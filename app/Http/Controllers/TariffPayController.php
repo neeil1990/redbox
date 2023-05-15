@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Tariffs\Facades\Tariffs;
+use App\Classes\Tariffs\FreeTariff;
 use App\Classes\Tariffs\Interfaces\Period;
 use App\Classes\Tariffs\Tariff;
 use App\TariffSetting;
@@ -72,9 +73,10 @@ class TariffPayController extends Controller
 
         $tariffs = new Tariffs();
         $tariffsArray = [];
-        foreach ($tariffs->getTariffs() as $tariff) {
+        foreach ($tariffs->getTariffs() as $tariff)
             $tariffsArray[] = $tariff->getAsArray();
-        }
+
+        array_unshift($tariffsArray, (new FreeTariff())->getAsArray());
 
         foreach ($tariffsArray as $tariffKey => $tariffValue) {
             foreach ($tariffValue['settings'] as $key => $setting) {
