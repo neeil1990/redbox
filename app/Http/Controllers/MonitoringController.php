@@ -444,10 +444,10 @@ class MonitoringController extends Controller
     {
         $project = MonitoringProject::findOrFail($request->projectId);
 
-        $totalWords = $project->keywords->count();
-        if (empty($request->region)) {
-            $totalWords *= $project->searchengines->count();
-        }
+        $totalWords = $request->region == ''
+            ? $project->keywords->count() * $project->searchengines->count()
+            : $project->keywords->count();
+
         if ($totalWords >= 1000) {
             $newRecord = new MonitoringCompetitorsResult();
             $newRecord->region = $request->region;
