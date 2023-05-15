@@ -25,10 +25,10 @@ class MonitoringCompetitor extends Model
         }
 
         foreach ($days as $day) {
-//            $diffInDays = Carbon::parse($day['dateOnly'])->diffInDays(Carbon::now());
-//            if ($diffInDays > 15) {
-//                continue;
-//            }
+            $diffInDays = Carbon::parse($day['dateOnly'])->diffInDays(Carbon::now());
+            if ($diffInDays > 15) {
+                continue;
+            }
 
             foreach ($words as $keywords) {
                 $start = microtime(true);
