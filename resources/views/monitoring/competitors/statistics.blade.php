@@ -485,8 +485,13 @@
             }
 
             function prepareActions() {
+                $('#table_length > label > select').on('change', function () {
+                    setTimeout(() => {
+                        colorCells()
+                    }, 200)
+                })
+
                 colorCells()
-                table.page.len(50).draw(false)
             }
 
             function colorCells() {
@@ -768,6 +773,10 @@
                                 "previous": "«"
                             },
                         },
+                        "drawCallback": function (settings) {
+                            console.log(1)
+                            colorCells()
+                        }
                     })
                 }
 
@@ -783,7 +792,7 @@
                 let successRequests = 0
                 let failRequests = 0
                 let totalRequests
-                if(needSplit) {
+                if (needSplit) {
                     totalRequests = oldArray.length * 5
                 } else {
                     totalRequests = oldArray.length
