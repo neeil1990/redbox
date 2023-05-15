@@ -459,10 +459,10 @@
                 })
 
                 table.rows.add(trs).draw()
-                colorCells()
             }
 
             function prepareActions() {
+                colorCells()
                 table.page.len(50).draw(false)
                 $('.remove-competitor').unbind().on('click', function () {
                     let columnIndex = $(this).attr('data-id')
@@ -499,32 +499,22 @@
                         let $row = $(this);
                         let $cells = $row.find('td');
                         if ($cells.length > 2) {
-                            let bool = true
+                            let array = []
                             $cells.each(function (cellIndex) {
                                 let $cell = $(this);
-                                if ($cell.hasClass('min-value')) {
-                                    bool = false
+                                let cellVal = parseFloat($cell.text());
+
+                                if (!isNaN(cellVal) && cellVal !== 0 && cellIndex !== 0) {
+                                    array.push({
+                                        cellIndex: cellIndex + 1,
+                                        cellVal: cellVal
+                                    })
                                 }
                             });
 
-                            if (bool) {
-                                let array = []
-                                $cells.each(function (cellIndex) {
-                                    let $cell = $(this);
-                                    let cellVal = parseFloat($cell.text());
-
-                                    if (!isNaN(cellVal) && cellVal !== 0 && cellIndex !== 0) {
-                                        array.push({
-                                            cellIndex: cellIndex + 1,
-                                            cellVal: cellVal
-                                        })
-                                    }
-                                });
-
-                                if (array.length > 0) {
-                                    array.sort((prev, next) => prev.cellVal - next.cellVal);
-                                    $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
-                                }
+                            if (array.length > 0) {
+                                array.sort((prev, next) => prev.cellVal - next.cellVal);
+                                $('#tableBody > tr:nth-child(' + rowIndex + ') > td:nth-child(' + array[0]['cellIndex'] + ')').addClass('min-value');
                             }
                         }
                     }
