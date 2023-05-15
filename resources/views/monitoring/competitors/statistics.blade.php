@@ -432,6 +432,29 @@
                     filter = JSON.parse(filter)
                     $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
                 }
+                $('.remove-competitor').unbind().on('click', function () {
+                    let columnIndex = $(this).attr('data-id')
+                    let url = $(this).attr('data-target')
+
+                    if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('monitoring.remove.competitor') }}",
+                            data: {
+                                '_token': $('meta[name="csrf-token"]').attr('content'),
+                                'url': url,
+                                'projectId': PROJECT_ID
+                            },
+                            success: function (response) {
+                                table.column(columnIndex).visible(false)
+                            },
+                        });
+                    }
+                })
+                $('#tableHeadRow > th:nth-of-type(2)').addClass('custom-info-bg')
+                $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
+
                 renderInfo()
 
                 $('#searchEngines').on('change', function () {
@@ -464,28 +487,6 @@
             function prepareActions() {
                 colorCells()
                 table.page.len(50).draw(false)
-                $('.remove-competitor').unbind().on('click', function () {
-                    let columnIndex = $(this).attr('data-id')
-                    let url = $(this).attr('data-target')
-
-                    if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('monitoring.remove.competitor') }}",
-                            data: {
-                                '_token': $('meta[name="csrf-token"]').attr('content'),
-                                'url': url,
-                                'projectId': PROJECT_ID
-                            },
-                            success: function (response) {
-                                table.column(columnIndex).visible(false)
-                            },
-                        });
-                    }
-                })
-                $('#tableHeadRow > th:nth-of-type(2)').addClass('custom-info-bg')
-                $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
             }
 
             function colorCells() {
@@ -777,36 +778,47 @@
                 ifIssetNotReady(KEYWORDS, countReadyWords, array, destroy, table)
             }
 
-            function ifIssetNotReady(oldArray, countReadyWords, results, destroy, table) {
+            function ifIssetNotReady(oldArray, countReadyWords, results, destroy, table, needSplit = false) {
                 let newArray = []
                 let successRequests = 0
                 let failRequests = 0
                 let totalRequests = oldArray.length
                 $.each(oldArray, function (k, words) {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        timeout: 60000,
-                        url: "{{ route('monitoring.get.competitors.statistics') }}",
-                        data: {
-                            '_token': $('meta[name="csrf-token"]').attr('content'),
-                            'competitors': {!! json_encode($competitors) !!},
-                            'region': $('#searchEngines').val(),
-                            'totalWords': TOTAL_WORDS,
-                            'projectId': PROJECT_ID,
-                            'keywords': words,
-                        },
-                        success: function (response) {
-                            renderTableBody(table, response.visibility)
-                            successRequests++
-                            countReadyWords += words.length
-                            $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
-                            results.push(response.statistics)
-                        },
-                        error: function () {
-                            failRequests++
-                            newArray.push(words)
-                        }
+                    let array
+                    if (needSplit) {
+                        console.log('+')
+                        array = chunkArray(words, 5)
+                    } else {
+                        console.log('-')
+                        array = words
+                    }
+
+                    $.each(array, function (k, words) {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            timeout: 60000,
+                            url: "{{ route('monitoring.get.competitors.statistics') }}",
+                            data: {
+                                '_token': $('meta[name="csrf-token"]').attr('content'),
+                                'competitors': {!! json_encode($competitors) !!},
+                                'region': $('#searchEngines').val(),
+                                'totalWords': TOTAL_WORDS,
+                                'projectId': PROJECT_ID,
+                                'keywords': words,
+                            },
+                            success: function (response) {
+                                renderTableBody(table, response.visibility)
+                                successRequests++
+                                countReadyWords += words.length
+                                $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
+                                results.push(response.statistics)
+                            },
+                            error: function () {
+                                failRequests++
+                                newArray.push(words)
+                            }
+                        })
                     })
                 });
 
@@ -828,6 +840,16 @@
                         }
                     }
                 }, 1000)
+            }
+
+
+            function chunkArray(arr, n) {
+                let chunkLength = Math.max(arr.length / n, 1);
+                let chunks = [];
+                for (let i = 0; i < n; i++) {
+                    if (chunkLength * (i + 1) <= arr.length) chunks.push(arr.slice(chunkLength * i, chunkLength * (i + 1)));
+                }
+                return chunks;
             }
 
             function calculateAvgValues(array) {
