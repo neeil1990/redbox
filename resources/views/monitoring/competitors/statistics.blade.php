@@ -458,7 +458,7 @@
                     trs.push(tr)
                 })
 
-                table.rows.add(trs).draw(false)
+                table.rows.add(trs).draw()
                 colorCells()
             }
 
