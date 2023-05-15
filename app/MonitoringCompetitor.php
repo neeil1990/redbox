@@ -118,14 +118,14 @@ class MonitoringCompetitor extends Model
         $visibilityArray = [];
         $lastDate = MonitoringProject::getLastDateByWords($request['keywords'], $request['region']);
 
-        if (isset($lastDate)) {
-            $queries = array_column($request['keywords'], 'query');
-            foreach ($queries as $keyword) {
-                foreach ($request['competitors'] as $competitor) {
-                    $visibilityArray[$keyword][$competitor] = 0;
-                }
+        $queries = array_column($request['keywords'], 'query');
+        foreach ($queries as $keyword) {
+            foreach ($request['competitors'] as $competitor) {
+                $visibilityArray[$keyword][$competitor] = 0;
             }
+        }
 
+        if (isset($lastDate)) {
             $start = microtime(true);
             $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                 ->where('search_indices.lr', $lastDate['engine']['lr'])
