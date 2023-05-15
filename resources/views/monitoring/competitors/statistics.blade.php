@@ -463,7 +463,7 @@
             }
 
             function prepareActions() {
-                table.page.len(50)
+                table.page.len(50).draw(false)
                 $('.remove-competitor').unbind().on('click', function () {
                     let columnIndex = $(this).attr('data-id')
                     let url = $(this).attr('data-target')
