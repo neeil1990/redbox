@@ -485,8 +485,13 @@
             }
 
             function prepareActions() {
+                $('#table_length > label > select').on('change', function () {
+                    setTimeout(() => {
+                        colorCells()
+                    }, 200)
+                })
+
                 colorCells()
-                table.page.len(50).draw(false)
             }
 
             function colorCells() {
@@ -755,8 +760,8 @@
                 } else {
                     table = $('#table').DataTable({
                         ordering: false,
-                        lengthMenu: [10, 25, 50, 100, TOTAL_WORDS],
-                        pageLength: TOTAL_WORDS,
+                        lengthMenu: [10, 25, 50, 100],
+                        pageLength: 50,
                         language: {
                             lengthMenu: "_MENU_",
                             search: "_INPUT_",
@@ -768,6 +773,9 @@
                                 "previous": "«"
                             },
                         },
+                        "drawCallback": function (settings) {
+                            colorCells()
+                        }
                     })
                 }
 
@@ -775,14 +783,20 @@
                 let array = [];
                 $('#ready-percent').html(0)
 
-                ifIssetNotReady(KEYWORDS, countReadyWords, array, destroy, table)
+                ifIssetNotReady(KEYWORDS, countReadyWords, array, destroy, table, true)
             }
 
             function ifIssetNotReady(oldArray, countReadyWords, results, destroy, table, needSplit = false) {
                 let newArray = []
                 let successRequests = 0
                 let failRequests = 0
-                let totalRequests = oldArray.length
+                let totalRequests
+                if (needSplit) {
+                    totalRequests = oldArray.length * 5
+                } else {
+                    totalRequests = oldArray.length
+                }
+
                 $.each(oldArray, function (k, words) {
                     let array
                     if (needSplit) {
@@ -797,24 +811,22 @@
                                     '_token': $('meta[name="csrf-token"]').attr('content'),
                                     'competitors': {!! json_encode($competitors) !!},
                                     'region': $('#searchEngines').val(),
-                                    'totalWords': TOTAL_WORDS,
                                     'projectId': PROJECT_ID,
                                     'keywords': words,
                                 },
                                 success: function (response) {
                                     renderTableBody(table, response.visibility)
-                                    successRequests++
                                     countReadyWords += words.length
                                     $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
                                     results.push(response.statistics)
+                                    successRequests++
                                 },
                                 error: function () {
-                                    failRequests++
                                     newArray.push(words)
+                                    failRequests++
                                 }
                             })
                         })
-
                     } else {
                         $.ajax({
                             type: "POST",
@@ -825,20 +837,19 @@
                                 '_token': $('meta[name="csrf-token"]').attr('content'),
                                 'competitors': {!! json_encode($competitors) !!},
                                 'region': $('#searchEngines').val(),
-                                'totalWords': TOTAL_WORDS,
                                 'projectId': PROJECT_ID,
                                 'keywords': words,
                             },
                             success: function (response) {
                                 renderTableBody(table, response.visibility)
-                                successRequests++
                                 countReadyWords += words.length
                                 $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
                                 results.push(response.statistics)
+                                successRequests++
                             },
                             error: function () {
-                                failRequests++
                                 newArray.push(words)
+                                failRequests++
                             }
                         })
                     }
@@ -858,12 +869,12 @@
                                 $('#toast-container').hide(300)
                             }, 5000)
 
+                            console.log(newArray)
                             ifIssetNotReady(newArray, countReadyWords, results, destroy, table, true)
                         }
                     }
                 }, 1000)
             }
-
 
             function chunkArray(arr, n) {
                 let chunkLength = Math.max(arr.length / n, 1);
