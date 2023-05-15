@@ -810,7 +810,7 @@
                                     'keywords': words,
                                 },
                                 beforeSend: function () {
-                                    totalRequests++
+                                    totalRequests = totalRequests + 1
                                 },
                                 success: function (response) {
                                     renderTableBody(table, response.visibility)
@@ -839,7 +839,7 @@
                                 'keywords': words,
                             },
                             beforeSend: function () {
-                                totalRequests++
+                                totalRequests = totalRequests + 1
                             },
                             success: function (response) {
                                 renderTableBody(table, response.visibility)
