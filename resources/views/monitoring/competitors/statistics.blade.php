@@ -860,7 +860,7 @@
                                 $('#toast-container').hide(300)
                             }, 5000)
 
-                            ifIssetNotReady(newArray, countReadyWords, results, destroy)
+                            ifIssetNotReady(newArray, countReadyWords, results, destroy, true)
                         }
                     }
                 }, 1000)
