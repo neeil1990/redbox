@@ -461,7 +461,53 @@
                 table.rows.add(trs).draw(false)
             }
 
-            function initTable() {
+            function prepareActions() {
+                $('.remove-competitor').unbind().on('click', function () {
+                    let columnIndex = $(this).attr('data-id')
+                    let url = $(this).attr('data-target')
+
+                    if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('monitoring.remove.competitor') }}",
+                            data: {
+                                '_token': $('meta[name="csrf-token"]').attr('content'),
+                                'url': url,
+                                'projectId': PROJECT_ID
+                            },
+                            success: function (response) {
+                                table.column(columnIndex).visible(false)
+                            },
+                        });
+                    }
+                })
+                $('#tableHeadRow > th:nth-of-type(2)').addClass('custom-info-bg')
+                $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
+                colorCells()
+
+                $('.paginate_button').on('click', function () {
+                    setTimeout(() => {
+                        colorCells()
+                    }, 300)
+                })
+
+                $('th.sorting').on('click', function () {
+                    setTimeout(() => {
+                        colorCells()
+                    }, 300)
+                })
+
+                $('select.table_length').on('change', function () {
+                    setTimeout(() => {
+                        colorCells()
+                    }, 300)
+                })
+            }
+
+            function colorCells() {
+                $('.min-value').removeClass('min-value')
+
                 let $table = $('#table');
                 let $rows = $table.find('tr');
 
@@ -489,30 +535,6 @@
                         }
                     }
                 });
-
-                $('.remove-competitor').unbind().on('click', function () {
-                    let columnIndex = $(this).attr('data-id')
-                    let url = $(this).attr('data-target')
-
-                    if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('monitoring.remove.competitor') }}",
-                            data: {
-                                '_token': $('meta[name="csrf-token"]').attr('content'),
-                                'url': url,
-                                'projectId': PROJECT_ID
-                            },
-                            success: function (response) {
-                                table.column(columnIndex).visible(false)
-                            },
-                        });
-                    }
-                })
-
-                $('#tableHeadRow > th:nth-of-type(2)').addClass('custom-info-bg')
-                $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
             }
 
             function renderChartTable(tableId, body, data, key, sortType = 'desc') {
@@ -808,7 +830,7 @@
                         clearInterval(interval)
                         if (failRequests === 0) {
                             $('#download-results').hide()
-                            initTable();
+                            prepareActions();
                             renderStatistics(calculateAvgValues(results), destroy)
                         } else {
                             $('#toast-container').show(300)
