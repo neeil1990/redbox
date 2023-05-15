@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -23,8 +24,12 @@ class MonitoringCompetitor extends Model
             $days = MonitoringProject::getLastDate($project, $request['region']);
         }
 
-        Log::debug('last scan', array_column($days, 'dateOnly'));
         foreach ($days as $day) {
+            $diffInDays = Carbon::parse($day['dateOnly'])->diffInDays(Carbon::now());
+
+            if ($diffInDays > 15) {
+                continue;
+            }
             foreach ($words as $keywords) {
                 $start = microtime(true);
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
