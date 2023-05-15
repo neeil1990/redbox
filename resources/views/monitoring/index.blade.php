@@ -102,356 +102,353 @@
 
             const HIGHLIGHT_TR_CLASS = "table-success";
 
-            $(document).ready(function () {
-                //Enable check and uncheck all functionality
-                $('.checkbox-toggle').click(function () {
-                    var clicks = $(this).data('clicks');
-                    if (clicks) {
-                        //Uncheck all checkboxes
-                        $('.table tbody tr.main').removeClass(HIGHLIGHT_TR_CLASS);
-                        $('.table tbody tr.main').find('.form-check-input').prop('checked', false);
-                        $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square');
-                    } else {
-                        //Check all checkboxes
-                        $('.table tbody tr.main').addClass(HIGHLIGHT_TR_CLASS);
-                        $('.table tbody tr.main').find('.form-check-input').prop('checked', true);
-                        $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square');
-                    }
-                    $(this).data('clicks', !clicks)
-                });
+            $('.checkbox-toggle').click(function () {
+                var clicks = $(this).data('clicks');
+                if (clicks) {
+                    //Uncheck all checkboxes
+                    $('.table tbody tr.main').removeClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr.main').find('.form-check-input').prop('checked', false);
+                    $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square');
+                } else {
+                    //Check all checkboxes
+                    $('.table tbody tr.main').addClass(HIGHLIGHT_TR_CLASS);
+                    $('.table tbody tr.main').find('.form-check-input').prop('checked', true);
+                    $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square');
+                }
+                $(this).data('clicks', !clicks)
+            });
 
-                $('[data-toggle="tooltip"]').tooltip({
-                    animation: false,
-                    trigger: 'hover',
-                });
+            $('[data-toggle="tooltip"]').tooltip({
+                animation: false,
+                trigger: 'hover',
+            });
 
-                let table = $('#projects').DataTable({
-                    dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
-                    fixedHeader: true,
-                    lengthMenu: LENGTH_MENU,
-                    pageLength: PAGE_LENGTH,
-                    pagingType: "simple_numbers",
-                    language: {
-                        lengthMenu: "_MENU_",
-                        search: "_INPUT_",
-                        searchPlaceholder: "{{ __('Search project') }}",
-                        paginate: {
-                            "first": "«",
-                            "last": "»",
-                            "next": "»",
-                            "previous": "«"
-                        },
-                        processing: '<img src="/img/1485.gif" style="width: 50px; height: 50px;">',
+            let table = $('#projects').DataTable({
+                dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                fixedHeader: true,
+                lengthMenu: LENGTH_MENU,
+                pageLength: PAGE_LENGTH,
+                pagingType: "simple_numbers",
+                language: {
+                    lengthMenu: "_MENU_",
+                    search: "_INPUT_",
+                    searchPlaceholder: "{{ __('Search project') }}",
+                    paginate: {
+                        "first": "«",
+                        "last": "»",
+                        "next": "»",
+                        "previous": "«"
                     },
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                        url: '/monitoring/projects/get',
-                        type: 'POST',
-                    },
-                    order: [
-                        [2, 'asc'],
-                    ],
-                    columnDefs: [
-                        {orderable: true, "width": "150px", targets: 'name'},
-                        {orderable: true, targets: 3},
-                        {orderable: false, targets: [0, 1, 4, 12, 13]},
-                    ],
-                    columns: [
-                        {
-                            orderable: false,
-                            data: function (row, type, val, meta) {
+                    processing: '<img src="/img/1485.gif" style="width: 50px; height: 50px;">',
+                },
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/monitoring/projects/get',
+                    type: 'POST',
+                },
+                order: [
+                    [2, 'asc'],
+                ],
+                columnDefs: [
+                    {orderable: true, "width": "150px", targets: 'name'},
+                    {orderable: true, targets: 3},
+                    {orderable: false, targets: [0, 1, 4, 12, 13]},
+                ],
+                columns: [
+                    {
+                        orderable: false,
+                        data: function (row, type, val, meta) {
 
-                                let form = $('<div />', {
-                                    class: 'form-check'
-                                });
-
-                                let input = $('<input />', {
-                                    class: 'form-check-input'
-                                });
-
-                                input.attr({
-                                    type: 'checkbox',
-                                    value: row.id,
-                                });
-
-                                return form.append(input)[0].outerHTML;
-                            },
-                        },
-                        {
-                            orderable: false,
-                            data: null,
-                            defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>',
-                        },
-                        {
-                            title: '{{ __('Project') }}',
-                            name: 'name',
-                            data: function (row) {
-                                return `<a href="/monitoring/${row.id}" class="text-bold">${row.name}</a>`;
-                            },
-                        },
-                        {
-                            title: '{{ __('Domain') }}',
-                            name: 'url',
-                            data: function (row) {
-                                return `<a href="https://${row.url}" target="_blank" class="text-muted">${row.url} <i class="fas fa-external-link-square"></i></a>`;
-                            },
-                        },
-                        {
-                            title: '{{ __('Search engine') }}',
-                            name: 'engines',
-                            data: 'engines',
-                        },
-                        {
-                            title: '{{ __('Words') }}',
-                            name: 'words',
-                            data: 'words',
-                        },
-                        {
-                            title: '{{ __('Middle position') }}',
-                            name: 'middle',
-                            data: 'middle',
-                        },
-                        {
-                            title: '% {{ __('TOP') }} 3',
-                            name: 'top3',
-                            data: function (row) {
-                                let sup = subColorTag(row.diff_top3);
-
-                                return row.top3 + sup;
-                            },
-                        },
-                        {
-                            title: '% {{ __('TOP') }} 5',
-                            name: 'top5',
-                            data: function (row) {
-                                let sup = subColorTag(row.diff_top5);
-
-                                return row.top5 + sup;
-                            },
-                        },
-                        {
-                            title: '% {{ __('TOP') }} 10',
-                            name: 'top10',
-                            data: function (row) {
-                                let sup = subColorTag(row.diff_top10);
-
-                                return row.top10 + sup;
-                            },
-                        },
-                        {
-                            title: '% {{ __('TOP') }} 30',
-                            name: 'top30',
-                            data: function (row) {
-                                let sup = subColorTag(row.diff_top30);
-
-                                return row.top30 + sup;
-                            },
-                        },
-                        {
-                            title: '% {{ __('TOP') }} 100',
-                            name: 'top100',
-                            data: function (row) {
-                                let sup = subColorTag(row.diff_top100);
-
-                                return row.top100 + sup;
-                            },
-                        },
-                        {
-                            width: '120px',
-                            title: '{{ __('Reports') }}',
-                            data: function (row) {
-
-                                let edit = $('<a />', {
-                                    class: 'btn btn-info btn-sm',
-                                    "data-toggle": 'modal',
-                                    "data-target": '.modal',
-                                    "data-type": 'export-edit',
-                                    "data-id": row.id,
-                                }).text('{{ __('Export') }}');
-
-                                return edit[0].outerHTML;
-                            },
-                            class: 'project-actions text-right',
-                        },
-                        {
-                            width: '145px',
-                            data: function (row) {
-
-                                let create = $('<a />', {class: 'btn btn-sm btn-success tooltip-on'}).append($('<i />', {class: 'fas fa-plus'}));
-
-                                create.attr({
-                                    "data-toggle": 'modal',
-                                    "data-target": '.modal',
-                                    "data-type": 'create_keywords',
-                                    "data-id": row.id,
-                                });
-
-                                let edit = $('<a />', {
-                                    class: 'btn btn-sm btn-success',
-                                    href: `/monitoring/create#id=${row.id}`,
-                                }).append($('<i />', {class: 'fas fa-edit'}));
-
-                                let folder = $('<a />', {
-                                    class: 'btn btn-sm btn-info',
-                                    href: '/monitoring/' + row.id + '/groups',
-                                }).append($('<i />', {class: 'fa fa-folder-open'}));
-
-                                let trash = $('<a />', {class: 'btn btn-sm btn-danger'}).append($('<i />', {class: 'fas fa-trash'}));
-
-                                trash.attr('onclick', `onClickDeleteProject(${row.id})`);
-
-                                return create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
-                            },
-                            class: 'project-actions text-right',
-                        },
-                    ],
-                    initComplete: function () {
-                        let api = this.api();
-                        let json = api.ajax.json();
-                        let loading = $('#projects_processing');
-
-                        this.find('tbody').on('click', 'tr.main', function () {
-                            $(this).toggleClass(HIGHLIGHT_TR_CLASS);
-
-                            if ($(this).hasClass(HIGHLIGHT_TR_CLASS)) {
-                                $(this).find('.form-check-input').prop('checked', true);
-                            } else {
-                                $(this).find('.form-check-input').prop('checked', false);
-                            }
-                        });
-
-                        this.find('tbody').on('click', 'td .dt-control', function () {
-                            let icon = $(this).find('i');
-                            let tr = $(this).closest('tr');
-                            let row = api.row(tr);
-
-                            if (row.child.isShown()) {
-                                // This row is already open - close it
-                                row.child.hide();
-                                tr.removeClass('shown');
-
-                                icon.removeClass('fa-minus-circle');
-                                icon.addClass('fa-plus-circle');
-                            } else {
-                                // Open this row
-                                let data = row.data();
-
-                                loading.css('display', 'block');
-                                axios.get(`/monitoring/${data.id}/child-rows/get`).then(function (response) {
-                                    loading.css('display', 'none');
-
-                                    let content = $(response.data);
-
-                                    $.each(content.find('.top'), function (i, el) {
-
-                                        let str = $(el).text();
-
-                                        if (str.indexOf('+') > 0)
-                                            $(el).addClass('grow-color');
-
-                                        if (str.indexOf('-') > 0)
-                                            $(el).addClass('shrink-color');
-                                    });
-
-                                    row.child(content).show();
-
-                                    content.find('.tooltip-child-table').tooltip({
-                                        animation: false,
-                                        trigger: 'hover',
-                                    });
-                                });
-
-                                tr.addClass('shown');
-
-                                icon.removeClass('fa-plus-circle');
-                                icon.addClass('fa-minus-circle')
-                            }
-
-                            return false;
-                        });
-
-                        // header card
-                        this.closest('.card').find('.card-header .card-title').html("");
-                        this.closest('.card').find('.card-header label').css('margin-bottom', 0);
-
-                        let updatedDateText = json.updatedDate;
-                        let dataTimeCache = $('<span />', {class: "data-time-cache"}).html(updatedDateText);
-                        let CacheText = `Сводные данные в таблице актуальны на дату: ${dataTimeCache[0].outerHTML} `;
-                        let updateCacheIcon = $('<i />', {class: "fas fa-sync-alt"});
-                        let updateCacheButton = $('<a />', {
-                            class: "text-muted",
-                            href: "javascript:void(0)"
-                        }).html(updateCacheIcon);
-
-                        updateCacheButton.click(function () {
-                            $(this).hide();
-                            loading.css('display', 'block');
-                            axios.get('/monitoring/project/update-data-table')
-                                .then(function () {
-                                    loading.css('display', 'none');
-                                    table.draw(false);
-                                    $('.data-time-cache').text(moment().format("DD.MM.YYYY H:mm"));
-                                });
-                            return false;
-                        });
-
-                        let updateCacheText = $('<div />', {class: "card-title ml-2"}).html(CacheText);
-                        updateCacheText.append(updateCacheButton);
-                        let updateCacheContainer = $('<div />', {class: "float-left"}).html(updateCacheText);
-                        this.closest('.card').find('.card-header .card-title').after(updateCacheContainer);
-
-                        axios.post('/monitoring/get/column/settings').then(function (response) {
-
-                            $.each(response.data, function (i, col) {
-                                if (col.state) {
-                                    table.column(col.column + ':name').visible(!col.state);
-                                    $(`.column-visible[data-column="${col.column}"]`).addClass('hover');
-                                }
+                            let form = $('<div />', {
+                                class: 'form-check'
                             });
+
+                            let input = $('<input />', {
+                                class: 'form-check-input'
+                            });
+
+                            input.attr({
+                                type: 'checkbox',
+                                value: row.id,
+                            });
+
+                            return form.append(input)[0].outerHTML;
+                        },
+                    },
+                    {
+                        orderable: false,
+                        data: null,
+                        defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>',
+                    },
+                    {
+                        title: '{{ __('Project') }}',
+                        name: 'name',
+                        data: function (row) {
+                            return `<a href="/monitoring/${row.id}" class="text-bold">${row.name}</a>`;
+                        },
+                    },
+                    {
+                        title: '{{ __('Domain') }}',
+                        name: 'url',
+                        data: function (row) {
+                            return `<a href="https://${row.url}" target="_blank" class="text-muted">${row.url} <i class="fas fa-external-link-square"></i></a>`;
+                        },
+                    },
+                    {
+                        title: '{{ __('Search engine') }}',
+                        name: 'engines',
+                        data: 'engines',
+                    },
+                    {
+                        title: '{{ __('Words') }}',
+                        name: 'words',
+                        data: 'words',
+                    },
+                    {
+                        title: '{{ __('Middle position') }}',
+                        name: 'middle',
+                        data: 'middle',
+                    },
+                    {
+                        title: '% {{ __('TOP') }} 3',
+                        name: 'top3',
+                        data: function (row) {
+                            let sup = subColorTag(row.diff_top3);
+
+                            return row.top3 + sup;
+                        },
+                    },
+                    {
+                        title: '% {{ __('TOP') }} 5',
+                        name: 'top5',
+                        data: function (row) {
+                            let sup = subColorTag(row.diff_top5);
+
+                            return row.top5 + sup;
+                        },
+                    },
+                    {
+                        title: '% {{ __('TOP') }} 10',
+                        name: 'top10',
+                        data: function (row) {
+                            let sup = subColorTag(row.diff_top10);
+
+                            return row.top10 + sup;
+                        },
+                    },
+                    {
+                        title: '% {{ __('TOP') }} 30',
+                        name: 'top30',
+                        data: function (row) {
+                            let sup = subColorTag(row.diff_top30);
+
+                            return row.top30 + sup;
+                        },
+                    },
+                    {
+                        title: '% {{ __('TOP') }} 100',
+                        name: 'top100',
+                        data: function (row) {
+                            let sup = subColorTag(row.diff_top100);
+
+                            return row.top100 + sup;
+                        },
+                    },
+                    {
+                        width: '120px',
+                        title: '{{ __('Reports') }}',
+                        data: function (row) {
+
+                            let edit = $('<a />', {
+                                class: 'btn btn-info btn-sm',
+                                "data-toggle": 'modal',
+                                "data-target": '.modal',
+                                "data-type": 'export-edit',
+                                "data-id": row.id,
+                            }).text('{{ __('Export') }}');
+
+                            return edit[0].outerHTML;
+                        },
+                        class: 'project-actions text-right',
+                    },
+                    {
+                        width: '145px',
+                        data: function (row) {
+
+                            let create = $('<a />', {class: 'btn btn-sm btn-success tooltip-on'}).append($('<i />', {class: 'fas fa-plus'}));
+
+                            create.attr({
+                                "data-toggle": 'modal',
+                                "data-target": '.modal',
+                                "data-type": 'create_keywords',
+                                "data-id": row.id,
+                            });
+
+                            let edit = $('<a />', {
+                                class: 'btn btn-sm btn-success',
+                                href: `/monitoring/create#id=${row.id}`,
+                            }).append($('<i />', {class: 'fas fa-edit'}));
+
+                            let folder = $('<a />', {
+                                class: 'btn btn-sm btn-info',
+                                href: '/monitoring/' + row.id + '/groups',
+                            }).append($('<i />', {class: 'fa fa-folder-open'}));
+
+                            let trash = $('<a />', {class: 'btn btn-sm btn-danger'}).append($('<i />', {class: 'fas fa-trash'}));
+
+                            trash.attr('onclick', `onClickDeleteProject(${row.id})`);
+
+                            return create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
+                        },
+                        class: 'project-actions text-right',
+                    },
+                ],
+                initComplete: function () {
+                    let api = this.api();
+                    let json = api.ajax.json();
+                    let loading = $('#projects_processing');
+
+                    this.find('tbody').on('click', 'tr.main', function () {
+                        $(this).toggleClass(HIGHLIGHT_TR_CLASS);
+
+                        if ($(this).hasClass(HIGHLIGHT_TR_CLASS)) {
+                            $(this).find('.form-check-input').prop('checked', true);
+                        } else {
+                            $(this).find('.form-check-input').prop('checked', false);
+                        }
+                    });
+
+                    this.find('tbody').on('click', 'td .dt-control', function () {
+                        let icon = $(this).find('i');
+                        let tr = $(this).closest('tr');
+                        let row = api.row(tr);
+
+                        if (row.child.isShown()) {
+                            // This row is already open - close it
+                            row.child.hide();
+                            tr.removeClass('shown');
+
+                            icon.removeClass('fa-minus-circle');
+                            icon.addClass('fa-plus-circle');
+                        } else {
+                            // Open this row
+                            let data = row.data();
+
+                            loading.css('display', 'block');
+                            axios.get(`/monitoring/${data.id}/child-rows/get`).then(function (response) {
+                                loading.css('display', 'none');
+
+                                let content = $(response.data);
+
+                                $.each(content.find('.top'), function (i, el) {
+
+                                    let str = $(el).text();
+
+                                    if (str.indexOf('+') > 0)
+                                        $(el).addClass('grow-color');
+
+                                    if (str.indexOf('-') > 0)
+                                        $(el).addClass('shrink-color');
+                                });
+
+                                row.child(content).show();
+
+                                content.find('.tooltip-child-table').tooltip({
+                                    animation: false,
+                                    trigger: 'hover',
+                                });
+                            });
+
+                            tr.addClass('shown');
+
+                            icon.removeClass('fa-plus-circle');
+                            icon.addClass('fa-minus-circle')
+                        }
+
+                        return false;
+                    });
+
+                    // header card
+                    this.closest('.card').find('.card-header .card-title').html("");
+                    this.closest('.card').find('.card-header label').css('margin-bottom', 0);
+
+                    let updatedDateText = json.updatedDate;
+                    let dataTimeCache = $('<span />', {class: "data-time-cache"}).html(updatedDateText);
+                    let CacheText = `Сводные данные в таблице актуальны на дату: ${dataTimeCache[0].outerHTML} `;
+                    let updateCacheIcon = $('<i />', {class: "fas fa-sync-alt"});
+                    let updateCacheButton = $('<a />', {
+                        class: "text-muted",
+                        href: "javascript:void(0)"
+                    }).html(updateCacheIcon);
+
+                    updateCacheButton.click(function () {
+                        $(this).hide();
+                        loading.css('display', 'block');
+                        axios.get('/monitoring/project/update-data-table')
+                            .then(function () {
+                                loading.css('display', 'none');
+                                table.draw(false);
+                                $('.data-time-cache').text(moment().format("DD.MM.YYYY H:mm"));
+                            });
+                        return false;
+                    });
+
+                    let updateCacheText = $('<div />', {class: "card-title ml-2"}).html(CacheText);
+                    updateCacheText.append(updateCacheButton);
+                    let updateCacheContainer = $('<div />', {class: "float-left"}).html(updateCacheText);
+                    this.closest('.card').find('.card-header .card-title').after(updateCacheContainer);
+
+                    axios.post('/monitoring/get/column/settings').then(function (response) {
+
+                        $.each(response.data, function (i, col) {
+                            if (col.state) {
+                                table.column(col.column + ':name').visible(!col.state);
+                                $(`.column-visible[data-column="${col.column}"]`).addClass('hover');
+                            }
                         });
-                    },
-                    drawCallback: function () {
-                        this.find('tbody tr').addClass('main');
-                        $('.pagination').addClass('pagination-sm');
-                    },
-                });
-
-                $('.column-visible').click(function (e) {
-                    e.preventDefault();
-
-                    let name = $(this).data('column');
-                    let column = table.column(name + ':name');
-                    let visible = column.visible();
-
-                    column.visible(!visible);
-
-                    $(this).toggleClass('hover', visible);
-
-                    axios.post('/monitoring/set/column/settings', {
-                        column: name,
-                        state: visible,
                     });
+                },
+                drawCallback: function () {
+                    this.find('tbody tr').addClass('main');
+                    $('.pagination').addClass('pagination-sm');
+                },
+            });
+
+            $('.column-visible').click(function (e) {
+                e.preventDefault();
+
+                let name = $(this).data('column');
+                let column = table.column(name + ':name');
+                let visible = column.visible();
+
+                column.visible(!visible);
+
+                $(this).toggleClass('hover', visible);
+
+                axios.post('/monitoring/set/column/settings', {
+                    column: name,
+                    state: visible,
                 });
+            });
 
-                $('.checkbox-delete').click(function () {
+            $('.checkbox-delete').click(function () {
 
-                    let rows = table.rows('.' + HIGHLIGHT_TR_CLASS);
-                    let data = rows.data();
+                let rows = table.rows('.' + HIGHLIGHT_TR_CLASS);
+                let data = rows.data();
 
-                    if (!data.length) {
-                        toastr.error("{{ __('Selected project') }}");
-                        return false;
-                    }
+                if (!data.length) {
+                    toastr.error("{{ __('Selected project') }}");
+                    return false;
+                }
 
-                    if (!window.confirm("{{__('Do you really want to delete?')}}"))
-                        return false;
+                if (!window.confirm("{{__('Do you really want to delete?')}}"))
+                    return false;
 
-                    $.each(data, function (index, row) {
-                        deleteProject(row.id);
-                    });
+                $.each(data, function (index, row) {
+                    deleteProject(row.id);
                 });
-            })
+            });
 
             function onClickDeleteProject(id) {
 

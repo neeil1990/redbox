@@ -419,7 +419,7 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
-        $user->monitoringProjects()->where('id', $id)->delete();
+        $user->monitoringProjects()->find($id)->delete();
     }
 
     public function monitoringCompetitors(MonitoringProject $project)
