@@ -68,12 +68,9 @@
         <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
             {{ __('My competitors') }}
         </a>
+
         <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
             {{ __('Comparison with competitors') }}
-        </a>
-
-        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.dates', $project->id) }}">
-            {{ __('Changes by top and date') }}
         </a>
 
         <div class="btn-group">

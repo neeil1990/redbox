@@ -648,14 +648,6 @@ class MonitoringController extends Controller
         return response()->json([], 415);
     }
 
-    public function changeDates(MonitoringProject $project)
-    {
-        $navigations = $this->navigations($project);
-        $searchEngines = $project->searchengines;
-
-        return view('monitoring.competitors.dates', compact('navigations', 'project', 'searchEngines'));
-    }
-
     public function resultChangesDatesState(MonitoringChangesDate $project)
     {
         $request = json_decode($project->request, true);
