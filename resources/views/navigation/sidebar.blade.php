@@ -68,7 +68,7 @@
                     </li>
                 @endif
             @endforeach
-            <li class="nav-item menu-item">
+            <li class="nav-item menu-item ml-2">
                 <a class="nav-link search-link" href="{{ route('partners') }}" style="white-space: inherit !important;">
                     <span>
                         <i class="fa fa-handshake" style="color: white"></i>
