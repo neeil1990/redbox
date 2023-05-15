@@ -790,12 +790,7 @@
                 let newArray = []
                 let successRequests = 0
                 let failRequests = 0
-                let totalRequests
-                if (needSplit) {
-                    totalRequests = oldArray.length * 5
-                } else {
-                    totalRequests = oldArray.length
-                }
+                let totalRequests = 0
 
                 $.each(oldArray, function (k, words) {
                     let array
@@ -813,6 +808,9 @@
                                     'region': $('#searchEngines').val(),
                                     'projectId': PROJECT_ID,
                                     'keywords': words,
+                                },
+                                beforeSend: function () {
+                                    totalRequests++
                                 },
                                 success: function (response) {
                                     renderTableBody(table, response.visibility)
@@ -840,6 +838,9 @@
                                 'projectId': PROJECT_ID,
                                 'keywords': words,
                             },
+                            beforeSend: function () {
+                                totalRequests++
+                            },
                             success: function (response) {
                                 renderTableBody(table, response.visibility)
                                 countReadyWords += words.length
@@ -860,7 +861,6 @@
                     console.log(successRequests)
                     console.log(failRequests)
                     if (totalRequests === successRequests + failRequests) {
-                        console.log(results)
                         clearInterval(interval)
                         if (failRequests === 0) {
                             $('#download-results').hide()
