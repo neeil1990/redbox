@@ -45,7 +45,7 @@ class MonitoringProject extends Model
         return $this->hasMany(MonitoringChangesDate::class);
     }
 
-    public static function getLastDates(MonitoringProject $project)
+    public static function getLastDates(MonitoringProject $project): array
     {
         $keywords = $project->keywords->pluck('id');
         $lastChecks = [];

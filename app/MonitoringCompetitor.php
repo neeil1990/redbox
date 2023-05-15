@@ -23,6 +23,7 @@ class MonitoringCompetitor extends Model
             $days = MonitoringProject::getLastDate($project, $request['region']);
         }
 
+        Log::debug('last scan', $days);
         foreach ($days as $day) {
             foreach ($words as $keywords) {
                 $start = microtime(true);
