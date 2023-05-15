@@ -856,7 +856,11 @@
                 });
 
                 let interval = setInterval(() => {
+                    console.log(totalRequests)
+                    console.log(successRequests)
+                    console.log(failRequests)
                     if (totalRequests === successRequests + failRequests) {
+                        console.log(results)
                         clearInterval(interval)
                         if (failRequests === 0) {
                             $('#download-results').hide()
@@ -869,7 +873,6 @@
                                 $('#toast-container').hide(300)
                             }, 5000)
 
-                            console.log(newArray)
                             ifIssetNotReady(newArray, countReadyWords, results, destroy, table, true)
                         }
                     }
