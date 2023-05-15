@@ -459,6 +459,7 @@
                 })
 
                 table.rows.add(trs).draw(false)
+                colorCells()
             }
 
             function prepareActions() {
@@ -484,34 +485,6 @@
                 })
                 $('#tableHeadRow > th:nth-of-type(2)').addClass('custom-info-bg')
                 $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
-                colorCells()
-
-                $('#table_paginate ul.pagination').children().on('click', function () {
-                    setTimeout(() => {
-                        colorCells()
-                    }, 300)
-                    refresh()
-                })
-
-                $('th.sorting').on('click', function () {
-                    setTimeout(() => {
-                        colorCells()
-                    }, 300)
-                })
-
-                $('select[name="table_length"]').on('change', function () {
-                    setTimeout(() => {
-                        colorCells()
-                    }, 300)
-                })
-            }
-
-            function refresh() {
-                $('#table_paginate ul.pagination').children().on('click', function () {
-                    setTimeout(() => {
-                        colorCells()
-                    }, 300)
-                })
             }
 
             function colorCells() {
