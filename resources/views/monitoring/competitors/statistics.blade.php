@@ -788,12 +788,36 @@
                     if (needSplit) {
                         console.log('+')
                         array = chunkArray(words, 5)
+                        $.each(array, function (k, words) {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                timeout: 60000,
+                                url: "{{ route('monitoring.get.competitors.statistics') }}",
+                                data: {
+                                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                                    'competitors': {!! json_encode($competitors) !!},
+                                    'region': $('#searchEngines').val(),
+                                    'totalWords': TOTAL_WORDS,
+                                    'projectId': PROJECT_ID,
+                                    'keywords': words,
+                                },
+                                success: function (response) {
+                                    renderTableBody(table, response.visibility)
+                                    successRequests++
+                                    countReadyWords += words.length
+                                    $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
+                                    results.push(response.statistics)
+                                },
+                                error: function () {
+                                    failRequests++
+                                    newArray.push(words)
+                                }
+                            })
+                        })
+
                     } else {
                         console.log('-')
-                        array = words
-                    }
-
-                    $.each(array, function (k, words) {
                         $.ajax({
                             type: "POST",
                             dataType: "json",
@@ -819,7 +843,7 @@
                                 newArray.push(words)
                             }
                         })
-                    })
+                    }
                 });
 
                 let interval = setInterval(() => {
