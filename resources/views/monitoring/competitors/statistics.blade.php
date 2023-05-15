@@ -786,7 +786,6 @@
                 $.each(oldArray, function (k, words) {
                     let array
                     if (needSplit) {
-                        console.log('+')
                         array = chunkArray(words, 5)
                         $.each(array, function (k, words) {
                             $.ajax({
@@ -817,11 +816,10 @@
                         })
 
                     } else {
-                        console.log('-')
                         $.ajax({
                             type: "POST",
                             dataType: "json",
-                            timeout: 60000,
+                            timeout: 100,
                             url: "{{ route('monitoring.get.competitors.statistics') }}",
                             data: {
                                 '_token': $('meta[name="csrf-token"]').attr('content'),
@@ -860,7 +858,7 @@
                                 $('#toast-container').hide(300)
                             }, 5000)
 
-                            ifIssetNotReady(newArray, countReadyWords, results, destroy, true)
+                            ifIssetNotReady(newArray, countReadyWords, results, destroy, table, true)
                         }
                     }
                 }, 1000)
