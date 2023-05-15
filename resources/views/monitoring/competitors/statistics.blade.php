@@ -9,13 +9,6 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
         <!-- daterange picker -->
         <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
-
-        <style>
-            .exist-position {
-                color: #28a745 !important;
-                font-weight: bold;
-            }
-        </style>
         <style>
             .custom-info-bg {
                 background-color: rgba(23, 162, 184, 0.5) !important;
@@ -207,7 +200,7 @@
         {{ __('Statistics for the selected region') }}
     </h3>
 
-    <table id="table" class="table table-hover table-bordered no-footer" style="display: none">
+    <table id="table" class="table table-hover table-bordered no-footer">
         <thead>
         <tr id="tableHeadRow">
             <th>{{ __('Query') }}</th>
@@ -451,20 +444,21 @@
                 })
             })
 
-            function renderTableBody(data) {
+            function renderTableBody(table, data) {
                 let trs = []
                 $.each(data, function (query, info) {
-                    let tr = '<tr class="render"><td>' + query + '</td>'
+                    let tr = []
+                    tr.push(query)
                     $.each(info, function (site, visibility) {
                         if (site !== '') {
-                            tr += '<td>' + visibility + '</td>'
+                            tr.push(visibility)
                         }
                     })
-                    tr += '</tr>'
 
                     trs.push(tr)
                 })
-                $('#tableBody').append(trs.join(' '))
+
+                table.rows.add(trs).draw(false)
             }
 
             function initTable() {
@@ -496,22 +490,6 @@
                     }
                 });
 
-                let res = $('#table').DataTable({
-                    lengthMenu: [10, 25, 50, 100],
-                    pageLength: 50,
-                    language: {
-                        lengthMenu: "_MENU_",
-                        search: "_INPUT_",
-                        searchPlaceholder: "{{ __('Search') }}",
-                        paginate: {
-                            "first": "«",
-                            "last": "»",
-                            "next": "»",
-                            "previous": "«"
-                        },
-                    },
-                })
-
                 $('.remove-competitor').unbind().on('click', function () {
                     let columnIndex = $(this).attr('data-id')
                     let url = $(this).attr('data-target')
@@ -535,11 +513,6 @@
 
                 $('#tableHeadRow > th:nth-of-type(2)').addClass('custom-info-bg')
                 $('#tableHeadRow > th:nth-of-type(2) > .remove-competitor').remove()
-
-                $('#table').show()
-                $('.header').show()
-
-                return res;
             }
 
             function renderChartTable(tableId, body, data, key, sortType = 'desc') {
@@ -768,30 +741,42 @@
 
             function renderInfo(destroy = false) {
                 $('#download-results').show()
-                $('#table').hide()
                 $('#statistics-table').hide()
-                $('.header').hide()
 
-                if ($.fn.DataTable.fnIsDataTable($('#table'))) {
-                    $('#table').dataTable().fnDestroy();
-                    $('.render').remove()
+                if (destroy) {
+                    table.clear().draw()
+                } else {
+                    table = $('#table').DataTable({
+                        lengthMenu: [10, 25, 50, 100],
+                        pageLength: 50,
+                        language: {
+                            lengthMenu: "_MENU_",
+                            search: "_INPUT_",
+                            searchPlaceholder: "{{ __('Search') }}",
+                            paginate: {
+                                "first": "«",
+                                "last": "»",
+                                "next": "»",
+                                "previous": "«"
+                            },
+                        },
+                    })
                 }
 
                 let countReadyWords = 0
                 let array = [];
                 $('#ready-percent').html(0)
 
-                ifIssetNotReady(KEYWORDS, countReadyWords, array, destroy)
+                ifIssetNotReady(KEYWORDS, countReadyWords, array, destroy, table)
             }
 
-            function ifIssetNotReady(oldArray, countReadyWords, results, destroy) {
-                let ajaxRequests = []
+            function ifIssetNotReady(oldArray, countReadyWords, results, destroy, table) {
                 let newArray = []
                 let successRequests = 0
                 let failRequests = 0
                 let totalRequests = oldArray.length
                 $.each(oldArray, function (k, words) {
-                    ajaxRequests.push($.ajax({
+                    $.ajax({
                         type: "POST",
                         dataType: "json",
                         timeout: 60000,
@@ -805,17 +790,17 @@
                             'keywords': words,
                         },
                         success: function (response) {
+                            renderTableBody(table, response.visibility)
                             successRequests++
                             countReadyWords += words.length
                             $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
-                            renderTableBody(response.visibility)
                             results.push(response.statistics)
                         },
                         error: function () {
                             failRequests++
                             newArray.push(words)
                         }
-                    }));
+                    })
                 });
 
                 let interval = setInterval(() => {
@@ -823,19 +808,19 @@
                         clearInterval(interval)
                         if (failRequests === 0) {
                             $('#download-results').hide()
-                            table = initTable();
+                            initTable();
                             renderStatistics(calculateAvgValues(results), destroy)
                         } else {
                             $('#toast-container').show(300)
                             $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
-
                             setTimeout(() => {
                                 $('#toast-container').hide(300)
-                            }, 2000)
+                            }, 5000)
+
                             ifIssetNotReady(newArray, countReadyWords, results, destroy)
                         }
                     }
-                }, 2000)
+                }, 1000)
             }
 
             function calculateAvgValues(array) {
