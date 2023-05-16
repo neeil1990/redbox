@@ -6,7 +6,7 @@ function renderResultTable_v2(data) {
     let copyGroupBool = true
     let copyRelevanceBool = false
 
-    let variable = Object.keys(data).reduce((key, promise) => {
+    let variable = Object.keys(data).reduce((promise, key) => {
         return promise.then((newRows) => {
             let result = data[key]
 
