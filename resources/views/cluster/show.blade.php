@@ -651,12 +651,6 @@
                         });
                     }
                 })
-
-                setTimeout(() => {
-                    $('#loader-block').hide(300)
-                    $('#result-table').show()
-                    $('#block-for-downloads-files').show()
-                }, 2000)
             })
         </script>
     @endslot
