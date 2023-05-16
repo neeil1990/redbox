@@ -202,14 +202,14 @@
                     </div>
                 </div>
 
-                <div id="block-for-downloads-files">
-                    <h3>{{ __('Cluster table') }}</h3>
-                    <a class="btn btn-secondary mb-2"
-                       href="/download-cluster-result/{{ $cluster['id'] }}/csv"
-                       target="_blank">{{ __('Download csv') }}</a>
-                    <a class="btn btn-secondary mb-2"
-                       href="/download-cluster-result/{{ $cluster['id'] }}/xls"
-                       target="_blank">{{ __('Download xls') }}</a>
+                <a class="btn btn-secondary mb-2"
+                   href="/download-cluster-result/{{ $cluster['id'] }}/csv"
+                   target="_blank">{{ __('Download csv') }}</a>
+                <a class="btn btn-secondary mb-2"
+                   href="/download-cluster-result/{{ $cluster['id'] }}/xls"
+                   target="_blank">{{ __('Download xls') }}</a>
+
+                <div id="block-for-downloads-files" style="display: none">
                     <div>
                         <table id="clusters-table" class="table table-bordered dtr-inline">
                             <thead>
@@ -480,7 +480,7 @@
         </script>
         <script src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>

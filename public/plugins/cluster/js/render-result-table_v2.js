@@ -28,6 +28,7 @@ function renderResultTable_v2(data) {
                 if (phrase !== 'finallyResult') {
                     iterator++
                     clusterIterator++
+                    $('#rendered-clusters').html(iterator)
                     let phraseForm = 0
                     if ('phrased' in information) {
                         if (information['phrased'] === 0) {
@@ -215,7 +216,7 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
-        if (counter >= 50) {
+        if (newRows.length % 5 === 0) {
             $('#clusters-table-tbody').append(newRows.join(' '))
             $('#rendered-clusters').html(iterator)
             newRows = []
@@ -430,7 +431,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
         newRows.push(newRow)
 
-        if (Object.keys(newRows).length > 50) {
+        if (Object.keys(newRows).length % 50 === 0) {
             $('#clusters-table-tbody').append(newRows.join(' '))
             $('#rendered-clusters').html(iterator)
             newRows = []
