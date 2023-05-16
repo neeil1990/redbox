@@ -192,12 +192,17 @@
                     </div>
 
                     <div id="loader-block" class="text-center">
-                        <img src="/img/1485.gif" alt="preloader_gif">
+                        <img src="/img/1485.gif" alt="preloader_gif" width="40" height="40">
+                        <div>
+                            <span id="rendered-clusters">0</span>
+                            /
+                            <span>{{ $cluster['count_phrases'] }}</span>
+                        </div>
                         <div>{{ __('Render data') }}</div>
                     </div>
                 </div>
 
-                <div id="block-for-downloads-files" style="display: none">
+                <div id="block-for-downloads-files">
                     <h3>{{ __('Cluster table') }}</h3>
                     <a class="btn btn-secondary mb-2"
                        href="/download-cluster-result/{{ $cluster['id'] }}/csv"
@@ -475,7 +480,7 @@
         </script>
         <script src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
@@ -651,7 +656,7 @@
                     $('#loader-block').hide(300)
                     $('#result-table').show()
                     $('#block-for-downloads-files').show()
-                }, 1000)
+                }, 2000)
             })
         </script>
     @endslot

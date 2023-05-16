@@ -261,7 +261,6 @@
         }
 
         function metricsTemp(user) {
-            console.log(user)
             let container = $('<div />', {
                 class: 'mt-2'
             });
