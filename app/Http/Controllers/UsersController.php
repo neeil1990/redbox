@@ -53,7 +53,7 @@ class UsersController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->ajax())
+        if ($request->ajax())
             return $this->getDataTable($request);
 
         $users = User::all();
@@ -83,11 +83,11 @@ class UsersController extends Controller
 
         $users = $user->paginate($length, ['*'], 'page', $page);
 
-        $users->transform(function($user){
+        $users->transform(function ($user) {
 
             // Tariff
             $user->tariff = collect([]);
-            if($pay = $user->pay->where('status', true)->first()){
+            if ($pay = $user->pay->where('status', true)->first()) {
                 $user->tariff->put('name', $user->tariff()->name());
                 $user->tariff->put('active_to', $pay->active_to->format('d.m.Y H:i'));
                 $user->tariff->put('active_to_diffForHumans', $pay->active_to->diffForHumans());
@@ -116,7 +116,7 @@ class UsersController extends Controller
 
     public function storeTariff(Request $request)
     {
-        foreach ($request['users'] as $user){
+        foreach ($request['users'] as $user) {
             $user = User::find($user);
             $this->assignTariffByUser($user, $request['tariff'], $request['period']);
         }
@@ -149,11 +149,11 @@ class UsersController extends Controller
             'period' => [],
         ];
 
-        /* @var Tariff $tariff*/
+        /* @var Tariff $tariff */
         foreach ($this->tariff->getTariffs() as $tariff)
             $select['tariff'][$tariff->code()] = $tariff->name();
 
-        /* @var PeriodTariff $period*/
+        /* @var PeriodTariff $period */
         foreach ($this->tariff->getPeriods() as $period)
             $select['period'][$period->code()] = $period->name();
 
@@ -384,8 +384,10 @@ class UsersController extends Controller
         if (!User::isUserAdmin()) {
             return abort(403);
         }
-        $users = User::with('roles')->get(['id', 'name', 'last_name', 'email', 'metrics'])->groupBy('id')->toArray();
-        $statistics = VisitStatistic::get()->groupBy('user_id');
+        $users = User::where('statistic', 1)->with('roles')->get(['id', 'name', 'last_name', 'email', 'metrics']);
+        $usersIds = $users->pluck('id')->toArray();
+        $users = $users->groupBy('id')->toArray();
+        $statistics = VisitStatistic::whereIn('user_id', $usersIds)->get()->groupBy('user_id');
         $results = [];
 
         foreach ($statistics as $userId => $statistic) {
@@ -417,6 +419,7 @@ class UsersController extends Controller
                 }
             }
         }
+
 
         return view('users.statistics', compact('results'));
     }

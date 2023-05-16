@@ -5,6 +5,10 @@
             .dt-buttons {
                 float: left;
             }
+
+            #statistics > thead > tr.filters > th:nth-child(8) {
+                display: none;
+            }
         </style>
     @endslot
     <table class="table table-striped border" id="statistics">
@@ -16,13 +20,16 @@
             <th>Обновлений страниц</th>
             <th>Количество действий</th>
             <th>Время проведёное в модулях</th>
-            <th style="min-width: 460px; max-width: 460px; width: 460px">{{ __('utm metrics') }}</th>
+            <th>{{ __('utm metrics') }}</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         @foreach($results as $userId => $result)
             <tr>
-                <td>{{ $userId }}</td>
+                <td data-order="{{ $userId }}">
+                    {{ $userId }}
+                </td>
                 <td data-order="{{ $result['userInfo']['email'] }}">
                     <div>
                         {{ $result['userInfo']['email'] }}
@@ -43,22 +50,35 @@
                     {{ $result['stat']['actions_counter'] }}
                 </td>
                 <td>
-                    {{ $result['stat']['seconds'] }}
+                    {{ Carbon::createFromTimestampUTC($result['stat']['seconds'])->toTimeString() }}
                 </td>
-                @php($json = json_decode($result['userInfo']['metrics'], true))
-                @if(isset($json['utm_source']))
-                    <td data-order="{{ strlen($json['utm_source']) }}">
-                        <div style="max-width: 420px">
-                            <b>utm_source:</b> {{ $json['utm_source'] }}
-                        </div>
-                    </td>
+                @php($json = $result['userInfo']['metrics'])
+                @if(is_array($json))
+                    @if(isset($json['utm_source']))
+                        <td data-order="{{ $json['utm_source'] }}">
+                            <b>utm_source</b>: {{ $json['utm_source'] }}
+                        </td>
+                    @else
+                        @foreach($json as $key => $val)
+                            @php($split = explode(':', $val))
+                            @if($split[0] === 'utm_source')
+                                <td data-order="{{ $split[1] }}">
+                                    <b>utm_source</b>: {{ $split[1] }}
+                                </td>
+                                @break
+                            @endif
+                        @endforeach
+                    @endif
                 @else
-                    <td data-order="{{ strlen($result['userInfo']['metrics']) }}">
-                        <div style="max-width: 420px">
-                            {{ $result['userInfo']['metrics'] }}
-                        </div>
+                    <td>
+                        <div style="max-width: 420px"></div>
                     </td>
                 @endif
+                <td>
+                    <a href="/visit-statistics/{{ $userId }}" class="btn btn-default">
+                        <i class="fas fa-chart-pie"></i>
+                    </a>
+                </td>
             </tr>
         @endforeach
         </tbody>
@@ -70,13 +90,23 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            $('#statistics thead tr').clone(true).addClass('filters').appendTo('#statistics thead');
+
             $(document).ready(function () {
                 $('#statistics').DataTable({
+                    orderCellsTop: true,
+                    fixedHeader: true,
                     lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
                     dom: 'lBfrtip',
                     buttons: [
                         'copy', 'csv', 'excel'
+                    ],
+                    aoColumnDefs: [
+                        {
+                            bSortable: false,
+                            aTargets: [7]
+                        }
                     ],
                     language: {
                         lengthMenu: "_MENU_",
@@ -89,6 +119,34 @@
                             "previous": "«"
                         },
                     },
+                    initComplete: function () {
+                        let api = this.api();
+
+                        api.columns().eq(0).each(function (colIdx) {
+                            // Set the header cell to contain the input element
+                            let cell = $('.filters th').eq($(api.column(colIdx).header()).index());
+                            $(cell).html('<input type="text" class="form form-control"/>');
+
+                            $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
+                                .off('keyup change').on('change', function (e) {
+                                $(this).attr('title', $(this).val());
+                                let regexr = '({search})';
+
+                                api.column(colIdx).search(
+                                    this.value != ''
+                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                        : '',
+                                    this.value != '',
+                                    this.value == ''
+                                )
+                                    .draw();
+                            }).on('keyup', function (e) {
+                                e.stopPropagation();
+                                $(this).trigger('change');
+                                $(this).focus()[0].setSelectionRange(cursorPosition, cursorPosition);
+                            });
+                        });
+                    },
                 })
 
                 $('.dt-buttons').addClass('ml-2')
@@ -97,5 +155,6 @@
                 })
             })
         </script>
+
     @endslot
 @endcomponent

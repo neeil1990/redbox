@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Common;
 use App\MainProject;
+use App\User;
 use App\VisitStatistic;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -89,7 +90,10 @@ class MainProjectsController extends Controller
 
     public function statistics(MainProject $project)
     {
+        $usersIds = User::where('statistic', 1)->with('roles')->get(['id'])->pluck('id')->toArray();
+
         $statistics = VisitStatistic::where('project_id', $project->id)
+            ->whereIn('user_id', $usersIds)
             ->with('user')
             ->get(['date', 'user_id', 'actions_counter', 'refresh_page_counter', 'seconds'])
             ->groupBy('date')
