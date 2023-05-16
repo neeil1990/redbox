@@ -9,10 +9,11 @@ function renderResultTable_v2(data) {
 
     let time = 100
 
-    let lastKey = Object.keys(data).pop();
+    let totalLength = Object.keys(data).length;
+    let countLength = 0
     $.each(data, function (key, result) {
-        // let isLastElement = key === data.length -1;
         setTimeout(() => {
+            countLength++
             let count = 0;
             for (let res in result) {
                 count++
@@ -228,7 +229,7 @@ function renderResultTable_v2(data) {
                 counter = 0
             }
 
-            if (lastKey === key) {
+            if (totalLength === countLength) {
                 if (counter > 0) {
                     $('#clusters-table-tbody').append(newRows.join(' '))
                     $('#rendered-clusters').html(iterator)
