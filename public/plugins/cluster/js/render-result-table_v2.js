@@ -7,7 +7,7 @@ function renderResultTable_v2(data) {
     let copyGroupBool = true
     let copyRelevanceBool = false
 
-    let time = 100
+    let time = 300
 
     let totalLength = Object.keys(data).length;
     let countLength = 0
@@ -239,7 +239,7 @@ function renderResultTable_v2(data) {
                 prepareFunctions(alone, iterator, colspan, copyGroupBool)
             }
         }, time)
-        time += 50
+        time += 100
     })
 }
 
