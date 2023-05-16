@@ -480,7 +480,7 @@
         </script>
         <script src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.min.js') }}"></script>
+        <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
