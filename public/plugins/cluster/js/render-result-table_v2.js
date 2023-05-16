@@ -215,7 +215,7 @@ function renderResultTable_v2(data) {
             alone[key] = result
         }
 
-        if (counter >= 25) {
+        if (counter >= 50) {
             $('#clusters-table-tbody').append(newRows.join(' '))
             $('#rendered-clusters').html(iterator)
             newRows = []
