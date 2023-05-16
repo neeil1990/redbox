@@ -437,11 +437,11 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
         newRows.push(newRow)
 
-        if (Object.keys(newRows).length % 50 === 0) {
-            $('#clusters-table-tbody').append(newRows.join(' '))
+        // if (Object.keys(newRows).length % 50 === 0) {
+        //     $('#clusters-table-tbody').append(newRows.join(' '))
             $('#rendered-clusters').html(iterator)
-            newRows = []
-        }
+            // newRows = []
+        // }
     }
 
     if (Object.keys(newRows).length > 0) {
