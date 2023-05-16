@@ -238,7 +238,6 @@ function renderResultTable_v2(data) {
     })
 
     Promise.all(promises).then(function () {
-        console.log('go')
         if (counter > 0) {
             $('#clusters-table-tbody').append(newRows.join(' '))
             $('#rendered-clusters').html(iterator)
