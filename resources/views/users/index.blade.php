@@ -99,7 +99,6 @@
                     [0, 'asc'],
                 ],
                 createdRow: function (row, data) {
-                    console.log(data)
                     $(row).find('td:nth-child(5)').attr('data-order', data.id);
                     $(row).find('td:nth-child(7)').attr('data-order', data.last_online_strtotime);
                 },
