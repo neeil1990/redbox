@@ -1234,6 +1234,7 @@
                     recommendations: "{{ __('Recommendations for your page') }}",
                 };
 
+                console.log(response)
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 renderTextTable(response.avg, response.main_page)
                 renderRecommendationsTable(response.recommendations, 50, localization)
