@@ -1043,7 +1043,6 @@
                         hash: $('#hiddenHash').val()
                     },
                     success: function (response) {
-                        console.log(response)
                         setProgressBarStyles(response.progress)
                         if (response.progress === 100) {
                             stopProgressBar()
@@ -1077,7 +1076,6 @@
                         data: getData(),
                     },
                     success: function (response) {
-                        console.log(response.hash)
                         $('#hiddenHash').val(response.hash)
                         if (type === 'full') {
                             startAnalyse()
@@ -1237,7 +1235,6 @@
                     recommendations: "{{ __('Recommendations for your page') }}",
                 };
 
-                console.log(response)
                 sessionStorage.setItem('hideDomains', response.hide_ignored_domains)
                 renderTextTable(response.avg, response.main_page)
                 renderRecommendationsTable(response.recommendations, 50, localization)
