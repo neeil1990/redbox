@@ -35,9 +35,8 @@ class RelevanceProgressController extends Controller
         $progress = RelevanceProgress::where('hash', '=', $request->hash)->first();
 
         if (isset($progress) && $progress->progress === 100) {
-            $project = RelevanceHistory::where('user_id', '=', Auth::id())->latest('created_at')->first();
-            $history = RelevanceHistoryResult::where('project_id', '=', $project->id)->latest('updated_at')->first();
-            Log::debug('history', [$history]);
+            $history = RelevanceHistoryResult::where('hash', '=', $request->hash)->first();
+
             return response()->json([
                 'progress' => $progress->progress,
                 'result' => Relevance::uncompress($history)

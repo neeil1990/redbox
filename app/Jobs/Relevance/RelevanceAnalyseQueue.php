@@ -74,6 +74,5 @@ class RelevanceAnalyseQueue implements ShouldQueue
         }
 
         $relevance->analysis();
-
     }
 }

@@ -89,8 +89,6 @@ class RelevanceHistoryQueue implements ShouldQueue
             ]);
 
             $this->relevance->saveError($exception);
-            TelegramBot::sendMessage('RelevanceAnalysisQueue error', 938341087);
-            TelegramBot::sendMessage(implode('  ', $this->request), 938341087);
         }
 
     }

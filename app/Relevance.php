@@ -71,11 +71,14 @@ class Relevance
 
     public $userId;
 
+    public $scanHash;
+
     public function __construct($request, $userId, bool $queue = false)
     {
         $this->queue = $queue;
         $this->request = $request;
         $this->userId = $userId;
+        $this->scanHash = $request['hash'];
 
         $this->maxWordLength = $request['separator'];
         $this->phrase = $request['phrase'] ?? '';
@@ -1293,9 +1296,8 @@ class Relevance
 
     /**
      * @param $id
-     * @return int
      */
-    public function saveHistoryResult($id): int
+    public function saveHistoryResult($id)
     {
         $result = RelevanceHistoryResult::firstOrNew(['project_id' => $id]);
 
@@ -1336,11 +1338,10 @@ class Relevance
         $result->phrases = base64_encode(gzcompress(json_encode($this->phrases), 9));
         $result->avg_coverage_percent = base64_encode(gzcompress(json_encode($this->avgCoveragePercent), 9));
         $result->recommendations = base64_encode(gzcompress(json_encode($this->recommendations), 9));
+        $result->hash = $this->scanHash;
 
         $result->compressed = true;
         $result->save();
-
-        return $result->id;
     }
 
     /**
