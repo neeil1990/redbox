@@ -1047,6 +1047,7 @@
                         hash: $('#hiddenHash').val()
                     },
                     success: function (response) {
+                        console.log(response)
                         setProgressBarStyles(response.progress)
                         if (response.progress === 100) {
                             stopProgressBar()
@@ -1055,7 +1056,7 @@
                         } else {
                             if (!stop) {
                                 setTimeout(() => {
-                                    getProgress(true)
+                                    getProgress()
                                 }, 5000)
                             }
                         }
