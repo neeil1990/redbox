@@ -15,6 +15,7 @@ use App\Common;
 use App\MonitoringKeyword;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
+use App\RelevanceHistoryResult;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -392,4 +393,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
+});
+
+Route::get('/test', function () {
+    dd(RelevanceHistoryResult::where('hash', '=', '138022040c0cec396b3f6ebe02632c17')->first());
 });
