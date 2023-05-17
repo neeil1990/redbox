@@ -1288,8 +1288,7 @@ class Relevance
 
                 ProjectRelevanceHistory::calculateInfo($main);
 
-                $this->params['result_id'] = $this->saveHistoryResult($id);
-                return;
+                $this->saveHistoryResult($id);
             }
         }
     }

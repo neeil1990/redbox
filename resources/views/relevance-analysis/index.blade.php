@@ -1037,32 +1037,37 @@
                 });
             }
 
-            function getProgress() {
-                let clearInteval = false
-                let interval = setInterval(() => {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('get.relevance.progress') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            hash: $('#hiddenHash').val()
-                        },
-                        success: function (response) {
-                            setProgressBarStyles(response.progress)
-                            if (response.progress === 100) {
-                                clearInteval = true;
-                                stopProgressBar()
-                                endProgress()
-                                successRequest(response.result)
+            function getProgress(stop = false) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('get.relevance.progress') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        hash: $('#hiddenHash').val()
+                    },
+                    success: function (response) {
+                        setProgressBarStyles(response.progress)
+                        if (response.progress === 100) {
+                            stopProgressBar()
+                            endProgress()
+                            successRequest(response.result)
+                        } else {
+                            if (!stop) {
+                                setTimeout(() => {
+                                    getProgress(true)
+                                }, 5000)
                             }
-                        },
-                    });
-
-                    if (clearInteval) {
-                        clearInterval(interval)
+                        }
+                    },
+                    error: function () {
+                        if (!stop) {
+                            setTimeout(() => {
+                                getProgress(true)
+                            }, 10000)
+                        }
                     }
-                }, 5000);
+                });
             }
 
             function startProgress(type) {
