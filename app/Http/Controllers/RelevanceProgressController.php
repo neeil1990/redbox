@@ -9,6 +9,7 @@ use App\RelevanceProgress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RelevanceProgressController extends Controller
 {
@@ -23,15 +24,9 @@ class RelevanceProgressController extends Controller
                 ], 415);
             }
         }
-        $progress = new RelevanceProgress();
-        $progress->user_id = Auth::id();
-        $progress->hash = md5(Auth::id() . time());
-        $progress->progress = 0;
-
-        $progress->save();
 
         return response()->json([
-            'hash' => $progress->hash
+            'hash' => RelevanceProgress::startProgress()
         ]);
     }
 
@@ -42,6 +37,7 @@ class RelevanceProgressController extends Controller
         if (isset($progress) && $progress->progress === 100) {
             $project = RelevanceHistory::where('user_id', '=', Auth::id())->latest('created_at')->first();
             $history = RelevanceHistoryResult::where('project_id', '=', $project->id)->latest('updated_at')->first();
+            Log::debug('history', [$history]);
             return response()->json([
                 'progress' => $progress->progress,
                 'result' => Relevance::uncompress($history)

@@ -13,17 +13,16 @@ class RelevanceProgress extends Model
 
     public $timestamps = false;
 
-    /**
-     * @return void
-     */
-    public static function startProgress($hash)
+    public static function startProgress(): string
     {
+        $hash = md5(Auth::id() . time());
         $progress = new RelevanceProgress();
         $progress->user_id = Auth::id();
         $progress->hash = $hash;
         $progress->progress = 0;
-
         $progress->save();
+
+        return $hash;
     }
 
     /**
