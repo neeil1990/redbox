@@ -32,6 +32,7 @@ class RelevanceProgressController extends Controller
 
     public function getProgress(Request $request): JsonResponse
     {
+        Log::debug('hash', [$request->hash]);
         $progress = RelevanceProgress::where('hash', '=', $request->hash)->first();
 
         if (isset($progress) && $progress->progress === 100) {

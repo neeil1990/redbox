@@ -1021,7 +1021,7 @@
             var generatedCompetitorCoverage = false
             var progressInterval
 
-            function endProgress(progressInterval) {
+            function endProgress() {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -1029,10 +1029,6 @@
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         hash: $('#hiddenHash').val()
-                    },
-                    success: function () {
-                        $('#hiddenHash').val('empty')
-                        clearInterval(progressInterval)
                     },
                 });
             }
@@ -1081,6 +1077,7 @@
                         data: getData(),
                     },
                     success: function (response) {
+                        console.log(response.hash)
                         $('#hiddenHash').val(response.hash)
                         if (type === 'full') {
                             startAnalyse()
