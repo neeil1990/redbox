@@ -78,7 +78,7 @@ class Relevance
         $this->queue = $queue;
         $this->request = $request;
         $this->userId = $userId;
-        $this->scanHash = $request['hash'];
+        $this->scanHash = $request['hash'] ?? 'no hash';
 
         $this->maxWordLength = $request['separator'];
         $this->phrase = $request['phrase'] ?? '';
