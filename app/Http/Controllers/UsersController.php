@@ -9,15 +9,12 @@ use App\Classes\Tariffs\Tariff;
 use App\Common;
 use App\Exports\FilteredUsersExport;
 use App\Exports\VerifiedUsersExport;
-use App\MainProject;
 use App\User;
 use App\VisitStatistic;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,13 +22,10 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
 use Jenssegers\Agent\Agent;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
@@ -324,19 +318,23 @@ class UsersController extends Controller
             return abort(403);
         }
 
-        $summedCollection = $this->getActions('20-03-2023 - ' . Carbon::now()->format('d-m-Y'), $user->id);
+        $now = Carbon::now()->format('d-m-Y');
+        $counterActions = $this->getCounterActions(Carbon::now()->subDays(30)->format('d-m-Y'), $now, $user->id);
+        $summedCollection = $this->getActions('20-03-2023 - ' . $now, $user->id);
         $info = VisitStatistic::getModulesInfo($summedCollection);
 
-        return view('users.visit', compact('summedCollection', 'info', 'user'));
+        return view('users.visit', compact('summedCollection', 'info', 'user', 'counterActions'));
     }
 
     public function userActionsHistory(Request $request): JsonResponse
     {
         $collection = $this->getActions($request->dateRange, $request->userId);
+        $range = explode(' - ', $request->dateRange);
 
         return response()->json([
             'collection' => $collection,
             'info' => VisitStatistic::getModulesInfo($collection, false),
+            'counterActions' => $this->getCounterActions($range[0], $range[1], $request->userId, false)
         ]);
     }
 
@@ -377,6 +375,61 @@ class UsersController extends Controller
 
                 return $firstItem;
             });
+    }
+
+    private function getCounterActions($start, $end, $userId, $encode = true)
+    {
+        $response = VisitStatistic::whereBetween('date', [
+            date('Y-m-d', strtotime($start)),
+            date('Y-m-d', strtotime($end))
+        ])
+            ->where('user_id', $userId)
+            ->get(['date', 'refresh_page_counter', 'seconds', 'actions_counter'])
+            ->groupBy('date')
+            ->map(function ($group) {
+                $sumActions = $group->sum('actions_counter');
+                $sumRefresh = $group->sum('refresh_page_counter');
+                $countSeconds = $group->sum('seconds');
+                $firstItem = $group->first();
+                $firstItem->actionsCounter = $sumActions;
+                $firstItem->refreshPageCounter = $sumRefresh;
+                $firstItem->time = $countSeconds;
+                unset($firstItem->refresh_page_counter);
+                unset($firstItem->actions_counter);
+                unset($firstItem->seconds);
+                unset($firstItem->date);
+
+                return $firstItem;
+            });
+
+        $actions = [];
+        $refresh = [];
+        $time = [];
+        $data = [];
+
+        foreach ($response->toArray() as $key => $item) {
+            $actions[] = $item['actionsCounter'];
+            $refresh[] = $item['refreshPageCounter'];
+            $time[] = $item['time'];
+            $data[] = $key;
+        }
+
+        if ($encode) {
+            return json_encode([
+                'actions' => $actions,
+                'refresh' => $refresh,
+                'time' => $time,
+                'data' => $data
+            ]);
+        }
+
+        return [
+            'actions' => $actions,
+            'refresh' => $refresh,
+            'time' => $time,
+            'data' => $data
+        ];
+
     }
 
     public function userVisitStatistics()

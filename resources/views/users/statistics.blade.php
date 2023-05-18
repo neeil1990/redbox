@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  __('Users statistics') ])
+@component('component.card', ['title' =>  __('General statistics of visits') ])
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <style>
@@ -100,7 +100,24 @@
                     pageLength: 50,
                     dom: 'lBfrtip',
                     buttons: [
-                        'copy', 'csv', 'excel'
+                        {
+                            extend: 'copy',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'csv',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        {
+                            extend: 'excel',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
                     ],
                     aoColumnDefs: [
                         {

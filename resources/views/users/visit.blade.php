@@ -89,6 +89,10 @@
                     <canvas id="doughnut-chart" style="position: relative; width: 100%"></canvas>
                 </div>
             </div>
+            <div class="mt-3">
+                <h3>Статистика за последние 30 дней</h3>
+                <canvas id="linear-chart" style="position: relative; width: 50%; height: 250px"></canvas>
+            </div>
             <div class="card mt-3">
                 <div class="card-header d-flex">
                     <div class="d-flex flex-column">
@@ -160,15 +164,19 @@
                             <canvas id="history-doughnut-chart" style="position: relative; width: 100%"></canvas>
                         </div>
                     </div>
+                    <div class="mt-3">
+                        <canvas id="another-linear-chart"
+                                style="position: relative; width: 50%; height: 100px"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
+
         @slot('js')
             <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
             <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
             <!-- date-range-picker -->
             <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
-
             <script>
                 let startDate = null;
                 let endDate = null;
@@ -273,11 +281,6 @@
             <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
             <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
             <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-            <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-
-            <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.min.js') }}"></script>
-            <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
             <script>
                 $(document).ready(function () {
                     $('#table').DataTable({
@@ -298,13 +301,14 @@
                     })
                 })
             </script>
-
             <!-- Charts -->
             <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
-
             <script>
+                let anotherChart
                 let historyChart
                 let colors = []
+                let results = {!! $counterActions !!};
+                renderChart('linear-chart', {!! $counterActions !!})
 
                 new Chart(document.getElementById("doughnut-chart"), {
                     type: 'doughnut',
@@ -344,6 +348,8 @@
                                 if ($.fn.DataTable.fnIsDataTable($('#actions-table'))) {
                                     $('#actions-table').dataTable().fnDestroy();
                                     targetBody.html('')
+                                    historyChart.destroy()
+                                    anotherChart.destroy()
                                 }
 
                                 let iterator = 0;
@@ -386,12 +392,7 @@
                                     },
                                 })
 
-                                try {
-                                    historyChart.destroy()
-                                } catch (e) {
-
-                                }
-
+                                anotherChart = renderChart('another-linear-chart', response.counterActions, true)
                                 historyChart = new Chart(document.getElementById("history-doughnut-chart"), {
                                     type: 'doughnut',
                                     data: {
@@ -428,6 +429,52 @@
                         }
                     });
                 })
+
+                function renderChart(chartId, data, returnChart = false) {
+                    let graph = document.getElementById(chartId).getContext('2d');
+
+                    let dataLine1 = {
+                        label: 'Время проведённое в модулях (сек)',
+                        data: data['time'],
+                        borderColor: 'red',
+                        fill: false
+                    };
+
+                    let dataLine2 = {
+                        label: 'Количество действий',
+                        data: data['actions'],
+                        borderColor: 'blue',
+                        fill: false
+                    };
+
+                    let dataLine3 = {
+                        label: 'Количество обновлений страниц',
+                        data: data['refresh'],
+                        borderColor: 'green',
+                        fill: false
+                    };
+
+                    let chartConfig = {
+                        type: 'line',
+                        data: {
+                            labels: data['data'],
+                            datasets: [dataLine1, dataLine2, dataLine3]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                },
+                            },
+                        },
+                    };
+
+                    if (returnChart) {
+                        return new Chart(graph, chartConfig);
+                    } else {
+                        new Chart(graph, chartConfig);
+                    }
+                }
             </script>
         @endslot
     @else
