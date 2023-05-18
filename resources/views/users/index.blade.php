@@ -201,8 +201,12 @@
                             content += '<a class="' + btnClass + '" href="/users/' + row.id + '/edit" title="{{ __('Edit') }}"><i class="fas fa-pencil-alt"></i></a>';
                             content += '<a class="' + btnClass + '" href="/visit-statistics/' + row.id + '" title="{{ __('User statistic') }}"><i class="fas fa-chart-pie"></i></a>';
 
-                            if (row.metrics)
+                            if (
+                                Object.prototype.toString.call(row.metrics) === '[object Array]' ||
+                                typeof row.metrics === 'object' && !Array.isArray(row.metrics) && row.metrics !== null
+                            ) {
                                 content += '<a class="' + btnClass + '" data-toggle="collapse" href="#collapseExample' + row.id + '" title="{{ __('utm metrics') }}"><i class="fas fa-share-alt"></i></a>';
+                            }
 
                             content += '<a class="btn btn-danger btn-sm" onclick="deleteUser(' + row.id + ')" title="{{ __('Delete') }}"><i class="fas fa-trash"></i></a>';
 
@@ -274,7 +278,8 @@
                     $.each(user.metrics, function (k, v) {
                         collapse.append($('<div />').html('<b>' + k + '</b>: ' + decodeURI(v)));
                     });
-                } catch (e) {}
+                } catch (e) {
+                }
 
                 container.append(collapse);
             }
