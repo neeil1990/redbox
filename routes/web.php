@@ -327,7 +327,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
     Route::get('/monitoring/{project}/competitors/positions', 'MonitoringController@competitorsPositions')->name('monitoring.competitors.positions');
     Route::post('/monitoring/competitors/visibility', 'MonitoringController@getStatistics')->name('monitoring.get.competitors.statistics');
-    Route::post('/monitoring/competitors/result/', 'MonitoringController@getMonitoringCompetitorsResult')->name('monitoring.get.competitors.result');
+    Route::post('/monitoring/wait-result', 'MonitoringController@getMonitoringCompetitorsResult')->name('monitoring.wait.result');
 
     Route::get('/share-my-projects', 'SharingController@index')->name('sharing.view');
     Route::get('/share-my-project-config/{project}', 'SharingController@shareProjectConf')->name('share.project.conf');

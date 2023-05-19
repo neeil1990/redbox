@@ -368,8 +368,8 @@
 
                 interval = setInterval(() => {
                     $.ajax({
-                        dataType: "json",
-                        url: "/monitoring/competitors/result/",
+                        url: "/monitoring/wait-result",
+                        method: "POST",
                         data: {
                             id: response.id,
                             ids: response.queue
