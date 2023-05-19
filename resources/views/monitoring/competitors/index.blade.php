@@ -350,7 +350,7 @@
                         $('#render-state').html("{{ __('loading results') }}")
                         $('#searchCompetitors').prop('disabled', true)
                         $('#tableBlock').hide()
-                        $('#render-state').html("{{ __('In queue') }}")
+                        $('#render-state').html("{{ __('In progress') }}")
                     },
                     success: function (response) {
                         if (response.state === 'ready') {
