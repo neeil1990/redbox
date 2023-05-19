@@ -781,30 +781,28 @@
                                 "previous": "«"
                             },
                         },
-                        "drawCallback": function (settings) {
+                        drawCallback: function (settings) {
                             colorCells()
                         }
                     })
                 }
 
-                let countReadyWords = 0
-                let array = [];
                 $('#ready-percent').html(0)
 
-                ifIssetNotReady(KEYWORDS, countReadyWords, array, destroy, table, true)
+                sendRequests(KEYWORDS, table, destroy)
             }
 
-            function ifIssetNotReady(oldArray, countReadyWords, results, destroy, table, needSplit = false) {
-                let newArray = []
-                let successRequests = 0
-                let failRequests = 0
-                let totalRequests = 0
+            function sendRequests(allWords, table, destroy) {
+                let countReadyWords = 0;
+                let newArray = [];
+                let data = []
+                let iterator = 0;
 
-                $.each(oldArray, function (k, words) {
-                    let array
-                    if (needSplit) {
-                        array = chunkArray(words, 5)
-                        $.each(array, function (k, words) {
+                let requests = Object.keys(allWords).reduce((promise, key) => {
+                    return promise.then(() => {
+                        let words = allWords[key]
+
+                        return new Promise(function (resolve) {
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",
@@ -817,71 +815,39 @@
                                     'projectId': PROJECT_ID,
                                     'keywords': words,
                                 },
-                                beforeSend: function () {
-                                    totalRequests = totalRequests + 1
-                                },
                                 success: function (response) {
                                     renderTableBody(table, response.visibility)
                                     countReadyWords += words.length
                                     $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
-                                    results.push(response.statistics)
-                                    successRequests++
+                                    data[iterator] = response.statistics
+                                    iterator++
+                                    resolve()
                                 },
                                 error: function () {
                                     newArray.push(words)
-                                    failRequests++
-                                }
+                                    resolve()
+                                },
                             })
-                        })
+                        });
+                    });
+                }, Promise.resolve())
+
+                requests.then(function () {
+                    if (newArray.length === 0) {
+                        $('#download-results').hide()
+                        prepareActions();
+                        renderStatistics(calculateAvgValues(data), destroy)
                     } else {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            timeout: 60000,
-                            url: "{{ route('monitoring.get.competitors.statistics') }}",
-                            data: {
-                                '_token': $('meta[name="csrf-token"]').attr('content'),
-                                'competitors': {!! json_encode($competitors) !!},
-                                'region': $('#searchEngines').val(),
-                                'projectId': PROJECT_ID,
-                                'keywords': words,
-                            },
-                            beforeSend: function () {
-                                totalRequests = totalRequests + 1
-                            },
-                            success: function (response) {
-                                renderTableBody(table, response.visibility)
-                                countReadyWords += words.length
-                                $('#ready-percent').html(Number(countReadyWords / TOTAL_WORDS * 100).toFixed())
-                                results.push(response.statistics)
-                                successRequests++
-                            },
-                            error: function () {
-                                newArray.push(words)
-                                failRequests++
-                            }
-                        })
+
+                        $('#toast-container').show(300)
+                        $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
+                        setTimeout(() => {
+                            $('#toast-container').hide(300)
+                        }, 5000)
+
+                        sendRequests(newArray, table, destroy)
                     }
                 });
-
-                let interval = setInterval(() => {
-                    if (Number(Number(countReadyWords / TOTAL_WORDS * 100).toFixed()) === 100) {
-                        clearInterval(interval)
-                        if (failRequests === 0) {
-                            $('#download-results').hide()
-                            prepareActions();
-                            renderStatistics(calculateAvgValues(results), destroy)
-                        } else {
-                            $('#toast-container').show(300)
-                            $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
-                            setTimeout(() => {
-                                $('#toast-container').hide(300)
-                            }, 5000)
-
-                            ifIssetNotReady(newArray, countReadyWords, results, destroy, table, true)
-                        }
-                    }
-                }, 1000)
             }
 
             function chunkArray(arr, n) {
@@ -896,6 +862,8 @@
             function calculateAvgValues(array) {
                 let domains = []
                 let results = {}
+
+                // что случилось с данными? не могу пройтись по array
 
                 $.each(array, function (key, values) {
                     $.each(values, function (domain, info) {
