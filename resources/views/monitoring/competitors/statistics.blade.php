@@ -371,9 +371,17 @@
                                     @elseif($result['state'] === 'in queue')
                                         {{ __("In queue") }}
                                         <img src="/img/1485.gif" style="width: 20px; height: 20px;">
+                                        <button class="btn btn-default remove-error-results"
+                                                data-id="{{ $result['id'] }}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
                                     @elseif($result['state'] === 'in process')
                                         {{ __("In process") }}
                                         <img src="/img/1485.gif" style="width: 20px; height: 20px;">
+                                        <button class="btn btn-default remove-error-results"
+                                                data-id="{{ $result['id'] }}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
                                     @else
                                         {{ __('Fail') }}
                                         <button class="btn btn-default remove-error-results"

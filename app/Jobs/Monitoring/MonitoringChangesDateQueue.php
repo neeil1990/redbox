@@ -56,7 +56,7 @@ class MonitoringChangesDateQueue implements ShouldQueue
             $lr = MonitoringSearchengine::where('id', '=', $this->request['region'])->pluck('lr')->toArray()[0];
 
             $words = MonitoringKeyword::where('monitoring_project_id', $project['id'])->get(['query'])->toArray();
-            $items = array_chunk(array_column($words, 'query'), 10);
+            $items = array_chunk(array_column($words, 'query'), 50);
 
             $range = explode(' - ', $this->request['dateRange']);
             $period = CarbonPeriod::create($range[0], $range[1]);
@@ -85,6 +85,7 @@ class MonitoringChangesDateQueue implements ShouldQueue
                     foreach ($results as $result) {
                         $records[$date][$result->query][$lr][] = $result;
                     }
+                    sleep(1);
                 }
             }
 
