@@ -463,7 +463,7 @@ class MonitoringController extends Controller
             ? $project->keywords->count() * $project->searchengines->count()
             : $project->keywords->count();
 
-        if ($totalWords > 5) {
+        if ($totalWords > 500) {
             $newRecord = new MonitoringCompetitorsResult();
             $newRecord->region = $request->region;
             $newRecord->date = Carbon::now()->toDateString();
