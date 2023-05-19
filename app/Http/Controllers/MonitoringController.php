@@ -7,6 +7,7 @@ use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
+use App\Jobs;
 use App\Jobs\Monitoring\MonitoringChangesDateQueue;
 use App\Jobs\Monitoring\MonitoringCompetitorsQueue;
 use App\MonitoringChangesDate;
@@ -442,13 +443,27 @@ class MonitoringController extends Controller
 
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
+        $inQueue = MonitoringCompetitorsResult::where('project_id', $request->projectId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (isset($inQueue)) {
+            $ids = Jobs::where('queue', 'monitoring_competitors_stat')->get(['id'])->toArray();
+            return response()->json([
+                'state' => 'in queue',
+                'id' => $inQueue->id,
+                'queue' => $ids,
+                'queuePositions' => count($ids)
+            ]);
+        }
+
         $project = MonitoringProject::findOrFail($request->projectId);
 
         $totalWords = $request->region == ''
             ? $project->keywords->count() * $project->searchengines->count()
             : $project->keywords->count();
 
-        if ($totalWords >= 1000) {
+        if ($totalWords > 5) {
             $newRecord = new MonitoringCompetitorsResult();
             $newRecord->region = $request->region;
             $newRecord->date = Carbon::now()->toDateString();
@@ -461,9 +476,13 @@ class MonitoringController extends Controller
                 $newRecord->id
             )->onQueue('monitoring_competitors_stat');
 
+            $ids = Jobs::where('queue', 'monitoring_competitors_stat')->get(['id'])->toArray();
+
             return response()->json([
                 'state' => 'in queue',
-                'id' => $newRecord->id
+                'id' => $newRecord->id,
+                'queue' => $ids,
+                'queuePositions' => count($ids)
             ]);
         }
 
@@ -473,8 +492,10 @@ class MonitoringController extends Controller
         ]);
     }
 
-    public function getMonitoringCompetitorsResult(MonitoringCompetitorsResult $record): JsonResponse
+    public function getMonitoringCompetitorsResult(Request $request): JsonResponse
     {
+        $record = MonitoringCompetitorsResult::find($request->id);
+
         if ($record->state === 'ready') {
             $result = $record;
             $record->delete();
@@ -486,7 +507,8 @@ class MonitoringController extends Controller
         }
 
         return response()->json([
-            'state' => $record->state
+            'state' => $record->state,
+            'queuePosition' => Jobs::whereIn('id', $request->ids)->count()
         ]);
     }
 

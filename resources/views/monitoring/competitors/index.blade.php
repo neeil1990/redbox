@@ -104,7 +104,7 @@
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <select name="region" class="custom-select" id="searchEngines">
+                            <select name="region" class="custom-select" id="searchEngines" disabled>
                                 @if($project->searchengines->count() > 1)
                                     <option value="">{{ __('All search engine and regions') }}</option>
                                 @endif
@@ -341,7 +341,7 @@
                     },
                     beforeSend: function () {
                         $('#download-results').show()
-                        $('#competitors-history-positions').prop('disabled', true)
+                        $('#searchEngines').prop('disabled', true)
                         if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                             $('#table').dataTable().fnDestroy();
                             $('#table > tbody').html('')
@@ -349,32 +349,37 @@
                         $('#render-state').html("{{ __('loading results') }}")
                         $('#searchCompetitors').prop('disabled', true)
                         $('#tableBlock').hide()
+                        $('#render-state').html("{{ __('In queue') }}")
                     },
                     success: function (response) {
                         if (response.state === 'ready') {
                             renderTableRows(JSON.parse(response.result))
-                            $('#competitors-history-positions').prop('disabled', false)
                         } else if (response.state === 'in process' || response.state === 'in queue') {
-                            waitFinishResult(response.id)
+                            waitFinishResult(response)
                         }
                     },
                 });
             }
 
-            function waitFinishResult(id) {
+            function waitFinishResult(response) {
                 clearInterval(interval)
                 $('#download-results').show()
-                $('#render-state').html('')
+                $('#render-state').html(`Вы ${response.queuePositions} в очереди`)
 
                 interval = setInterval(() => {
                     $.ajax({
                         dataType: "json",
-                        url: "/monitoring/competitors/result/" + id,
+                        url: "/monitoring/competitors/result/",
+                        data: {
+                            id: response.id,
+                            ids: response.queue
+                        },
                         success: function (response) {
                             if (response.state === 'ready') {
                                 renderTableRows(JSON.parse(response.result))
                                 clearInterval(interval)
-                                $('#competitors-history-positions').prop('disabled', false)
+                            } else {
+                                $('#render-state').html(`Вы ${response.queuePosition} в очереди`)
                             }
                         },
                     });
@@ -382,6 +387,7 @@
             }
 
             function renderTableRows(data) {
+                $('#searchEngines').prop('disabled', false)
                 $('#render-state').html("{{ __('Render data') }}")
 
                 let tableRows = []
@@ -466,6 +472,10 @@
                     ],
                 })
 
+                $('#table').on('draw.dt', function () {
+                    refreshMethods()
+                });
+
                 setTimeout(() => {
                     $('#download-results').hide()
                     $('#table_wrapper').show()
@@ -501,6 +511,8 @@
                             )
                         },
                         success: function (response) {
+                            response = JSON.parse(response['result'])
+
                             let rows = ''
                             let yandexTh = false
                             let googleTh = false
