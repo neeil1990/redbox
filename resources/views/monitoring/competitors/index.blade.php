@@ -512,6 +512,7 @@
                             )
                         },
                         success: function (response) {
+                            console.log(response)
                             response = JSON.parse(response['result'])
 
                             let rows = ''
