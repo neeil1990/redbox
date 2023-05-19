@@ -104,7 +104,7 @@
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
                             </div>
-                            <select name="region" class="custom-select" id="searchEngines" disabled>
+                            <select name="region" class="custom-select" id="searchEngines">
                                 @if($project->searchengines->count() > 1)
                                     <option value="">{{ __('All search engine and regions') }}</option>
                                 @endif
@@ -123,6 +123,7 @@
                                     @endif
                                 @endforeach
                             </select>
+                            <button class="btn btn-secondary" id="start-analyse-region">{{ __("Analyse") }}</button>
                         </div>
                         <div id="download-results" style="display: none">
                             <div class="d-flex justify-content-center align-items-center">
@@ -270,8 +271,6 @@
                     $('#searchEngines option[value=' + filter.val + ']').attr('selected', 'selected')
                 }
 
-                getCompetitors()
-
                 $('#searchEngines').on('change', function () {
                     let val = $(this).val()
                     if (val !== '') {
@@ -281,8 +280,6 @@
                     } else {
                         localStorage.removeItem('lr_redbox_monitoring_selected_filter')
                     }
-
-                    getCompetitors()
                 })
 
                 $('#searchCompetitors').on('click', function () {
@@ -326,6 +323,10 @@
                             refreshMethods()
                         },
                     });
+                })
+
+                $('#start-analyse-region').on('click', function () {
+                    getCompetitors()
                 })
             })
 
