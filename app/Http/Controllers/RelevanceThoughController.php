@@ -12,12 +12,12 @@ class RelevanceThoughController extends Controller
 {
     public $slice = 10;
 
-    /**
-     * @param ProjectRelevanceThough $though
-     * @return View
-     */
-    public function show(ProjectRelevanceThough $though): View
+    public function show(ProjectRelevanceThough $though)
     {
+        if (empty($though->result)) {
+            return abort(403, 'Too Early');
+        }
+
         $though->result = json_decode(gzuncompress(base64_decode($though->result)), true);
         $allResult = $though->result;
         $though->result = array_slice($though->result, 0, count($though->result) / $this->slice);

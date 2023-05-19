@@ -100,7 +100,7 @@
     @endif
 
     <div class="text-center" id="preloaderBlock">
-        <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif">
+        <img src="{{ asset('/img/1485.gif') }}" alt="preloader_gif" width="40" height="40">
         <p>Получено <b id="getCount">{{ $count }}</b> из <b>{{ $allCount }}</b></p>
     </div>
     <div style="display: none" id="though-block">
