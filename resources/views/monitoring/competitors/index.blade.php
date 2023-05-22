@@ -480,7 +480,7 @@
                             "next": "»",
                             "previous": "«"
                         },
-                        "emptyTable": "{{ __('More than 15 days have passed since the last withdrawal') }}"
+                        "emptyTable": "{{ __('Empty') }}"
                     },
                     columnDefs: [
                         {
