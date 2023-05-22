@@ -404,10 +404,12 @@
 
             function renderTableRows(response) {
                 let data = JSON.parse(response.result)
+                $('#dateOnly').parent().hide()
                 try {
                     JSON.parse(response.date)
                 } catch (e) {
                     $('#dateOnly').html(response.date)
+                    $('#dateOnly').parent().show()
                 }
 
                 $('#render-state').html("{{ __('Render data') }}")
