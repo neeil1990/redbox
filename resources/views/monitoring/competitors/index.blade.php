@@ -33,11 +33,12 @@
                 width: 37.5%;
             }
 
-            #table > tbody > tr:nth-child(1) {
-                width: 5%;
-                min-width: 5%;
-                max-width: 5%;
+            #table > thead > tr > th:nth-child(1) {
+                width: 100px !important;
+                min-width: 100px !important;
+                max-width: 100px !important;
             }
+
         </style>
     @endslot
 
@@ -192,7 +193,7 @@
         </div>
     </div>
 
-    <div id="tableBlock" style="display: none">
+    <div id="tableBlock" style="height: 0; opacity: 0">
         <h3>{{ __('Domains ranked in the top 10') }}</h3>
         <p>{{ __('The date of withdrawal of positions used') }}: <span id="dateOnly"></span></p>
         <table id="table" class="table table-bordered no-footer">
@@ -335,6 +336,7 @@
                 $('#start-analyse-region').on('click', function () {
                     getCompetitors()
                 })
+                $('#table').DataTable()
             })
 
             function getCompetitors() {
@@ -348,12 +350,12 @@
                         'region': $('#searchEngines').val()
                     },
                     beforeSend: function () {
-                        $('#download-results').show()
                         if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                             $('#table').dataTable().fnDestroy();
-                            $('#table > tbody').html('')
                         }
-                        $('#render-state').html("{{ __('loading results') }}")
+
+                        $('#download-results').show()
+                        $('#table > tbody').html('')
                         $('#searchCompetitors').prop('disabled', true)
                         $('#tableBlock').hide()
                         $('#render-state').html("{{ __('In progress') }}")
@@ -379,7 +381,7 @@
             function waitFinishResult(response) {
                 clearInterval(interval)
                 $('#download-results').show()
-                $('#render-state').html(`Вы в очереди`)
+                $('#render-state').html("{{ __('In queue') }}")
 
                 interval = setInterval(() => {
                     $.ajax({
@@ -393,7 +395,7 @@
                                 renderTableRows(response)
                                 clearInterval(interval)
                             } else {
-                                $('#render-state').html(`Вы в очереди`)
+                                $('#render-state').html("{{ __('In queue') }}")
                             }
                         },
                     });
@@ -402,10 +404,13 @@
 
             function renderTableRows(response) {
                 let data = JSON.parse(response.result)
-                let date = response.date
+                try {
+                    JSON.parse(response.date)
+                } catch (e) {
+                    $('#dateOnly').html(response.date)
+                }
 
                 $('#render-state').html("{{ __('Render data') }}")
-                $('#dateOnly').html(date)
 
                 let tableRows = []
                 if (data !== []) {
@@ -456,7 +461,7 @@
                         let bool = val.competitor ?? false
 
                         tableRows.push('<tr>' +
-                            '    <td data-order="' + bool + '" onclick="changeCellState(this)" data-target="' + key + '">' + input + '</td>' +
+                            '    <td style="max-width: 100px; min-width: 100px; width: 100px;" data-order="' + bool + '" onclick="changeCellState(this)" data-target="' + key + '">' + input + '</td>' +
                             '    <td data-order="' + key + '">' + stub + '</td>' +
                             '    <td>' + engines + '</td>' +
                             '    <td class="p-0 m-0" data-order="' + Number(val.visibility) + '" data-action="' + key + '">' + visibilityCell + '</td>' +
@@ -494,9 +499,12 @@
                 });
 
                 setTimeout(() => {
+                    $('#tableBlock').css({
+                        'height': 'auto',
+                        'opacity': 1,
+                    }).show()
                     $('#download-results').hide()
                     $('#table_wrapper').show()
-                    $('#tableBlock').show()
                     $('#searchCompetitors').prop('disabled', false)
                     refreshMethods()
                 }, 300)
