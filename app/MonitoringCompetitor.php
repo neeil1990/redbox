@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -11,7 +10,7 @@ class MonitoringCompetitor extends Model
 {
     protected $fillable = ['url'];
 
-    public static function getCompetitors(array $request, $targetId = false): ?string
+    public static function getCompetitors(array $request, $targetId): ?string
     {
         $project = MonitoringProject::findOrFail($request['projectId']);
         $words = MonitoringKeyword::where('monitoring_project_id', $request['projectId'])->get(['query'])->toArray();
@@ -25,13 +24,7 @@ class MonitoringCompetitor extends Model
         }
 
         foreach ($days as $day) {
-            $diffInDays = Carbon::parse($day['dateOnly'])->diffInDays(Carbon::now());
-            if ($diffInDays > 15) {
-                continue;
-            }
-
             foreach ($words as $keywords) {
-                $start = microtime(true);
                 $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                     ->where('search_indices.lr', $day['engine']['lr'])
                     ->where('search_indices.position', '<=', 10)
@@ -40,8 +33,6 @@ class MonitoringCompetitor extends Model
                     ->orderBy('search_indices.id', 'desc')
                     ->get()
                     ->toArray();
-
-                Log::debug('microtime', [microtime(true) - $start]);
 
                 foreach ($results as $result) {
                     $host = parse_url(Common::domainFilter($result->url))['host'];
@@ -108,12 +99,10 @@ class MonitoringCompetitor extends Model
             $competitors[$key]['visibilityGoogle'] = $google;
         }
 
-        if ($targetId !== false) {
-            MonitoringCompetitorsResult::where('id', $targetId)->update([
-                'result' => Common::compressArray($competitors, JSON_INVALID_UTF8_IGNORE),
-                'state' => 'ready'
-            ]);
-        }
+        MonitoringCompetitorsResult::where('id', $targetId)->update([
+            'result' => Common::compressArray($competitors, JSON_INVALID_UTF8_IGNORE),
+            'state' => 'ready'
+        ]);
 
         return json_encode($competitors, JSON_INVALID_UTF8_IGNORE);
     }

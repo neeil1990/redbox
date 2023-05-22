@@ -443,53 +443,70 @@ class MonitoringController extends Controller
 
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
-        $inQueue = MonitoringCompetitorsResult::where('project_id', $request->projectId)
+        if ($request->region == '') {
+            $lastDays = json_encode(array_column(MonitoringProject::getLastDates(MonitoringProject::find($request->projectId)), 'dateOnly'));
+            $region = 'all';
+        } else {
+            $lastDays = MonitoringProject::getLastDate(MonitoringProject::find($request->projectId), $request->region, true);
+            $region = $request->region;
+        }
+
+        $record = MonitoringCompetitorsResult::where('project_id', $request->projectId)
+            ->where('region', $region)
             ->where('user_id', Auth::id())
+            ->latest()
             ->first();
 
-        if (isset($inQueue)) {
-            $ids = Jobs::where('queue', 'monitoring_competitors_stat')->get(['id'])->toArray();
-            return response()->json([
-                'state' => 'in queue',
-                'id' => $inQueue->id,
-                'queue' => $ids,
-                'queuePositions' => count($ids)
-            ]);
+        if (isset($record)) {
+            if ($record->date !== $lastDays) {
+                $record->delete();
+                $id = MonitoringController::startNewCompetitorsAnalyse($lastDays, $region, $request->all());
+
+                return response()->json([
+                    'state' => 'in queue',
+                    'id' => $id,
+                    'newScan' => true
+                ]);
+            }
+
+            $response = [
+                'state' => $record->state,
+                'date' => $record->date,
+                'id' => $record->id,
+            ];
+
+            if ($record->state === 'ready') {
+                $response['result'] = Common::uncompressArray($record->result, false);
+                $response['newScan'] = false;
+            }
+
+            return response()->json($response);
         }
 
-        $project = MonitoringProject::findOrFail($request->projectId);
-
-        $totalWords = $request->region == ''
-            ? $project->keywords->count() * $project->searchengines->count()
-            : $project->keywords->count();
-
-        if ($totalWords > 500) {
-            $newRecord = new MonitoringCompetitorsResult();
-            $newRecord->region = $request->region;
-            $newRecord->date = Carbon::now()->toDateString();
-            $newRecord->project_id = $request->projectId;
-            $newRecord->user_id = Auth::id();
-            $newRecord->save();
-
-            MonitoringCompetitorsQueue::dispatch(
-                $request->all(),
-                $newRecord->id
-            )->onQueue('monitoring_competitors_stat');
-
-            $ids = Jobs::where('queue', 'monitoring_competitors_stat')->get(['id'])->toArray();
-
-            return response()->json([
-                'state' => 'in queue',
-                'id' => $newRecord->id,
-                'queue' => $ids,
-                'queuePositions' => count($ids)
-            ]);
-        }
+        $id = MonitoringController::startNewCompetitorsAnalyse($lastDays, $region, $request->all());
 
         return response()->json([
-            'state' => 'ready',
-            'result' => MonitoringCompetitor::getCompetitors($request->all()),
+            'state' => 'in queue',
+            'id' => $id,
+            'newScan' => true
         ]);
+    }
+
+    private static function startNewCompetitorsAnalyse(string $lastDays, string $region, array $request): int
+    {
+        $newRecord = new MonitoringCompetitorsResult();
+        $newRecord->date = $lastDays;
+        $newRecord->region = $region;
+        $newRecord->project_id = $request['projectId'];
+        $newRecord->user_id = Auth::id();
+        $newRecord->save();
+
+        MonitoringCompetitorsQueue::dispatch(
+            $request,
+            $newRecord->id
+        )->onQueue('monitoring_competitors_stat');
+
+        return $newRecord->id;
     }
 
     public function getMonitoringCompetitorsResult(Request $request): JsonResponse
@@ -497,18 +514,15 @@ class MonitoringController extends Controller
         $record = MonitoringCompetitorsResult::find($request->id);
 
         if ($record->state === 'ready') {
-            $result = $record;
-            $record->delete();
-
             return response()->json([
-                'result' => Common::uncompressArray($result->result, false),
-                'state' => $result->state
+                'state' => $record->state,
+                'date' => $record->date,
+                'result' => Common::uncompressArray($record->result, false)
             ]);
         }
 
         return response()->json([
             'state' => $record->state,
-            'queuePosition' => Jobs::whereIn('id', $request->ids)->count()
         ]);
     }
 
@@ -676,5 +690,31 @@ class MonitoringController extends Controller
         $request['region'] = MonitoringSearchengine::where('id', $request['region'])->first()->location->name;
 
         return view('monitoring.competitors.dates-results', compact('project', 'request'));
+    }
+
+    public function getCompetitorsDomain(Request $request): array
+    {
+        if ($request->region == '') {
+            $region = 'all';
+        } else {
+            $region = $request->region;
+        }
+
+        $record = MonitoringCompetitorsResult::where('project_id', $request->projectId)
+            ->where('region', $region)
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->first();
+
+        $results = Common::uncompressArray($record->result)[$request->targetDomain]['urls'];
+
+        $response = [];
+        foreach ($results as $engine => $phrases) {
+            foreach ($phrases as $key => $info) {
+                $response[$key][$engine] = $info;
+            }
+        }
+
+        return $response;
     }
 }

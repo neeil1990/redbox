@@ -838,7 +838,6 @@
                         prepareActions();
                         renderStatistics(calculateAvgValues(data), destroy)
                     } else {
-
                         $('#toast-container').show(300)
                         $('.toast-message').html("{{ __('Data could not be retrieved, the request was duplicated') }}")
                         setTimeout(() => {
@@ -862,8 +861,6 @@
             function calculateAvgValues(array) {
                 let domains = []
                 let results = {}
-
-                // что случилось с данными? не могу пройтись по array
 
                 $.each(array, function (key, values) {
                     $.each(values, function (domain, info) {

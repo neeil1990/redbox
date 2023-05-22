@@ -66,7 +66,7 @@ class MonitoringProject extends Model
         return $lastChecks;
     }
 
-    public static function getLastDate(MonitoringProject $project, $region): array
+    public static function getLastDate(MonitoringProject $project, $region, $dateOnly = false)
     {
         $keywords = $project->keywords->pluck('id');
 
@@ -77,6 +77,10 @@ class MonitoringProject extends Model
             ->with('engine')
             ->first()
             ->toArray();
+
+        if ($dateOnly) {
+            return $result['dateOnly'];
+        }
 
         return [$result];
     }

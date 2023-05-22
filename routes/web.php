@@ -11,13 +11,7 @@
 |
 */
 
-use App\Common;
-use App\MonitoringKeyword;
-use App\MonitoringProject;
-use App\MonitoringSearchengine;
-use App\RelevanceHistoryResult;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 Route::get('info', function () {
     phpinfo();
@@ -325,6 +319,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/monitoring/{project}/competitors', 'MonitoringController@monitoringCompetitors')->name('monitoring.competitors');
     Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
+    Route::post('/monitoring/projects/competitors-domain', 'MonitoringController@getCompetitorsDomain')->name('monitoring.get.competitors.domain');
     Route::get('/monitoring/{project}/competitors/positions', 'MonitoringController@competitorsPositions')->name('monitoring.competitors.positions');
     Route::post('/monitoring/competitors/visibility', 'MonitoringController@getStatistics')->name('monitoring.get.competitors.statistics');
     Route::post('/monitoring/wait-result', 'MonitoringController@getMonitoringCompetitorsResult')->name('monitoring.wait.result');

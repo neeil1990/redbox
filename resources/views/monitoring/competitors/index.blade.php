@@ -32,12 +32,18 @@
             #table > tbody > tr > td:nth-child(4) {
                 width: 37.5%;
             }
+
+            #table > tbody > tr:nth-child(1) {
+                width: 5%;
+                min-width: 5%;
+                max-width: 5%;
+            }
         </style>
     @endslot
 
-    <div id="toast-container" class="toast-top-right success-message" style="display:none;">
-        <div class="toast toast-success" aria-live="polite">
-            <div class="toast-message">{{ __('Filter applied') }}</div>
+    <div id="toast-container" class="toast-top-right info-message" style="display:none;">
+        <div class="toast toast-info" aria-live="polite">
+            <div class="toast-message"></div>
         </div>
     </div>
 
@@ -187,11 +193,12 @@
     </div>
 
     <div id="tableBlock" style="display: none">
-        <h3>{{ __('Domains ranked in the top 10 (based on your phrases)') }}</h3>
+        <h3>{{ __('Domains ranked in the top 10') }}</h3>
+        <p>{{ __('The date of withdrawal of positions used') }}: <span id="dateOnly"></span></p>
         <table id="table" class="table table-bordered no-footer">
             <thead style="top: 0; position: sticky; background-color: white">
             <tr>
-                <th>{{ __('Competitor') }}?</th>
+                <th style="min-width: 100px; max-width: 100px;">{{ __('Competitor') }}?</th>
                 <th>{{ __('Domain') }}</th>
                 <th>{{ __('Search engines') }}</th>
                 <th>{{ __('Visibility by selected regions') }}</th>
@@ -233,7 +240,7 @@
                                 'url': url,
                                 'projectId': {{ $project->id }}
                             },
-                            success: function (response) {
+                            success: function () {
                                 targetInput.prop('checked', true)
                                 targetBlock.attr('data-order', 'true')
                             },
@@ -342,7 +349,6 @@
                     },
                     beforeSend: function () {
                         $('#download-results').show()
-                        $('#searchEngines').prop('disabled', true)
                         if ($.fn.DataTable.fnIsDataTable($('#table'))) {
                             $('#table').dataTable().fnDestroy();
                             $('#table > tbody').html('')
@@ -354,9 +360,17 @@
                     },
                     success: function (response) {
                         if (response.state === 'ready') {
-                            renderTableRows(JSON.parse(response.result))
+                            renderTableRows(response)
                         } else if (response.state === 'in process' || response.state === 'in queue') {
                             waitFinishResult(response)
+                        }
+
+                        if (response.newScan) {
+                            $('#toast-container').show(300)
+                            $('.toast-message').html('{{ __('New withdrawals of positions were discovered.') }} <br> {{ __('The analysis of fresh data has been launched.') }} <br>')
+                            setTimeout(() => {
+                                $('#toast-container').hide(300)
+                            }, 10000)
                         }
                     },
                 });
@@ -365,7 +379,7 @@
             function waitFinishResult(response) {
                 clearInterval(interval)
                 $('#download-results').show()
-                $('#render-state').html(`Вы ${response.queuePositions} в очереди`)
+                $('#render-state').html(`Вы в очереди`)
 
                 interval = setInterval(() => {
                     $.ajax({
@@ -373,23 +387,25 @@
                         method: "POST",
                         data: {
                             id: response.id,
-                            ids: response.queue
                         },
                         success: function (response) {
                             if (response.state === 'ready') {
-                                renderTableRows(JSON.parse(response.result))
+                                renderTableRows(response)
                                 clearInterval(interval)
                             } else {
-                                $('#render-state').html(`Вы ${response.queuePosition} в очереди`)
+                                $('#render-state').html(`Вы в очереди`)
                             }
                         },
                     });
                 }, 5000)
             }
 
-            function renderTableRows(data) {
-                $('#searchEngines').prop('disabled', false)
+            function renderTableRows(response) {
+                let data = JSON.parse(response.result)
+                let date = response.date
+
                 $('#render-state').html("{{ __('Render data') }}")
+                $('#dateOnly').html(date)
 
                 let tableRows = []
                 if (data !== []) {
@@ -495,7 +511,7 @@
                     $.ajax({
                         type: "POST",
                         dataType: "json",
-                        url: "{{ route('monitoring.get.competitors') }}",
+                        url: "{{ route('monitoring.get.competitors.domain') }}",
                         data: {
                             '_token': $('meta[name="csrf-token"]').attr('content'),
                             'projectId': {{ $project->id }},
@@ -512,23 +528,11 @@
                             )
                         },
                         success: function (response) {
-                            console.log(response)
-                            response = JSON.parse(response['result'])
-
                             let rows = ''
                             let yandexTh = false
                             let googleTh = false
 
-                            $.each(response[targetDomain]['urls'], function (phrase, engines) {
-                                $.each(engines, function (engine) {
-                                    if (engine === 'yandex') {
-                                        yandexTh = true
-                                    }
-                                    if (engine === 'google') {
-                                        googleTh = true
-                                    }
-                                })
-
+                            $.each(response, function (phrase, engines) {
                                 let yandex = ''
                                 let google = ''
 
@@ -567,16 +571,14 @@
                                 '<table class="table table-hover table-bordered no-footer custom-table">' +
                                 '    <thead>' +
                                 '        <tr>' +
-                                '            <th> {{ __('Phrase') }} </th>'
+                                '            <th style="min-width:200px; max-width:200px;"> {{ __('Phrase') }} </th>'
 
                             if (yandexTh) {
                                 table += '<th> {{ __('Yandex') }} </th>'
                             }
-
                             if (googleTh) {
                                 table += '<th> {{ __('Google') }} </th>'
                             }
-
                             table += '</tr>' +
                                 '</thead>' +
                                 '    <tbody>' +
