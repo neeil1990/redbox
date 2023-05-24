@@ -391,10 +391,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
-
-Route::get('/test', function (){
-    $cluster = \App\ClusterResults::where('id', 489)->first();
-//    $ar = json_decode($cluster->html, true);
-//    $clusters = Cluster::unpackCluster($cluster->result);
-    dd($cluster->html);
-});
