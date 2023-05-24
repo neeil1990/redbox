@@ -229,8 +229,12 @@
                 let url = targetBlock.attr('data-target')
                 let targetInput = targetBlock.children('input').eq(0)
                 let state = targetBlock.attr('data-order') === 'true'
+                console.log(targetBlock)
+                console.log(targetInput)
+                console.log(state)
 
-                if (state) {
+
+                if (!state) {
                     if (confirm(`{{ __('Are you going to add the domain') }} "${url}" {{ __('in competitors') }}`)) {
                         $.ajax({
                             type: "POST",
@@ -247,7 +251,7 @@
                             },
                         });
                     } else {
-                        targetInput.prop('checked', !state)
+                        targetInput.prop('checked', false)
                     }
                 } else {
                     if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
@@ -266,7 +270,7 @@
                             },
                         });
                     } else {
-                        targetInput.prop('checked', !state)
+                        targetInput.prop('checked', true)
                     }
                 }
             }
@@ -419,7 +423,6 @@
 
             function renderTableRows(response) {
                 let competitors = JSON.parse(sessionStorage.getItem('competitorsArray'))
-                console.log(competitors)
 
                 let data = JSON.parse(response.result)
                 $('#dateOnly').parent().hide()
