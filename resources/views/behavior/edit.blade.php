@@ -32,7 +32,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::number('count[]', 1, ['min' => 1, 'max' => 100, 'class' => 'form-control' . ($errors->has('count') ? ' is-invalid' : ''), 'placeholder' => __('Count')]) !!}
+                            {!! Form::number('count[]', 1, ['min' => 1, 'max' => 500, 'class' => 'form-control' . ($errors->has('count') ? ' is-invalid' : ''), 'placeholder' => __('Count')]) !!}
                             @error('count') <span class="error invalid-feedback">{{ $message }}</span> @enderror
                         </div>
                     </div>
