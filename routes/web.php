@@ -393,7 +393,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function (){
-    $cluster = \App\ClusterResults::where('id', 489)->get();
+    $cluster = \App\ClusterResults::where('id', 489)->first();
 //    $ar = json_decode($cluster->html, true);
     $clusters = Cluster::unpackCluster($cluster->result);
     dd($clusters);
