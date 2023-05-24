@@ -717,4 +717,9 @@ class MonitoringController extends Controller
 
         return $response;
     }
+
+    public function getProjectCompetitors(MonitoringProject $project): array
+    {
+        return array_column($project->competitors->toArray(), 'url');
+    }
 }

@@ -340,6 +340,8 @@
             })
 
             function getCompetitors() {
+                getCompetitorsArray()
+
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -382,6 +384,7 @@
                 clearInterval(interval)
                 $('#download-results').show()
                 $('#render-state').html("{{ __('In queue') }}")
+                getCompetitorsArray()
 
                 interval = setInterval(() => {
                     $.ajax({
@@ -402,7 +405,22 @@
                 }, 5000)
             }
 
+            function getCompetitorsArray(array) {
+                $.ajax({
+                    url: "/monitoring/get-competitors-array/{{ $project->id }}",
+                    method: "get",
+                    success: function (response) {
+                        sessionStorage.setItem('competitorsArray', JSON.stringify(response))
+                    },
+                });
+
+                return array;
+            }
+
             function renderTableRows(response) {
+                let competitors = JSON.parse(sessionStorage.getItem('competitorsArray'))
+                console.log(competitors)
+
                 let data = JSON.parse(response.result)
                 $('#dateOnly').parent().hide()
                 try {
@@ -421,7 +439,7 @@
                         if (val.mainPage) {
                             input = "{{ __('Your website') }}"
                         } else {
-                            if (val.competitor) {
+                            if (competitors.indexOf(key) != -1) {
                                 input = '<input type="checkbox" data-target="' + key + '" checked>'
                             } else {
                                 input = '<input type="checkbox" data-target="' + key + '">'
