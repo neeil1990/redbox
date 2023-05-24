@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Rules\UniqueProjectName;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * @property string project_name
