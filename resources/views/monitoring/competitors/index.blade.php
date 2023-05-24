@@ -230,7 +230,7 @@
                 let targetInput = targetBlock.children('input').eq(0)
                 let state = targetBlock.attr('data-order') === 'true'
 
-                if (!state) {
+                if (state) {
                     if (confirm(`{{ __('Are you going to add the domain') }} "${url}" {{ __('in competitors') }}`)) {
                         $.ajax({
                             type: "POST",
@@ -247,7 +247,7 @@
                             },
                         });
                     } else {
-                        targetInput.prop('checked', state)
+                        targetInput.prop('checked', !state)
                     }
                 } else {
                     if (confirm(`{{ __('Are you going to remove the domain') }} "${url}" {{ __('from competitors') }}`)) {
@@ -266,7 +266,7 @@
                             },
                         });
                     } else {
-                        targetInput.prop('checked', state)
+                        targetInput.prop('checked', !state)
                     }
                 }
             }
