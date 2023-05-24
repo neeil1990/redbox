@@ -153,8 +153,10 @@ class ClusterResults extends Model
                      </div>';
                 }
             } catch (\Throwable $e) {
+                Log::info($e->getMessage());
                 Log::info($phrase);
                 Log::info($mainPhrase);
+                Log::debug('', $this->clusters[$mainPhrase]);
             }
         }
         $ol .= '</ol>';
