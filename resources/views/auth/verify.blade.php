@@ -40,8 +40,10 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <button type="button" class="btn btn-primary btn-block" id="verifyCodeButton"
-                                    onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628')"
+                            <button type="button"
+                                    class="btn btn-primary btn-block"
+                                    id="verifyCodeButton"
+                                    onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628'); _tmr.push({ type: 'reachGoal', id: 3340935, goal: 'Verifikacija170523'});"
                                     style="display: none">{{ __('Send') }}</button>
                             <button type="button" class="btn btn-primary btn-block" id="fakeButton"
                                     disabled>{{ __('Send') }}</button>
