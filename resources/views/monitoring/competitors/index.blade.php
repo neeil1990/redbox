@@ -229,10 +229,6 @@
                 let url = targetBlock.attr('data-target')
                 let targetInput = targetBlock.children('input').eq(0)
                 let state = targetBlock.attr('data-order') === 'true'
-                console.log(targetBlock)
-                console.log(targetInput)
-                console.log(state)
-
 
                 if (!state) {
                     if (confirm(`{{ __('Are you going to add the domain') }} "${url}" {{ __('in competitors') }}`)) {
@@ -423,9 +419,9 @@
 
             function renderTableRows(response) {
                 let competitors = JSON.parse(sessionStorage.getItem('competitorsArray'))
-
                 let data = JSON.parse(response.result)
                 $('#dateOnly').parent().hide()
+
                 try {
                     JSON.parse(response.date)
                 } catch (e) {
@@ -438,12 +434,14 @@
                 let tableRows = []
                 if (data !== []) {
                     $.each(data, function (key, val) {
+                        let bool = false
                         let input = ''
                         if (val.mainPage) {
                             input = "{{ __('Your website') }}"
                         } else {
                             if (competitors.indexOf(key) != -1) {
                                 input = '<input type="checkbox" data-target="' + key + '" checked>'
+                                bool = true
                             } else {
                                 input = '<input type="checkbox" data-target="' + key + '">'
                             }
@@ -480,8 +478,6 @@
                             }
                             visibilityCell += '<div class="w-50 p-2 ' + border + '"> Yandex: ' + yandex + '</div>'
                         }
-
-                        let bool = val.competitor ?? false
 
                         tableRows.push('<tr>' +
                             '    <td style="max-width: 100px; min-width: 100px; width: 100px;" data-order="' + bool + '" onclick="changeCellState(this)" data-target="' + key + '">' + input + '</td>' +
