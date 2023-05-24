@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ClusterResults extends Model
@@ -104,13 +105,14 @@ class ClusterResults extends Model
         $ol = '<ol id="' . Str::random(5) . '" class="list-group list-group-flush show">';
 
         foreach ($items as $phrase) {
-            if (is_array($phrase)) {
-                $ol .= $this->parseTree($phrase);
-            } else {
-                if ($boolean) {
-                    $mainPhrase = $phrase;
-                }
-                $ol .= '<div data-target="' . $phrase . '" data-action="' . $mainPhrase . '" class="list-group-item">
+            try {
+                if (is_array($phrase)) {
+                    $ol .= $this->parseTree($phrase);
+                } else {
+                    if ($boolean) {
+                        $mainPhrase = $phrase;
+                    }
+                    $ol .= '<div data-target="' . $phrase . '" data-action="' . $mainPhrase . '" class="list-group-item">
                            <div class="d-flex justify-content-between align-items-center">
                                <div class="phrase-for-color">' . $phrase . '</div>
                                <span class="relevance-link hide">' . Cluster::getRelevanceLink($this->searchElement($phrase)) . '</span>
@@ -149,6 +151,10 @@ class ClusterResults extends Model
                                </div>
                           </div>
                      </div>';
+                }
+            } catch (\Throwable $e) {
+                Log::info($phrase);
+                Log::info($mainPhrase);
             }
         }
         $ol .= '</ol>';
