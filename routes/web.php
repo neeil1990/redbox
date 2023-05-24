@@ -11,6 +11,7 @@
 |
 */
 
+use App\Cluster;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -394,5 +395,6 @@ Route::middleware(['verified'])->group(function () {
 Route::get('/test', function (){
     $cluster = \App\ClusterResults::where('id', 489)->get();
 //    $ar = json_decode($cluster->html, true);
-    dd($cluster);
+    $clusters = Cluster::unpackCluster($cluster->result);
+    dd($clusters);
 });
