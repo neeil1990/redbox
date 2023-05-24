@@ -161,7 +161,7 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-row justify-content-start align-items-center">
-                        <div class="col-4 mr-3">
+                        <div class="col-5 mr-3">
                             <div class="form-group">
                                 <label>{{ __('Search engine') }}:</label>
                                 <select name="region" class="custom-select" id="searchEngines">

@@ -105,7 +105,7 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-row justify-content-start align-items-center">
-                        <div class="input-group col-4 pl-0 ml-0">
+                        <div class="input-group col-5 pl-0 ml-0">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
