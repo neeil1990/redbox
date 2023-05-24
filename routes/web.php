@@ -392,7 +392,7 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function (){
-    $cluster = \App\ClusterResults::where('id', 489)->get('html');
+    $cluster = \App\ClusterResults::where('id', 489)->get(['html']);
     $ar = json_decode($cluster->html, true);
     dd($ar);
 });
