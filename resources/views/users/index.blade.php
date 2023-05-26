@@ -268,21 +268,19 @@
                 class: 'mt-2'
             });
 
-            if (user.metrics) {
-                let collapse = $('<div />', {
-                    class: 'collapse text-left mt-3',
-                    id: 'collapseExample' + user.id,
+            let collapse = $('<div />', {
+                class: 'collapse text-left mt-3',
+                id: 'collapseExample' + user.id,
+            });
+
+            try {
+                $.each(user.metrics, function (k, v) {
+                    collapse.append($('<div />').html('<b>' + k + '</b>: ' + decodeURI(v)));
                 });
-
-                try {
-                    $.each(user.metrics, function (k, v) {
-                        collapse.append($('<div />').html('<b>' + k + '</b>: ' + decodeURI(v)));
-                    });
-                } catch (e) {
-                }
-
-                container.append(collapse);
+            } catch (e) {
             }
+
+            container.append(collapse);
 
             return container[0].outerHTML;
         }

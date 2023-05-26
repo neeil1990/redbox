@@ -7,7 +7,6 @@ use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
-use App\Jobs;
 use App\Jobs\Monitoring\MonitoringChangesDateQueue;
 use App\Jobs\Monitoring\MonitoringCompetitorsQueue;
 use App\MonitoringChangesDate;
@@ -31,7 +30,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringController extends Controller
 {

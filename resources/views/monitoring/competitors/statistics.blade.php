@@ -492,16 +492,6 @@
                 table.rows.add(trs).draw()
             }
 
-            function prepareActions() {
-                $('#table_length > label > select').on('change', function () {
-                    setTimeout(() => {
-                        colorCells()
-                    }, 200)
-                })
-
-                colorCells()
-            }
-
             function colorCells() {
                 $('.min-value').removeClass('min-value')
 
@@ -835,7 +825,6 @@
                 requests.then(function () {
                     if (newArray.length === 0) {
                         $('#download-results').hide()
-                        prepareActions();
                         renderStatistics(calculateAvgValues(data), destroy)
                     } else {
                         $('#toast-container').show(300)
