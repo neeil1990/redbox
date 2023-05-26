@@ -665,7 +665,7 @@
                         labels: labels,
                         datasets: [{
                             data: data,
-                            backgroundColor: colors
+                            backgroundColor: colors,
                         }]
                     },
                     options: {
@@ -674,6 +674,13 @@
                             text: label
                         },
                         scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    fontSize: 12
+                                }
+                            }],
                             xAxes: [{
                                 ticks: {
                                     maxRotation: 60,
