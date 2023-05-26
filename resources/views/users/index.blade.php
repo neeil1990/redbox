@@ -203,7 +203,8 @@
 
                             if (
                                 Object.prototype.toString.call(row.metrics) === '[object Array]' ||
-                                typeof row.metrics === 'object' && !Array.isArray(row.metrics) && row.metrics !== null
+                                typeof row.metrics === 'object' && !Array.isArray(row.metrics) && row.metrics !== null ||
+                                typeof row.metrics === 'string'
                             ) {
                                 content += '<a class="' + btnClass + '" data-toggle="collapse" href="#collapseExample' + row.id + '" title="{{ __('utm metrics') }}"><i class="fas fa-share-alt"></i></a>';
                             }
@@ -274,9 +275,16 @@
             });
 
             try {
-                $.each(user.metrics, function (k, v) {
-                    collapse.append($('<div />').html('<b>' + k + '</b>: ' + decodeURI(v)));
-                });
+                if (typeof user.metrics == 'string') {
+                    let info = JSON.parse(user.metrics)
+                    $.each(info, function (k, v) {
+                        collapse.append($('<div />').html('<b>' + k + '</b>: ' + decodeURI(v)));
+                    });
+                } else {
+                    $.each(user.metrics, function (k, v) {
+                        collapse.append($('<div />').html('<b>' + k + '</b>: ' + decodeURI(v)));
+                    });
+                }
             } catch (e) {
             }
 
