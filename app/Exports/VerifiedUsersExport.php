@@ -54,6 +54,8 @@ class VerifiedUsersExport implements FromCollection
             ];
 
             if (isset($user->metrics)) {
+                $user->metrics = json_decode($user->metrics, true);
+
                 $rows[$iterator][8] = isset($user->metrics['utm_campaign'])
                     ? urldecode($user->metrics['utm_campaign'])
                     : '';
