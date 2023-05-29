@@ -45,6 +45,40 @@ abstract class Positions
      */
     protected function getSitePosition()
     {
+        if($position = $this->getSitePositionWithDB())
+            return $position;
+
+        return $this->getSitePositionWithXml();
+    }
+
+    protected function getSitePositionWithDB()
+    {
+        $now = Carbon::today()->toDateString();
+        $model = new SearchIndex();
+
+        $data = $model->select('position', 'url', 'created_at')
+            ->whereDate('created_at', $now)
+            ->where('lr', $this->lr)
+            ->where('query', $this->query)
+            ->get();
+
+        if($data->count() > 0){
+            $positions = $data->filter(function($item){
+                $domain = parse_url($item['url']);
+                return $this->domainFilter($domain['host']) == $this->domain;
+            })->sortByDesc('created_at')->first();
+
+            if($positions)
+                return $positions;
+
+            return ['position' => 101];
+        }
+
+        return null;
+    }
+
+    protected function getSitePositionWithXml()
+    {
         $site = $this->domain;
         $results = $this->xml->getByArray();
 
