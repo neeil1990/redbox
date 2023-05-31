@@ -19,10 +19,10 @@ class ClusterResults extends Model
         $this->clusters = Cluster::unpackCluster($default_result);
     }
 
-    public function parseTree($ar): string
+    public function parseTree($array): string
     {
         $html = '';
-        foreach ($ar as $mainPhrase => $items) {
+        foreach ($array as $mainPhrase => $items) {
             $id = str_replace(' ', '_', $mainPhrase);
             $html .= '<li id="' . $id . '" class="cluster-block">' .
                 ClusterResults::generateHeader($mainPhrase) .
@@ -105,23 +105,25 @@ class ClusterResults extends Model
         $ol = '<ol id="' . Str::random(5) . '" class="list-group list-group-flush show">';
 
         foreach ($items as $phrase) {
-            try {
-                if (is_array($phrase)) {
-                    $ol .= $this->parseTree($phrase);
-                } else {
-                    if ($boolean) {
-                        $mainPhrase = $phrase;
-                    }
-                    $ol .= '<div data-target="' . $phrase . '" data-action="' . $mainPhrase . '" class="list-group-item">
+            if (is_array($phrase)) {
+                $ol .= $this->parseTree($phrase);
+            } else {
+                if ($boolean) {
+                    $mainPhrase = $phrase;
+                }
+
+                $targetElement = $this->clusters[$mainPhrase][$phrase] ?? $this->searchElement($phrase, true);
+
+                $ol .= '<div data-target="' . $phrase . '" data-action="' . $mainPhrase . '" class="list-group-item">
                            <div class="d-flex justify-content-between align-items-center">
                                <div class="phrase-for-color">' . $phrase . '</div>
-                               <span class="relevance-link hide">' . Cluster::getRelevanceLink($this->searchElement($phrase)) . '</span>
-                               <div class="hide">' . implode("\n", array_keys($this->searchElement($phrase, true))) . '</div>
+                               <span class="relevance-link hide">' . Cluster::getRelevanceLink($targetElement) . '</span>
+                               <div class="hide">' . implode("\n", array_keys($targetElement)) . '</div>
                                <div>
                                     <span class="__helper-link ui_tooltip_w frequency">
-                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['based']) . '</span> /
-                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['phrased']) . '</span> /
-                                        <span>' . ClusterResults::getVisibilityCounter($this->clusters[$mainPhrase][$phrase]['target']) . '</span>
+                                        <span>' . ClusterResults::getVisibilityCounter($targetElement['based']) . '</span> /
+                                        <span>' . ClusterResults::getVisibilityCounter($targetElement['phrased']) . '</span> /
+                                        <span>' . ClusterResults::getVisibilityCounter($targetElement['target']) . '</span>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content">
                                                 <span>' . __("Base") . '</span> /
@@ -151,9 +153,6 @@ class ClusterResults extends Model
                                </div>
                           </div>
                      </div>';
-                }
-            } catch (\Throwable $e){
-
             }
         }
         $ol .= '</ol>';
