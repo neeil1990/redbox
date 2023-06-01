@@ -15,7 +15,7 @@ class FilteredUsersExport implements FromCollection
 
     public function __construct($request)
     {
-        dd($request);
+        dd(Carbon::parse($request['lastOnline'])->toDateTimeString());
         $sql = User::where('id', '>', 0);
         if ($request['verify'] === 'verify') {
             $sql->where('email_verified_at', '!=', NULL);
@@ -24,7 +24,7 @@ class FilteredUsersExport implements FromCollection
         }
 
         if (isset($request['lastOnline'])) {
-            $sql->where('last_online_at', '<=', $request['lastOnline']);
+            $sql->where('last_online_at', '<=', Carbon::parse($request['lastOnline'])->toDateTimeString());
         }
 
         $this->users = $sql->get();
