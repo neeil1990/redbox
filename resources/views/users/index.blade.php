@@ -29,7 +29,7 @@
             <div class="card-tools">
                 <div class="btn-group">
                     <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown"
-                            data-offset="-200">
+                            data-offset="-200" aria-expanded="false">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="dropdown-menu" role="menu">
