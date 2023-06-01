@@ -11,14 +11,14 @@ class RemoveDuplicatesDBFromSearchIndicesTable extends Command
      *
      * @var string
      */
-    protected $signature = 'search-indices:remove-duplicates';
+    protected $signature = 'search-indices:remove-duplicates {date}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command for managed search_indices table in data base';
+    protected $description = 'Command for remove duplicates in search_indices table input: search-indices:remove-duplicates 2022-05-01';
 
     /**
      * Create a new command instance.
@@ -37,43 +37,31 @@ class RemoveDuplicatesDBFromSearchIndicesTable extends Command
      */
     public function handle()
     {
-        set_time_limit(0);
-
         $model = new \App\SearchIndex();
+        $date = $this->argument('date');
 
-        $dates = $model->select(\DB::raw('DATE(created_at) as date'))->groupBy('date')->get();
+        $data = $model->select(\DB::raw('*, count(id) as cnt'))
+            ->whereDate('created_at', $date)
+            ->groupBy('query', 'lr')
+            ->having('cnt', '>', 100)
+            ->get();
 
-        $bar = $this->output->createProgressBar($dates->count());
-
-        foreach($dates->pluck('date') as $date){
-
-            $data = $model->select(\DB::raw('*, count(id) as cnt'))
-                ->whereDate('created_at', $date)
-                ->groupBy('query', 'lr')
-                ->having('cnt', '>', 100)
+        foreach($data as $d){
+            $records = $model->whereDate('created_at', $d['created_at']->format('Y-m-d'))
+                ->where('query', $d['query'])
+                ->where('lr', $d['lr'])
+                ->orderBy('position', 'asc')
                 ->get();
 
-            foreach($data as $d){
-                $records = $model->whereDate('created_at', $d['created_at']->format('Y-m-d'))
-                    ->where('query', $d['query'])
-                    ->where('lr', $d['lr'])
-                    ->orderBy('position', 'asc')
-                    ->get();
-
-                $now = -1;
-                foreach($records as $rec){
-                    if($now == -1 || $rec['position'] > $now ){
-                        $now = $rec['position'];
-                        continue;
-                    }
-
-                    $rec->delete();
+            $now = -1;
+            foreach($records as $record){
+                if($now == -1 || $record['position'] > $now ){
+                    $now = $record['position'];
+                    continue;
                 }
+
+                $record->delete();
             }
-
-            $bar->advance();
         }
-
-        $bar->finish();
     }
 }
