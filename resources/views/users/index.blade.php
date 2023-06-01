@@ -27,7 +27,7 @@
             <h3 class="card-title">{{ __('Users') }}</h3>
 
             <div class="card-tools">
-                <div class="btn-group">
+                <div class="btn-group show">
                     <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown"
                             data-offset="-200" aria-expanded="false">
                         <i class="fas fa-bars"></i>
