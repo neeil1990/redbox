@@ -26,19 +26,6 @@
         <div class="card-header">
             <h3 class="card-title">{{ __('Users') }}</h3>
 
-            <div class="btn-group">
-                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Действие
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Действие</a>
-                    <a class="dropdown-item" href="#">Другое действие</a>
-                    <a class="dropdown-item" href="#">Что-то еще здесь</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Отдельная ссылка</a>
-                </div>
-            </div>
-
             <div class="card-tools">
                 <div class="btn-group">
                     <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown"
