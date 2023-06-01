@@ -78,7 +78,7 @@ class FilteredUsersExport implements FromCollection
                     $arr = $user->metrics;
                 }
 
-                dd($arr);
+                Log::debug('arr', [$arr]);
                 if (isset($arr['utm_campaign'])) {
                     $rows[$iterator][8] = urldecode($arr['utm_campaign']);
                 } else {
