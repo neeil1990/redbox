@@ -73,7 +73,10 @@ class FilteredUsersExport implements FromCollection
             $metrics = $user->metrics;
             if (isset($metrics)) {
                 if ($user->metrics !== null) {
-                    $arr = json_decode($metrics, true);
+                    if (gettype($metrics) === 'string') {
+                        $arr = json_decode($metrics, true);
+                    }
+
                     if (isset($arr['utm_campaign'])) {
                         $rows[$iterator][8] = urldecode($arr['utm_campaign']);
                     } else {
