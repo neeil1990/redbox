@@ -27,6 +27,8 @@ class FilteredUsersExport implements FromCollection
         }
 
         $this->users = $sql->get();
+
+        dd($this->users);
     }
 
     /**
