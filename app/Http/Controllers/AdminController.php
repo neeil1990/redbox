@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -58,18 +59,11 @@ class AdminController extends Controller
     public function showConfig(): View
     {
         $config = RelevanceAnalysisConfig::first();
-        $host = config('database.host');
-        $db_name = config('database.database');
-        $user = config('database.username');
-        $password = config('database.password');
-        $connection = mysqli_connect($host, $user, $password, $db_name);
+        $tableName = 'relevance_history_result';
 
-        $query = 'SELECT table_name AS `Table`,
-                        round(((data_length + index_length) / 1024 / 1024), 2)
-                    FROM information_schema.TABLES
-                    WHERE table_name = "relevance_history_result";';
-        $result = mysqli_query($connection, $query);
-        $result = $result->fetch_assoc();
+        $result = DB::select("SELECT table_name AS `Table`,
+        ROUND(((data_length + index_length) / 1024 / 1024), 2)
+        FROM information_schema.TABLESWHERE table_name = ?", [$tableName]);
 
         return view('relevance-analysis.relevance-config', [
             'admin' => true,
