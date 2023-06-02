@@ -4,21 +4,21 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class SearchIndices extends Command
+class SearchIndicesCount extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'search-indices:start';
+    protected $signature = 'search-indices:count';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Show count records from search_indices table';
 
     /**
      * Create a new command instance.
