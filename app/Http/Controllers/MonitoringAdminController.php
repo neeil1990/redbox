@@ -61,6 +61,7 @@ class MonitoringAdminController extends Controller
             ['type' => 'number', 'name' => 'pagination_query', 'label' => 'Количество элементов на странице запросы', 'placeholder' => '100'],
             ['type' => 'time', 'name' => 'data_projects', 'label' => 'Обновление данных проекты', 'placeholder' => 'Format time 24Hr'],
             ['type' => 'textarea', 'name' => 'ignored_domains', 'label' => 'Игнорируемые домены (Мои конкуренты)', 'placeholder' => 'example.com'],
+            ['type' => 'number', 'name' => 'search_indices_days_delete', 'label' => 'Оставить записи в таблице  search_indices, количество дней', 'placeholder' => '180'],
         ]);
     }
 
