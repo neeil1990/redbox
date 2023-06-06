@@ -29,6 +29,7 @@ define([
         popupInstance = showPopup(settings.template(settings.templateData));
 
         function showPopup(renderedTemplate) {
+
             var popupModal;
             var PopupModal = Backbone.Modal.extend({
                 template: renderedTemplate,
