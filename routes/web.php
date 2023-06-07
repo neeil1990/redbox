@@ -391,8 +391,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 });
-
-Route::get('/test', function (){
-   $t = '{"utm_source":"google","utm_medium":"cpc","utm_campaign":"Osnovnye_zaprosy_Poisk_Desktop_KZ_Gruppa_generator_slov","utm_term_keyword":"%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%20%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D1%85%20%D1%81%D0%BB%D0%BE%D0%B2","utm_content":"654611840144"}';
-   $k = '{"utm_source":"google","utm_medium":"cpc","utm_campaign":"Osnovnye_zaprosy_Poisk_Desktop_KZ_Gruppa_html-redaktor","utm_term_keyword":"%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD%20%D1%80%D0%B5%D0%B4%D0%B0%D0%BA%D1%82%D0%BE%D1%80%20html%20css","utm_content":"654611840138"}';
-});

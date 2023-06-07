@@ -2,7 +2,7 @@
 
 @section('title', __('Users'))
 
-@section('css')
+@slot('css')
     <!-- DataTables -->
     <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
@@ -19,7 +19,7 @@
             min-width: 200px;
         }
     </style>
-@endsection
+@endslot
 
 @section('content')
     <div class="card">
@@ -292,5 +292,10 @@
 
             return container[0].outerHTML;
         }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#app > div > div.card > div.card-header > div > div > button').trigger('click')
+        })
     </script>
 @endsection
