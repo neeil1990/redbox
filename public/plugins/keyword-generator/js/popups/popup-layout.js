@@ -13,6 +13,7 @@ define('popup-layout', [
     var Layout,
         popupLayout;
 
+
     Backbone.Marionette.Renderer.render = function (template, data) {
         if (!template) {
             throw new Backbone.Marionette.Error({
