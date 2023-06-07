@@ -6,7 +6,6 @@ use App\User;
 use App\VisitStatistic;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class FilteredUsersExport implements FromCollection

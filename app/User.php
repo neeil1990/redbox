@@ -111,9 +111,9 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @return void
      */
-    public function sendProfilePasswordResetNotification($request)
+    public function sendProfilePasswordResetNotification($request, $user)
     {
-        $this->notify(new RegisterPasswordEmail($request));
+        $this->notify(new RegisterPasswordEmail($request, $user));
     }
 
     /**
