@@ -71,45 +71,45 @@
             </div>
         </div>
     </div>
+@endsection
 
-    @section('js')
-        <script>
-            if (navigator.language === 'en') {
-                $('#select-language').val('en')
-            } else {
-                $('#select-language').val('ru')
-            }
+@section('js')
+    <script>
+        if (navigator.language === 'en') {
+            $('#select-language').val('en')
+        } else {
+            $('#select-language').val('ru')
+        }
 
-            $(".flags").select2({
-                theme: 'bootstrap4',
-                minimumResultsForSearch: Infinity,
-                templateResult: function (state) {
-                    if (!state.id) {
-                        return state.text;
-                    }
-                    var baseUrl = "/img/flags";
-                    var $state = $(
-                        '<span><img src="' + baseUrl + '/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
-                    );
-                    return $state;
+        $(".flags").select2({
+            theme: 'bootstrap4',
+            minimumResultsForSearch: Infinity,
+            templateResult: function (state) {
+                if (!state.id) {
+                    return state.text;
                 }
-            });
-        </script>
+                var baseUrl = "/img/flags";
+                var $state = $(
+                    '<span><img src="' + baseUrl + '/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
+                );
+                return $state;
+            }
+        });
+    </script>
 
-        <script>
-            $(document).ready(function () {
-                $('#select-language').on('change', function () {
-                    if ($(this).val() === 'en') {
-                        $('#reset-header').html('Reset Password')
-                        $('body > div > div > div.card-body > form > div:nth-child(4) > button').html('Send Password Reset Link')
-                        $('body > div > div > div.card-body > form > div.mt-2 > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Register a new membership')
-                    } else {
-                        $('#reset-header').html('Сброс пароля')
-                        $('body > div > div > div.card-body > form > div:nth-child(4) > button').html('Отправить ссылку для сброса пароля')
-                        $('body > div > div > div.card-body > form > div.mt-2 > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Зарегистрировать нового пользователя')
-                    }
-                })
+    <script>
+        $(document).ready(function () {
+            $('#select-language').on('change', function () {
+                if ($(this).val() === 'en') {
+                    $('#reset-header').html('Reset Password')
+                    $('body > div > div > div.card-body > form > div:nth-child(4) > button').html('Send Password Reset Link')
+                    $('body > div > div > div.card-body > form > div.mt-2 > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Register a new membership')
+                } else {
+                    $('#reset-header').html('Сброс пароля')
+                    $('body > div > div > div.card-body > form > div:nth-child(4) > button').html('Отправить ссылку для сброса пароля')
+                    $('body > div > div > div.card-body > form > div.mt-2 > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Зарегистрировать нового пользователя')
+                }
             })
-        </script>
-    @endsection
+        })
+    </script>
 @endsection

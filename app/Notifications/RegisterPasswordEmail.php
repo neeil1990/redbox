@@ -49,6 +49,7 @@ class RegisterPasswordEmail extends Notification
 
         if ($this->user->lang == 'ru') {
             return (new MailMessage)
+                ->greeting('Здравствуйте!')
                 ->subject(__('Сброс пароля'))
                 ->line('Уведомление о сбросе пароля.')
                 ->line('Ваш новый пароль: ' . $password)
