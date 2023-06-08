@@ -474,7 +474,6 @@ class UsersController extends Controller
             }
         }
 
-
         return view('users.statistics', compact('results'));
     }
 

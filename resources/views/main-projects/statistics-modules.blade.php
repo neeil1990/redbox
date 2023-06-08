@@ -17,7 +17,7 @@
         @foreach($projects as $project)
             <tr>
                 <td>
-                    <a href="{{ $project['link'] }}" target="_blank">{{ $project['title'] }}</a>
+                    <a href="{{ $project['link'] }}" target="_blank">{{ __($project['title']) }}</a>
                 </td>
                 <td>
                     <div
