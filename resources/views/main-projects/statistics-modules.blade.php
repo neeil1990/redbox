@@ -84,6 +84,9 @@
                 options: {
                     title: {
                         display: false,
+                    },
+                    animation: {
+                        duration: 0
                     }
                 }
             });
@@ -101,6 +104,9 @@
                 options: {
                     title: {
                         display: false,
+                    },
+                    animation: {
+                        duration: 0
                     }
                 }
             });
@@ -118,6 +124,9 @@
                 options: {
                     title: {
                         display: false,
+                    },
+                    animation: {
+                        duration: 0
                     }
                 }
             });
