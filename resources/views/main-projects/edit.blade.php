@@ -29,13 +29,12 @@
                         <span class="ui_tooltip_content">
                             Контроллер - связан с модулем, если контроллер указан, тогда для модуля начнёт собираться статистика.<br>
                             Пример: <br>
-                            MyController - <span class="text-muted">Название контроллера</span> <br>
+                            PasswordGeneratorController - <span class="text-muted">Название контроллера</span> <br>
                             @index - <span class="text-muted">Метод, будет накапливать счётчик посещения и обновления страниц</span> <br>
-                            @store - <span class="text-muted">Метод, будет накапливать счётчик посещения и обновления страниц</span> <br>
-                            !getProgress - <span class="text-muted">Метод, который будет игнорироваться</span> <br> <br>
+                            !generatePassword - <span class="text-muted">Метод, который будет накапливать счётчик действий</span> <br> <br>
 
                             <span class="text-muted">Путь до кода - app/Http/Middleware/VisitStatistics.php</span> <br> <br>
-                            <span class="text-info">Методы контроллера которые не были описани при помощи дирректив (@, !) будут накапливать счётчик действий</span>
+                            <span class="text-info">Методы контроллера которые не были описани при помощи дирректив (@, !) будут игнорироваться</span>
                         </span>
                     </span>
                 </span>

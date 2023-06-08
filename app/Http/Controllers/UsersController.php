@@ -9,6 +9,7 @@ use App\Classes\Tariffs\Tariff;
 use App\Common;
 use App\Exports\FilteredUsersExport;
 use App\Exports\VerifiedUsersExport;
+use App\MainProject;
 use App\User;
 use App\VisitStatistic;
 use Carbon\Carbon;
@@ -475,6 +476,50 @@ class UsersController extends Controller
 
 
         return view('users.statistics', compact('results'));
+    }
+
+    public function moduleVisitStatistics()
+    {
+        $projects = MainProject::with('statistics')->get()->toArray();
+        $names = [];
+        $colors = [];
+        $refreshes = [];
+        $actions = [];
+        $seconds = [];
+
+        foreach ($projects as $key => $project) {
+            $sumActions = 0;
+            $sumRefresh = 0;
+            $countSeconds = 0;
+
+            foreach ($project['statistics'] as $statistic) {
+                $sumActions += $statistic['actions_counter'];
+                $sumRefresh += $statistic['refresh_page_counter'];
+                $countSeconds += $statistic['seconds'];
+            }
+
+            $projects[$key]['statistics'] = [
+                'actions_counter' => $sumActions,
+                'refresh_page_counter' => $sumRefresh,
+                'seconds' => $countSeconds,
+            ];
+
+            $names[] = __($project['title']);
+            $colors[] = $project['color'];
+            $actions[] = $sumActions;
+            $refreshes[] = $sumRefresh;
+            $seconds[] = $countSeconds;
+        }
+
+        $colors = json_encode($colors);
+        $names = json_encode($names);
+        $actions = json_encode($actions);
+        $refreshes = json_encode($refreshes);
+        $seconds = json_encode($seconds);
+
+        return view('main-projects.statistics-modules',
+            compact('projects', 'colors', 'names', 'actions', 'refreshes', 'seconds')
+        );
     }
 
     public static function getRoles(array $array): array

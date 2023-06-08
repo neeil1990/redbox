@@ -33,6 +33,7 @@ class VisitStatistics
             if ($controllerAction === 'PublicController@updateStatistics') {
                 return $next($request);
             }
+
             $targetController = class_basename(Route::current()->controller);
             $project = MainProject::where('controller', $controllerAction)
                 ->orWhere('controller', 'like', '%' . $targetController . "\n%")
@@ -59,16 +60,17 @@ class VisitStatistics
                     }
 
                     if ($this->findAction('!', $action, $callAction)) {
+                        $this->updateOrCreateVisitStatistic($project, 'actions_counter');
                         return $next($request);
                     } else if ($this->findAction('@', $action, $callAction)) {
                         $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
                         return $next($request);
                     }
                 }
-
-                $this->updateOrCreateVisitStatistic($project, 'actions_counter');
             }
+
             return $next($request);
+
         } catch (\Throwable $e) {
             Log::debug('visit statistics error', [
                 $e->getMessage(),

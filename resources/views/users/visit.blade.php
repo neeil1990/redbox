@@ -175,8 +175,12 @@
         @slot('js')
             <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
             <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
-            <!-- date-range-picker -->
             <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
+            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
             <script>
                 let startDate = null;
                 let endDate = null;
@@ -276,11 +280,6 @@
                     })
                 });
             </script>
-            <!-- datatables -->
-            <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-            <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-            <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-            <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
             <script>
                 $(document).ready(function () {
                     $('#table').DataTable({
@@ -301,8 +300,6 @@
                     })
                 })
             </script>
-            <!-- Charts -->
-            <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
             <script>
                 let anotherChart
                 let historyChart
@@ -478,6 +475,6 @@
             </script>
         @endslot
     @else
-        Нет данных
+        {{ __('No records') }}
     @endif
 @endcomponent

@@ -40,7 +40,9 @@
                         <a type="button" class="dropdown-item" data-toggle="modal"
                            data-target="#assignTariffModal">{{ __('Assign tariff')  }}</a>
                         <a href="{{ route('users.statistics') }}"
-                           class="dropdown-item">{{ __('General statistics of visits') }}</a>
+                           class="dropdown-item">{{ __('General statistics users') }}</a>
+                        <a href="{{ route('statistics.modules') }}"
+                           class="dropdown-item">{{ __('General statistics modules') }}</a>
                     </div>
                 </div>
             </div>
