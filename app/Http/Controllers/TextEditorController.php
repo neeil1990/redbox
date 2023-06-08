@@ -111,6 +111,7 @@ class TextEditorController extends Controller
     public function destroyProject(string $id): RedirectResponse
     {
         Project::destroy($id);
+
         flash()->overlay(__('Project was successfully deleted'), ' ')
             ->success();
 
@@ -236,9 +237,11 @@ class TextEditorController extends Controller
      */
     public static function saveDescription($description, $id)
     {
-        $projectDescription = new ProjectDescription();
-        $projectDescription->description = $description;
-        $projectDescription->project_id = $id;
+        $projectDescription = new ProjectDescription([
+            'description' => $description,
+            'project_id' => $id,
+        ]);
+
         $projectDescription->save();
     }
 

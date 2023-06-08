@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\DB;
 class MonitoringController extends Controller
 {
     protected $user;
+
     protected $subtractionMonths = [0, 1, 3, 6, 12];
 
     /**

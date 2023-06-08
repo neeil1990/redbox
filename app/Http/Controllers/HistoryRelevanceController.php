@@ -82,11 +82,9 @@ class HistoryRelevanceController extends Controller
 
     public function editGroupName(Request $request): JsonResponse
     {
-        $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
-
-        $project->group_name = $request->name;
-
-        $project->save();
+        ProjectRelevanceHistory::where('id', '=', $request->id)->update([
+            'group_name' => $request->name
+        ]);
 
         return response()->json([]);
     }

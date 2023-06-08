@@ -30,18 +30,39 @@
         @endforeach
         </tbody>
     </table>
-    <div class="d-flex mt-5">
-        <div class="col-4 text-center">
-            <h3>Счётчик действий</h3>
-            <canvas id="doughnut-actions-chart" style="position: relative; width: 100%"></canvas>
+    <div class="card mt-5">
+        <div class="card-header d-flex p-0">
+            <h3 class="card-title p-3">Графики</h3>
+            <ul class="nav nav-pills ml-auto p-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="#tab_1" data-toggle="tab">Счётчик действий</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#tab_2" data-toggle="tab">Счётчик обновлений страниц</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#tab_3" data-toggle="tab">Счётчик времени проведённого в модулях</a>
+                </li>
+            </ul>
         </div>
-        <div class="col-4 text-center">
-            <h3>Счётчик обновлений страниц</h3>
-            <canvas id="doughnut-refreshes-chart" style="position: relative; width: 100%"></canvas>
-        </div>
-        <div class="col-4 text-center">
-            <h3>Счётчик проведённого времени</h3>
-            <canvas id="doughnut-times-chart" style="position: relative; width: 100%"></canvas>
+        <div class="card-body">
+            <div class="tab-content">
+                <div class="tab-pane" id="tab_1">
+                    <div class="w-50 ml-auto mr-auto">
+                        <canvas id="doughnut-actions-chart"></canvas>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_2">
+                    <div class="w-50 ml-auto mr-auto">
+                        <canvas id="doughnut-refreshes-chart"></canvas>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_3">
+                    <div class="w-50 ml-auto mr-auto">
+                        <canvas id="doughnut-times-chart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

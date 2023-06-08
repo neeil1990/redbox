@@ -37,6 +37,7 @@ class UniqueWordsController extends Controller
     {
         $listWords = self::stringToCollectionWords($request->phrases);
         $listWordsWithKeys = self::addKeysInCollect($listWords);
+
         return response()->json([
             'list' => $listWordsWithKeys[0],
             'length' => $listWordsWithKeys[1]
