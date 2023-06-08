@@ -7,6 +7,7 @@
         <thead>
         <tr>
             <th>Модуль</th>
+            <th>Ссылка на статистику модуля</th>
             <th>Цвет</th>
             <th>Количество действий</th>
             <th>Количество обновлений страницы</th>
@@ -18,6 +19,10 @@
             <tr>
                 <td>
                     <a href="{{ $project['link'] }}" target="_blank">{{ __($project['title']) }}</a>
+                </td>
+                <td>
+                    <a class="btn btn-default" href="{{ route('main-projects.statistics', $project['id'])}}"
+                       target="_blank">Статистика</a>
                 </td>
                 <td>
                     <div
@@ -133,8 +138,7 @@
         </script>
         <script>
             $('#table').DataTable({
-                orderCellsTop: true,
-                fixedHeader: true,
+                order: [[5, 'desc']],
                 lengthMenu: [10, 25, 50, 100],
                 pageLength: 25,
                 dom: 'lBfrtip',
