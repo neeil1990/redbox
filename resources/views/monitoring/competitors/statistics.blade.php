@@ -1104,7 +1104,13 @@
 
                             removeErrorResults()
                         } else if (response.state === 'in process') {
-                            $('#analyse-in-queue-' + recordId).children('td').eq(2).html("{{ __('In process') }}" + ' <img src="/img/1485.gif" style="width: 20px; height: 20px;">')
+                            $('#analyse-in-queue-' + recordId).children('td').eq(2).html(
+                                "{{ __('In process') }}" +
+                                ' <img src="/img/1485.gif" style="width: 20px; height: 20px;">' +
+                                '<button class="btn btn-default remove-error-results" data-id="' + recordId + '">' +
+                                '    <i class="fa fa-trash"></i>' +
+                                '</button>'
+                            )
                             setTimeout(() => {
                                 waitFinishAnalyse(recordId)
                             }, 10000)
@@ -1123,6 +1129,5 @@
                 })
             }
         </script>
-
     @endslot
 @endcomponent
