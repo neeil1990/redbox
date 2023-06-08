@@ -40,6 +40,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('main-projects', 'MainProjectsController');
     Route::get('/main-projects/statistics/{project}', 'MainProjectsController@statistics')->name('main-projects.statistics');
+    Route::get('/modules-statistics/', 'MainProjectsController@moduleVisitStatistics')->name('statistics.modules');
     Route::post('/update-statistics', 'PublicController@updateStatistics')->name('update.statistics');
 
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
@@ -49,7 +50,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/get-data-range-visit-statistics/{user}', 'UsersController@getDateRangeVisitStatistics')->name('visit.statistics.date.range');
     Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
     Route::get('/visits-statistics/', 'UsersController@userVisitStatistics')->name('users.statistics');
-    Route::get('/modules-statistics/', 'UsersController@moduleVisitStatistics')->name('statistics.modules');
     Route::post('users/tariff', 'UsersController@storeTariff')->name('users.tariff');
     Route::resource('users', 'UsersController');
 
