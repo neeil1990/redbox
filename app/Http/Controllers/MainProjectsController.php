@@ -6,6 +6,7 @@ use App\Common;
 use App\MainProject;
 use App\User;
 use App\VisitStatistic;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -81,11 +82,11 @@ class MainProjectsController extends Controller
         return redirect()->route('main-projects.index');
     }
 
-    public function destroy($id): RedirectResponse
+    public function destroy($id): JsonResponse
     {
         MainProject::where('id', $id)->delete();
 
-        return redirect()->route('main-projects.index');
+        return response()->json([], 200);
     }
 
     public function statistics(MainProject $project)

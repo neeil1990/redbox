@@ -12,7 +12,7 @@
             <table class="table-bordered table-striped">
                 <thead>
                 <tr>
-                    <th>id</th>
+                    <th>№</th>
                     <th>Позиция</th>
                     <th>Уровни доступа</th>
                     <th>icon</th>
@@ -39,13 +39,9 @@
                                style="display: inline;">
                                 <i class="fa fa-edit"></i>
                             </a>
-                            <form action="{{ route('main-projects.destroy', $row->id)}}" method="post"
-                                  style="display: inline;">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-default mr-1" type="submit">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
+                            <button class="btn btn-default mr-1 remove-project" data-id="{{ $row->id }}">
+                                <i class="fa fa-trash"></i>
+                            </button>
                             @if(isset($row->controller))
                                 <a href="{{ route('main-projects.statistics', $row->id)}}" class="btn btn-default"
                                    style="display: inline;">
@@ -60,4 +56,26 @@
             <a href="{{ route('main-projects.create')}}" class="btn btn-secondary mt-3 mb-5">{{ __('Create new') }}</a>
         </div>
     @endsection
+
+    @slot('js')
+        <script>
+            $('.remove-project').on('click', function () {
+                let id = $(this).attr('data-id')
+                let parent = $(this).parents().eq(1)
+                let bool = confirm('Вы дейсвительно хотите удалить проект?')
+
+                if (bool) {
+                    let url = 'main-projects/' + id
+
+                    $.ajax({
+                        type: 'DELETE',
+                        url: url,
+                        success: function () {
+                            parent.remove()
+                        }
+                    })
+                }
+            })
+        </script>
+    @endslot
 @endcomponent

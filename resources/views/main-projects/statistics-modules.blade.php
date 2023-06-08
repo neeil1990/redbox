@@ -41,7 +41,7 @@
                     <a class="nav-link" href="#tab_2" data-toggle="tab">Счётчик обновлений страниц</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#tab_3" data-toggle="tab">Счётчик времени проведённого в модулях</a>
+                    <a class="nav-link" href="#tab_3" data-toggle="tab">Счётчик времени проведённого в модулях (сек)</a>
                 </li>
             </ul>
         </div>
