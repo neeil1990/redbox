@@ -598,9 +598,9 @@ class MonitoringController extends Controller
             return abort(403);
         }
 
-//        MonitoringCompetitor::where('monitoring_project_id', $request->projectId)
-//            ->where('url', $request->url)
-//            ->delete();
+        MonitoringCompetitor::where('monitoring_project_id', $request->projectId)
+            ->where('url', $request->url)
+            ->delete();
 
         return response()->json([], 200);
     }
