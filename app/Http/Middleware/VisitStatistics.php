@@ -51,7 +51,8 @@ class VisitStatistics
             Log::debug('$callAction', [$callAction]);
 
             foreach ($config as $action) {
-                Log::debug('$action', [$action]);
+                $action = str_replace("\r", "", $action);
+
                 if (explode('@', $action)[0] !== $targetController && explode('!', $action)[0] !== $targetController) {
                     continue;
                 }
