@@ -76,8 +76,9 @@ class PublicController extends Controller
     {
         $targetController = explode('@', $request->controllerAction)[0];
         $project = MainProject::Where('controller', 'like', "%" . $targetController . '@%')->first();
+        Log::debug('$targetController', [$targetController]);
         Log::debug('project', [$project]);
-        Log::debug('seconds', [$request->seconds]);
+        Log::debug('project', [$request->seconds]);
 
         if (isset($project)) {
             VisitStatistic::where('project_id', $project->id)
