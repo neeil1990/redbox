@@ -35,7 +35,12 @@ class VisitStatistics
             }
 
             $targetController = class_basename(Route::current()->controller);
+
+            Log::debug('$targetController', [$targetController]);
+
             $project = MainProject::where('controller', 'like', "%" . $targetController . '%')->first();
+
+            Log::debug('$project', [$project]);
 
             if (empty($project)) {
                 return $next($request);
@@ -43,8 +48,10 @@ class VisitStatistics
 
             $config = explode("\n", $project->controller);
             $callAction = last(explode('@', Route::current()->action['controller']));
+            Log::debug('$callAction', [$callAction]);
 
             foreach ($config as $action) {
+                Log::debug('$action', [$action]);
                 if (explode('@', $action)[0] !== $targetController && explode('!', $action)[0] !== $targetController) {
                     continue;
                 }
@@ -55,12 +62,9 @@ class VisitStatistics
 
                 if ($this->findAction('!', $action, $callAction)) {
                     $this->updateOrCreateVisitStatistic($project, 'actions_counter');
-
                     return $next($request);
-
                 } else if ($this->findAction('@', $action, $callAction)) {
                     $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
-
                     return $next($request);
                 }
             }
