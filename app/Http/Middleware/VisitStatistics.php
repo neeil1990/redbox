@@ -35,37 +35,33 @@ class VisitStatistics
             }
 
             $targetController = class_basename(Route::current()->controller);
-            $project = MainProject::where('controller', $controllerAction)
-                ->orWhere('controller', 'like', '%' . $targetController . "\n%")
-                ->orWhere('controller', 'like', "%\n" . $targetController . '%')
-                ->first();
+            $project = MainProject::where('controller', 'like', "%" . $targetController . '%')->first();
 
             if (empty($project)) {
                 return $next($request);
             }
 
-            if ($project->controller === $controllerAction) {
-                $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
-            } else {
-                $config = explode("\r\n", $project->controller);
-                $callAction = last(explode('@', Route::current()->action['controller']));
+            $config = explode("\n", $project->controller);
+            $callAction = last(explode('@', Route::current()->action['controller']));
 
-                foreach ($config as $action) {
-                    if (explode('@', $action)[0] !== $targetController && explode('!', $action)[0] !== $targetController) {
-                        continue;
-                    }
-                    $action = str_replace($targetController, '', $action);
-                    if ($action === '') {
-                        continue;
-                    }
+            foreach ($config as $action) {
+                if (explode('@', $action)[0] !== $targetController && explode('!', $action)[0] !== $targetController) {
+                    continue;
+                }
+                $action = str_replace($targetController, '', $action);
+                if ($action === '') {
+                    continue;
+                }
 
-                    if ($this->findAction('!', $action, $callAction)) {
-                        $this->updateOrCreateVisitStatistic($project, 'actions_counter');
-                        return $next($request);
-                    } else if ($this->findAction('@', $action, $callAction)) {
-                        $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
-                        return $next($request);
-                    }
+                if ($this->findAction('!', $action, $callAction)) {
+                    $this->updateOrCreateVisitStatistic($project, 'actions_counter');
+
+                    return $next($request);
+
+                } else if ($this->findAction('@', $action, $callAction)) {
+                    $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
+
+                    return $next($request);
                 }
             }
 

@@ -27,7 +27,7 @@ class PublicController extends Controller
         $behavior = Behavior::findOrFail($id);
         $phrases = $behavior->phrases()->where('status', 0)->first();
 
-        if(!$phrases){
+        if (!$phrases) {
             Session::flash('adding_phrases', __('Please adding phrases.'));
             return redirect()->route('behavior.edit', [$id]);
         }
@@ -74,11 +74,8 @@ class PublicController extends Controller
 
     public function updateStatistics(Request $request)
     {
-        $project = MainProject::where('controller', $request->controllerAction)
-            ->orWhere('controller', 'like', '%' . $request->controllerAction . "\n%")
-            ->orWhere('controller', 'like', "%\n" . $request->controllerAction . '%')
-            ->first();
-
+        $targetController = explode('@', $request->controllerAction)[0];
+        $project = MainProject::Where('controller', 'like', "%" . $targetController . '@%')->first();
 
         if (isset($project)) {
             VisitStatistic::where('project_id', $project->id)

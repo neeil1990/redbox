@@ -11,7 +11,7 @@
             }
         </style>
     @endslot
-    {!! Form::open(['action' =>'DomainMonitoringController@store', 'method' => 'POST'])!!}
+    {!! Form::open(['action' =>'MonitoringDomainController@store', 'method' => 'POST'])!!}
     <div class='col-md-6 mt-3'>
         <div class='form-group required'>
             {!! Form::label(__('Project name')) !!}
