@@ -427,7 +427,7 @@ class MonitoringController extends Controller
         $countQuery = count($project->keywords);
         $navigations = $this->navigations($project);
         $ignoredDomains = MonitoringSettings::where('name', '=', 'ignored_domains')->first('value');
-        $competitors = $project->competitors->pluck('url')->toArray();
+        $competitors = $project->competitors->toArray();
 
         if (isset($ignoredDomains)) {
             $ignoredDomains = $ignoredDomains['value'];
@@ -598,9 +598,9 @@ class MonitoringController extends Controller
             return abort(403);
         }
 
-        MonitoringCompetitor::where('monitoring_project_id', $request->projectId)
-            ->where('url', $request->url)
-            ->delete();
+//        MonitoringCompetitor::where('monitoring_project_id', $request->projectId)
+//            ->where('url', $request->url)
+//            ->delete();
 
         return response()->json([], 200);
     }

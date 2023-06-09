@@ -144,16 +144,7 @@
         @endforeach
     </div>
 
-    <div class="d-flex flex-row mb-3 mt-3 btn-group col-4 p-0">
-        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
-            {{ __('My competitors') }}
-        </a>
-        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
-            {{ __('Comparison with competitors') }}
-        </a>
-    </div>
-
-    <div class="row mt-5 ">
+    <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
