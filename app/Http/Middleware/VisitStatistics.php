@@ -38,7 +38,7 @@ class VisitStatistics
 
             Log::debug('$targetController', [$targetController]);
 
-            $project = MainProject::where('controller', 'like', "%" . $targetController . '%')->first();
+            $project = MainProject::where('controller', 'like', '%' . $controllerAction . '%')->first();
 
             Log::debug('$project', [$project]);
 
