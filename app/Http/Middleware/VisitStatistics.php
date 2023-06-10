@@ -36,11 +36,7 @@ class VisitStatistics
 
             $targetController = class_basename(Route::current()->controller);
 
-            Log::debug('$targetController', [$targetController]);
-
             $project = MainProject::where('controller', 'like', '%' . $controllerAction . '%')->first();
-
-            Log::debug('$project', [$project]);
 
             if (empty($project)) {
                 return $next($request);
@@ -48,7 +44,6 @@ class VisitStatistics
 
             $config = explode("\n", $project->controller);
             $callAction = last(explode('@', Route::current()->action['controller']));
-            Log::debug('$callAction', [$callAction]);
 
             foreach ($config as $action) {
                 $action = str_replace("\r", "", $action);
