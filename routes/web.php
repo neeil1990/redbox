@@ -11,6 +11,7 @@
 |
 */
 
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -390,4 +391,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
+});
+
+Route::get('/test', function () {
+    dd(TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit('https://dostupsreda.ru/catalog/glavnaya-kategoriya/lestnichnye-podemniki/gusenichnye-podemniki')));
+//    https://dostupsreda.ru/catalog/glavnaya-kategoriya/lestnichnye-podemniki/gusenichnye-podemniki
 });
