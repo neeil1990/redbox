@@ -187,6 +187,8 @@ class TextAnalyzer extends Model
         $document->removeElements('[style="display: none;"]');
         $document->removeElements('.js_img-for-color.hidden');
         $document->removeElements('link');
+        $document->removeElements('style');
+        $document->removeElements('meta');
         $document->removeElements('script');
         $document->removeElements('path');
         $document->removeElements('noscript');
