@@ -516,7 +516,7 @@
                                     <button class="btn btn-secondary"
                                             data-target="#startThroughScan{{ $item->id }}"
                                             data-toggle="modal" data-placement="top">
-                                        {{ __('Analysis of end-to-end words') }}
+                                        {{ __('Analysis of end-to-end') }}
                                     </button>
 
                                     @isset($item->though)
