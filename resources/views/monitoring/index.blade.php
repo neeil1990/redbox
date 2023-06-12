@@ -375,7 +375,7 @@
 
                     let updatedDateText = json.updatedDate;
                     let dataTimeCache = $('<span />', {class: "data-time-cache"}).html(updatedDateText);
-                    let CacheText = `Сводные данные в таблице актуальны на дату: ${dataTimeCache[0].outerHTML} `;
+                    let CacheText = `{{ __('The summary data in the table is current as of the date:') }}${dataTimeCache[0].outerHTML} `;
                     let updateCacheIcon = $('<i />', {class: "fas fa-sync-alt"});
                     let updateCacheButton = $('<a />', {
                         class: "text-muted",

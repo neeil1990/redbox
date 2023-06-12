@@ -19,8 +19,8 @@
                 <table class="table table-bordered table-hover table-sm">
                     <thead>
                         <tr>
-                            <th>Дата обновления</th>
-                            <th class="tooltip-child-table" title="В этом столбце средняя позиция по поисковой системе определенного региона/города. Мы ее считаем классическим способом: сумма всех позиций, разделенная на количество слов. Благодаря группировке по регионам и дням, Вы сможете увидеть ее динамику. Чем ближе среднее значение к 1, тем лучше.">Средняя позиция <i class="far fa-question-circle"></i></th>
+                            <th>{{ __('Update date') }}</th>
+                            <th class="tooltip-child-table" title="{{ __('In this column, the average position on the search engine of a certain region/city. We consider it in the classical way: the sum of all positions divided by the number of words. Thanks to grouping by region and day, you will be able to see its dynamics. The closer the average value is to 1, the better.') }}">Средняя позиция <i class="far fa-question-circle"></i></th>
                             <th class="tooltip-child-table" title="В столбцах ТОП Вы увидите результат в процентах, какое количество слов попадает в ТОП 3/5/10/30/100. Чем выше процент фраз, тем лучше. Благодаря группировке по регионам и дням, Вы сможете увидеть ее динамику в сравнении с 30/90/180/365 днями ранее, если результат за этот период есть в системе.">ТОП-1 <i class="far fa-question-circle"></i></th>
                             <th>ТОП-3</th>
                             <th>ТОП-5</th>
