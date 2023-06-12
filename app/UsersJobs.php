@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Log;
 
 class UsersJobs extends Model
 {
@@ -19,6 +20,7 @@ class UsersJobs extends Model
     {
         $job = UsersJobs::firstOrNew(['user_id' => $userId]);
 
+        Log::debug('job', [$job]);
         if (isset($job)) {
             if ($job->count_jobs <= 10) {
                 $priority = 'high';

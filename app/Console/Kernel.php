@@ -50,7 +50,7 @@ class Kernel extends ConsoleKernel
         // auto update positions in monitoring module
         $this->autoUpdateMonitoringPositions($schedule);
 
-        $schedule->call(function (){
+        $schedule->call(function () {
             (new ProjectDataTableUpdateDB(MonitoringProject::all()))->save();
         })->dailyAt(MonitoringSettings::getValue('data_projects') ?: '00:00');
 
@@ -61,13 +61,13 @@ class Kernel extends ConsoleKernel
     private function autoUpdateMonitoringPositions($schedule)
     {
         $engines = MonitoringSearchengine::where('auto_update', true)->get();
-        if($engines->isNotEmpty()){
+        if ($engines->isNotEmpty()) {
 
-            foreach ($engines as $engine){
+            foreach ($engines as $engine) {
 
                 $time = explode(':', $engine->time ?? '00:00');
-                $hour = (int) $time[0];
-                $minute = (int) $time[1];
+                $hour = (int)$time[0];
+                $minute = (int)$time[1];
 
                 $weekdays = ($engine->weekdays) ? implode(',', $engine->weekdays) : '*';
 
