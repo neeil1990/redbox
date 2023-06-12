@@ -439,7 +439,7 @@
                         <tbody>
                         @foreach($main as $item)
                             <tr id="story-id-{{ $item->id }}">
-                                <td>
+                                <td data-order="{{ $item->name }}">
                                     <a href="#history_table_{{ $item->name }}"
                                        class="project_name"
                                        style="cursor:pointer;"
@@ -487,7 +487,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td id="project-{{ $item->id }}">
+                                <td id="project-{{ $item->id }}" data-order="{{ count($item->relevanceTags) }}">
                                     @foreach($item->relevanceTags as $tag)
                                         <div style="color: {{ $tag->color }}"
                                              id="tag-{{ $tag->id }}-item-{{ $item->id }}">

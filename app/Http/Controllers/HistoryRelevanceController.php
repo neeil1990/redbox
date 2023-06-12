@@ -29,7 +29,7 @@ class HistoryRelevanceController extends Controller
     {
         $config = RelevanceAnalysisConfig::first();
         $tags = RelevanceTags::where('user_id', '=', Auth::id())->get();
-        $projects = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
+        $projects = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->with('relevanceTags')->get();
         $admin = User::isUserAdmin();
 
         return view('relevance-analysis.history', [
