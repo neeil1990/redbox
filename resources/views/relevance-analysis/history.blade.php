@@ -426,14 +426,14 @@
                            class="table table-bordered table-hover dtr-inline no-footer dataTable mb-3">
                         <thead>
                         <tr>
-                            <th class="table-header">{{ __('Project name') }}</th>
+                            <th class="table-header col-3">{{ __('Project name') }}</th>
                             <th class="table-header col-2">{{ __('Tags') }}</th>
-                            <th class="table-header">{{ __('Number of analyzed pages') }}</th>
+                            <th class="table-header col-2">{{ __('Number of analyzed pages') }}</th>
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
-                            <th class="table-header col-3">{{ __('end-to-end analysis') }}</th>
-                            <th class="table-header col-3">{{ __('Last check') }}</th>
+                            <th class="table-header col-2">{{ __('end-to-end analysis') }}</th>
+                            <th class="table-header col-1">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -446,44 +446,46 @@
                                        data-order="{{ $item->id }}">
                                         {{ $item->name }}
                                     </a>
+                                    <div>
 
-                                    <i class="fa fa-table project_name"
-                                       data-order="{{ $item->id }}"
-                                       style="opacity: 0.6; cursor:pointer;"></i>
+                                        <i class="fa fa-table project_name"
+                                           data-order="{{ $item->id }}"
+                                           style="opacity: 0.6; cursor:pointer;"></i>
 
-                                    <i class="fa fa-list project_name_v2"
-                                       data-order="{{ $item->id }}"
-                                       style="opacity: 0.6; cursor:pointer;"></i>
+                                        <i class="fa fa-list project_name_v2"
+                                           data-order="{{ $item->id }}"
+                                           style="opacity: 0.6; cursor:pointer;"></i>
 
-                                    <div class="dropdown" style="display: inline">
-                                        <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
-                                           aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <div class="dropdown" style="display: inline">
+                                            <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
+                                               aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <span class="dropdown-item project_name"
                                                   style="cursor:pointer;"
                                                   data-order="{{ $item->id }}">
                                                 <i class="fa fa-table"></i>
                                                 {{ __('Show the results of the analysis') }}
                                             </span>
-                                            <span class="dropdown-item project_name_v2"
-                                                  style="cursor:pointer;"
-                                                  data-order="{{ $item->id }}">
+                                                <span class="dropdown-item project_name_v2"
+                                                      style="cursor:pointer;"
+                                                      data-order="{{ $item->id }}">
                                                 <i class="fa fa-list"></i>
                                                 {{ __('View the results in a list') }}
                                             </span>
-                                            <span class="dropdown-item"
-                                                  style="cursor:pointer;"
-                                                  data-toggle="modal" data-target="#removeModal{{ $item->id }}">
+                                                <span class="dropdown-item"
+                                                      style="cursor:pointer;"
+                                                      data-toggle="modal" data-target="#removeModal{{ $item->id }}">
                                                 <i class="fa fa-trash"></i>
                                                 {{ __('Delete results without comments') }}
                                             </span>
-                                            <span class="dropdown-item"
-                                                  style="cursor:pointer;"
-                                                  data-toggle="modal"
-                                                  data-target="#removeWithFiltersModal{{ $item->id }}">
+                                                <span class="dropdown-item"
+                                                      style="cursor:pointer;"
+                                                      data-toggle="modal"
+                                                      data-target="#removeWithFiltersModal{{ $item->id }}">
                                                 <i class="fa fa-trash"></i>
                                                 {{ __('Delete using filters') }}
                                             </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -500,7 +502,7 @@
                                         </div>
                                     @endforeach
                                 </td>
-                                <td class="col-2" data-order="{{ $item->count_sites }}">
+                                <td data-order="{{ $item->count_sites }}">
                                     <span class="count-sites-{{ $item->id }}">
                                         {{ $item->count_sites }}
                                     </span>
@@ -509,9 +511,9 @@
                                        data-toggle="modal" data-placement="top"
                                        title="{{ __('restart analyzed pages') }}"></i>
                                 </td>
-                                <td class="col-2 count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
-                                <td class="col-2 total-points-{{ $item->id }}">{{ $item->total_points }}</td>
-                                <td class="col-2 total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
+                                <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
+                                <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
+                                <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
                                 <td>
                                     <button class="btn btn-secondary"
                                             data-target="#startThroughScan{{ $item->id }}"
