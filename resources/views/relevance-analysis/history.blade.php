@@ -432,7 +432,7 @@
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
-                            <th class="table-header">{{ __('end-to-end analysis') }}</th>
+                            <th class="table-header col-4">{{ __('end-to-end analysis') }}</th>
                             <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
