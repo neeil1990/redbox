@@ -8,6 +8,7 @@ use App\MainProject;
 use App\VisitStatistic;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -72,7 +73,7 @@ class PublicController extends Controller
         return $phrases;
     }
 
-    public function updateStatistics(Request $request)
+    public function updateStatistics(Request $request): JsonResponse
     {
         $targetController = explode('@', $request->controllerAction)[0];
         $project = MainProject::Where('controller', 'like', "%" . $targetController . '@%')->first();
@@ -83,5 +84,7 @@ class PublicController extends Controller
                 ->where('date', Carbon::now()->toDateString())
                 ->increment('seconds', $request->seconds);
         }
+
+        return response()->json([], 200);
     }
 }

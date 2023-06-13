@@ -36,7 +36,8 @@ class VisitStatistics
 
             $targetController = class_basename(Route::current()->controller);
 
-            $project = MainProject::where('controller', 'like', '%' . $controllerAction . '%')->first();
+            $project = MainProject::where('controller', 'like', '%' . $targetController . '%')
+                ->first();
 
             if (empty($project)) {
                 return $next($request);
