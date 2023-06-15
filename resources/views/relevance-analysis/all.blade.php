@@ -64,16 +64,14 @@
                         <a href="{{ route('access.project') }}"
                            class="nav-link">{{ __('Projects available to you') }}</a>
                     </li>
-                    @if($admin)
-                        <li class="nav-item">
-                            <a class="nav-link active"
-                               href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link admin-link"
-                               href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
-                        </li>
-                    @endif
+                    <li class="nav-item">
+                        <a class="nav-link active"
+                           href="{{ route('all.relevance.projects') }}">{{ __('Statistics') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-link"
+                           href="{{ route('show.config') }}">{{ __('Module administration') }}</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -87,43 +85,63 @@
                                    class="table table-bordered table-hover dataTable dtr-inline mb-5">
                                 <tbody>
                                 <tr>
-                                    <th class="col-10">{{ __('Number of checks for the current day') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Number of checks for the current day') }}</b>
+                                    </td>
                                     <td> {{ $statistics['toDay']['count_checks'] ?? 0 }} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Number of checks for the current month') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Number of checks for the current month') }}</b>
+                                    </td>
                                     <td> {{ $statistics['month']}} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Number of errors for the current day') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Number of errors for the current day') }}</b>
+                                    </td>
                                     <td> {{ $statistics['toDay']['count_fails'] ?? 0 }} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Number of projects') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Number of projects') }}</b>
+                                    </td>
                                     <td> {{ $statistics['countProjects']}} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Number of saved scan results') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Number of saved scan results') }}</b>
+                                    </td>
                                     <td> {{ $statistics['countSavedResults']}} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Number of unique landing pages') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Number of unique landing pages') }}</b>
+                                    </td>
                                     <td> {{ $statistics['pages'] }} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Number of unique landing domains') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Number of unique landing domains') }}</b>
+                                    </td>
                                     <td> {{ $statistics['domains'] }} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Total number of unique analyzed domains') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Total number of unique analyzed domains') }}</b>
+                                    </td>
                                     <td> {{ $statistics['allDomains'] }} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Total number of unique analyzed sites') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Total number of unique analyzed sites') }}</b>
+                                    </td>
                                     <td> {{ $statistics['allPages'] }} </td>
                                 </tr>
                                 <tr>
-                                    <th class="col-10">{{ __('Number of tasks in the queue') }}</th>
+                                    <td class="col-10">
+                                        <b>{{ __('Number of tasks in the queue') }}</b>
+                                    </td>
                                     <td id="countJobs"> {{ $statistics['countJobs'] }} </td>
                                 </tr>
                                 </tbody>
@@ -145,7 +163,7 @@
                                 </thead>
                                 <tbody id="user_jobs_table_body">
                                 @foreach($usersJobs as $job)
-                                    <tr class="job-row">
+                                    <tr class="joFb-row">
                                         <td>
                                             {{ $job->user->email }}
                                             <div class="text-muted">
@@ -182,12 +200,9 @@
                         @foreach($projects as $item)
                             <tr id="story-id-{{ $item->id }}">
                                 <td>
-                                    <a href="#history_table_{{ $item->name }}"
-                                       class="project_name"
-                                       style="cursor:pointer;"
-                                       data-order="{{ $item->id }}">
+                                    <span data-order="{{ $item->name }}">
                                         {{ $item->name }}
-                                    </a>
+                                    </span>
 
                                     <i class="fa fa-table project_name"
                                        data-order="{{ $item->id }}"
@@ -196,6 +211,7 @@
                                     <i class="fa fa-list project_name_v2"
                                        data-order="{{ $item->id }}"
                                        style="opacity: 0.6; cursor:pointer;"></i>
+
                                     <div class="dropdown" style="display: inline">
                                         <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
                                            aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
@@ -227,7 +243,6 @@
                                             </span>
                                         </div>
                                     </div>
-
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
@@ -881,11 +896,6 @@
         <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-        <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
             let words = {
                 search: "{{ __('Search') }}",
@@ -1464,10 +1474,6 @@
             let usersProjects = $('#users_projects').DataTable({
                 order: [[0, "desc"]],
                 pageLength: 10,
-                dom: 'lBfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel'
-                ],
                 language: {
                     paginate: {
                         "first": "«",
