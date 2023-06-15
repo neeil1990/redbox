@@ -116,33 +116,31 @@
         </style>
     @endslot
 
-    @section('content')
-        <div>
-            <h3 class="mb-3">{{ $request['region'] }}</h3>
-            <div id="history-block">
-                <div class="mb-2 btn-group" id="visibility-buttons">
-                    <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
-                        {{ __('Domain') }}
-                    </button>
-                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                        {{ __('Average position') }}
-                    </button>
-                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                        {{ __('Top') }} 3
-                    </button>
-                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                        {{ __('Top') }} 10
-                    </button>
-                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                        {{ __('Top') }} 100
-                    </button>
-                    <button data-action="off" class="btn btn-default btn-sm" id="switch-color">
-                        {{ __('Turn off the coloring') }}
-                    </button>
-                </div>
+    <div>
+        <h3 class="mb-3">{{ $request['region'] }}</h3>
+        <div id="history-block">
+            <div class="mb-2 btn-group" id="visibility-buttons">
+                <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
+                    {{ __('Domain') }}
+                </button>
+                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                    {{ __('Average position') }}
+                </button>
+                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                    {{ __('Top') }} 3
+                </button>
+                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                    {{ __('Top') }} 10
+                </button>
+                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                    {{ __('Top') }} 100
+                </button>
+                <button data-action="off" class="btn btn-default btn-sm" id="switch-color">
+                    {{ __('Turn off the coloring') }}
+                </button>
             </div>
         </div>
-    @endsection
+    </div>
 
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
