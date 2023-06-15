@@ -118,12 +118,9 @@
             th:first-child,
             td:first-child {
                 position: sticky;
-                left: 0;
                 background-color: #FFF;
-            }
-
-            td:first-child {
                 left: -8px;
+
             }
         </style>
     @endslot
