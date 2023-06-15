@@ -1,8 +1,6 @@
 @component('component.card', ['title' => $project->mainProject->name . ' ' . $project->range])
     @slot('css')
-        <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
-        <!-- DataTables -->
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
@@ -117,31 +115,34 @@
             }
         </style>
     @endslot
-    <div>
-        <h3 class="mb-3">{{ $request['region'] }}</h3>
-        <div id="history-block">
-            <div class="mb-2 btn-group" id="visibility-buttons">
-                <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
-                    {{ __('Domain') }}
-                </button>
-                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                    {{ __('Average position') }}
-                </button>
-                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                    {{ __('Top') }} 3
-                </button>
-                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                    {{ __('Top') }} 10
-                </button>
-                <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
-                    {{ __('Top') }} 100
-                </button>
-                <button data-action="off" class="btn btn-default btn-sm" id="switch-color">
-                    {{ __('Turn off the coloring') }}
-                </button>
+
+    @section('content')
+        <div>
+            <h3 class="mb-3">{{ $request['region'] }}</h3>
+            <div id="history-block">
+                <div class="mb-2 btn-group" id="visibility-buttons">
+                    <button data-action="hide" data-order="0" class="btn btn-default btn-sm column-visible">
+                        {{ __('Domain') }}
+                    </button>
+                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                        {{ __('Average position') }}
+                    </button>
+                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                        {{ __('Top') }} 3
+                    </button>
+                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                        {{ __('Top') }} 10
+                    </button>
+                    <button data-action="hide" class="btn btn-default btn-sm column-visible add-order">
+                        {{ __('Top') }} 100
+                    </button>
+                    <button data-action="off" class="btn btn-default btn-sm" id="switch-color">
+                        {{ __('Turn off the coloring') }}
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+    @endsection
 
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
