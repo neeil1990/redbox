@@ -123,7 +123,7 @@
             }
 
             td:first-child {
-                padding-left: 17px;
+                left: -8px;
             }
         </style>
     @endslot
