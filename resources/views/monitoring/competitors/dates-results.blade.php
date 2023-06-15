@@ -250,7 +250,7 @@
                     $('#history-block').append(result)
 
                     historyTable = $('#history-results').DataTable({
-                        dPaginate: false,
+                        paging: false,
                         bAutoWidth: false,
                         bSort: false,
                         lengthMenu: [10, 25, 50, 100],
