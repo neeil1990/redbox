@@ -92,12 +92,6 @@
                 max-height: 950px;
             }
 
-            #history-results_wrapper > div:nth-child(2) > div {
-                overflow: auto;
-                width: 100%;
-                max-height: 950px;
-            }
-
             #history-results {
                 width: auto;
             }
@@ -120,7 +114,6 @@
                 position: sticky;
                 background-color: #FFF;
                 left: -8px;
-
             }
         </style>
     @endslot
