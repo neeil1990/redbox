@@ -121,6 +121,10 @@
                 left: 0;
                 background-color: #FFF;
             }
+
+            td:first-child {
+                padding-left: 17px;
+            }
         </style>
     @endslot
     <div>
