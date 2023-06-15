@@ -95,6 +95,7 @@
             #history-results_wrapper > div:nth-child(2) > div {
                 overflow: auto;
                 width: 100%;
+                max-height: 950px;
             }
 
             #history-results {
