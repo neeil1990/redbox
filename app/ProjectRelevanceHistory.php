@@ -128,9 +128,6 @@ class ProjectRelevanceHistory extends Model
         return $main;
     }
 
-    /**
-     * @return HasOne
-     */
     public function though(): HasOne
     {
         return $this->hasOne(ProjectRelevanceThough::class);

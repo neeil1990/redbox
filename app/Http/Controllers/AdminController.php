@@ -35,8 +35,9 @@ class AdminController extends Controller
         if (!User::isUserAdmin()) {
             return abort(403);
         }
+
         $firstDay = new Carbon('first day of this month');
-        $projects = ProjectRelevanceHistory::with('though')->get();
+        $projects = ProjectRelevanceHistory::with('though:id,updated_at')->get();
 
         return view('relevance-analysis.all', [
             'projects' => $projects,
