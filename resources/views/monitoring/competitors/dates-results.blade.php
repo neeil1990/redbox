@@ -114,6 +114,13 @@
             .antiquewhite {
                 background: antiquewhite;
             }
+
+            th:first-child,
+            td:first-child {
+                position: sticky;
+                left: 0;
+                background-color: #FFF;
+            }
         </style>
     @endslot
     <div>
@@ -143,7 +150,6 @@
     </div>
 
     @slot('js')
-        <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
@@ -161,7 +167,6 @@
                 const sortedKeys = Object.keys(data).sort((a, b) => new Date(a.split('-').reverse().join('-')) - new Date(b.split('-').reverse().join('-')));
                 const sortedData = {};
                 let length = 0
-
 
                 sortedKeys.forEach(key => {
                     sortedData[key] = data[key];
