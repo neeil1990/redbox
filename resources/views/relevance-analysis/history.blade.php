@@ -426,14 +426,14 @@
                            class="table table-bordered table-hover dtr-inline no-footer dataTable mb-3">
                         <thead>
                         <tr>
-                            <th class="table-header col-3">{{ __('Project name') }}</th>
-                            <th class="table-header col-2">{{ __('Tags') }}</th>
-                            <th class="table-header col-2">{{ __('Number of analyzed pages') }}</th>
+                            <th class="table-header">{{ __('Project name') }}</th>
+                            <th class="table-header">{{ __('Tags') }}</th>
+                            <th class="table-header">{{ __('Number of analyzed pages') }}</th>
                             <th class="table-header">{{ __('Number of saved scans') }}</th>
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
-                            <th class="table-header col-2">{{ __('end-to-end analysis') }}</th>
-                            <th class="table-header col-1">{{ __('Last check') }}</th>
+                            <th class="table-header">{{ __('end-to-end analysis') }}</th>
+                            <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
                         <tbody>
