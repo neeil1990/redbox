@@ -1,6 +1,8 @@
 @component('component.card', ['title' => $project->mainProject->name . ' ' . $project->range])
     @slot('css')
+        <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+        <!-- DataTables -->
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
@@ -90,6 +92,11 @@
                 max-height: 950px;
             }
 
+            #history-results_wrapper > div:nth-child(2) > div {
+                overflow: auto;
+                width: 100%;
+            }
+
             #history-results {
                 width: auto;
             }
@@ -115,7 +122,6 @@
             }
         </style>
     @endslot
-
     <div>
         <h3 class="mb-3">{{ $request['region'] }}</h3>
         <div id="history-block">
