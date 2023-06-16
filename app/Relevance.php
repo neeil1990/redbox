@@ -177,35 +177,20 @@ class Relevance
     {
         try {
             $this->removeNoIndex();
-            Log::debug($this->userId, ['removeNoIndex']);
             $this->getHiddenData();
-            Log::debug($this->userId, ['getHiddenData']);
             $this->separateLinksFromText();
-            Log::debug($this->userId, ['separateLinksFromText']);
             $this->removePartsOfSpeech();
-            Log::debug($this->userId, ['removePartsOfSpeech']);
             $this->removeListWords();
-            Log::debug($this->userId, ['removeListWords']);
             $this->getTextFromCompetitors();
-            Log::debug($this->userId, ['getTextFromCompetitors']);
             $this->separateAllText();
-            Log::debug($this->userId, ['separateAllText']);
             $this->preparePhrasesTable();
-            Log::debug($this->userId, ['preparePhrasesTable']);
             $this->searchWordForms();
-            Log::debug($this->userId, ['searchWordForms']);
             $this->processingOfGeneralInformation();
-            Log::debug($this->userId, ['processingOfGeneralInformation']);
             $this->prepareUnigramTable();
-            Log::debug($this->userId, ['prepareUnigramTable']);
             $this->analyzeRecommendations();
-            Log::debug($this->userId, ['analyzeRecommendations']);
             $this->prepareAnalysedSitesTable();
-            Log::debug($this->userId, ['prepareAnalysedSitesTable']);
             $this->prepareClouds();
-            Log::debug($this->userId, ['prepareClouds']);
             $this->saveHistory($historyId);
-            Log::debug($this->userId, ['saveHistory']);
         } catch (\Throwable $exception) {
             if ($historyId !== false) {
                 RelevanceHistory::where('id', '=', $historyId)->update([
