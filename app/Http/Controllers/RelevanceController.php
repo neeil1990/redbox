@@ -42,7 +42,9 @@ class RelevanceController extends Controller
             'phrase.required' => __('The keyword is required to fill in.'),
         ]);
 
-        RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full');
+        RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full')
+            ->onQueue(UsersJobs::getPriority(Auth::id()))
+            ->onConnection('database');
 
         return response()->json([
             'success' => true
@@ -71,7 +73,9 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'competitors');
+        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'competitors')
+            ->onQueue(UsersJobs::getPriority(Auth::id()))
+            ->onConnection('database');
 
         return response()->json([
             'success' => true
@@ -100,7 +104,9 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'main');
+        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'main')
+            ->onQueue(UsersJobs::getPriority(Auth::id()))
+            ->onConnection('database');
 
         return response()->json([
             'success' => true
@@ -173,7 +179,6 @@ class RelevanceController extends Controller
     public function createTaskQueue(Request $request): JsonResponse
     {
         $rows = explode("\n", $request->params);
-
         if (RelevanceHistory::checkRelevanceAnalysisLimits(count($rows))) {
             return response()->json([
                 'code' => 415,
