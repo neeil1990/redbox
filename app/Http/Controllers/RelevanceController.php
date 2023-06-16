@@ -42,9 +42,7 @@ class RelevanceController extends Controller
             'phrase.required' => __('The keyword is required to fill in.'),
         ]);
 
-        RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full')
-            ->onQueue(UsersJobs::getPriority(Auth::id()))
-            ->onConnection('database');
+        RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full');
 
         return response()->json([
             'success' => true
@@ -73,9 +71,7 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'competitors')
-            ->onQueue(UsersJobs::getPriority(Auth::id()))
-            ->onConnection('database');
+        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'competitors');
 
         return response()->json([
             'success' => true
@@ -104,9 +100,7 @@ class RelevanceController extends Controller
             'link' => 'required|website',
         ], $messages);
 
-        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'main')
-            ->onQueue(UsersJobs::getPriority(Auth::id()))
-            ->onConnection('database');
+        RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'main');
 
         return response()->json([
             'success' => true
