@@ -12,10 +12,6 @@ class UsersJobs extends Model
 
     protected $table = 'users_jobs';
 
-    /**
-     * @param $userId
-     * @return string
-     */
     public static function getPriority($userId): string
     {
         $job = UsersJobs::firstOrNew(['user_id' => $userId]);

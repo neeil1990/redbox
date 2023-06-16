@@ -173,6 +173,7 @@ class RelevanceController extends Controller
     public function createTaskQueue(Request $request): JsonResponse
     {
         $rows = explode("\n", $request->params);
+
         if (RelevanceHistory::checkRelevanceAnalysisLimits(count($rows))) {
             return response()->json([
                 'code' => 415,
