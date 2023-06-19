@@ -200,6 +200,8 @@ class Relevance
 
             $this->saveError($exception);
         }
+
+        RelevanceProgress::where('hash', '=', $this->scanHash)->delete();
     }
 
     public function separateAllText()
