@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\Jobs\Relevance\RemoveRelevanceProgress;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -177,35 +178,20 @@ class Relevance
     {
         try {
             $this->removeNoIndex();
-            Log::info('removeNoIndex');
             $this->getHiddenData();
-            Log::info('getHiddenData');
             $this->separateLinksFromText();
-            Log::info('separateLinksFromText');
             $this->removePartsOfSpeech();
-            Log::info('removePartsOfSpeech');
             $this->removeListWords();
-            Log::info('removeListWords');
             $this->getTextFromCompetitors();
-            Log::info('getTextFromCompetitors');
             $this->separateAllText();
-            Log::info('separateAllText');
             $this->preparePhrasesTable();
-            Log::info('preparePhrasesTable');
             $this->searchWordForms();
-            Log::info('searchWordForms');
             $this->processingOfGeneralInformation();
-            Log::info('processingOfGeneralInformation');
             $this->prepareUnigramTable();
-            Log::info('prepareUnigramTable');
             $this->analyzeRecommendations();
-            Log::info('analyzeRecommendations');
             $this->prepareAnalysedSitesTable();
-            Log::info('prepareAnalysedSitesTable');
             $this->prepareClouds();
-            Log::info('prepareClouds');
             $this->saveHistory($historyId);
-            Log::info('saveHistory');
         } catch (\Throwable $exception) {
             if ($historyId !== false) {
                 RelevanceHistory::where('id', '=', $historyId)->update([
@@ -216,8 +202,9 @@ class Relevance
             $this->saveError($exception);
         }
 
-        sleep(25);
-        RelevanceProgress::where('hash', '=', $this->scanHash)->delete();
+        RemoveRelevanceProgress::dispatch($this->scanHash)
+            ->onQueue('normal')
+            ->delay(now()->addSeconds(60));
     }
 
     public function separateAllText()

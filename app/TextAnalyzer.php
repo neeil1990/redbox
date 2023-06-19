@@ -195,26 +195,6 @@ class TextAnalyzer extends Model
         $document->removeElements('comment');
 
         return $document->outertext;
-//
-//        $html = mb_strtolower($html);
-//
-//        $regex = [
-//            '/<!--.*?-->/si',
-/*            '/<script.*?>(.*?)<\/script>/is',*/
-/*            '/<style.*?>(.*?)<\/style>/is',*/
-//            '/<pre\s+style="display:none;">.*?<\/pre>/is',
-//            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
-//        ];
-//
-//        foreach ($regex as $rule) {
-//            $newHtml = preg_replace($rule, '', $html);
-//
-//            if (strlen($newHtml) > 0) {
-//                $html = $newHtml;
-//            }
-//        }
-//
-//        return $html;
     }
 
     /**
