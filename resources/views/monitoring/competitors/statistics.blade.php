@@ -144,16 +144,7 @@
         @endforeach
     </div>
 
-    <div class="d-flex flex-row mb-3 mt-3 btn-group col-4 p-0">
-        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
-            {{ __('My competitors') }}
-        </a>
-        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
-            {{ __('Comparison with competitors') }}
-        </a>
-    </div>
-
-    <div class="row mt-5 ">
+    <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
@@ -412,10 +403,7 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <!-- Charts -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"
-                integrity="sha512-a+mx2C3JS6qqBZMZhSI5LpWv8/4UK21XihyLKaFoSbiKQs/3yRdtqCwGuWZGwHKc5amlNN8Y7JlqnWQ6N/MYgA=="
-                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+        <script src="{{ asset('plugins/chart.js/2.7.3/chart.min.js') }}"></script>
         <!-- InputMask -->
         <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
         <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
@@ -1101,10 +1089,14 @@
                                 '    <i class="fa fa-trash"></i>' +
                                 '</button>'
                             )
-
-                            removeErrorResults()
                         } else if (response.state === 'in process') {
-                            $('#analyse-in-queue-' + recordId).children('td').eq(2).html("{{ __('In process') }}" + ' <img src="/img/1485.gif" style="width: 20px; height: 20px;">')
+                            $('#analyse-in-queue-' + recordId).children('td').eq(2).html(
+                                "{{ __('In process') }}" +
+                                ' <img src="/img/1485.gif" style="width: 20px; height: 20px;">' +
+                                '<button class="btn btn-default remove-error-results" data-id="' + recordId + '">' +
+                                '    <i class="fa fa-trash"></i>' +
+                                '</button>'
+                            )
                             setTimeout(() => {
                                 waitFinishAnalyse(recordId)
                             }, 10000)
@@ -1113,16 +1105,16 @@
                                 '<button class="btn btn-default remove-error-results" data-id="' + recordId + '">' +
                                 '    <i class="fa fa-trash"></i>' +
                                 '</button>')
-                            removeErrorResults()
                         } else {
                             setTimeout(() => {
                                 waitFinishAnalyse(recordId)
                             }, 10000)
                         }
+
+                        removeErrorResults()
                     },
                 })
             }
         </script>
-
     @endslot
 @endcomponent

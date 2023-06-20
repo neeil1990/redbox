@@ -8,6 +8,7 @@ use App\MainProject;
 use App\VisitStatistic;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -27,7 +28,7 @@ class PublicController extends Controller
         $behavior = Behavior::findOrFail($id);
         $phrases = $behavior->phrases()->where('status', 0)->first();
 
-        if(!$phrases){
+        if (!$phrases) {
             Session::flash('adding_phrases', __('Please adding phrases.'));
             return redirect()->route('behavior.edit', [$id]);
         }
@@ -72,13 +73,10 @@ class PublicController extends Controller
         return $phrases;
     }
 
-    public function updateStatistics(Request $request)
+    public function updateStatistics(Request $request): JsonResponse
     {
-        $project = MainProject::where('controller', $request->controllerAction)
-            ->orWhere('controller', 'like', '%' . $request->controllerAction . "\n%")
-            ->orWhere('controller', 'like', "%\n" . $request->controllerAction . '%')
-            ->first();
-
+        $targetController = explode('@', $request->controllerAction)[0];
+        $project = MainProject::Where('controller', 'like', "%" . $targetController . '@%')->first();
 
         if (isset($project)) {
             VisitStatistic::where('project_id', $project->id)
@@ -86,5 +84,7 @@ class PublicController extends Controller
                 ->where('date', Carbon::now()->toDateString())
                 ->increment('seconds', $request->seconds);
         }
+
+        return response()->json([], 200);
     }
 }

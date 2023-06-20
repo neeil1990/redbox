@@ -1,7 +1,18 @@
 <div class="group group-required">
     <label for="countDays">{{ __('The day of the last online') }}</label>
-    <input class="form form-control" type="datetime-local" name="lastOnline">
+    <div class="row">
+        <div class="col-6">
+            <select name="dateType" id="dateType" class="custom custom-select">
+                <option value="all">От начала регистрации до выбранного дня</option>
+                <option value="only">Только выбранный день</option>
+            </select>
+        </div>
+        <div class="col-6">
+            <input class="form form-control" type="datetime-local" name="lastOnline">
+        </div>
+    </div>
 </div>
+
 
 <div class="group group-required mt-3">
     <label for="verify">{{ __('File Type') }}</label>

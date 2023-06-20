@@ -25,7 +25,7 @@
     <div class="d-flex flex-column mt-3 mb-3">
         <div class="collapse multi-collapse w-50 collapse show" id="analyse-text">
             <div class="form-group required text-or-html">
-                <textarea name="textarea" class="form form-control" rows="10" placeholder="Ваш текст"
+                <textarea name="textarea" class="form form-control" rows="10" placeholder="{{ __('Your text') }}"
                 >@isset($request['textarea'])
                         {{ $request['textarea'] }}
                     @endisset</textarea>
@@ -110,6 +110,7 @@
     <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Analyse') }}">
 
     {!! Form::close() !!}
+
     @if(isset($response))
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/text-analyzer/css/style.css') }}"/>
         <div class="mt-5 mb-3">
@@ -249,6 +250,7 @@
             </table>
         </div>
     @endif
+
     @slot('js')
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>

@@ -39,6 +39,14 @@
                 max-width: 100px !important;
             }
 
+            #start-analyse-region {
+                border-radius: 0;
+            }
+
+            .fa.fa-trash:hover {
+                cursor: pointer;
+                color: black;
+            }
         </style>
     @endslot
 
@@ -72,9 +80,9 @@
     </div>
 
     <div class="d-flex flex-row mb-3 mt-3 btn-group col-6 p-0">
-        <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors', $project->id) }}">
-            {{ __('My competitors') }}
-        </a>
+        <button class="btn btn-outline-secondary" id="competitors-button">
+            Список конкурентов (<span id="counter-competitors">{{ count($competitors) }}</span>)
+        </button>
         <a class="btn btn-outline-secondary" href="{{ route('monitoring.competitors.positions', $project->id) }}">
             {{ __('Comparison with competitors') }}
         </a>
@@ -97,49 +105,103 @@
         </div>
     </div>
 
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ __('Region filter') }}</h3>
+    <div class="card w-25" id="competitors-block" style="display: none">
+        <div class="card-header">
+            <h3 class="card-title">Список конкурентов у проекта {{ $project->name }}</h3>
+        </div>
+        <div class="card-body" style="padding: 0">
+            <table class="table table-striped border">
+                <thead>
+                <tr>
+                    <td>Конкурент</td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($competitors as $competitor)
+                    <tr>
+                        <td>
+                            <b>{{ $competitor['url'] }}</b>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-default remove-competitor-button"
+                                        data-id="{{ $competitor['id'] }}"
+                                        data-name="{{ $competitor['url'] }}"
+                                        data-toggle="modal"
+                                        data-target="#removeCompetitor">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="removeCompetitor" tabindex="-1" aria-labelledby="removeCompetitorLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeCompetitorLabel">Подтвердите действие</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex flex-row justify-content-start align-items-center">
-                        <div class="input-group col-5 pl-0 ml-0">
-                            <div class="input-group-prepend">
+                <div class="modal-body">
+                    Вы собираетесь удалить конкурента <span id="competitor-name"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                    <button type="button" class="btn btn-secondary" id="remove-competitor"
+                            data-dismiss="modal">{{ __('Remove') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ __('Region filter') }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-row justify-content-start align-items-center">
+                <div class="input-group col-5 pl-0 ml-0">
+                    <div class="input-group-prepend">
                                 <span class="input-group-text">
                                     <i class="far fa-calendar-alt"></i>
                                 </span>
-                            </div>
-                            <select name="region" class="custom-select" id="searchEngines">
-                                @if($project->searchengines->count() > 1)
-                                    <option value="">{{ __('All search engine and regions') }}</option>
-                                @endif
+                    </div>
+                    <select name="region" class="custom-select" id="searchEngines">
+                        @if($project->searchengines->count() > 1)
+                            <option value="">{{ __('All search engine and regions') }}</option>
+                        @endif
 
-                                @foreach($project->searchengines as $search)
-                                    @if($search->id == request('region'))
-                                        <option value="{{ $search->id }}"
-                                                selected>{{ strtoupper($search->engine) }} {{ $search->location->name }}
-                                            [{{$search->lr}}]
-                                        </option>
-                                    @else
-                                        <option
-                                            value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }}
-                                            [{{$search->lr}}]
-                                        </option>
-                                    @endif
-                                @endforeach
-                            </select>
-                            <button class="btn btn-secondary" id="start-analyse-region">{{ __("Analyse") }}</button>
-                        </div>
-                        <div id="download-results" style="display: none">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <img src="/img/1485.gif" style="width: 20px; height: 20px;">
-                            </div>
-                            <div id="render-state">
-                                {{ __('loading results') }}
-                            </div>
-                        </div>
+                        @foreach($project->searchengines as $search)
+                            @if($search->id == request('region'))
+                                <option value="{{ $search->id }}"
+                                        selected>{{ strtoupper($search->engine) }} {{ $search->location->name }}
+                                    [{{$search->lr}}]
+                                </option>
+                            @else
+                                <option
+                                    value="{{ $search->id }}">{{ strtoupper($search->engine) }} {{ $search->location->name }}
+                                    [{{$search->lr}}]
+                                </option>
+                            @endif
+                        @endforeach
+                    </select>
+                    <button class="btn btn-secondary" id="start-analyse-region">{{ __("Analyse") }}</button>
+                </div>
+                <div id="download-results" style="display: none">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="/img/1485.gif" style="width: 20px; height: 20px;">
+                    </div>
+                    <div id="render-state">
+                        {{ __('loading results') }}
                     </div>
                 </div>
             </div>
@@ -336,7 +398,6 @@
                 $('#start-analyse-region').on('click', function () {
                     getCompetitors()
                 })
-                $('#table').DataTable()
             })
 
             function getCompetitors() {
@@ -700,6 +761,47 @@
 
                 return region
             }
+        </script>
+        <script>
+            let removedRow
+            $('#competitors-button').on('click', function () {
+                if ($('#competitors-block').is(':visible')) {
+                    $('#competitors-block').hide()
+                } else {
+                    $('#competitors-block').show()
+                }
+            })
+
+            $('.remove-competitor-button').on('click', function () {
+                $('#competitor-name').html($(this).attr('data-name'))
+                removedRow = $(this).parents().eq(2)
+            })
+
+            $('#remove-competitor').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "{{ route('monitoring.remove.competitor') }}",
+                    data: {
+                        '_token': $('meta[name="csrf-token"]').attr('content'),
+                        'url': $('#competitor-name').html(),
+                        'projectId': {{ $project->id }}
+                    },
+                    success: function (response) {
+                        removedRow.remove()
+                        $('#counter-competitors').html(
+                            Number($('#counter-competitors').html()) - 1
+                        )
+                        $('#app > div > div > div.card-body > div.row > div:nth-child(2) > a > div.inner > h3').html(
+                            Number($('#app > div > div > div.card-body > div.row > div:nth-child(2) > a > div.inner > h3').html()) - 1
+                        )
+
+                        if ($('#table > tbody').html() !== '') {
+                            $('#start-analyse-region').trigger('click')
+                        }
+                    },
+                });
+            })
         </script>
     @endslot
 @endcomponent

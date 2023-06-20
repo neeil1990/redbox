@@ -26,7 +26,7 @@
         @endslot
 
         <div class="mb-3">
-            <a href="{{ $project->link }}" target="_blank">Перейти в модуль</a>
+            <a class="btn btn-default" href="{{ $project->link }}" target="_blank">Перейти в модуль</a>
         </div>
 
         <table id="table" class="table table-striped no-footer border">

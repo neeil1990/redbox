@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Classes\Xml\SimplifiedXmlFacade;
+use App\Jobs\Relevance\RemoveRelevanceProgress;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -104,19 +105,12 @@ class Relevance
         $this->params['html_main_page'] = '';
     }
 
-    /**
-     * @return void
-     */
     public function getMainPageHtml()
     {
         $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
         $this->setMainPage($html);
     }
 
-    /**
-     * @param bool|array $xmlResponse
-     * @return void
-     */
     public function parseSites($xmlResponse = false, $searchPosition = false)
     {
         $mainUrl = parse_url($this->params['main_page_link']);
@@ -180,10 +174,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param int|boolean $historyId
-     * @return void
-     */
     public function analysis($historyId = false)
     {
         try {
@@ -211,11 +201,12 @@ class Relevance
 
             $this->saveError($exception);
         }
+
+        RemoveRelevanceProgress::dispatch($this->scanHash)
+            ->onQueue('normal')
+            ->delay(now()->addSeconds(100));
     }
 
-    /**
-     * @return void
-     */
     public function separateAllText()
     {
         $this->competitorsLinks = $this->separateText($this->competitorsLinks);
@@ -226,10 +217,6 @@ class Relevance
         $this->competitorsTextAndLinks = ' ' . $this->competitorsLinks . ' ' . $this->competitorsText . ' ';
     }
 
-    /**
-     * Удалить текст, который помечен <noindex>
-     * @return void
-     */
     public function removeNoIndex()
     {
         if ($this->request['noIndex'] == 'false') {
@@ -240,10 +227,6 @@ class Relevance
         }
     }
 
-    /**
-     * Разделение ссылок и текста
-     * @return void
-     */
     public function separateLinksFromText()
     {
         foreach ($this->sites as $key => $page) {
@@ -278,10 +261,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $html
-     * @return string
-     */
     public static function searchPassages($html): string
     {
         $passages = '';
@@ -302,9 +281,6 @@ class Relevance
         return trim($passages);
     }
 
-    /**
-     * @return void
-     */
     public function getHiddenData()
     {
         RelevanceProgress::editProgress(20, $this->request);
@@ -321,10 +297,6 @@ class Relevance
         }
     }
 
-    /**
-     * Вся информация с сайтов конкурентов с сайтов конкурентов
-     * @return void
-     */
     public function getTextFromCompetitors()
     {
         RelevanceProgress::editProgress(40, $this->request);
@@ -339,9 +311,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function calculateCoveragePoints()
     {
         $totalTf = 0;
@@ -358,10 +327,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $object
-     * @return array
-     */
     public function calculateCoverage($object): array
     {
         $text = 0;
@@ -393,10 +358,6 @@ class Relevance
         ];
     }
 
-    /**
-     * Расчёт баллов для таблицы "Проанализированные сайты"
-     * @return void
-     */
     public function calculateWidthPoints()
     {
         // высчитываем 100%, игнорируя игнорируемые домены
@@ -419,9 +380,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function calculateTotalPoints()
     {
         foreach ($this->sites as $key => $site) {
@@ -430,9 +388,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function calculateTextInfo()
     {
         foreach ($this->sites as $key => $site) {
@@ -453,9 +408,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function analyzeRecommendations()
     {
         foreach ($this->wordForms as $wordForm) {
@@ -498,9 +450,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function prepareAnalysedSitesTable()
     {
         $this->calculateDensity();
@@ -511,10 +460,6 @@ class Relevance
         $this->calculateAvg();
     }
 
-    /**
-     * @param $wordsInText
-     * @return float
-     */
     public function calculateCoverageTF($wordsInText): float
     {
         $sum = 0;
@@ -529,11 +474,6 @@ class Relevance
         return $sum / $percent;
     }
 
-    /**
-     * Получить скрытый текст из alt,title,data-text атрибутов
-     * @param $html
-     * @return array|string|string[]|null
-     */
     public static function getHiddenText($html)
     {
         $hiddenText = '';
@@ -550,10 +490,6 @@ class Relevance
         return TextAnalyzer::deleteEverythingExceptCharacters($hiddenText);
     }
 
-    /**
-     * Удаляем союзы, предлоги, местоимения
-     * @return void
-     */
     public function removePartsOfSpeech()
     {
         if ($this->request['conjunctionsPrepositionsPronouns'] == 'false') {
@@ -568,10 +504,6 @@ class Relevance
         }
     }
 
-    /**
-     * Исключаем слова
-     * @return void
-     */
     public function removeListWords()
     {
         if (filter_var($this->request['switchMyListWords'], FILTER_VALIDATE_BOOLEAN)) {
@@ -596,14 +528,6 @@ class Relevance
         }
     }
 
-    /**
-     * Преобразование слова в нужную кодировку и удаление слов
-     *
-     * @param $search
-     * @param $replace
-     * @param $string
-     * @return string
-     */
     public static function mbStrReplace($search, $replace, $string): string
     {
         $charset = mb_detect_encoding($string);
@@ -654,10 +578,6 @@ class Relevance
         $this->wordForms = array_slice($this->wordForms, 0, 1000);
     }
 
-    /**
-     * Обработка информации для таблицы LTP
-     * @return void
-     */
     public function processingOfGeneralInformation()
     {
         RelevanceProgress::editProgress(80, $this->request);
@@ -744,9 +664,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function prepareUnigramTable()
     {
         $this->coverageInfo['sum'] = 0;
@@ -820,10 +737,6 @@ class Relevance
         )->toArray();
     }
 
-    /**
-     * Подготовка облаков (http://cavaliercoder.com/jclouds)
-     * @return void
-     */
     public function prepareClouds()
     {
         RelevanceProgress::editProgress(90, $this->request);
@@ -857,12 +770,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $request
-     * @param $sites
-     * @param $exp
-     * @return void
-     */
     public function removeIgnoredDomains($request, $sites, $exp)
     {
         $ignoredDomains = str_replace("\r\n", "\n", $request['ignoredDomains']);
@@ -902,19 +809,12 @@ class Relevance
         }
     }
 
-    /**
-     * @param $html
-     */
     public function setMainPage($html)
     {
         $this->mainPage['html'] = $html;
         $this->params['html_main_page'] = $html;
     }
 
-    /**
-     * @param $sites
-     * @return void
-     */
     public function setSites($sites)
     {
         $mainPageInRelevance = false;
@@ -962,10 +862,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $domains
-     * @return void
-     */
     public function setDomains($domains)
     {
         $array = json_decode($domains, true);
@@ -984,19 +880,11 @@ class Relevance
 
     }
 
-    /**
-     * @param array $array
-     * @return string
-     */
     public static function concatenation(array $array): string
     {
         return implode(' ', $array);
     }
 
-    /**
-     * @param $text
-     * @return array
-     */
     public function prepareTfCloud($text): array
     {
         $wordForms = $cloud = [];
@@ -1049,7 +937,6 @@ class Relevance
         return $collection->sortByDesc('weight')->toArray();
     }
 
-
     /**
      * Обрезать все слова короче N символов
      * @param $text
@@ -1066,9 +953,6 @@ class Relevance
         return implode(" ", $text);
     }
 
-    /**
-     * @return void
-     */
     public function preparePhrasesTable()
     {
         $result = [];
@@ -1162,9 +1046,6 @@ class Relevance
         return $phrases->unique()->toArray();
     }
 
-    /**
-     * @return void
-     */
     public function calculateDensity()
     {
         foreach ($this->sites as $keyPage => $page) {
@@ -1174,10 +1055,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $text
-     * @return array
-     */
     public function calculateDensityPoints($text): array
     {
         $result = [];
@@ -1213,9 +1090,6 @@ class Relevance
         return $result;
     }
 
-    /**
-     * @return void
-     */
     public function saveResults()
     {
         $saveObject = [];
@@ -1237,10 +1111,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $historyId
-     * @return void
-     */
     public function saveHistory($historyId)
     {
         RelevanceProgress::editProgress(100, $this->request);
@@ -1293,9 +1163,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $id
-     */
     public function saveHistoryResult($id)
     {
         $result = RelevanceHistoryResult::firstOrNew(['project_id' => $id]);
@@ -1343,11 +1210,6 @@ class Relevance
         $result->save();
     }
 
-    /**
-     * @param $request
-     * @param $exp
-     * @return void
-     */
     public function analysisByPhrase($request, $exp)
     {
         try {
@@ -1364,10 +1226,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $request
-     * @return void
-     */
     public function analysisByList($request)
     {
         RelevanceProgress::editProgress(10, $request);
@@ -1375,10 +1233,6 @@ class Relevance
         $this->parseSites(false, true);
     }
 
-    /**
-     * @param $siteList
-     * @return void
-     */
     public function prepareDomains($siteList)
     {
         $sitesList = str_replace("\r\n", "\n", $siteList);
@@ -1393,9 +1247,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function saveStatistic()
     {
         $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
@@ -1419,9 +1270,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function calculateAvg()
     {
         $coverage = $coverageTf = $density = $width = $points = $countSymbols = [];
@@ -1451,11 +1299,6 @@ class Relevance
         }
     }
 
-    /**
-     * @param $key
-     * @param $elem
-     * @return void
-     */
     public function calculate($key, $elem)
     {
         if (isset($this->avg[$key])) {
@@ -1465,9 +1308,6 @@ class Relevance
         }
     }
 
-    /**
-     * @return void
-     */
     public function saveError($exception)
     {
         $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);

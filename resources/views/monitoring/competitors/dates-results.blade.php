@@ -1,8 +1,6 @@
 @component('component.card', ['title' => $project->mainProject->name . ' ' . $project->range])
     @slot('css')
-        <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
-        <!-- DataTables -->
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
@@ -95,7 +93,7 @@
             #history-results_wrapper > div:nth-child(2) > div {
                 overflow: auto;
                 width: 100%;
-                max-height: 950px;
+                max-height: 850px;
             }
 
             #history-results {
@@ -114,8 +112,20 @@
             .antiquewhite {
                 background: antiquewhite;
             }
+
+            th:first-child,
+            td:first-child {
+                position: sticky;
+                background-color: #FFF;
+                left: -8px;
+            }
+
+            thead {
+                z-index: 9999;
+            }
         </style>
     @endslot
+
     <div>
         <h3 class="mb-3">{{ $request['region'] }}</h3>
         <div id="history-block">
@@ -143,7 +153,6 @@
     </div>
 
     @slot('js')
-        <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
@@ -155,13 +164,15 @@
 
             $(document).ready(function () {
                 renderHistoryPositions({!! $project['result'] !!})
+                $('#history-results_wrapper > div:nth-child(1) > div:nth-child(1)').append($('#visibility-buttons'))
             })
 
             function renderHistoryPositions(data) {
                 const sortedKeys = Object.keys(data).sort((a, b) => new Date(a.split('-').reverse().join('-')) - new Date(b.split('-').reverse().join('-')));
+                sortedKeys.reverse()
+
                 const sortedData = {};
                 let length = 0
-
 
                 sortedKeys.forEach(key => {
                     sortedData[key] = data[key];
@@ -241,6 +252,7 @@
                     $('#history-block').append(result)
 
                     historyTable = $('#history-results').DataTable({
+                        paging: false,
                         bAutoWidth: false,
                         bSort: false,
                         lengthMenu: [10, 25, 50, 100],
@@ -263,7 +275,7 @@
                         for (let j = 0; j < 4; j++) {
                             let res = length * j
                             let bool = j === 0
-                            colorCells($(this), 1 + res, length * (j + 1), bool)
+                            colorCells($(this), res, length * (j + 1), bool)
                         }
                     })
 
@@ -305,13 +317,12 @@
             }
 
             function colorCells(elem, start, end, inverse) {
-                for (let i = end; i > start; i--) {
+                for (let i = start + 1; i < end; i++) {
                     let targetElement = elem.children('td').eq(i)
-                    let beforeElement = elem.children('td').eq(i - 1)
+                    let afterElement = elem.children('td').eq(i + 1)
 
-                    let result = Number(targetElement.text()) - Number(beforeElement.text())
+                    let result = Number(targetElement.text()) - Number(afterElement.text())
                     if (result !== 0) {
-
                         let substring = String(result).substring(0, 5)
                         if (inverse) {
                             if (result > 0) {

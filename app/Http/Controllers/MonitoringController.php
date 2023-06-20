@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\DB;
 class MonitoringController extends Controller
 {
     protected $user;
+
     protected $subtractionMonths = [0, 1, 3, 6, 12];
 
     /**
@@ -426,6 +427,7 @@ class MonitoringController extends Controller
         $countQuery = count($project->keywords);
         $navigations = $this->navigations($project);
         $ignoredDomains = MonitoringSettings::where('name', '=', 'ignored_domains')->first('value');
+        $competitors = $project->competitors->toArray();
 
         if (isset($ignoredDomains)) {
             $ignoredDomains = $ignoredDomains['value'];
@@ -435,7 +437,8 @@ class MonitoringController extends Controller
             'navigations',
             'countQuery',
             'ignoredDomains',
-            'project'
+            'project',
+            'competitors'
         ));
     }
 

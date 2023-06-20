@@ -9,6 +9,7 @@ use App\Classes\Tariffs\Tariff;
 use App\Common;
 use App\Exports\FilteredUsersExport;
 use App\Exports\VerifiedUsersExport;
+use App\MainProject;
 use App\User;
 use App\VisitStatistic;
 use Carbon\Carbon;
@@ -472,7 +473,6 @@ class UsersController extends Controller
                 }
             }
         }
-
 
         return view('users.statistics', compact('results'));
     }

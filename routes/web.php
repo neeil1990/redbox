@@ -11,7 +11,7 @@
 |
 */
 
-use App\Cluster;
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -41,6 +41,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('main-projects', 'MainProjectsController');
     Route::get('/main-projects/statistics/{project}', 'MainProjectsController@statistics')->name('main-projects.statistics');
+    Route::get('/modules-statistics/', 'MainProjectsController@moduleVisitStatistics')->name('statistics.modules');
     Route::post('/update-statistics', 'PublicController@updateStatistics')->name('update.statistics');
 
     Route::get('users/{id}/login', 'UsersController@login')->name('users.login');
@@ -140,13 +141,13 @@ Route::middleware(['verified'])->group(function () {
     Route::post('edit-backlink', 'BacklinkController@editBacklink')->name('edit.backlink');
     Route::post('add-link', 'BacklinkController@storeLink');
 
-    Route::get('site-monitoring', 'DomainMonitoringController@index')->name('site.monitoring');
-    Route::get('add-site-monitoring', 'DomainMonitoringController@createView')->name('add.site.monitoring.view');
-    Route::post('add-site-monitoring', 'DomainMonitoringController@store')->name('add.site.monitoring');
-    Route::get('delete-site-monitoring/{id}', 'DomainMonitoringController@remove')->name('delete.site.monitoring');
-    Route::post('check-site-monitoring', 'DomainMonitoringController@checkLink')->name('check.domain');
-    Route::post('edit-site-monitoring', 'DomainMonitoringController@edit')->name('edit.domain');
-    Route::post('delete-domains-monitoring', 'DomainMonitoringController@removeDomains')->name('delete.sites.monitoring');
+    Route::get('site-monitoring', 'MonitoringDomainController@index')->name('site.monitoring');
+    Route::get('add-site-monitoring', 'MonitoringDomainController@createView')->name('add.site.monitoring.view');
+    Route::post('add-site-monitoring', 'MonitoringDomainController@store')->name('add.site.monitoring');
+    Route::get('delete-site-monitoring/{id}', 'MonitoringDomainController@remove')->name('delete.site.monitoring');
+    Route::post('check-site-monitoring', 'MonitoringDomainController@checkLink')->name('check.domain');
+    Route::post('edit-site-monitoring', 'MonitoringDomainController@edit')->name('edit.domain');
+    Route::post('delete-domains-monitoring', 'MonitoringDomainController@removeDomains')->name('delete.sites.monitoring');
 
     Route::get('verification-token/{token}', 'TelegramBotController@verificationToken')->name('verification.token');
     Route::get('reset-notification/{token}', 'TelegramBotController@resetNotification')->name('reset.notification');
@@ -234,7 +235,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/edit-policy-files', 'AdminController@editPolicyFilesView')->name('edit.policy.files.view');
     Route::post('/edit-policy-files', 'AdminController@editPolicyFiles')->name('edit.policy.files');
     Route::post('/get-policy-document', 'AdminController@getPolicyDocument')->name('get.policy.document');
-
     Route::get('/balance/{response?}', 'BalanceController@index')->name('balance.index');
     Route::post('/counting/yandex-metrics/', 'BalanceController@countingMetrics')->name('counting.metrics');
     Route::resource('balance-add', 'BalanceAddController');
@@ -390,9 +390,4 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
-});
-
-Route::get('/test', function (){
-   $t = '{"utm_source":"google","utm_medium":"cpc","utm_campaign":"Osnovnye_zaprosy_Poisk_Desktop_KZ_Gruppa_generator_slov","utm_term_keyword":"%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%20%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D1%85%20%D1%81%D0%BB%D0%BE%D0%B2","utm_content":"654611840144"}';
-   $k = '{"utm_source":"google","utm_medium":"cpc","utm_campaign":"Osnovnye_zaprosy_Poisk_Desktop_KZ_Gruppa_html-redaktor","utm_term_keyword":"%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD%20%D1%80%D0%B5%D0%B4%D0%B0%D0%BA%D1%82%D0%BE%D1%80%20html%20css","utm_content":"654611840138"}';
 });

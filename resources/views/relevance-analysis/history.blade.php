@@ -46,58 +46,97 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{ __('My Tags') }}</h5>
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#add-to-project" data-toggle="tab">
+                                {{ __('Add a label to a project') }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#managing" data-toggle="tab">{{ __('My Tags') }}</a>
+                        </li>
+                    </ul>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        {{ __('Your created tags:') }}
-                        <ul class="mt-3" id="tags-list">
-                            @foreach($tags as $tag)
-                                <li>
-                                    <div class="btn-group mb-2">
-                                        <input type="color" class="tag-color-input" data-target="{{ $tag->id }}"
-                                               value="{{ $tag->color }}" style="height: 37px">
-                                        <input type="text" class="form form-control w-100 tag-name-input d-inline"
-                                               style="display: inline !important;"
-                                               data-target="{{ $tag->id }}" value="{{ $tag->name }}">
-                                        <button type="button" class="btn btn-secondary col-2 remove-tag"
-                                                data-target="{{ $tag->id }}">
-                                            <i class="fa fa-trash text-white"></i>
-                                        </button>
+                <div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="add-to-project">
+                                <label for="project-id">{{ __('Your projects') }}</label>
+                                @if(count($main) > 0)
+                                    <select name="project-id" id="project-id" class="form form-control mb-3">
+                                        @foreach($main as $story)
+                                            <option value="{{ $story->id }}">{{ $story->name }}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                                <label for="tag-id">{{ __('Your tags') }}</label>
+                                <select name="tag-id" id="tag-id" class="form form-control">
+                                    @foreach($tags as $tag)
+                                        <option value="{{ $tag->id }}" id="option-tag-{{$tag->id}}">
+                                            {{ $tag->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-secondary create-new-link">
+                                        {{ __('Save') }}
+                                    </button>
+                                    <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">
+                                        {{ __('Close') }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="managing">
+                                <div class="mb-3">
+                                    {{ __('Your created tags:') }}
+                                    <ul class="mt-3" id="tags-list" style="list-style: none; padding-left: 0">
+                                        @foreach($tags as $tag)
+                                            <li>
+                                                <div class="btn-group mb-2">
+                                                    <input type="color" class="tag-color-input"
+                                                           data-target="{{ $tag->id }}"
+                                                           value="{{ $tag->color }}" style="height: 37px">
+                                                    <input type="text"
+                                                           class="form form-control w-100 tag-name-input d-inline"
+                                                           style="display: inline !important;"
+                                                           data-target="{{ $tag->id }}" value="{{ $tag->name }}">
+                                                    <button type="button" class="btn btn-secondary col-2 remove-tag"
+                                                            data-target="{{ $tag->id }}">
+                                                        <i class="fa fa-trash text-white"></i>
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <div class="border-top">
+                                    <h5 class="mt-3">{{ __('Add a new label') }}</h5>
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <input type="text" id="tag-name" name="tag-name" class="form form-control"
+                                                   placeholder="{{ __('Name') }}">
+                                            <input type="color" name="tag-color" id="tag-color" style="height: 38px">
+                                        </div>
                                     </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    <div class="border-top">
-                        <h5 class="mt-3">{{ __('Add a new label') }}</h5>
-                        <div class="mb-3">
-                            <label for="tag-name">{{ __('Label name') }}</label>
-                            <input type="text" id="tag-name" name="tag-name" class="form form-control">
+                                </div>
+                                <button class="btn btn-secondary" id="create-tag">
+                                    {{ __('Create a label') }}
+                                </button>
+                                <button type="button" class="btn btn-default"
+                                        data-dismiss="modal">{{ __('Close') }}</button>
+                            </div>
                         </div>
-                        <div class="mt-3 mb-3">
-                            <label for="tag-color">{{ __('Set a color') }}</label>
-                            <input type="color" name="tag-color" id="tag-color">
-                        </div>
-                        <button class="btn btn-secondary mt-3" id="create-tag">
-                            {{ __('Create a label') }}
-                        </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-toggle="modal"
-                            data-target="#create-link"
-                            data-dismiss="modal">
-                        {{ __('Add a label to a project') }}
-                    </button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="create-link" tabindex="-1" aria-labelledby="exampleModalLabel">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -137,6 +176,7 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog"
          aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -399,55 +439,57 @@
                         <tbody>
                         @foreach($main as $item)
                             <tr id="story-id-{{ $item->id }}">
-                                <td>
+                                <td data-order="{{ $item->name }}">
                                     <a href="#history_table_{{ $item->name }}"
                                        class="project_name"
                                        style="cursor:pointer;"
                                        data-order="{{ $item->id }}">
                                         {{ $item->name }}
                                     </a>
+                                    <div>
 
-                                    <i class="fa fa-table project_name"
-                                       data-order="{{ $item->id }}"
-                                       style="opacity: 0.6; cursor:pointer;"></i>
+                                        <i class="fa fa-table project_name"
+                                           data-order="{{ $item->id }}"
+                                           style="opacity: 0.6; cursor:pointer;"></i>
 
-                                    <i class="fa fa-list project_name_v2"
-                                       data-order="{{ $item->id }}"
-                                       style="opacity: 0.6; cursor:pointer;"></i>
+                                        <i class="fa fa-list project_name_v2"
+                                           data-order="{{ $item->id }}"
+                                           style="opacity: 0.6; cursor:pointer;"></i>
 
-                                    <div class="dropdown" style="display: inline">
-                                        <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
-                                           aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <div class="dropdown" style="display: inline">
+                                            <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
+                                               aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <span class="dropdown-item project_name"
                                                   style="cursor:pointer;"
                                                   data-order="{{ $item->id }}">
                                                 <i class="fa fa-table"></i>
                                                 {{ __('Show the results of the analysis') }}
                                             </span>
-                                            <span class="dropdown-item project_name_v2"
-                                                  style="cursor:pointer;"
-                                                  data-order="{{ $item->id }}">
+                                                <span class="dropdown-item project_name_v2"
+                                                      style="cursor:pointer;"
+                                                      data-order="{{ $item->id }}">
                                                 <i class="fa fa-list"></i>
                                                 {{ __('View the results in a list') }}
                                             </span>
-                                            <span class="dropdown-item"
-                                                  style="cursor:pointer;"
-                                                  data-toggle="modal" data-target="#removeModal{{ $item->id }}">
+                                                <span class="dropdown-item"
+                                                      style="cursor:pointer;"
+                                                      data-toggle="modal" data-target="#removeModal{{ $item->id }}">
                                                 <i class="fa fa-trash"></i>
                                                 {{ __('Delete results without comments') }}
                                             </span>
-                                            <span class="dropdown-item"
-                                                  style="cursor:pointer;"
-                                                  data-toggle="modal"
-                                                  data-target="#removeWithFiltersModal{{ $item->id }}">
+                                                <span class="dropdown-item"
+                                                      style="cursor:pointer;"
+                                                      data-toggle="modal"
+                                                      data-target="#removeWithFiltersModal{{ $item->id }}">
                                                 <i class="fa fa-trash"></i>
                                                 {{ __('Delete using filters') }}
                                             </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
-                                <td id="project-{{ $item->id }}">
+                                <td id="project-{{ $item->id }}" data-order="{{ count($item->relevanceTags) }}">
                                     @foreach($item->relevanceTags as $tag)
                                         <div style="color: {{ $tag->color }}"
                                              id="tag-{{ $tag->id }}-item-{{ $item->id }}">
@@ -460,7 +502,7 @@
                                         </div>
                                     @endforeach
                                 </td>
-                                <td class="col-2" data-order="{{ $item->count_sites }}">
+                                <td data-order="{{ $item->count_sites }}">
                                     <span class="count-sites-{{ $item->id }}">
                                         {{ $item->count_sites }}
                                     </span>
@@ -469,14 +511,14 @@
                                        data-toggle="modal" data-placement="top"
                                        title="{{ __('restart analyzed pages') }}"></i>
                                 </td>
-                                <td class="col-2 count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
-                                <td class="col-2 total-points-{{ $item->id }}">{{ $item->total_points }}</td>
-                                <td class="col-2 total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
+                                <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
+                                <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
+                                <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
                                 <td>
                                     <button class="btn btn-secondary"
                                             data-target="#startThroughScan{{ $item->id }}"
                                             data-toggle="modal" data-placement="top">
-                                        {{ __('Analysis of end-to-end words') }}
+                                        {{ __('Analysis of end-to-end') }}
                                     </button>
 
                                     @isset($item->though)
@@ -769,7 +811,7 @@
                                                         data-tag="{{ $tag->id }}"
                                                         data-history="{{ $item->id }}"
                                                         data-dismiss="modal">
-                                                    {{ __('Untie the label from the project') }}
+                                                    {{ __('Remove tag') }}
                                                 </button>
                                                 <button type="button" class="btn btn-default" data-dismiss="modal">
                                                     {{ __('Close') }}
@@ -899,10 +941,10 @@
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
             let words = {
@@ -1163,15 +1205,15 @@
                                     '               <span aria-hidden="true">&times;</span> ' +
                                     '               </button> ' +
                                     '           </div> ' +
-                                    '       <div class="modal-body"> {{ __('Are you going to untie the label from the project, are you sure?') }}" ' +
+                                    '       <div class="modal-body"> {{ __('Are you going to untie the label from the project, are you sure?') }} ' +
                                     '   </div> ' +
                                     '   <div class="modal-footer"> ' +
                                     '           <button type="button"' +
                                     '               class="btn btn-secondary remove-project-relevance-link"' +
                                     '               data-tag="' + response.tag.id + '" ' +
-                                    '               data-history="' + response.project.id + '" data-dismiss="modal">Отвязать метку от проекта' +
+                                    '               data-history="' + response.project.id + '" data-dismiss="modal">{{ __('Remove tag') }}' +
                                     '           </button> ' +
-                                    '           <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть' +
+                                    '           <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}' +
                                     '           </button>' +
                                     '           </div>' +
                                     '       </div>' +
@@ -1219,6 +1261,8 @@
                                 }
                             },
                         });
+                    } else {
+                        getErrorMessage('Название метки не может быть пустым')
                     }
                 })
 
@@ -1237,10 +1281,6 @@
                             if (response.code === 200) {
                                 getSuccessMessage(response.message)
                                 ojb.parent().parent().remove()
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    $(this).parent().remove()
-                                })
-
                                 $('#option-tag-' + id).remove()
                             }
                         },
@@ -1264,11 +1304,6 @@
                         success: function (response) {
                             if (response.code === 200) {
                                 getSuccessMessage(response.message)
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    let oldHtml = $(this).parent().html()
-                                    let newHtml = oldHtml.replace(prev, current)
-                                    $(this).parent().html(newHtml)
-                                })
                             }
                         },
                     });
@@ -1290,9 +1325,6 @@
                         success: function (response) {
                             if (response.code === 200) {
                                 getSuccessMessage(response.message)
-                                $.each($("i[data-tag=" + id + "]"), function (key, value) {
-                                    $(this).parent().css('color', color)
-                                })
                             } else if (response.code === 415) {
                                 getErrorMessage(response.message)
                             }

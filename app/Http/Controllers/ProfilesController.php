@@ -159,7 +159,7 @@ class ProfilesController extends Controller
 
         flash()->overlay(__('User password successfully'), __('Update user'))->success();
 
-        $user->sendProfilePasswordResetNotification($request);
+        $user->sendProfilePasswordResetNotification($request, $user);
 
         return redirect()->route('profile.index');
     }

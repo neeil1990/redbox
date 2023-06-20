@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
-class DomainMonitoringController extends Controller
+class MonitoringDomainController extends Controller
 {
 
     public function __construct()

@@ -2,10 +2,9 @@
 
 namespace App;
 
-use DOMDocument;
+use App\Classes\SimpleHtmlDom\HtmlDocument;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use JavaScript;
 
 class TextAnalyzer extends Model
@@ -183,25 +182,19 @@ class TextAnalyzer extends Model
 
     public static function removeStylesAndScripts($html): string
     {
-        $html = mb_strtolower($html);
+        $document = new HtmlDocument();
+        $document->load(mb_strtolower($html));
+        $document->removeElements('[style="display: none;"]');
+        $document->removeElements('.js_img-for-color.hidden');
+        $document->removeElements('link');
+        $document->removeElements('style');
+        $document->removeElements('meta');
+        $document->removeElements('script');
+        $document->removeElements('path');
+        $document->removeElements('noscript');
+        $document->removeElements('comment');
 
-        $regex = [
-            '/<!--.*?-->/si',
-            '/<script.*?>(.*?)<\/script>/is',
-            '/<style.*?>(.*?)<\/style>/is',
-            '/<pre\s+style="display:none;">.*?<\/pre>/is',
-            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
-        ];
-
-        foreach ($regex as $rule) {
-            $newHtml = preg_replace($rule, '', $html);
-
-            if (strlen($newHtml) > 0) {
-                $html = $newHtml;
-            }
-        }
-
-        return $html;
+        return $document->outertext;
     }
 
     /**
@@ -210,12 +203,11 @@ class TextAnalyzer extends Model
      */
     public static function removeNoindexText($html)
     {
-        preg_match_all('#<noindex>(.+?)</noindex>#su', $html, $matches, PREG_SET_ORDER);
-        foreach ($matches as $item) {
-            $html = str_replace($item[0], "", $html);
-        }
+        $document = new HtmlDocument();
+        $document->load(mb_strtolower($html));
+        $document->removeElements('noindex');
 
-        return mb_strtolower($html);
+        return $html;
     }
 
     /**
@@ -321,7 +313,7 @@ class TextAnalyzer extends Model
      * @param $search
      * @param $replace
      * @param $string
-     * @return array|false|string|string[]
+     * @return array|string|string[]
      */
     public static function mbStrReplace($search, $replace, $string)
     {
@@ -393,10 +385,7 @@ class TextAnalyzer extends Model
         return TextAnalyzer::calculateTFIDF($result, $totalWords, 'inText');
     }
 
-    /**
-     * @param $string
-     * @return \Illuminate\Support\Collection
-     */
+
     public static function searchPhrases($string)
     {
         $phrases = [];

@@ -11,6 +11,7 @@ use App\RelevanceHistory;
 use App\RelevanceStatistics;
 use App\RelevanceUniqueDomains;
 use App\RelevanceUniquePages;
+use App\User;
 use App\UsersJobs;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -31,17 +32,21 @@ class AdminController extends Controller
      */
     public function relevanceHistoryProjects(): View
     {
+        if (!User::isUserAdmin()) {
+            return abort(403);
+        }
+
         $firstDay = new Carbon('first day of this month');
+        $projects = ProjectRelevanceHistory::with('though:id,updated_at')->get();
 
         return view('relevance-analysis.all', [
-            'admin' => true,
-            'projects' => ProjectRelevanceHistory::with('though')->get(),
+            'projects' => $projects,
             'config' => RelevanceAnalysisConfig::first(),
             'usersJobs' => UsersJobs::where('count_jobs', '>', 0)->with('user')->get(),
             'statistics' => [
                 'toDay' => RelevanceStatistics::where('date', '=', Carbon::now()->toDateString())->first(),
                 'month' => RelevanceStatistics::where('created_at', '>=', $firstDay->toDateString())->sum('count_checks'),
-                'countProjects' => ProjectRelevanceHistory::count(),
+                'countProjects' => count($projects),
                 'countSavedResults' => RelevanceHistory::count(),
                 'pages' => RelevanceUniquePages::count(),
                 'domains' => RelevanceUniqueDomains::count(),

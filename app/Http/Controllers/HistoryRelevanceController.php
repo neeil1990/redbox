@@ -29,7 +29,7 @@ class HistoryRelevanceController extends Controller
     {
         $config = RelevanceAnalysisConfig::first();
         $tags = RelevanceTags::where('user_id', '=', Auth::id())->get();
-        $projects = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->get();
+        $projects = ProjectRelevanceHistory::where('user_id', '=', Auth::id())->with('relevanceTags')->get();
         $admin = User::isUserAdmin();
 
         return view('relevance-analysis.history', [
@@ -82,11 +82,9 @@ class HistoryRelevanceController extends Controller
 
     public function editGroupName(Request $request): JsonResponse
     {
-        $project = ProjectRelevanceHistory::where('id', '=', $request->id)->first();
-
-        $project->group_name = $request->name;
-
-        $project->save();
+        ProjectRelevanceHistory::where('id', '=', $request->id)->update([
+            'group_name' => $request->name
+        ]);
 
         return response()->json([]);
     }

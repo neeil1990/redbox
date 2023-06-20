@@ -171,7 +171,7 @@
         <input type="hidden" id="Phrases-are-being-generated" value="{{__('Phrases are being generated')}}">
         <input type="hidden" id="This-may-take-some-time" value="{{__('This may take some time.')}}">
         <input type="hidden" id="Words" value="{{__('Words')}}">
-        <input type="hidden" id="Leave-phrases" value="{{__('Leave phrases containing 123')}}">
+        <input type="hidden" id="Leave-phrases" value="{{__('Leave phrases containing')}}">
         <input type="hidden" id="Words-from-this-list" value="{{__('Words from this list will be added, including without combining with others.')}}">
         <input type="hidden" id="Add-source-list" value="{{__('Add source list')}}">
         <input type="hidden" id="Add" value="{{__('Add')}}">

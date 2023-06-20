@@ -3,9 +3,9 @@
 namespace App\Exports;
 
 use App\User;
+use App\VisitStatistic;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class FilteredUsersExport implements FromCollection
@@ -16,6 +16,7 @@ class FilteredUsersExport implements FromCollection
     public function __construct($request)
     {
         $sql = User::where('id', '>', 0);
+
         if ($request['verify'] === 'verify') {
             $sql->where('email_verified_at', '!=', NULL);
         } elseif ($request['verify'] === 'noVerify') {
@@ -23,7 +24,12 @@ class FilteredUsersExport implements FromCollection
         }
 
         if (isset($request['lastOnline'])) {
-            $sql->where('last_online_at', '<=', Carbon::parse($request['lastOnline'])->toDateTimeString());
+            if ($request['dateType'] === 'only') {
+                $usersId = VisitStatistic::whereDate('date', Carbon::parse($request['lastOnline'])->toDateString())->get(['user_id'])->pluck('user_id')->toArray();
+                $sql->whereIn('id', $usersId);
+            } else {
+                $sql->where('last_online_at', '<=', Carbon::parse($request['lastOnline'])->toDateTimeString());
+            }
         }
 
         $this->users = $sql->get();

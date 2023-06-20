@@ -33,42 +33,41 @@ class VisitStatistics
             if ($controllerAction === 'PublicController@updateStatistics') {
                 return $next($request);
             }
+
             $targetController = class_basename(Route::current()->controller);
-            $project = MainProject::where('controller', $controllerAction)
-                ->orWhere('controller', 'like', '%' . $targetController . "\n%")
-                ->orWhere('controller', 'like', "%\n" . $targetController . '%')
+
+            $project = MainProject::where('controller', 'like', '%' . $targetController . '%')
                 ->first();
 
             if (empty($project)) {
                 return $next($request);
             }
 
-            if ($project->controller === $controllerAction) {
-                $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
-            } else {
-                $config = explode("\r\n", $project->controller);
-                $callAction = last(explode('@', Route::current()->action['controller']));
+            $config = explode("\n", $project->controller);
+            $callAction = last(explode('@', Route::current()->action['controller']));
 
-                foreach ($config as $action) {
-                    if (explode('@', $action)[0] !== $targetController && explode('!', $action)[0] !== $targetController) {
-                        continue;
-                    }
-                    $action = str_replace($targetController, '', $action);
-                    if ($action === '') {
-                        continue;
-                    }
+            foreach ($config as $action) {
+                $action = str_replace("\r", "", $action);
 
-                    if ($this->findAction('!', $action, $callAction)) {
-                        return $next($request);
-                    } else if ($this->findAction('@', $action, $callAction)) {
-                        $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
-                        return $next($request);
-                    }
+                if (explode('@', $action)[0] !== $targetController && explode('!', $action)[0] !== $targetController) {
+                    continue;
+                }
+                $action = str_replace($targetController, '', $action);
+                if ($action === '') {
+                    continue;
                 }
 
-                $this->updateOrCreateVisitStatistic($project, 'actions_counter');
+                if ($this->findAction('!', $action, $callAction)) {
+                    $this->updateOrCreateVisitStatistic($project, 'actions_counter');
+                    return $next($request);
+                } else if ($this->findAction('@', $action, $callAction)) {
+                    $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
+                    return $next($request);
+                }
             }
+
             return $next($request);
+
         } catch (\Throwable $e) {
             Log::debug('visit statistics error', [
                 $e->getMessage(),

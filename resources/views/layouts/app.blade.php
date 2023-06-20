@@ -131,6 +131,7 @@
         timeTrackingRedboxInterval = startTracking()
 
         $(window).bind('focus', function () {
+            clearInterval(timeTrackingRedboxInterval)
             timeTrackingRedboxInterval = startTracking()
         });
 
@@ -140,6 +141,7 @@
         });
 
         window.onbeforeunload = function () {
+            clearInterval(timeTrackingRedboxInterval)
             updateStatistics(secondsTrackingRedbox)
         };
 

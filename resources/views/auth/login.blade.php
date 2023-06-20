@@ -97,79 +97,75 @@
             </div>
         </div>
     </div>
+@endsection
 
+@section('js')
+    <script>
+        if (navigator.language === 'en') {
+            $('#select-language').val('en')
+        } else {
+            $('#select-language').val('ru')
+        }
+
+        $(".flags").select2({
+            theme: 'bootstrap4',
+            minimumResultsForSearch: Infinity,
+            templateResult: function (state) {
+                if (!state.id) {
+                    return state.text;
+                }
+                var baseUrl = "/img/flags";
+                var $state = $(
+                    '<span><img src="' + baseUrl + '/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
+                );
+                return $state;
+            }
+        });
+    </script>
     <script>
         $(document).ready(function () {
             $('#select-language').on('change', function () {
                 if ($(this).val() === 'en') {
-                    $('#password').attr('placeholder', 'Password')
-                    $('#remember-me-label').html('Remember me')
-                    $('#login-button').html('Login')
-                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Forgot your password?')
-                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Register a new user')
-                    $('#auth-header').html('Authentication')
+                    setEngLanguage()
                 } else {
-                    $('#password').attr('placeholder', 'Пароль')
-                    $('#remember-me-label').html('Запомнить меня')
-                    $('#login-button').html('Войти')
-                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Забыли пароль?')
-                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Зарегистрировать нового пользователя')
-                    $('#auth-header').html('Аутентификация')
+                    setRuLanguage()
                 }
             })
-        })
-    </script>
-    @section('js')
-        <script>
-            if (navigator.language === 'en') {
-                $('#select-language').val('en')
-            } else {
-                $('#select-language').val('ru')
+
+            function setEngLanguage() {
+                $('#password').attr('placeholder', 'Password')
+                $('#remember-me-label').html('Remember me')
+                $('#login-button').html('Login')
+                $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Forgot your password?')
+                $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Register a new user')
+                $('#auth-header').html('Log in to the system')
             }
 
-            $(".flags").select2({
-                theme: 'bootstrap4',
-                minimumResultsForSearch: Infinity,
-                templateResult: function (state) {
-                    if (!state.id) {
-                        return state.text;
-                    }
-                    var baseUrl = "/img/flags";
-                    var $state = $(
-                        '<span><img src="' + baseUrl + '/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
-                    );
-                    return $state;
-                }
-            });
-        </script>
-        <script>
-            $(document).ready(function () {
-                $('#select-language').on('change', function () {
-                    if ($(this).val() === 'en') {
-                        setEngLanguage()
-                    } else {
-                        setRuLanguage()
-                    }
-                })
+            function setRuLanguage() {
+                $('#password').attr('placeholder', 'Пароль')
+                $('#remember-me-label').html('Запомнить меня')
+                $('#login-button').html('Войти')
+                $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Забыли пароль?')
+                $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Зарегистрировать нового пользователя')
+                $('#auth-header').html('Вход в систему')
+            }
+        })
+    </script>
+    <script>
+        if (localStorage.getItem('_user_metrics_redbox') != '' && localStorage.getItem('_user_metrics_redbox') != undefined) {
+            let registerButtons = $("a[href='{{ route('register') }}']");
 
-                function setEngLanguage() {
-                    $('#password').attr('placeholder', 'Password')
-                    $('#remember-me-label').html('Remember me')
-                    $('#login-button').html('Login')
-                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Forgot your password?')
-                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Register a new user')
-                    $('#auth-header').html('Log in to the system')
-                }
-
-                function setRuLanguage() {
-                    $('#password').attr('placeholder', 'Пароль')
-                    $('#remember-me-label').html('Запомнить меня')
-                    $('#login-button').html('Войти')
-                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-primary').html('<i class="fas fa-key mr-2"></i> Забыли пароль?')
-                    $('body > div > div > div.card-body > div > a.btn.btn-block.btn-danger').html('<i class="fas fa-registered mr-2"></i> Зарегистрировать нового пользователя')
-                    $('#auth-header').html('Вход в систему')
-                }
+            $.each(registerButtons, function (k, element) {
+                element.href += localStorage.getItem('_user_metrics_redbox');
             })
-        </script>
-    @endsection
+
+        } else if (new URL(window.location.href)['search'] != '' && new URL(window.location.href)['search'] != undefined) {
+            let registerButtons = $("a[href='{{ route('register') }}']");
+
+            $.each(registerButtons, function (k, element) {
+                element.href += new URL(window.location.href)['search'];
+            })
+        }
+    </script>
 @endsection
+

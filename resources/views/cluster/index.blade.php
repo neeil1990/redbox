@@ -135,6 +135,7 @@
             </div>
         </div>
     </div>
+
     @slot('js')
         <script>
             $('#tab_1 > div.w-50.pb-3 > div:nth-child(4)').hide()

@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Log;
 
 class UsersJobs extends Model
 {
@@ -11,10 +12,6 @@ class UsersJobs extends Model
 
     protected $table = 'users_jobs';
 
-    /**
-     * @param $userId
-     * @return string
-     */
     public static function getPriority($userId): string
     {
         $job = UsersJobs::firstOrNew(['user_id' => $userId]);
@@ -25,7 +22,7 @@ class UsersJobs extends Model
             } elseif ($job->count_jobs <= 20) {
                 $priority = 'medium';
             } else {
-                $priority = 'default';
+                $priority = 'normal';
             }
             $job->count_jobs++;
         } else {

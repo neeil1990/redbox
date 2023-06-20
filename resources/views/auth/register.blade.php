@@ -226,8 +226,11 @@
                 }
             })
 
-            let url = window.location.href
-            $('#utm-metrics').val(new URL(url)['search'])
+            if (localStorage.getItem('_user_metrics_redbox') != '' && localStorage.getItem('_user_metrics_redbox') != undefined) {
+                $('#utm-metrics').val(localStorage.getItem('_user_metrics_redbox'))
+            } else if (new URL(window.location.href)['search'] != '' && new URL(window.location.href)['search'] != undefined) {
+                $('#utm-metrics').val(new URL(window.location.href)['search'])
+            }
         })
     </script>
 
@@ -272,8 +275,8 @@
         function checkValid() {
             if (isDataValid()) {
                 $.ajax({
-                    method: "post",
-                    dataType: "json",
+                    method: 'post',
+                    dataType: 'json',
                     data: getData(),
                     url: "{{ route('validate.registration.form') }}",
                     error: function (response) {
@@ -282,7 +285,7 @@
                             messages = JSON.stringify(response.responseJSON.errors);
                             $(".render-li").remove()
                             $.each(response.responseJSON.errors, function (key, value) {
-                                $("#validate-messages").append('<li class="render-li alert p-0">' + value.join() + '</li>')
+                                $('#validate-messages').append('<li class="render-li alert p-0">' + value.join() + '</li>')
                             })
                         }
 
@@ -290,8 +293,8 @@
                         $('#sendFormButton').hide();
                         $('#sendFormButton').attr('type', 'button')
                     },
-                    success: function (response) {
-                        $(".render-li").remove()
+                    success: function () {
+                        $('.render-li').remove()
                         $('#fakeButton').hide();
                         $('#sendFormButton').show();
                         $('#sendFormButton').attr('type', 'submit')

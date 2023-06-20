@@ -123,7 +123,6 @@ class MonitoringCompetitor extends Model
                 ->get(['search_indices.url', 'search_indices.position', 'search_indices.created_at', 'search_indices.query'])
                 ->toArray();
 
-            Log::debug('microtime', [microtime(true) - $start]);
             foreach ($records as $record) {
                 try {
                     $url = Common::domainFilter(parse_url($record->url)['host']);
