@@ -204,7 +204,7 @@ class Relevance
 
         RemoveRelevanceProgress::dispatch($this->scanHash)
             ->onQueue('normal')
-            ->delay(now()->addSeconds(60));
+            ->delay(now()->addSeconds(100));
     }
 
     public function separateAllText()
