@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class RemoveAllDuplicatesFromSearchIndicesTable extends Command
+class SearchIndicesRemoveAll extends Command
 {
     /**
      * The name and signature of the console command.
