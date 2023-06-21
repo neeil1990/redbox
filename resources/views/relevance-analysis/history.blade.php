@@ -440,12 +440,9 @@
                         @foreach($main as $item)
                             <tr id="story-id-{{ $item->id }}">
                                 <td data-order="{{ $item->name }}">
-                                    <a href="#history_table_{{ $item->name }}"
-                                       class="project_name"
-                                       style="cursor:pointer;"
-                                       data-order="{{ $item->id }}">
+                                    <span>
                                         {{ $item->name }}
-                                    </a>
+                                    </span>
                                     <div>
 
                                         <i class="fa fa-table project_name"
