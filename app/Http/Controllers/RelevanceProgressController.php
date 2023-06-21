@@ -33,9 +33,7 @@ class RelevanceProgressController extends Controller
         $progress = RelevanceProgress::where('hash', '=', $request->hash)->first();
 
         if (isset($progress) && $progress->progress === 100) {
-            $start = microtime(true);
             $history = RelevanceHistoryResult::where('hash', '=', $request->hash)->first();
-            Log::debug('время поулчения записи', [microtime(true) - $start]);
 
             if (isset($history)) {
                 return response()->json([

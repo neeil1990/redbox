@@ -417,7 +417,7 @@
                         <div class="d-flex flex-column pb-3">
                             <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3"
                                     style="cursor: pointer">
-                                "{{ __('TF-idf clouds of sites from the top and landing page') }}"
+                                {{ __('TF-idf clouds of sites from the top and landing page') }}
                             </button>
                             <div class="tf-idf-clouds" style="display: none">
                                 <div class="d-lg-flex mt-4 justify-content-around">
