@@ -7,6 +7,7 @@ use App\RelevanceHistoryResult;
 use App\RelevanceProgress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class RelevanceProgressController extends Controller
 {
@@ -32,9 +33,14 @@ class RelevanceProgressController extends Controller
         $progress = RelevanceProgress::where('hash', '=', $request->hash)->first();
 
         if (isset($progress) && $progress->progress === 100) {
+            $start = microtime(true);
             $history = RelevanceHistoryResult::where('hash', '=', $request->hash)->first();
+            Log::debug('время поулчения записи', [microtime(true) - $start]);
 
             if (isset($history)) {
+                $start = microtime(true);
+                $uncompress = Relevance::uncompress($history);
+                Log::debug('время распоковки', [microtime(true) - $start]);
                 return response()->json([
                     'progress' => $progress->progress,
                     'result' => Relevance::uncompress($history)
