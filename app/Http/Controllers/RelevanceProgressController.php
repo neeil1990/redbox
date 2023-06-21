@@ -38,9 +38,6 @@ class RelevanceProgressController extends Controller
             Log::debug('время поулчения записи', [microtime(true) - $start]);
 
             if (isset($history)) {
-                $start = microtime(true);
-                $uncompress = Relevance::uncompress($history);
-                Log::debug('время распоковки', [microtime(true) - $start]);
                 return response()->json([
                     'progress' => $progress->progress,
                     'result' => Relevance::uncompress($history)
