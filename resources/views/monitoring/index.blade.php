@@ -51,14 +51,6 @@
         </style>
     @endslot
 
-    @hasanyrole('Super Admin|admin')
-    <div class="row mb-2">
-        <div class="col-6">
-            @include('monitoring.admin._btn')
-        </div>
-    </div>
-    @endhasanyrole
-
     <div class="row mb-1">
         @include('monitoring.partials._buttons')
     </div>
@@ -66,6 +58,14 @@
     <div class="row">
         @include('monitoring.partials._table')
     </div>
+
+    @hasanyrole('Super Admin|admin')
+    <div class="row mb-2">
+        <div class="col-12">
+            @include('monitoring.admin._btn')
+        </div>
+    </div>
+    @endhasanyrole
 
     @include('monitoring.keywords.modal.main')
 

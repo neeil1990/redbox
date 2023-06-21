@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class DeleteRecordsFromSearchIndicesTable extends Command
+class SearchIndicesDelete extends Command
 {
     /**
      * The name and signature of the console command.
@@ -47,5 +47,3 @@ class DeleteRecordsFromSearchIndicesTable extends Command
         $this->info("Deleted $cnt records!");
     }
 }
-
-
