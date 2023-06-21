@@ -443,46 +443,44 @@
                                     <span>
                                         {{ $item->name }}
                                     </span>
-                                    <div>
 
-                                        <i class="fa fa-table project_name"
-                                           data-order="{{ $item->id }}"
-                                           style="opacity: 0.6; cursor:pointer;"></i>
+                                    <i class="fa fa-table project_name"
+                                       data-order="{{ $item->id }}"
+                                       style="opacity: 0.6; cursor:pointer;"></i>
 
-                                        <i class="fa fa-list project_name_v2"
-                                           data-order="{{ $item->id }}"
-                                           style="opacity: 0.6; cursor:pointer;"></i>
+                                    <i class="fa fa-list project_name_v2"
+                                       data-order="{{ $item->id }}"
+                                       style="opacity: 0.6; cursor:pointer;"></i>
 
-                                        <div class="dropdown" style="display: inline">
-                                            <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
-                                               aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <div class="dropdown" style="display: inline">
+                                        <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
+                                           aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <span class="dropdown-item project_name"
                                                   style="cursor:pointer;"
                                                   data-order="{{ $item->id }}">
                                                 <i class="fa fa-table"></i>
                                                 {{ __('Show the results of the analysis') }}
                                             </span>
-                                                <span class="dropdown-item project_name_v2"
-                                                      style="cursor:pointer;"
-                                                      data-order="{{ $item->id }}">
+                                            <span class="dropdown-item project_name_v2"
+                                                  style="cursor:pointer;"
+                                                  data-order="{{ $item->id }}">
                                                 <i class="fa fa-list"></i>
                                                 {{ __('View the results in a list') }}
                                             </span>
-                                                <span class="dropdown-item"
-                                                      style="cursor:pointer;"
-                                                      data-toggle="modal" data-target="#removeModal{{ $item->id }}">
+                                            <span class="dropdown-item"
+                                                  style="cursor:pointer;"
+                                                  data-toggle="modal" data-target="#removeModal{{ $item->id }}">
                                                 <i class="fa fa-trash"></i>
                                                 {{ __('Delete results without comments') }}
                                             </span>
-                                                <span class="dropdown-item"
-                                                      style="cursor:pointer;"
-                                                      data-toggle="modal"
-                                                      data-target="#removeWithFiltersModal{{ $item->id }}">
+                                            <span class="dropdown-item"
+                                                  style="cursor:pointer;"
+                                                  data-toggle="modal"
+                                                  data-target="#removeWithFiltersModal{{ $item->id }}">
                                                 <i class="fa fa-trash"></i>
                                                 {{ __('Delete using filters') }}
                                             </span>
-                                            </div>
                                         </div>
                                     </div>
                                 </td>
