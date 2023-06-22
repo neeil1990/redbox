@@ -1320,9 +1320,7 @@ class Relevance
         }
         $toDay->save();
 
-        if ($this->queue) {
-            UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
-        }
+        UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
 
         Log::debug('Relevance Error', [
             'file' => $exception->getFile(),
