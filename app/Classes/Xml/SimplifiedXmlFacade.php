@@ -127,14 +127,18 @@ class SimplifiedXmlFacade extends XmlFacade
             $this->setPath('https://xmlstock.com/yandex/xml/');
             $this->setUser(config('xmlstock.user'));
             $this->setKey(config('xmlstock.key'));
+
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+
         } elseif ($attempt >= 3 && $attempt <= 4) {
             $this->setPath('https://xmlproxy.ru/search/xml');
             $this->setUser(config('xmlproxy.user'));
             $this->setKey(config('xmlproxy.key'));
+
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+
         } elseif ($attempt >= 5 && $attempt <= 6) {
             $this->setPath('https://xmlriver.com/search_yandex/xml');
             $this->setUser(config('xmlriver.user'));

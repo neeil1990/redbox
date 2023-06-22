@@ -91,5 +91,6 @@ class RelevanceHistoryQueue implements ShouldQueue
             $this->relevance->saveError($exception);
         }
 
+        die();
     }
 }
