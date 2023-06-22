@@ -3,6 +3,7 @@
 namespace App\Jobs\Relevance;
 
 use App\RelevanceProgress;
+use App\UsersJobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

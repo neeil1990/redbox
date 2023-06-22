@@ -1161,6 +1161,8 @@ class Relevance
                 $this->saveHistoryResult($id);
             }
         }
+
+        UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
     }
 
     public function saveHistoryResult($id)
