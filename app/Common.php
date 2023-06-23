@@ -19,20 +19,20 @@ class Common
         rename($filePath, $newFileName);
 
         $headers = [
-            'Content-Description' => 'File Transfer',
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=' . basename($newFileName),
-            'Content-Transfer-Encoding' => 'binary',
+//            'Content-Description' => 'File Transfer',
+//            'Content-Type' => 'text/csv',
+//            'Content-Disposition' => 'attachment; filename=' . basename($newFileName),
+//            'Content-Transfer-Encoding' => 'binary',
         ];
 
-        foreach ($headers as $header => $value) {
-            header("$header: $value");
-        }
+//        foreach ($headers as $header => $value) {
+//            header("$header: $value");
+//        }
 
         // Определяем размер файла
         $fileSize = filesize($newFileName);
-        header('Content-Length: ' . $fileSize);
         dd($fileSize);
+        header('Content-Length: ' . $fileSize);
 
         // Читаем файл и отправляем его на скачивание
         $fileHandle = fopen($newFileName, 'rb');
