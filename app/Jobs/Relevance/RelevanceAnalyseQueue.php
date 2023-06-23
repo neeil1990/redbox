@@ -24,11 +24,6 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public $userId;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
     public function __construct($request, $exp, $userId, $type)
     {
         $this->request = $request;
@@ -37,11 +32,6 @@ class RelevanceAnalyseQueue implements ShouldQueue
         $this->userId = $userId;
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
         $relevance = new Relevance($this->request, $this->userId);

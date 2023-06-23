@@ -54,42 +54,31 @@ class RelevanceHistoryQueue implements ShouldQueue
     public function handle()
     {
         $this->relevance = new Relevance($this->request, $this->userId, true);
+        if ($this->type == 'full') {
+            $this->relevance->getMainPageHtml();
 
-        try {
-            if ($this->type == 'full') {
-                $this->relevance->getMainPageHtml();
+            if ($this->request['type'] == 'phrase') {
+                $this->relevance->analysisByPhrase($this->request, false);
 
-                if ($this->request['type'] == 'phrase') {
-                    $this->relevance->analysisByPhrase($this->request, false);
-
-                } elseif ($this->request['type'] == 'list') {
-                    $this->relevance->analysisByList($this->request);
-                }
-
-            } elseif ($this->type == 'mainPage') {
-                $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
-
-                $this->relevance->getMainPageHtml();
-                $this->relevance->setSites($info->sites);
-
-            } elseif ($this->type == 'competitors') {
-                $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
-
-                $this->relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
-                $this->relevance->setDomains($info->sites);
-                $this->relevance->parseSites();
+            } elseif ($this->request['type'] == 'list') {
+                $this->relevance->analysisByList($this->request);
             }
 
-            $this->relevance->analysis($this->historyId);
-            UsersJobs::where('user_id', '=', $this->userId)->decrement('count_jobs');
+        } elseif ($this->type == 'mainPage') {
+            $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
 
-        } catch (\Throwable $exception) {
-            RelevanceHistory::where('id', '=', $this->request['id'])->update([
-                'state' => '-1'
-            ]);
+            $this->relevance->getMainPageHtml();
+            $this->relevance->setSites($info->sites);
 
-            $this->relevance->saveError($exception);
+        } elseif ($this->type == 'competitors') {
+            $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
+
+            $this->relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
+            $this->relevance->setDomains($info->sites);
+            $this->relevance->parseSites();
         }
+
+        $this->relevance->analysis($this->historyId);
 
         die();
     }
