@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalyseQueue implements ShouldQueue
 {
@@ -24,6 +23,8 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public $userId;
 
+    public $relevance;
+
     public function __construct($request, $exp, $userId, $type)
     {
         $this->request = $request;
@@ -34,14 +35,14 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public function handle()
     {
-        $relevance = new Relevance($this->request, $this->userId);
+        $this->relevance = new Relevance($this->request, $this->userId);
         if ($this->type === 'full') {
-            $relevance->getMainPageHtml();
+            $this->relevance->getMainPageHtml();
 
             if ($this->request['type'] == 'phrase') {
-                $relevance->analysisByPhrase($this->request, $this->exp);
+                $this->relevance->analysisByPhrase($this->request, $this->exp);
             } elseif ($this->request['type'] == 'list') {
-                $relevance->analysisByList($this->request);
+                $this->relevance->analysisByList($this->request);
             }
 
         } else if ($this->type === 'competitors') {
@@ -50,20 +51,25 @@ class RelevanceAnalyseQueue implements ShouldQueue
             $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
                 ->where('page_hash', '=', $this->request['pageHash'])
                 ->first();
-            $relevance->setMainPage($params->html_main_page);
-            $relevance->setDomains($params->sites);
-            $relevance->parseSites();
+            $this->relevance->setMainPage($params->html_main_page);
+            $this->relevance->setDomains($params->sites);
+            $this->relevance->parseSites();
         } else if ($this->type === 'main') {
             RelevanceProgress::editProgress(15, $this->request);
 
             $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
                 ->where('page_hash', '=', $this->request['pageHash'])
                 ->first();
-            $relevance->getMainPageHtml();
-            $relevance->setSites($params->sites);
+            $this->relevance->getMainPageHtml();
+            $this->relevance->setSites($params->sites);
         }
 
-        $relevance->analysis();
+        $this->relevance->analysis();
         die();
+    }
+
+    public function failed(\Throwable $exception)
+    {
+        $this->relevance->saveError($exception);
     }
 }
