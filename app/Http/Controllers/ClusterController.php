@@ -271,7 +271,6 @@ class ClusterController extends Controller
 
     public function downloadClusterResult(ClusterResults $cluster, string $type)
     {
-        dd($type);
         if ($cluster->created_at <= Carbon::parse('00:00 22.02.2023')) {
             return abort(403, __('In order to edit this result, you need to reshoot it'));
         }
@@ -285,6 +284,7 @@ class ClusterController extends Controller
             }
 
             $file = Excel::download(new ClusterResultExport($cluster), $fileName . '.' . $type);
+            dd($file);
             Common::fileExport($file, $type, $fileName);
         }
 
