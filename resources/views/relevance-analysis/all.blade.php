@@ -200,15 +200,13 @@
                         @foreach($projects as $item)
                             <tr id="story-id-{{ $item->id }}">
                                 <td>
-                                    <span class="project_name nav-link"
+                                    <span class="project_name"
                                           style="cursor:pointer;"
                                           data-order="{{ $item->id }}">
                                         {{ $item->name }}
-                                    </span>
-
-                                    <i class="fa fa-table project_name"
-                                       data-order="{{ $item->id }}"
-                                       style="opacity: 0.6; cursor:pointer;"></i>
+                                                                            <i class="fa fa-table project_name"
+                                                                               data-order="{{ $item->id }}"
+                                                                               style="opacity: 0.6; cursor:pointer;"></i>
 
                                     <i class="fa fa-list project_name_v2"
                                        data-order="{{ $item->id }}"
@@ -245,6 +243,7 @@
                                             </span>
                                         </div>
                                     </div>
+                                    </span>
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
