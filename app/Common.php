@@ -16,30 +16,17 @@ class Common
 
         $filePath = storage_path('framework/laravel-excel/' . $fileName);
         $newFileName = storage_path('framework/laravel-excel/' . $name) . '.' . $type;
+
         rename($filePath, $newFileName);
 
-        $headers = [
-//            'Content-Description' => 'File Transfer',
-//            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=' . basename($newFileName),
-            'Content-Transfer-Encoding' => 'binary',
-        ];
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename=' . basename($newFileName));
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($newFileName));
 
-        foreach ($headers as $header => $value) {
-            header("$header: $value");
-        }
+        readfile($newFileName);
 
-        // Определяем размер файла
-        $fileSize = filesize($newFileName);
-        header('Content-Length: ' . $fileSize);
-
-        // Читаем файл и отправляем его на скачивание
-        $fileHandle = fopen($newFileName, 'rb');
-        dd($fileHandle);
-        fpassthru($fileHandle);
-        fclose($fileHandle);
-
-        // Удаляем временный файл
         unlink($newFileName);
     }
 
