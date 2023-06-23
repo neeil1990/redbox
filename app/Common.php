@@ -32,6 +32,7 @@ class Common
         // Определяем размер файла
         $fileSize = filesize($newFileName);
         header('Content-Length: ' . $fileSize);
+        dump($fileSize);
 
         // Читаем файл и отправляем его на скачивание
         $fileHandle = fopen($newFileName, 'rb');
@@ -39,7 +40,7 @@ class Common
         fclose($fileHandle);
 
         // Удаляем временный файл
-//        unlink($newFileName);
+        unlink($newFileName);
     }
 
     public static function uncompressArray($string, $decode = true)
