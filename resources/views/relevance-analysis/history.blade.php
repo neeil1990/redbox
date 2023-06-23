@@ -441,8 +441,8 @@
                             <tr id="story-id-{{ $item->id }}">
                                 <td data-order="{{ $item->name }}">
                                     <span class="project_name"
-                                       style="cursor:pointer;"
-                                       data-order="{{ $item->id }}">
+                                          style="cursor:pointer;"
+                                          data-order="{{ $item->id }}">
                                         {{ $item->name }}
                                         <i class="fa fa-table project_name"
                                            data-order="{{ $item->id }}"
@@ -976,401 +976,8 @@
                     "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
                     "sEmptyTable": "{{ __('No records') }}",
                     "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
-                }
-            });
-
-            $(".dt-button").addClass('btn btn-secondary')
-
-            $('.repeat-scan-unique-sites').on('click', function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/repeat-scan-unique-sites",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        id: $(this).attr('data-target'),
-                    },
-                    success: function (response) {
-                        if (response.code === 200) {
-                            getSuccessMessage(response.message)
-                            $.each(response.object, function (key, value) {
-                                $('#history-state-' + value).html(
-                                    '<p>Обрабатывается..</p>' +
-                                    '<div class="text-center" id="preloaderBlock">' +
-                                    '        <div class="three col">' +
-                                    '            <div class="loader" id="loader-1"></div>' +
-                                    '        </div>' +
-                                    '</div>'
-                                )
-                            })
-
-                        } else if (response.code === 415) {
-                            getErrorMessage(response.message)
-                        }
-                    },
-                });
-            })
-
-            $('.start-through-analyse').on('click', function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/start-through-analyse",
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        id: $(this).attr('data-target'),
-                    },
-                    success: function (response) {
-                        if (response.code === 200) {
-                            getSuccessMessage(response.message, 5000)
-                        } else if (response.code === 415) {
-                            getErrorMessage(response.message, 15000)
-                        }
-                    },
-                });
-            })
-
-
-            $('input#switchMyListWords').click(function () {
-                if ($(this).is(':checked')) {
-                    $('.form-group.required.list-words.mt-1').show(300)
-                } else {
-                    $('.form-group.required.list-words.mt-1').hide(300)
-                }
-            })
-
-            function getRegionName(id) {
-                switch (id) {
-                    case '1' :
-                        return "{{ __('Moscow and the area') }}";
-                    case '20' :
-                        return "{{ __('Arkhangelsk') }}";
-                    case '10649' :
-                        return "{{ __('Stary Oskol') }}";
-                    case '37' :
-                        return "{{ __('Astrakhan') }}";
-                    case '197' :
-                        return "{{ __('Barnaul') }}";
-                    case '4' :
-                        return "{{ __('Belgorod') }}";
-                    case '77' :
-                        return "{{ __('Blagoveshchensk') }}";
-                    case '191' :
-                        return "{{ __('Bryansk') }}";
-                    case '24' :
-                        return "{{ __('Veliky Novgorod') }}";
-                    case '75' :
-                        return "{{ __('Vladivostok') }}";
-                    case '33' :
-                        return "{{ __('Vladikavkaz') }}";
-                    case '192' :
-                        return "{{ __('Vladimir') }}";
-                    case '38' :
-                        return "{{ __('Volgograd') }}";
-                    case '21' :
-                        return "{{ __('Vologda') }}";
-                    case '193' :
-                        return "{{ __('Voronezh') }}";
-                    case '1106' :
-                        return "{{ __('Grozny') }}";
-                    case '54' :
-                        return "{{ __('Ekaterinburg') }}";
-                    case '5' :
-                        return "{{ __('Ivanovo') }}";
-                    case '63' :
-                        return "{{ __('Irkutsk') }}";
-                    case '41' :
-                        return "{{ __('Yoshkar-ola') }}";
-                    case '43' :
-                        return "{{ __('Kazan') }}";
-                    case '22' :
-                        return "{{ __('Kaliningrad') }}";
-                    case '64' :
-                        return "{{ __('Kemerovo') }}";
-                    case '7' :
-                        return "{{ __('Kostroma') }}";
-                    case '35' :
-                        return "{{ __('Krasnodar') }}";
-                    case '62' :
-                        return "{{ __('Krasnoyarsk') }}";
-                    case '53' :
-                        return "{{ __('Kurgan') }}";
-                    case '8' :
-                        return "{{ __('Kursk') }}";
-                    case '9' :
-                        return "{{ __('Lipetsk') }}";
-                    case '28' :
-                        return "{{ __('Makhachkala') }}";
-                    case '213' :
-                        return "{{ __('Moscow') }}";
-                    case '23' :
-                        return "{{ __('Murmansk') }}";
-                    case '1092' :
-                        return "{{ __('Nazran') }}";
-                    case '30' :
-                        return "{{ __('Nalchik') }}";
-                    case '47' :
-                        return "{{ __('Nizhniy Novgorod') }}";
-                    case '65' :
-                        return "{{ __('Novosibirsk') }}";
-                    case '66' :
-                        return "{{ __('Omsk') }}";
-                    case '10' :
-                        return "{{ __('Eagle') }}";
-                    case '48' :
-                        return "{{ __('Orenburg') }}";
-                    case '49' :
-                        return "{{ __('Penza') }}";
-                    case '50' :
-                        return "{{ __('Perm') }}";
-                    case '25' :
-                        return "{{ __('Pskov') }}";
-                    case '39' :
-                        return "{{ __('Rostov-on') }}";
-                    case '11' :
-                        return "{{ __('Ryazan') }}";
-                    case '51' :
-                        return "{{ __('Samara') }}";
-                    case '42' :
-                        return "{{ __('Saransk') }}";
-                    case '2' :
-                        return "{{ __('Saint-Petersburg') }}";
-                    case '12' :
-                        return "{{ __('Smolensk') }}";
-                    case '239' :
-                        return "{{ __('Sochi') }}";
-                    case '36' :
-                        return "{{ __('Stavropol') }}";
-                    case '973' :
-                        return "{{ __('Surgut') }}";
-                    case '13' :
-                        return "{{ __('Tambov') }}";
-                    case '14' :
-                        return "{{ __('Tver') }}";
-                    case '67' :
-                        return "{{ __('Tomsk') }}";
-                    case '15' :
-                        return "{{ __('Tula') }}";
-                    case '195' :
-                        return "{{ __('Ulyanovsk') }}";
-                    case '172' :
-                        return "{{ __('Ufa') }}";
-                    case '76' :
-                        return "{{ __('Khabarovsk') }}";
-                    case '45' :
-                        return "{{ __('Cheboksary') }}";
-                    case '56' :
-                        return "{{ __('Chelyabinsk') }}";
-                    case '1104' :
-                        return "{{ __('Cherkessk') }}";
-                    case '16' :
-                        return "{{ __('Yaroslavl') }}";
-                }
-            }
-
-            setInterval(() => {
-                refreshMethods()
-            }, 200)
-
-            function refreshMethods() {
-                $('.create-new-link').unbind().on('click', function () {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('create.link.project.with.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            projectId: $('#project-id').val(),
-                            tagId: $('#tag-id').val()
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                $('#project-' + response.project.id).append(
-                                    '<div style="color: ' + response.tag.color + '" id="tag-' + response.tag.id + '-item-' + response.project.id + '">' + response.tag.name + '' +
-                                    ' <i class="fa fa-trash" style="opacity: 0.5; cursor: pointer" data-toggle="modal"' +
-                                    ' data-target=#removeTagModal' + response.timestamps + '></i>' +
-                                    '</div>'
-                                )
-                                $('#removeLinksModals').append(
-                                    '<div class="modal fade" id="removeTagModal' + response.timestamps + '" aria-labelledby="removeTagModal' + response.timestamps + 'Label" aria-hidden="true"> ' +
-                                    '   <div class="modal-dialog"> ' +
-                                    '       <div class="modal-content"> ' +
-                                    '           <div class="modal-header"> ' +
-                                    '               <button type="button" class="close" data-dismiss="modal" ' +
-                                    '               aria-label="Close"> ' +
-                                    '               <span aria-hidden="true">&times;</span> ' +
-                                    '               </button> ' +
-                                    '           </div> ' +
-                                    '       <div class="modal-body"> {{ __('Are you going to untie the label from the project, are you sure?') }} ' +
-                                    '   </div> ' +
-                                    '   <div class="modal-footer"> ' +
-                                    '           <button type="button"' +
-                                    '               class="btn btn-secondary remove-project-relevance-link"' +
-                                    '               data-tag="' + response.tag.id + '" ' +
-                                    '               data-history="' + response.project.id + '" data-dismiss="modal">{{ __('Remove tag') }}' +
-                                    '           </button> ' +
-                                    '           <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}' +
-                                    '           </button>' +
-                                    '           </div>' +
-                                    '       </div>' +
-                                    '   </div>' +
-                                    '</div>')
-                                getSuccessMessage(response.message)
-                            } else if (response.code === 415) {
-                                getErrorMessage(response.message)
-                            }
-                        },
-                    });
-                })
-
-                $('#create-tag').unbind().on('click', function () {
-                    if ($('#tag-name').val() !== '') {
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "{{ route('store.relevance.tag') }}",
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                name: $('#tag-name').val(),
-                                color: $('#tag-color').val()
-                            },
-                            success: function (response) {
-                                if (response.code === 201) {
-                                    $('#tags-list').append(
-                                        '<li data-target="' + response.tag.id + '"> ' +
-                                        '   <div class="btn-group mb-2"> ' +
-                                        '<input type="color" class="tag-color-input" data-target="' + response.tag.id + '" value="' + response.tag.color + '" style="height: 37px">' +
-                                        '       <input type="text" class="form form-control w-100 tag-name-input d-inline" style="display: inline !important;" ' +
-                                        '       data-target="' + response.tag.id + '" value="' + response.tag.name + '">' +
-                                        '<button type="button" class="btn btn-secondary col-2 remove-tag" data-target="' + response.tag.id + '"> ' +
-                                        '       <i class="fa fa-trash text-white"></i></button> ' +
-                                        '   </div> ' +
-                                        '</li>'
-                                    )
-                                    getSuccessMessage(response.message)
-
-                                    $('#tag-id').append(
-                                        '<option value="' + response.tag.id + '" id="option-tag-' + response.tag.id + '">' + response.tag.name + '</option>'
-                                    )
-                                } else if (response.code === 415) {
-                                    getErrorMessage(response.message)
-                                }
-                            },
-                        });
-                    } else {
-                        getErrorMessage('Название метки не может быть пустым')
-                    }
-                })
-
-                $('.remove-tag').unbind().on('click', function () {
-                    let ojb = $(this)
-                    let id = $(this).attr('data-target')
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('destroy.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target')
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage(response.message)
-                                ojb.parent().parent().remove()
-                                $('#option-tag-' + id).remove()
-                            }
-                        },
-                    });
-                })
-
-                $('.tag-name-input').unbind().on('change', function () {
-                    var prev = this.defaultValue;
-                    var current = $(this).val();
-
-                    let id = $(this).attr('data-target')
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('edit.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target'),
-                            name: $(this).val()
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage(response.message)
-                            }
-                        },
-                    });
-                    this.defaultValue = current
-                })
-
-                $('.tag-color-input').unbind().on('change', function () {
-                    let id = $(this).attr('data-target')
-                    let color = $(this).val()
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('edit.relevance.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-target'),
-                            color: $(this).val()
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                getSuccessMessage(response.message)
-                            } else if (response.code === 415) {
-                                getErrorMessage(response.message)
-                            }
-                        },
-                    });
-                })
-
-                $('.remove-project-relevance-link').unbind().on('click', function () {
-                    let elem = $(this)
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "{{ route('destroy.link.project.with.tag') }}",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            tagId: $(this).attr('data-tag'),
-                            projectId: $(this).attr('data-history')
-                        },
-                        success: function (response) {
-                            if (response.code === 200) {
-                                let tId = elem.attr('data-tag')
-                                let iId = elem.attr('data-history')
-                                $("#tag-" + tId + "-item-" + iId).remove()
-                                getSuccessMessage(response.message)
-                            } else if (response.code === 415) {
-                                getErrorMessage(response.message)
-                            }
-                        },
-                    });
-                })
-            }
-
-            function getSuccessMessage(message, time = 3000) {
-                $('.toast-top-right.success-message').show(300)
-                $('#message-info').html(message)
-                setTimeout(() => {
-                    $('.toast-top-right.success-message').hide(300)
-                }, time)
-            }
-
-            function getErrorMessage(message, time = 3000) {
-                $('.toast-top-right.error-message').show(300)
-                $('#message-error-info').html(message)
-                setTimeout(() => {
-                    $('.toast-top-right.error-message').hide(300)
-                }, time)
-            }
-
-            $(document).ready(function () {
-                setInterval(() => {
+                },
+                drawCallback: function () {
                     $('#changeAllState, #changeAllStateList').unbind().on('change', function () {
                         let state = $(this).is(':checked')
                         $.each($('.custom-control-input.switch'), function () {
@@ -1722,8 +1329,393 @@
                     })
 
                     getHistoryInfo()
-                }, 500)
+                }
+            });
+
+            $(".dt-button").addClass('btn btn-secondary')
+
+            $('.repeat-scan-unique-sites').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/repeat-scan-unique-sites",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: $(this).attr('data-target'),
+                    },
+                    success: function (response) {
+                        if (response.code === 200) {
+                            getSuccessMessage(response.message)
+                            $.each(response.object, function (key, value) {
+                                $('#history-state-' + value).html(
+                                    '<p>Обрабатывается..</p>' +
+                                    '<div class="text-center" id="preloaderBlock">' +
+                                    '        <div class="three col">' +
+                                    '            <div class="loader" id="loader-1"></div>' +
+                                    '        </div>' +
+                                    '</div>'
+                                )
+                            })
+
+                        } else if (response.code === 415) {
+                            getErrorMessage(response.message)
+                        }
+                    },
+                });
             })
+
+            $('.start-through-analyse').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/start-through-analyse",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: $(this).attr('data-target'),
+                    },
+                    success: function (response) {
+                        if (response.code === 200) {
+                            getSuccessMessage(response.message, 5000)
+                        } else if (response.code === 415) {
+                            getErrorMessage(response.message, 15000)
+                        }
+                    },
+                });
+            })
+
+
+            $('input#switchMyListWords').click(function () {
+                if ($(this).is(':checked')) {
+                    $('.form-group.required.list-words.mt-1').show(300)
+                } else {
+                    $('.form-group.required.list-words.mt-1').hide(300)
+                }
+            })
+
+            function getRegionName(id) {
+                switch (id) {
+                    case '1' :
+                        return "{{ __('Moscow and the area') }}";
+                    case '20' :
+                        return "{{ __('Arkhangelsk') }}";
+                    case '10649' :
+                        return "{{ __('Stary Oskol') }}";
+                    case '37' :
+                        return "{{ __('Astrakhan') }}";
+                    case '197' :
+                        return "{{ __('Barnaul') }}";
+                    case '4' :
+                        return "{{ __('Belgorod') }}";
+                    case '77' :
+                        return "{{ __('Blagoveshchensk') }}";
+                    case '191' :
+                        return "{{ __('Bryansk') }}";
+                    case '24' :
+                        return "{{ __('Veliky Novgorod') }}";
+                    case '75' :
+                        return "{{ __('Vladivostok') }}";
+                    case '33' :
+                        return "{{ __('Vladikavkaz') }}";
+                    case '192' :
+                        return "{{ __('Vladimir') }}";
+                    case '38' :
+                        return "{{ __('Volgograd') }}";
+                    case '21' :
+                        return "{{ __('Vologda') }}";
+                    case '193' :
+                        return "{{ __('Voronezh') }}";
+                    case '1106' :
+                        return "{{ __('Grozny') }}";
+                    case '54' :
+                        return "{{ __('Ekaterinburg') }}";
+                    case '5' :
+                        return "{{ __('Ivanovo') }}";
+                    case '63' :
+                        return "{{ __('Irkutsk') }}";
+                    case '41' :
+                        return "{{ __('Yoshkar-ola') }}";
+                    case '43' :
+                        return "{{ __('Kazan') }}";
+                    case '22' :
+                        return "{{ __('Kaliningrad') }}";
+                    case '64' :
+                        return "{{ __('Kemerovo') }}";
+                    case '7' :
+                        return "{{ __('Kostroma') }}";
+                    case '35' :
+                        return "{{ __('Krasnodar') }}";
+                    case '62' :
+                        return "{{ __('Krasnoyarsk') }}";
+                    case '53' :
+                        return "{{ __('Kurgan') }}";
+                    case '8' :
+                        return "{{ __('Kursk') }}";
+                    case '9' :
+                        return "{{ __('Lipetsk') }}";
+                    case '28' :
+                        return "{{ __('Makhachkala') }}";
+                    case '213' :
+                        return "{{ __('Moscow') }}";
+                    case '23' :
+                        return "{{ __('Murmansk') }}";
+                    case '1092' :
+                        return "{{ __('Nazran') }}";
+                    case '30' :
+                        return "{{ __('Nalchik') }}";
+                    case '47' :
+                        return "{{ __('Nizhniy Novgorod') }}";
+                    case '65' :
+                        return "{{ __('Novosibirsk') }}";
+                    case '66' :
+                        return "{{ __('Omsk') }}";
+                    case '10' :
+                        return "{{ __('Eagle') }}";
+                    case '48' :
+                        return "{{ __('Orenburg') }}";
+                    case '49' :
+                        return "{{ __('Penza') }}";
+                    case '50' :
+                        return "{{ __('Perm') }}";
+                    case '25' :
+                        return "{{ __('Pskov') }}";
+                    case '39' :
+                        return "{{ __('Rostov-on') }}";
+                    case '11' :
+                        return "{{ __('Ryazan') }}";
+                    case '51' :
+                        return "{{ __('Samara') }}";
+                    case '42' :
+                        return "{{ __('Saransk') }}";
+                    case '2' :
+                        return "{{ __('Saint-Petersburg') }}";
+                    case '12' :
+                        return "{{ __('Smolensk') }}";
+                    case '239' :
+                        return "{{ __('Sochi') }}";
+                    case '36' :
+                        return "{{ __('Stavropol') }}";
+                    case '973' :
+                        return "{{ __('Surgut') }}";
+                    case '13' :
+                        return "{{ __('Tambov') }}";
+                    case '14' :
+                        return "{{ __('Tver') }}";
+                    case '67' :
+                        return "{{ __('Tomsk') }}";
+                    case '15' :
+                        return "{{ __('Tula') }}";
+                    case '195' :
+                        return "{{ __('Ulyanovsk') }}";
+                    case '172' :
+                        return "{{ __('Ufa') }}";
+                    case '76' :
+                        return "{{ __('Khabarovsk') }}";
+                    case '45' :
+                        return "{{ __('Cheboksary') }}";
+                    case '56' :
+                        return "{{ __('Chelyabinsk') }}";
+                    case '1104' :
+                        return "{{ __('Cherkessk') }}";
+                    case '16' :
+                        return "{{ __('Yaroslavl') }}";
+                }
+            }
+
+            setInterval(() => {
+                refreshMethods()
+            }, 200)
+
+            function refreshMethods() {
+                $('.create-new-link').unbind().on('click', function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('create.link.project.with.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            projectId: $('#project-id').val(),
+                            tagId: $('#tag-id').val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                $('#project-' + response.project.id).append(
+                                    '<div style="color: ' + response.tag.color + '" id="tag-' + response.tag.id + '-item-' + response.project.id + '">' + response.tag.name + '' +
+                                    ' <i class="fa fa-trash" style="opacity: 0.5; cursor: pointer" data-toggle="modal"' +
+                                    ' data-target=#removeTagModal' + response.timestamps + '></i>' +
+                                    '</div>'
+                                )
+                                $('#removeLinksModals').append(
+                                    '<div class="modal fade" id="removeTagModal' + response.timestamps + '" aria-labelledby="removeTagModal' + response.timestamps + 'Label" aria-hidden="true"> ' +
+                                    '   <div class="modal-dialog"> ' +
+                                    '       <div class="modal-content"> ' +
+                                    '           <div class="modal-header"> ' +
+                                    '               <button type="button" class="close" data-dismiss="modal" ' +
+                                    '               aria-label="Close"> ' +
+                                    '               <span aria-hidden="true">&times;</span> ' +
+                                    '               </button> ' +
+                                    '           </div> ' +
+                                    '       <div class="modal-body"> {{ __('Are you going to untie the label from the project, are you sure?') }} ' +
+                                    '   </div> ' +
+                                    '   <div class="modal-footer"> ' +
+                                    '           <button type="button"' +
+                                    '               class="btn btn-secondary remove-project-relevance-link"' +
+                                    '               data-tag="' + response.tag.id + '" ' +
+                                    '               data-history="' + response.project.id + '" data-dismiss="modal">{{ __('Remove tag') }}' +
+                                    '           </button> ' +
+                                    '           <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}' +
+                                    '           </button>' +
+                                    '           </div>' +
+                                    '       </div>' +
+                                    '   </div>' +
+                                    '</div>')
+                                getSuccessMessage(response.message)
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+
+                $('#create-tag').unbind().on('click', function () {
+                    if ($('#tag-name').val() !== '') {
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{{ route('store.relevance.tag') }}",
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                name: $('#tag-name').val(),
+                                color: $('#tag-color').val()
+                            },
+                            success: function (response) {
+                                if (response.code === 201) {
+                                    $('#tags-list').append(
+                                        '<li data-target="' + response.tag.id + '"> ' +
+                                        '   <div class="btn-group mb-2"> ' +
+                                        '<input type="color" class="tag-color-input" data-target="' + response.tag.id + '" value="' + response.tag.color + '" style="height: 37px">' +
+                                        '       <input type="text" class="form form-control w-100 tag-name-input d-inline" style="display: inline !important;" ' +
+                                        '       data-target="' + response.tag.id + '" value="' + response.tag.name + '">' +
+                                        '<button type="button" class="btn btn-secondary col-2 remove-tag" data-target="' + response.tag.id + '"> ' +
+                                        '       <i class="fa fa-trash text-white"></i></button> ' +
+                                        '   </div> ' +
+                                        '</li>'
+                                    )
+                                    getSuccessMessage(response.message)
+
+                                    $('#tag-id').append(
+                                        '<option value="' + response.tag.id + '" id="option-tag-' + response.tag.id + '">' + response.tag.name + '</option>'
+                                    )
+                                } else if (response.code === 415) {
+                                    getErrorMessage(response.message)
+                                }
+                            },
+                        });
+                    } else {
+                        getErrorMessage('Название метки не может быть пустым')
+                    }
+                })
+
+                $('.remove-tag').unbind().on('click', function () {
+                    let ojb = $(this)
+                    let id = $(this).attr('data-target')
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('destroy.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target')
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage(response.message)
+                                ojb.parent().parent().remove()
+                                $('#option-tag-' + id).remove()
+                            }
+                        },
+                    });
+                })
+
+                $('.tag-name-input').unbind().on('change', function () {
+                    var current = $(this).val();
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('edit.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target'),
+                            name: $(this).val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage(response.message)
+                            }
+                        },
+                    });
+                    this.defaultValue = current
+                })
+
+                $('.tag-color-input').unbind().on('change', function () {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('edit.relevance.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-target'),
+                            color: $(this).val()
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                getSuccessMessage(response.message)
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+
+                $('.remove-project-relevance-link').unbind().on('click', function () {
+                    let elem = $(this)
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "{{ route('destroy.link.project.with.tag') }}",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            tagId: $(this).attr('data-tag'),
+                            projectId: $(this).attr('data-history')
+                        },
+                        success: function (response) {
+                            if (response.code === 200) {
+                                let tId = elem.attr('data-tag')
+                                let iId = elem.attr('data-history')
+                                $("#tag-" + tId + "-item-" + iId).remove()
+                                getSuccessMessage(response.message)
+                            } else if (response.code === 415) {
+                                getErrorMessage(response.message)
+                            }
+                        },
+                    });
+                })
+            }
+
+            function getSuccessMessage(message, time = 3000) {
+                $('.toast-top-right.success-message').show(300)
+                $('#message-info').html(message)
+                setTimeout(() => {
+                    $('.toast-top-right.success-message').hide(300)
+                }, time)
+            }
+
+            function getErrorMessage(message, time = 3000) {
+                $('.toast-top-right.error-message').show(300)
+                $('#message-error-info').html(message)
+                setTimeout(() => {
+                    $('.toast-top-right.error-message').hide(300)
+                }, time)
+            }
 
             function customFiltersWithoutComment(tableID, table, prefix = '', index = 0) {
                 $.fn.dataTable.ext.search.push(function (settings, data) {
