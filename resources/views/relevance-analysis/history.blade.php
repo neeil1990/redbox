@@ -440,7 +440,9 @@
                         @foreach($main as $item)
                             <tr id="story-id-{{ $item->id }}">
                                 <td data-order="{{ $item->name }}">
-                                    <span>
+                                    <span class="project_name nav-link"
+                                       style="cursor:pointer;"
+                                       data-order="{{ $item->id }}">
                                         {{ $item->name }}
                                     </span>
 
