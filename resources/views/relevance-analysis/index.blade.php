@@ -381,7 +381,7 @@
 
                     <div id="progress-bar" style="display: none">
                         <div class="progress-bar mt-3 mb-3" role="progressbar"></div>
-                        <span class="text-muted" id="progress-bar-state">Подготовка данных..</span>
+                        <span class="text-muted" id="progress-bar-state">{{ __('Data preparation..') }}</span>
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
 
@@ -1043,16 +1043,28 @@
                         hash: $('#hiddenHash').val()
                     },
                     success: function (response) {
-                        setProgressBarStyles(response.progress)
-                        if (response.progress === 100) {
-                            stopProgressBar()
-                            endProgress()
-                            successRequest(response.result)
+                        if (response.crash != undefined) {
+                            $('.toast-message.error-message').html("{{ __('An error has occurred, repeat the request.') }}")
+                            $('.toast-top-right.error-message.empty').show(300)
+                            setTimeout(() => {
+                                $('.toast-top-right.error-message.empty').hide(300)
+                            }, 5000)
+
+                            refreshAllRenderElements()
+                            $('#full-analyse').prop("disabled", false);
+                            $('#progress-bar').hide()
                         } else {
-                            if (!stop) {
-                                setTimeout(() => {
-                                    getProgress()
-                                }, 5000)
+                            setProgressBarStyles(response.progress)
+                            if (response.progress === 100) {
+                                stopProgressBar()
+                                endProgress()
+                                successRequest(response.result)
+                            } else {
+                                if (!stop) {
+                                    setTimeout(() => {
+                                        getProgress()
+                                    }, 5000)
+                                }
                             }
                         }
                     },

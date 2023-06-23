@@ -73,7 +73,6 @@ class RelevanceAnalyseQueue implements ShouldQueue
             $relevance->setSites($params->sites);
         }
 
-        Log::info('start analyse');
         $relevance->analysis();
         die();
     }

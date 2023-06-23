@@ -32,18 +32,26 @@ class RelevanceProgressController extends Controller
     {
         $progress = RelevanceProgress::where('hash', '=', $request->hash)->first();
 
-        if (isset($progress) && $progress->progress === 100) {
-            $history = RelevanceHistoryResult::where('hash', '=', $request->hash)->first();
+        if (isset($progress)) {
+            if ($progress->error) {
+                $progress->delete();
 
-            if (isset($history)) {
                 return response()->json([
-                    'progress' => $progress->progress,
-                    'result' => Relevance::uncompress($history)
+                    'crash' => true,
                 ]);
-            } else {
-                return response()->json([
-                    'progress' => 99,
-                ]);
+            } else if ($progress->progress === 100) {
+                $history = RelevanceHistoryResult::where('hash', '=', $request->hash)->first();
+
+                if (isset($history)) {
+                    return response()->json([
+                        'progress' => $progress->progress,
+                        'result' => Relevance::uncompress($history)
+                    ]);
+                } else {
+                    return response()->json([
+                        'progress' => 99,
+                    ]);
+                }
             }
         }
 

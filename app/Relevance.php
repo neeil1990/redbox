@@ -1321,6 +1321,7 @@ class Relevance
         $toDay->save();
 
         UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
+        RelevanceProgress::where('hash', $this->scanHash)->update(['error' => 1]);
 
         Log::debug('Relevance Error', [
             'file' => $exception->getFile(),
