@@ -16,9 +16,6 @@ class Common
 
         $filePath = storage_path('framework/laravel-excel/' . $fileName);
         $newFileName = storage_path('framework/laravel-excel/' . $name) . '.' . $type;
-        dump($filePath);
-        dd($newFileName);
-
         rename($filePath, $newFileName);
 
         header('Content-Description: File Transfer');
@@ -28,7 +25,6 @@ class Common
         header('Content-Length: ' . filesize($newFileName));
 
         readfile($newFileName);
-
         unlink($newFileName);
     }
 
