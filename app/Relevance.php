@@ -176,7 +176,7 @@ class Relevance
 
     public function analysis($historyId = false)
     {
-//        try {
+        try {
             $this->removeNoIndex();
             $this->getHiddenData();
             $this->separateLinksFromText();
@@ -192,15 +192,15 @@ class Relevance
             $this->prepareAnalysedSitesTable();
             $this->prepareClouds();
             $this->saveHistory($historyId);
-//        } catch (\Throwable $exception) {
-//            if ($historyId !== false) {
-//                RelevanceHistory::where('id', '=', $historyId)->update([
-//                    'state' => '-1'
-//                ]);
-//            }
-//
-//            $this->saveError($exception);
-//        }
+        } catch (\Throwable $exception) {
+            if ($historyId !== false) {
+                RelevanceHistory::where('id', '=', $historyId)->update([
+                    'state' => '-1'
+                ]);
+            }
+
+            $this->saveError($exception);
+        }
 
         RemoveRelevanceProgress::dispatch($this->scanHash)
             ->onQueue('normal')
