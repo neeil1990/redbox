@@ -284,7 +284,7 @@ class ClusterController extends Controller
             }
 
             $file = Excel::download(new ClusterResultExport($cluster), $fileName . '.' . $type);
-            dd($file);
+
             Common::fileExport($file, $type, $fileName);
         }
 
