@@ -66,7 +66,6 @@ class ClusterResultExport implements FromCollection
         }
 
 
-        dd($file);
         return collect($file);
     }
 
