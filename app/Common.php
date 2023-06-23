@@ -32,7 +32,7 @@ class Common
         // Определяем размер файла
         $fileSize = filesize($newFileName);
         header('Content-Length: ' . $fileSize);
-        dump($fileSize);
+        dd($fileSize);
 
         // Читаем файл и отправляем его на скачивание
         $fileHandle = fopen($newFileName, 'rb');
