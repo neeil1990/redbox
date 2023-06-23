@@ -39,7 +39,7 @@ class Common
         fclose($fileHandle);
 
         // Удаляем временный файл
-        unlink($newFileName);
+//        unlink($newFileName);
     }
 
     public static function uncompressArray($string, $decode = true)
