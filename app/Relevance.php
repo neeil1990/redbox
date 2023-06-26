@@ -103,6 +103,8 @@ class Relevance
         $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
+
+        Log::info('Подготовили объект');
     }
 
     public function getMainPageHtml()
@@ -113,6 +115,7 @@ class Relevance
 
     public function parseSites($xmlResponse = false, $searchPosition = false)
     {
+        Log::info('Начало парсинга сайтов');
         $mainUrl = parse_url($this->params['main_page_link']);
         $host = Str::lower($mainUrl['host']);
 
@@ -172,25 +175,68 @@ class Relevance
                 'position' => $position
             ];
         }
+        Log::info('Парсинг сайтов окончен');
     }
 
     public function analysis($historyId = false)
     {
         try {
+            Log::info('removeNoIndex start');
             $this->removeNoIndex();
+            Log::info('removeNoIndex end');
+
+            Log::info('getHiddenData start');
             $this->getHiddenData();
+            Log::info('getHiddenData end');
+
+            Log::info('separateLinksFromText start');
             $this->separateLinksFromText();
+            Log::info('separateLinksFromText end');
+
+            Log::info('removePartsOfSpeech start');
             $this->removePartsOfSpeech();
+            Log::info('removePartsOfSpeech end');
+
+            Log::info('removeListWords start');
             $this->removeListWords();
+            Log::info('removeListWords end');
+
+            Log::info('getTextFromCompetitors start');
             $this->getTextFromCompetitors();
+            Log::info('getTextFromCompetitors end');
+
+            Log::info('separateAllText start');
             $this->separateAllText();
+            Log::info('separateAllText end');
+
+            Log::info('preparePhrasesTable start');
             $this->preparePhrasesTable();
+            Log::info('preparePhrasesTable end');
+
+            Log::info('searchWordForms start');
             $this->searchWordForms();
+            Log::info('searchWordForms end');
+
+            Log::info('processingOfGeneralInformation start');
             $this->processingOfGeneralInformation();
+            Log::info('processingOfGeneralInformation end');
+
+            Log::info('prepareUnigramTable start');
             $this->prepareUnigramTable();
+            Log::info('prepareUnigramTable end');
+
+            Log::info('analyzeRecommendations start');
             $this->analyzeRecommendations();
+            Log::info('analyzeRecommendations end');
+
+            Log::info('prepareAnalysedSitesTable start');
             $this->prepareAnalysedSitesTable();
+            Log::info('prepareAnalysedSitesTable end');
+
+            Log::info('prepareClouds start');
             $this->prepareClouds();
+            Log::info('prepareClouds end');
+
             $this->saveHistory($historyId);
         } catch (\Throwable $exception) {
             if ($historyId !== false) {
