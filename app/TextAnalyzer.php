@@ -197,17 +197,14 @@ class TextAnalyzer extends Model
         return $document->outertext;
     }
 
-    /**
-     * @param $html
-     * @return array|false|string|string[]|null
-     */
     public static function removeNoindexText($html)
     {
-        $document = new HtmlDocument();
-        $document->load(mb_strtolower($html));
-        $document->removeElements('noindex');
+        preg_match_all('#<noindex>(.+?)</noindex>#su', $html, $matches, PREG_SET_ORDER);
+        foreach ($matches as $item) {
+            $html = str_replace($item[0], "", $html);
+        }
 
-        return $html;
+        return mb_strtolower($html);
     }
 
     /**
