@@ -182,50 +182,28 @@ class TextAnalyzer extends Model
 
     public static function removeStylesAndScripts($html): string
     {
+        $document = new HtmlDocument();
+        $document->load(mb_strtolower($html));
+        $document->removeElements('[style="display: none;"]');
+        $document->removeElements('.js_img-for-color.hidden');
+        $document->removeElements('link');
+        $document->removeElements('style');
+        $document->removeElements('meta');
+        $document->removeElements('script');
+        $document->removeElements('path');
+        $document->removeElements('noscript');
+        $document->removeElements('comment');
 
-        $html = mb_strtolower($html);
-
-        $regex = [
-            '/<!--.*?-->/si',
-            '/<script.*?>(.*?)<\/script>/is',
-            '/<style.*?>(.*?)<\/style>/is',
-            '/<pre\s+style="display:none;">.*?<\/pre>/is',
-            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
-        ];
-
-        foreach ($regex as $rule) {
-            $newHtml = preg_replace($rule, '', $html);
-
-            if (strlen($newHtml) > 0) {
-                $html = $newHtml;
-            }
-        }
-
-        return $html;
-//
-//        $document = new HtmlDocument();
-//        $document->load(mb_strtolower($html));
-//        $document->removeElements('[style="display: none;"]');
-//        $document->removeElements('.js_img-for-color.hidden');
-//        $document->removeElements('link');
-//        $document->removeElements('style');
-//        $document->removeElements('meta');
-//        $document->removeElements('script');
-//        $document->removeElements('path');
-//        $document->removeElements('noscript');
-//        $document->removeElements('comment');
-//
-//        return $document->outertext;
+        return $document->outertext;
     }
 
     public static function removeNoindexText($html)
     {
-        preg_match_all('#<noindex>(.+?)</noindex>#su', $html, $matches, PREG_SET_ORDER);
-        foreach ($matches as $item) {
-            $html = str_replace($item[0], "", $html);
-        }
+        $document = new HtmlDocument();
+        $document->load(mb_strtolower($html));
+        $document->removeElements('noindex');
 
-        return mb_strtolower($html);
+        return $document->outertext;
     }
 
     /**

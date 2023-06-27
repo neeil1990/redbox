@@ -115,7 +115,6 @@ class Relevance
 
     public function parseSites($xmlResponse = false, $searchPosition = false)
     {
-        Log::info('Начало парсинга сайтов');
         $mainUrl = parse_url($this->params['main_page_link']);
         $host = Str::lower($mainUrl['host']);
 
@@ -175,7 +174,6 @@ class Relevance
                 'position' => $position
             ];
         }
-        Log::info('Парсинг сайтов окончен');
     }
 
     public function analysis($historyId = false)
@@ -406,7 +404,6 @@ class Relevance
 
     public function calculateWidthPoints()
     {
-        // высчитываем 100%, игнорируя игнорируемые домены
         $this->avgCoveragePercent = $iterator = 0;
         foreach ($this->sites as $site) {
             if (!$site['ignored']) {
@@ -983,11 +980,6 @@ class Relevance
         return $collection->sortByDesc('weight')->toArray();
     }
 
-    /**
-     * Обрезать все слова короче N символов
-     * @param $text
-     * @return string
-     */
     public function separateText($text): string
     {
         $text = explode(" ", $text);
@@ -1068,11 +1060,6 @@ class Relevance
         $this->phrases = $collection->slice(0, 600)->toArray();
     }
 
-    /**
-     * из строки "купить много хлеба" получает фразы (купить много, много хлеба)
-     *
-     * @return array
-     */
     public function searchPhrases(): array
     {
         $phrases = [];
