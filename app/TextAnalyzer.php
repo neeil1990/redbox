@@ -182,19 +182,40 @@ class TextAnalyzer extends Model
 
     public static function removeStylesAndScripts($html): string
     {
-        $document = new HtmlDocument();
-        $document->load(mb_strtolower($html));
-        $document->removeElements('[style="display: none;"]');
-        $document->removeElements('.js_img-for-color.hidden');
-        $document->removeElements('link');
-        $document->removeElements('style');
-        $document->removeElements('meta');
-        $document->removeElements('script');
-        $document->removeElements('path');
-        $document->removeElements('noscript');
-        $document->removeElements('comment');
 
-        return $document->outertext;
+        $html = mb_strtolower($html);
+
+        $regex = [
+            '/<!--.*?-->/si',
+            '/<script.*?>(.*?)<\/script>/is',
+            '/<style.*?>(.*?)<\/style>/is',
+            '/<pre\s+style="display:none;">.*?<\/pre>/is',
+            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
+        ];
+
+        foreach ($regex as $rule) {
+            $newHtml = preg_replace($rule, '', $html);
+
+            if (strlen($newHtml) > 0) {
+                $html = $newHtml;
+            }
+        }
+
+        return $html;
+//
+//        $document = new HtmlDocument();
+//        $document->load(mb_strtolower($html));
+//        $document->removeElements('[style="display: none;"]');
+//        $document->removeElements('.js_img-for-color.hidden');
+//        $document->removeElements('link');
+//        $document->removeElements('style');
+//        $document->removeElements('meta');
+//        $document->removeElements('script');
+//        $document->removeElements('path');
+//        $document->removeElements('noscript');
+//        $document->removeElements('comment');
+//
+//        return $document->outertext;
     }
 
     public static function removeNoindexText($html)
