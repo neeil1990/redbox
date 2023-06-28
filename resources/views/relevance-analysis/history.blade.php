@@ -1045,7 +1045,7 @@
                                                 '   Повторить анализ' +
                                                 '</button>'
                                                 +
-                                                "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary mt-3'> Подробная информация</a>"
+                                                "<a href='/show-history/" + val.id + "' target='_blank' class='btn btn-secondary get-history-info mt-3'> Подробная информация</a>"
 
                                         } else if (val.state === 0) {
                                             state =
@@ -1163,7 +1163,10 @@
                                                 "sLengthMenu": words.show + " _MENU_ " + words.records,
                                                 "sEmptyTable": words.noRecords,
                                                 "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
-                                            }
+                                            },
+                                            drawCallback: function () {
+                                                getHistoryInfo()
+                                            },
                                         });
 
                                         $('#history_table_length').before(
@@ -1328,7 +1331,7 @@
                         });
                     })
 
-                    getHistoryInfo()
+                    refreshMethods()
                 }
             });
 
@@ -1382,7 +1385,6 @@
                     },
                 });
             })
-
 
             $('input#switchMyListWords').click(function () {
                 if ($(this).is(':checked')) {
@@ -1520,10 +1522,6 @@
                         return "{{ __('Yaroslavl') }}";
                 }
             }
-
-            setInterval(() => {
-                refreshMethods()
-            }, 200)
 
             function refreshMethods() {
                 $('.create-new-link').unbind().on('click', function () {

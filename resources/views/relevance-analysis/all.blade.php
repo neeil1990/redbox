@@ -1123,6 +1123,9 @@
                                                     "sLengthMenu": words.show + " _MENU_ " + words.records,
                                                     "sEmptyTable": words.noRecords,
                                                     "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                                                },
+                                                drawCallback: function () {
+                                                    getHistoryInfo()
                                                 }
                                             });
 
@@ -1303,8 +1306,6 @@
 
                             $(this).attr('class', 'fa fa-plus show-stories')
                         });
-
-                        getHistoryInfo()
                     }
                 })
 
@@ -1340,7 +1341,6 @@
                             $('#user_jobs_table').DataTable().draw()
                         },
                     });
-
                 }, 10000)
             });
 
