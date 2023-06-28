@@ -16,9 +16,6 @@ class ClusterResultExport implements FromCollection
         $this->cluster = $cluster;
     }
 
-    /**
-     * @return Collection
-     */
     public function collection(): Collection
     {
         $file[] = [__('Sequence number'), __('Sequence number in the cluster'), __('Key query'), __('Group'), __('Relevant Page'), __('Base'), __('Phrasal'), __('Target')];
@@ -67,6 +64,7 @@ class ClusterResultExport implements FromCollection
             }
             $clusterIterator++;
         }
+
 
         return collect($file);
     }

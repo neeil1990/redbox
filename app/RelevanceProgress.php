@@ -15,34 +15,25 @@ class RelevanceProgress extends Model
 
     public static function startProgress(): string
     {
-        $hash = md5(Auth::id() . time());
-        $progress = new RelevanceProgress();
-        $progress->user_id = Auth::id();
-        $progress->hash = $hash;
-        $progress->progress = 0;
+        $progress = new RelevanceProgress([
+            'user_id' => Auth::id(),
+            'hash' => md5(Auth::id() . time()),
+            'progress' => 0
+        ]);
         $progress->save();
 
-        return $hash;
+        return $progress->hash;
     }
 
-    /**
-     * @param $percent
-     * @param $request
-     * @return void
-     */
     public static function editProgress($percent, $request)
     {
         if (isset($request['hash'])) {
-            RelevanceProgress::where('hash', '=', $request['hash'])->update(['progress' => $percent]);
+            RelevanceProgress::where('hash', $request['hash'])->update(['progress' => $percent]);
         }
     }
 
-    /**
-     * @param $hash
-     * @return mixed
-     */
     public static function endProgress($hash)
     {
-        return RelevanceProgress::where('hash', '=', $hash)->delete();
+        return RelevanceProgress::where('hash', $hash)->delete();
     }
 }

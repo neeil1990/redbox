@@ -520,8 +520,8 @@
 <script type="application/javascript" src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
 <script type="application/javascript" src="{{ asset('/plugins/common/js/common.js') }}"></script>
 <script type="application/javascript">
-    let url = new URL(window.location.href)
-    if (url['pathname'] === '/cluster-configuration') {
+    let locationPage = new URL(window.location.href)
+    if (locationPage['pathname'] === '/cluster-configuration') {
         $('#form').remove()
         $('#sendTelegramMessageConfig').show()
     } else {

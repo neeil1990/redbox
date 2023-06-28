@@ -111,7 +111,7 @@
                         <img src="/img/1485.gif" alt="preloader_gif" width="20">
                     </div>
 
-                    <div id="block-for-downloads-files" style="display: none">
+                    <div id="block-for-downloads-files" class="mt-5" style="display: none">
                         <h3>{{ __('Cluster table') }}</h3>
                         <div id="files-downloads"></div>
                     </div>
@@ -151,10 +151,10 @@
         </script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.min.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
         <script>
             let progressId
             let interval
@@ -173,7 +173,9 @@
                 if ($(this).attr('data-target') !== 'classic' && $('#phrases').val() === '') {
                     return;
                 }
+
                 $(this).attr('disabled', true)
+
                 $.ajax({
                     type: "GET",
                     url: "{{ route('start.cluster.progress') }}",
@@ -280,12 +282,20 @@
                     url: "{{ route('analysis.cluster') }}",
                     data: getData(),
                     success: function (response) {
-                        if ($('#save').val() === '1') {
+                        if ($('#start-analyse').attr('data-target') === 'classic' && $('#save_classic').val() === '1') {
                             $('.history-notification').show(300)
                             setTimeout(() => {
                                 $('.history-notification').hide(300)
                             }, 15000)
+                        } else if($('#start-analyse').attr('data-target') === 'professional' && $('#save').val() === '1') {
+                            if ($('#save').val() === '1') {
+                                $('.history-notification').show(300)
+                                setTimeout(() => {
+                                    $('.history-notification').hide(300)
+                                }, 15000)
+                            }
                         }
+
                         $('#total-phrases').html(response.totalPhrases)
                     },
                     error: function (response) {

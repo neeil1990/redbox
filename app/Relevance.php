@@ -103,6 +103,8 @@ class Relevance
         $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
+
+        Log::info('Подготовили объект');
     }
 
     public function getMainPageHtml()
@@ -177,20 +179,62 @@ class Relevance
     public function analysis($historyId = false)
     {
         try {
+            Log::info('removeNoIndex start');
             $this->removeNoIndex();
+            Log::info('removeNoIndex end');
+
+            Log::info('getHiddenData start');
             $this->getHiddenData();
+            Log::info('getHiddenData end');
+
+            Log::info('separateLinksFromText start');
             $this->separateLinksFromText();
+            Log::info('separateLinksFromText end');
+
+            Log::info('removePartsOfSpeech start');
             $this->removePartsOfSpeech();
+            Log::info('removePartsOfSpeech end');
+
+            Log::info('removeListWords start');
             $this->removeListWords();
+            Log::info('removeListWords end');
+
+            Log::info('getTextFromCompetitors start');
             $this->getTextFromCompetitors();
+            Log::info('getTextFromCompetitors end');
+
+            Log::info('separateAllText start');
             $this->separateAllText();
+            Log::info('separateAllText end');
+
+            Log::info('preparePhrasesTable start');
             $this->preparePhrasesTable();
+            Log::info('preparePhrasesTable end');
+
+            Log::info('searchWordForms start');
             $this->searchWordForms();
+            Log::info('searchWordForms end');
+
+            Log::info('processingOfGeneralInformation start');
             $this->processingOfGeneralInformation();
+            Log::info('processingOfGeneralInformation end');
+
+            Log::info('prepareUnigramTable start');
             $this->prepareUnigramTable();
+            Log::info('prepareUnigramTable end');
+
+            Log::info('analyzeRecommendations start');
             $this->analyzeRecommendations();
+            Log::info('analyzeRecommendations end');
+
+            Log::info('prepareAnalysedSitesTable start');
             $this->prepareAnalysedSitesTable();
+            Log::info('prepareAnalysedSitesTable end');
+
+            Log::info('prepareClouds start');
             $this->prepareClouds();
+            Log::info('prepareClouds end');
+
             $this->saveHistory($historyId);
         } catch (\Throwable $exception) {
             if ($historyId !== false) {
@@ -360,7 +404,6 @@ class Relevance
 
     public function calculateWidthPoints()
     {
-        // высчитываем 100%, игнорируя игнорируемые домены
         $this->avgCoveragePercent = $iterator = 0;
         foreach ($this->sites as $site) {
             if (!$site['ignored']) {
@@ -937,11 +980,6 @@ class Relevance
         return $collection->sortByDesc('weight')->toArray();
     }
 
-    /**
-     * Обрезать все слова короче N символов
-     * @param $text
-     * @return string
-     */
     public function separateText($text): string
     {
         $text = explode(" ", $text);
@@ -1022,11 +1060,6 @@ class Relevance
         $this->phrases = $collection->slice(0, 600)->toArray();
     }
 
-    /**
-     * из строки "купить много хлеба" получает фразы (купить много, много хлеба)
-     *
-     * @return array
-     */
     public function searchPhrases(): array
     {
         $phrases = [];
@@ -1161,6 +1194,8 @@ class Relevance
                 $this->saveHistoryResult($id);
             }
         }
+
+        UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
     }
 
     public function saveHistoryResult($id)
@@ -1318,9 +1353,8 @@ class Relevance
         }
         $toDay->save();
 
-        if ($this->queue) {
-            UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
-        }
+        UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
+        RelevanceProgress::where('hash', $this->scanHash)->update(['error' => 1]);
 
         Log::debug('Relevance Error', [
             'file' => $exception->getFile(),

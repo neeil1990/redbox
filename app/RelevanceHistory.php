@@ -109,7 +109,6 @@ class RelevanceHistory extends Model
                     ->count();
 
                 if ($countRecordInThisMonth + $count >= $tariff['settings']['RelevanceAnalysis']['value']) {
-
                     return true;
                 }
             }

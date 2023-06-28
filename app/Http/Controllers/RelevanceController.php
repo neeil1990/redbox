@@ -36,10 +36,11 @@ class RelevanceController extends Controller
 
         $request->validate([
             'link' => 'required|website',
-            'phrase' => 'required|not_website',
+            'phrase' => 'required|not_website|max:50',
         ], [
             'link.required' => __('A link to the landing page is required.'),
             'phrase.required' => __('The keyword is required to fill in.'),
+            'phrase.max' => __('Maximum keyword length') . ' 50 ' . __('symbols'),
         ]);
 
         RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full')

@@ -197,17 +197,13 @@ class TextAnalyzer extends Model
         return $document->outertext;
     }
 
-    /**
-     * @param $html
-     * @return array|false|string|string[]|null
-     */
     public static function removeNoindexText($html)
     {
         $document = new HtmlDocument();
         $document->load(mb_strtolower($html));
         $document->removeElements('noindex');
 
-        return $html;
+        return $document->outertext;
     }
 
     /**

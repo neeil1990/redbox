@@ -10,26 +10,17 @@ use Throwable;
 
 class SimplifiedXmlFacade extends XmlFacade
 {
-    /**
-     * Количество сайтов на странице
-     *
-     * @var
-     */
-    protected $count;
+    protected int $count;
 
-    /**
-     * @var mixed
-     */
-    protected $result;
+    protected int $attempt;
 
-    /**
-     * @param $region
-     * @param int $count
-     */
+    protected string $url;
+
     public function __construct($region, int $count = 100)
     {
         $this->count = $count;
         $this->lr = $region;
+        $this->attempt = 0;
     }
 
     public function setCount($count)
@@ -37,28 +28,26 @@ class SimplifiedXmlFacade extends XmlFacade
         $this->count = $count;
     }
 
-    /**
-     * @param int $attempt
-     * @param string $searchEngine
-     * @return array|null
-     */
-    public function getXMLResponse(string $searchEngine = 'yandex', int $attempt = 1): ?array
+    public function getXMLResponse(string $searchEngine = 'yandex')
     {
+        $this->attempt += 1;
+
+        if ($this->attempt >= 7) {
+            return 'Превышен лимит попыток';
+        }
+
         try {
-            $result = $this->sendRequest($searchEngine, $attempt);
+            $result = $this->sendRequest($searchEngine);
 
             if (isset($result['response']['results']['grouping']['group'])) {
+
                 return $this->parseResult($result['response']['results']['grouping']['group']);
-            } else if (isset($result['response']['error'])) {
 
-                if ($result['response']['error'] === 'Для заданного поискового запроса отсутствуют результаты поиска.') {
-                    return ['отсутствуют результаты поиска'];
-                } else {
-                    Log::debug("$this->path: " . $result['response']['error']);
-                    TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 938341087);
-                    TelegramBot::sendMessage("$this->path: " . $result['response']['error'], 169011279);
-                }
-
+            } else if (
+                isset($result['response']['error']) &&
+                $result['response']['error'] === 'Для заданного поискового запроса отсутствуют результаты поиска.'
+            ) {
+                return ['Отсутствуют результаты поиска'];
             }
 
         } catch (Throwable $e) {
@@ -71,43 +60,39 @@ class SimplifiedXmlFacade extends XmlFacade
             ]);
         }
 
-        return $this->getXMLResponse($searchEngine, $attempt + 1);
+        return $this->getXMLResponse($searchEngine);
     }
 
-    /**
-     * @return array|Exception
-     */
-    protected function sendRequest($searchEngine, $attempt)
+    protected function sendRequest($searchEngine)
     {
         if ($searchEngine === 'yandex') {
-            $url = $this->prepareYandexRequest($attempt);
+            $this->url = $this->prepareYandexRequest();
         } else {
-            $url = $this->prepareGoogleRequest($attempt);
+            $this->url = $this->prepareGoogleRequest();
         }
 
         try {
-            $response = file_get_contents($url);
-        } catch (Exception|Throwable $exception) {
-            return $this->sendRequest($searchEngine, $attempt + 1);
+            $response = file_get_contents($this->url);
+        } catch (Throwable $exception) {
+            return $this->sendRequest($searchEngine);
         }
-
         $xml = $this->load($response);
 
         return json_decode(json_encode($xml), true);
     }
 
-    protected function prepareGoogleRequest($attempt): ?string
+    protected function prepareGoogleRequest(): ?string
     {
         $query = str_replace(' ', '%20', $this->query);
 
-        if ($attempt >= 1 && $attempt <= 2) {
+        if ($this->attempt <= 2) {
             $this->setPath('https://xmlstock.com/google/xml/');
             $this->setUser(config('xmlstock.user'));
             $this->setKey(config('xmlstock.key'));
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=$this->count&lr=$this->lr&sortby=$this->sortby";
 
-        } elseif ($attempt >= 3 && $attempt <= 4) {
+        } elseif ($this->attempt <= 4) {
             $this->setPath('https://xmlriver.com/search/xml');
             $this->setUser(config('xmlriver.user'));
             $this->setKey(config('xmlriver.key'));
@@ -119,23 +104,27 @@ class SimplifiedXmlFacade extends XmlFacade
         return null;
     }
 
-    protected function prepareYandexRequest($attempt): ?string
+    protected function prepareYandexRequest(): ?string
     {
         $query = str_replace(' ', '%20', $this->query);
 
-        if ($attempt >= 1 && $attempt <= 2) {
+        if ($this->attempt <= 2) {
             $this->setPath('https://xmlstock.com/yandex/xml/');
             $this->setUser(config('xmlstock.user'));
             $this->setKey(config('xmlstock.key'));
+
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
-        } elseif ($attempt >= 3 && $attempt <= 4) {
+
+        } elseif ($this->attempt <= 4) {
             $this->setPath('https://xmlproxy.ru/search/xml');
             $this->setUser(config('xmlproxy.user'));
             $this->setKey(config('xmlproxy.key'));
+
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
-        } elseif ($attempt >= 5 && $attempt <= 6) {
+
+        } elseif ($this->attempt <= 6) {
             $this->setPath('https://xmlriver.com/search_yandex/xml');
             $this->setUser(config('xmlriver.user'));
             $this->setKey(config('xmlriver.key'));
@@ -148,10 +137,6 @@ class SimplifiedXmlFacade extends XmlFacade
         return null;
     }
 
-    /**
-     * @param $xmlResult
-     * @return array
-     */
     protected function parseResult($xmlResult): array
     {
         $result = [];
@@ -166,10 +151,6 @@ class SimplifiedXmlFacade extends XmlFacade
         return $result;
     }
 
-    /**
-     * @param $request
-     * @return bool|int
-     */
     public static function getPosition($request)
     {
         $xml = new SimplifiedXmlFacade($request['region']);
@@ -184,9 +165,6 @@ class SimplifiedXmlFacade extends XmlFacade
         return $position;
     }
 
-    /**
-     * @return string
-     */
     protected function getRiverLocation(): string
     {
         $array = [
