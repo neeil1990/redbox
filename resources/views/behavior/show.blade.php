@@ -63,6 +63,10 @@
     </div>
 
     <div class="row">
+        @include('behavior.buttons')
+    </div>
+
+    <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
@@ -126,14 +130,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
-            <a href="{{ route('behavior.edit_project', $behavior->id) }}" class="btn btn-success"><i class="fas fa-edit"></i> {{ __('Edit project') }}</a>
-        </div>
-        <div class="col-md-6">
-            {!! Form::open(['method' => 'DELETE', 'route' => ['behavior.destroy', $behavior->id], 'onSubmit' => 'deleteProject(this);return false;']) !!}
-                {!! Form::button( '<i class="fas fa-trash"></i> ' . __('Delete'), ['type' => 'submit', 'class' => 'btn btn-danger']) !!}
-            {!! Form::close() !!}
-        </div>
+        @include('behavior.buttons')
     </div>
 
     @slot('js')
@@ -141,7 +138,6 @@
         <script src="{{ asset('plugins/codemirror/codemirror.js') }}"></script>
         <script src="{{ asset('plugins/codemirror/mode/css/css.js') }}"></script>
         <script src="{{ asset('plugins/codemirror/mode/xml/xml.js') }}"></script>
-        <script src="{{ asset('plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
         <script>
             $(function () {
                 // CodeMirror
@@ -162,13 +158,27 @@
                         }
                     });
                 });
+
+                $('.destroy-project, .destroy-phrases').click(function (e) {
+                    e.preventDefault();
+
+                    if (!confirm('{{ __('Are you sure?') }}'))
+                        return false;
+
+                    let link = $(this).attr('href');
+
+                    axios.delete(link).then(function (response) {
+                        if(!response.data)
+                            window.location.reload();
+                        else
+                            window.location.href = response.data;
+                    });
+                });
+
             });
 
-            function deleteProject(e) {
-                if (confirm('{{ __('You sure about that?') }}'))
-                    e.submit();
-            }
         </script>
+        <script src="{{ asset('plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
     @endslot
 
 
