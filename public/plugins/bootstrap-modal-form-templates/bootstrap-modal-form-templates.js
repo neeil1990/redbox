@@ -35,6 +35,15 @@
                             text: "Checkbox field",
                         }]
                 },
+                {
+                    type: 'textarea',
+                    name: "textarea",
+                    label: 'Text field area',
+                    params: [{
+                        val: "",
+                        placeholder: "Text field",
+                    }]
+                },
             ],
             onAgree: function (modal) {
                 return modal;
@@ -56,6 +65,9 @@
                 let field = null;
 
                 switch (f.type) {
+                    case "textarea":
+                        field = textareaField(f);
+                        break;
                     case "text":
                         field = textField(f);
                         break;
@@ -139,6 +151,30 @@
             let labels = (label) ? $('<label />').text(label) : null;
 
             return group.append([labels, field])
+        }
+
+        function textareaField(f)
+        {
+            let params = f.params;
+
+            if(!Array.isArray(params))
+                return false;
+
+            let container = $('<div />');
+
+            $.each(params, function (i, param) {
+                let input = $('<textarea />', {
+                    name: f.name,
+                    value: param.val,
+                    class: 'form-control',
+                    placeholder: param.placeholder,
+                    rows: 10,
+                });
+
+                container.append(input);
+            });
+
+            return container;
         }
 
         function textField(f)
