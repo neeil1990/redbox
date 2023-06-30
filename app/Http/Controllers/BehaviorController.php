@@ -48,6 +48,7 @@ class BehaviorController extends Controller
     public function index()
     {
         $behaviors = Auth::user()->behaviors()->get();
+
         return view('behavior.index', compact('behaviors'));
     }
 
@@ -222,7 +223,7 @@ class BehaviorController extends Controller
     {
         $behavior->delete();
 
-        return redirect()->route('behavior.index');
+        return route('behavior.index');
     }
 
     public function phraseDestroy($phrase, BehaviorsPhrase $behaviorsPhrase)
@@ -232,5 +233,10 @@ class BehaviorController extends Controller
             $phrase->delete();
         else
             abort(403);
+    }
+
+    public function destroyPhrases(Behavior $behavior)
+    {
+        $behavior->phrases()->delete();
     }
 }

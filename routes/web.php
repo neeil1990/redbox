@@ -82,6 +82,8 @@ Route::middleware(['verified'])->group(function () {
     Route::patch('behavior/{behavior}/update-project', 'BehaviorController@updateProject')->name('behavior.update_project');
 
     Route::delete('behavior/phrase/{phrase}', 'BehaviorController@phraseDestroy')->name('behavior.phrase.destroy');
+    Route::delete('behavior/phrases/{behavior}', 'BehaviorController@destroyPhrases')->name('behavior.phrases.destroy');
+
     Route::resource('behavior', 'BehaviorController');
 
     Route::get('profile/', 'ProfilesController@index')->name('profile.index');
