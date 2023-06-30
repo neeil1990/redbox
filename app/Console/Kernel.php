@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new ClusterCleaningResults())->daily();
 
         // auto update positions in monitoring module
-        $this->autoUpdateMonitoringPositions($schedule);
+//        $this->autoUpdateMonitoringPositions($schedule);
 
         $schedule->call(function () {
             (new ProjectDataTableUpdateDB(MonitoringProject::all()))->save();
