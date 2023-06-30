@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalyseQueue implements ShouldQueue
 {
@@ -35,6 +36,9 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public function handle()
     {
+        Log::info($this->type);
+        Log::info($this->request['type']);
+
         $this->relevance = new Relevance($this->request, $this->userId);
         if ($this->type === 'full') {
             $this->relevance->getMainPageHtml();
