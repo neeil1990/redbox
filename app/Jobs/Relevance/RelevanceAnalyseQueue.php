@@ -70,6 +70,6 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public function failed(\Throwable $exception)
     {
-        $this->relevance->saveError($exception);
+//        $this->relevance->saveError($exception);
     }
 }
