@@ -115,14 +115,12 @@ class Relevance
 
     public function parseSites($xmlResponse = false, $searchPosition = false)
     {
-        Log::info('parse start');
         $mainUrl = parse_url($this->params['main_page_link']);
         $host = Str::lower($mainUrl['host']);
 
         foreach ($this->domains as $item) {
             $domain = Str::lower($item['item']);
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
-            Log::debug('removeStylesAndScripts', [$domain]);
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
@@ -175,7 +173,6 @@ class Relevance
                 'position' => $position
             ];
         }
-        Log::info('parse end');
     }
 
     public function analysis($historyId = false)
