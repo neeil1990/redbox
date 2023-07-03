@@ -103,8 +103,6 @@ class Relevance
         $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
-
-        Log::info('Подготовили объект');
     }
 
     public function getMainPageHtml()
@@ -1209,8 +1207,6 @@ class Relevance
             $xml = new SimplifiedXmlFacade($request['region']);
             $xml->setQuery($request['phrase']);
             $xmlResponse = $xml->getXMLResponse();
-
-            Log::debug('xmlresp', [$xmlResponse]);
 
             $this->removeIgnoredDomains($request, $xmlResponse, $exp);
             $this->parseSites($xmlResponse);
