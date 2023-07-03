@@ -177,31 +177,31 @@ class Relevance
 
     public function analysis($historyId = false)
     {
-        try {
-            $this->removeNoIndex();
-            $this->getHiddenData();
-            $this->separateLinksFromText();
-            $this->removePartsOfSpeech();
-            $this->removeListWords();
-            $this->getTextFromCompetitors();
-            $this->separateAllText();
-            $this->preparePhrasesTable();
-            $this->searchWordForms();
-            $this->processingOfGeneralInformation();
-            $this->prepareUnigramTable();
-            $this->analyzeRecommendations();
-            $this->prepareAnalysedSitesTable();
-            $this->prepareClouds();
-            $this->saveHistory($historyId);
-        } catch (\Throwable $exception) {
-            if ($historyId !== false) {
-                RelevanceHistory::where('id', '=', $historyId)->update([
-                    'state' => '-1'
-                ]);
-            }
+//        try {
+//        } catch (\Throwable $exception) {
+//            if ($historyId !== false) {
+//                RelevanceHistory::where('id', '=', $historyId)->update([
+//                    'state' => '-1'
+//                ]);
+//            }
+//            $this->saveError($exception);
+//        }
 
-            $this->saveError($exception);
-        }
+        $this->removeNoIndex();
+        $this->getHiddenData();
+        $this->separateLinksFromText();
+        $this->removePartsOfSpeech();
+        $this->removeListWords();
+        $this->getTextFromCompetitors();
+        $this->separateAllText();
+        $this->preparePhrasesTable();
+        $this->searchWordForms();
+        $this->processingOfGeneralInformation();
+        $this->prepareUnigramTable();
+        $this->analyzeRecommendations();
+        $this->prepareAnalysedSitesTable();
+        $this->prepareClouds();
+        $this->saveHistory($historyId);
 
         RemoveRelevanceProgress::dispatch($this->scanHash)
             ->onQueue('normal')

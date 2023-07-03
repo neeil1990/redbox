@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalyseQueue implements ShouldQueue
 {
@@ -67,10 +66,5 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
         $this->relevance->analysis();
         die();
-    }
-
-    public function failed(\Throwable $exception)
-    {
-//        $this->relevance->saveError($exception);
     }
 }

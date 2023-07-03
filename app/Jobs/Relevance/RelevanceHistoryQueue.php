@@ -28,11 +28,6 @@ class RelevanceHistoryQueue implements ShouldQueue
 
     public $relevance;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
     public function __construct($userId, $request, $historyId, $link = false, $phrase = false, $type = 'full')
     {
         $this->request = $request;
@@ -46,11 +41,6 @@ class RelevanceHistoryQueue implements ShouldQueue
         }
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
         $this->relevance = new Relevance($this->request, $this->userId, true);
