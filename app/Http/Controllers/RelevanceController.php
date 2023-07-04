@@ -107,7 +107,7 @@ class RelevanceController extends Controller
 
         RelevanceAnalyseQueue::dispatch($request->all(), false, Auth::id(), 'main')
             ->onQueue(UsersJobs::getPriority(Auth::id()))
-            ->onConnection('database');
+            ->onConnection('sync');
 
         return response()->json([
             'success' => true
