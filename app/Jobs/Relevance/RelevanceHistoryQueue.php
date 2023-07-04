@@ -69,6 +69,5 @@ class RelevanceHistoryQueue implements ShouldQueue
         }
 
         $this->relevance->analysis($this->historyId);
-        die();
     }
 }
