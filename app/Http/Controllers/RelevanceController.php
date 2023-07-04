@@ -43,9 +43,13 @@ class RelevanceController extends Controller
             'phrase.max' => __('Maximum keyword length') . ' 50 ' . __('symbols'),
         ]);
 
-        RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full')
-            ->onQueue(UsersJobs::getPriority(Auth::id()))
-            ->onConnection('database');
+        try {
+            RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full')
+                ->onQueue(UsersJobs::getPriority(Auth::id()))
+                ->onConnection('database');
+        } catch (\Throwable $e) {
+            var_dump($e);
+        }
 
         return response()->json([
             'success' => true

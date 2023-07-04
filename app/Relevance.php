@@ -103,8 +103,6 @@ class Relevance
         $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
-
-        Log::info('Подготовили объект');
     }
 
     public function getMainPageHtml()
@@ -120,7 +118,6 @@ class Relevance
 
         foreach ($this->domains as $item) {
             $domain = Str::lower($item['item']);
-
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
@@ -179,76 +176,34 @@ class Relevance
     public function analysis($historyId = false)
     {
         try {
-            Log::info('removeNoIndex start');
             $this->removeNoIndex();
-            Log::info('removeNoIndex end');
-
-            Log::info('getHiddenData start');
             $this->getHiddenData();
-            Log::info('getHiddenData end');
-
-            Log::info('separateLinksFromText start');
             $this->separateLinksFromText();
-            Log::info('separateLinksFromText end');
-
-            Log::info('removePartsOfSpeech start');
             $this->removePartsOfSpeech();
-            Log::info('removePartsOfSpeech end');
-
-            Log::info('removeListWords start');
             $this->removeListWords();
-            Log::info('removeListWords end');
-
-            Log::info('getTextFromCompetitors start');
             $this->getTextFromCompetitors();
-            Log::info('getTextFromCompetitors end');
-
-            Log::info('separateAllText start');
             $this->separateAllText();
-            Log::info('separateAllText end');
-
-            Log::info('preparePhrasesTable start');
             $this->preparePhrasesTable();
-            Log::info('preparePhrasesTable end');
-
-            Log::info('searchWordForms start');
             $this->searchWordForms();
-            Log::info('searchWordForms end');
-
-            Log::info('processingOfGeneralInformation start');
             $this->processingOfGeneralInformation();
-            Log::info('processingOfGeneralInformation end');
-
-            Log::info('prepareUnigramTable start');
             $this->prepareUnigramTable();
-            Log::info('prepareUnigramTable end');
-
-            Log::info('analyzeRecommendations start');
             $this->analyzeRecommendations();
-            Log::info('analyzeRecommendations end');
-
-            Log::info('prepareAnalysedSitesTable start');
             $this->prepareAnalysedSitesTable();
-            Log::info('prepareAnalysedSitesTable end');
-
-            Log::info('prepareClouds start');
             $this->prepareClouds();
-            Log::info('prepareClouds end');
-
             $this->saveHistory($historyId);
+
+            RemoveRelevanceProgress::dispatch($this->scanHash)
+                ->onQueue('normal')
+                ->delay(now()->addSeconds(100));
+
         } catch (\Throwable $exception) {
             if ($historyId !== false) {
                 RelevanceHistory::where('id', '=', $historyId)->update([
                     'state' => '-1'
                 ]);
             }
-
             $this->saveError($exception);
         }
-
-        RemoveRelevanceProgress::dispatch($this->scanHash)
-            ->onQueue('normal')
-            ->delay(now()->addSeconds(100));
     }
 
     public function separateAllText()
@@ -1345,6 +1300,8 @@ class Relevance
 
     public function saveError($exception)
     {
+        Log::info('ошибка в анализе');
+
         $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
         if ($toDay->id) {
             $toDay->count_fails += 1;
@@ -1353,8 +1310,12 @@ class Relevance
         }
         $toDay->save();
 
+        Log::info('Фиксация ежедневной ошибки');
+
         UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
         RelevanceProgress::where('hash', $this->scanHash)->update(['error' => 1]);
+
+        Log::info('Доп обработка');
 
         Log::debug('Relevance Error', [
             'file' => $exception->getFile(),
