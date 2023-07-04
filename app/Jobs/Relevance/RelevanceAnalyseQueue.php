@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalyseQueue implements ShouldQueue
 {
@@ -37,6 +38,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
     {
         $this->relevance = new Relevance($this->request, $this->userId);
         if ($this->type === 'full') {
+            Log::info('Полный');
             $this->relevance->getMainPageHtml();
 
             if ($this->request['type'] == 'phrase') {
@@ -46,6 +48,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
             }
 
         } else if ($this->type === 'competitors') {
+            Log::info('Конкуренты');
             RelevanceProgress::editProgress(15, $this->request);
 
             $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
@@ -55,6 +58,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
             $this->relevance->setDomains($params->sites);
             $this->relevance->parseSites();
         } else if ($this->type === 'main') {
+            Log::info('Посадочная страница');
             RelevanceProgress::editProgress(15, $this->request);
 
             $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
