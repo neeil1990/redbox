@@ -46,7 +46,7 @@ class RelevanceController extends Controller
         try {
             RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full')
                 ->onQueue(UsersJobs::getPriority(Auth::id()))
-                ->onConnection('sync');
+                ->onConnection('database');
         } catch (\Throwable $e) {
             var_dump($e);
         }
