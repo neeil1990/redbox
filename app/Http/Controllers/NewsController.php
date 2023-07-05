@@ -6,6 +6,7 @@ use App\News;
 use App\NewsComments;
 use App\NewsLikes;
 use App\NewsNotification;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -51,6 +52,10 @@ class NewsController extends Controller
      */
     public function createView()
     {
+        if (!User::isUserAdmin()) {
+            return abort(403);
+        }
+
         return view('news.create');
     }
 
@@ -60,6 +65,10 @@ class NewsController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if (!User::isUserAdmin()) {
+            return abort(403);
+        }
+
         $news = $request->all();
         $news['user_id'] = Auth::id();
         $news = new News($news);
