@@ -188,7 +188,7 @@
                                     </td>
                                     <td class="project-actions text-right">
 
-                                        <a class="btn btn-info btn-sm" target="_blank" :href="'/meta-tags/histories/' + meta.id">
+                                        <a class="btn btn-info btn-sm click_tracking" target="_blank" :href="'/meta-tags/histories/' + meta.id">
                                             <i class="fas fa-list"></i>
                                             {{ lang.history }}
                                         </a>
