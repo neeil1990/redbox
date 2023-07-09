@@ -403,7 +403,7 @@ Route::get('/test', function () {
     $usersIds = $usersIds->pluck('id')->toArray();
 
     $records = ClickTracking::where('project_id', 1)
-        ->whereIn('user_id', $usersIds)
+        ->whereIn('user_id', [2, 4, 5, 40, 85])
         ->with('user')
         ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
         ->groupBy('user.email');
