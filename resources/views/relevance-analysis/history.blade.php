@@ -774,8 +774,8 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button data-target="{{ $item->id }}" type="button"
-                                                data-click="Start through scan"
                                                 class="btn btn-secondary start-through-analyse click_tracking"
+                                                data-click="Start through scan"
                                                 data-dismiss="modal">{{ __('Start') }}</button>
                                         <button type="button" class="btn btn-default"
                                                 data-dismiss="modal">{{ __('Close') }}</button>

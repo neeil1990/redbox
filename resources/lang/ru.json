@@ -1248,7 +1248,7 @@
     "Repeat the analysis": "Повторить анализ",
     "List of sites": "Список сайтов",
     "Clouds of the first 200 important (tf-idf) words from competitors": "Облака первых 200 важных (по tf-idf) слов у конкурентов",
-    "Clouds of the first 200 important tf-idf words from competitors": "Облака первых 200 важных по tf-idf слов у конкурентов",
+    "Clouds of the first 200 important tf idf words from competitors": "Облака первых 200 важных по tf idf слов у конкурентов",
     "hide ignored domains": "скрыть игнорируемые домены",
     "Total number of characters": "Общее количество символов",
     "You don't have access to this object": "У вас нет доступа до этого объекта",

@@ -932,7 +932,7 @@
                     <div class="pb-3" id="competitorsTfClouds" style="display: none !important;">
                         <div class="align-items-end clouds-div">
                             <button class="btn btn-secondary col-lg-3 col-md-5 click_tracking"
-                                    data-click="Clouds of the first 200 important tf-idf words from competitors"
+                                    data-click="Clouds of the first 200 important tf idf words from competitors"
                                     id="coverage-clouds-button">
                                 {{ __('Clouds of the first 200 important (tf-idf) words from competitors') }}
                             </button>
