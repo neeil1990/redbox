@@ -18,13 +18,11 @@
             </select>
         </th>
         <th></th>
-
         @if(is_array($columns))
             @foreach($columns as $column)
                 <th></th>
             @endforeach
         @endif
-
     </tr>
     <tr>
         <th>Пользователь</th>
@@ -104,6 +102,7 @@
                     "next": "»",
                     "previous": "«"
                 },
+                emptyTable: "{{ __('No records') }}"
             },
             drawCallback: function () {
                 let timeout
@@ -116,5 +115,7 @@
                 });
             }
         })
+
+        $('#actionsTable').wrap('<div style="width:100%; overflow: auto"></div>')
     })
 </script>

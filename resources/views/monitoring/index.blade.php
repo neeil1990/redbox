@@ -179,7 +179,7 @@
                     {
                         orderable: false,
                         data: null,
-                        defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>',
+                        defaultContent: '<a href="#" class="dt-control text-muted click_tracking" data-click="Show project positions"><i class="fas fa-plus-circle"></i></a>',
                     },
                     {
                         title: '{{ __('Project') }}',
@@ -261,7 +261,8 @@
                         data: function (row) {
 
                             let edit = $('<a />', {
-                                class: 'btn btn-info btn-sm',
+                                class: 'btn btn-info btn-sm click_tracking',
+                                "data-click": 'Export project',
                                 "data-toggle": 'modal',
                                 "data-target": '.modal',
                                 "data-type": 'export-edit',

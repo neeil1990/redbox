@@ -22,9 +22,14 @@
                 #actions-table_wrapper {
                     width: 75%;
                 }
-                .dt-buttons.btn-group.flex-wrap{
+
+                .dt-buttons.btn-group.flex-wrap {
                     float: left;
                     margin-bottom: 5px;
+                }
+
+                #actionsTable > th {
+                    width: 150px !important;
                 }
             </style>
 

@@ -27,7 +27,7 @@
             ['name' => 'top30', 'text' => __('TOP') . '30'],
             ['name' => 'top100', 'text' => __('TOP') . '100'],
         ] as $col)
-            <a href="javascript:void(0)" class="btn btn-default btn-sm column-visible" data-toggle="tooltip" data-column="{{ $col['name'] }}" title="Скрыть/Показать столбец">{{ $col['text'] }}</a>
+            <a href="javascript:void(0)" class="btn btn-default btn-sm column-visible click_tracking" data-click="{{ $col['text'] }}" data-toggle="tooltip" data-column="{{ $col['name'] }}" title="Скрыть/Показать столбец">{{ $col['text'] }}</a>
         @endforeach
     </div>
 </div>
