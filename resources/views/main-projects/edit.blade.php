@@ -108,7 +108,7 @@
                     <div class="form-group required">
                         <label for="buttons">Какие кнопки отслеживаем</label>
                         <textarea name="buttons" id="buttons" cols="10" rows="10"
-                                  class="form-control">{{ implode("\r\n", json_decode($data->buttons)) }}</textarea>
+                                  class="form-control">@isset($data->buttons){{ implode("\r\n", json_decode($data->buttons)) }}@endisset</textarea>
                     </div>
                 </div>
             </div>
@@ -119,6 +119,7 @@
             </div>
 
         </div>
+
         {!! Form::close() !!}
     @endsection
 @endcomponent
