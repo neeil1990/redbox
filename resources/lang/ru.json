@@ -1299,7 +1299,7 @@
     "The number of entries in the table of analyzed sites by default": "Количество записей в таблице проанализированных сайтов по умолчанию",
     "The number of entries in the default recommendation table": "Количество записей в таблице рекомендаций по умолчанию",
     "add % to coverage": "добавить % к охвату",
-    "TF-idf clouds of sites from the top and landing page": "Облака TF-idf посадочной страницы и конкурентов",
+    "TF idf clouds of sites from the top and landing page": "Облака TF idf посадочной страницы и конкурентов",
     "Users who have access to the project": "Пользователи которым доступен проект",
     "Viewing only": "Только просмотр",
     "Viewing and launching a re-analysis": "Просмотр и запуск повторного анализа",

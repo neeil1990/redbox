@@ -420,7 +420,7 @@
                         <h3>{{ __('The clouds') }}</h3>
                         <div class="d-flex flex-column pb-3">
                             <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3 click_tracking"
-                                    data-click="TF-idf clouds of sites from the top and landing page"
+                                    data-click="TF idf clouds of sites from the top and landing page"
                                     style="cursor: pointer">
                                 {{ __('TF-idf clouds of sites from the top and landing page') }}
                             </button>
