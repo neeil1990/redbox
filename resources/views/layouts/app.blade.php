@@ -179,6 +179,8 @@
 
 @yield('js')
 
+<span class="click_tracking another_action"></span>
+
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
@@ -260,7 +262,7 @@
     <script>
         const tracking_project_id = {{ request()->route()->parameter('statistic_project_id') }};
 
-        $('.click_tracking').on('click', function () {
+        $(document).on('click', '.click_tracking', function () {
             $.ajax({
                 type: 'post',
                 url: "{{ route('click.tracking') }}",
@@ -275,7 +277,7 @@
                 error: function () {
                 }
             })
-        })
+        });
     </script>
 @endif
 </body>
