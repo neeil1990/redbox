@@ -18,17 +18,23 @@
             </select>
         </th>
         <th></th>
-        @foreach($columns as $column)
-            <th></th>
-        @endforeach
+
+        @if(is_array($columns))
+            @foreach($columns as $column)
+                <th></th>
+            @endforeach
+        @endif
+
     </tr>
     <tr>
         <th>Пользователь</th>
         <th>Роли пользователя</th>
         <th>URL</th>
-        @foreach($columns as $column)
-            <th>{{ __($column) }}</th>
-        @endforeach
+        @if(is_array($columns))
+            @foreach($columns as $column)
+                <th>{{ __($column) }}</th>
+            @endforeach
+        @endif
     </tr>
     </thead>
     <tbody>
@@ -60,7 +66,8 @@
                     return `<a class="nav-link" href="${row.url}" target="_blank">${row.url}</a>`
                 }
             },
-            @foreach($columns as $column)
+            @if(is_array($columns))
+                @foreach($columns as $column)
                 {!!  "{
                         name: \"$column\",
                         data: function(row) {
@@ -72,7 +79,8 @@
                         },
                     },"
                  !!}
-            @endforeach
+                @endforeach
+            @endif()
         ]
 
         let table = $('#actionsTable').DataTable({
@@ -98,8 +106,9 @@
                 },
             },
             drawCallback: function () {
+                let timeout
+
                 $('.filter-input').unbind().on('input', function () {
-                    let timeout
                     clearTimeout(timeout)
                     timeout = setTimeout(() => {
                         table.column($(this).attr('data-index')).search($(this).val()).draw();
