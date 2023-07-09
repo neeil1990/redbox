@@ -183,7 +183,7 @@ class MainProjectsController extends Controller
         );
     }
 
-    public function actions($id, Request $request)
+    public function actions(Request $request)
     {
         $columnName_arr = $request['columns'];
 
@@ -205,15 +205,11 @@ class MainProjectsController extends Controller
 
         $usersIds = $usersIds->pluck('id')->toArray();
 
-        Log::debug('$usersIds', $usersIds);
-
-        $records = ClickTracking::where('project_id', 1)
+        $records = ClickTracking::where('project_id', $request->project_id)
             ->whereIn('user_id', $usersIds)
             ->with('user')
             ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
             ->groupBy('user.email');
-
-        Log::debug('$records', [$records]);
 
         $data = [];
         $i = 0;
