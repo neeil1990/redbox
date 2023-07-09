@@ -13,10 +13,8 @@
             }
         </style>
     @endslot
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <button class="btn btn-secondary" id="set-text" type="button">{{ __('Text Analysis') }}</button>
-    <button class="btn btn-outline-secondary" id="set-url" type="button">{{ __('URL Analysis') }}</button>
+    <button class="btn btn-secondary click_tracking" data-click="Text Analysis" id="set-text" type="button">{{ __('Text Analysis') }}</button>
+    <button class="btn btn-outline-secondary click_tracking" data-click="URL Analysis" id="set-url" type="button">{{ __('URL Analysis') }}</button>
 
     {!! Form::open(['action' =>'TextAnalyzerController@analyze', 'method' => 'POST'])!!}
 
@@ -107,7 +105,7 @@
                 {{ $request['listWords'] }}
             @endif</textarea>
     </div>
-    <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Analyse') }}">
+    <input type="submit" class="btn btn-secondary mt-2 click_tracking" data-click="Analyse" value="{{ __('Analyse') }}">
 
     {!! Form::close() !!}
 

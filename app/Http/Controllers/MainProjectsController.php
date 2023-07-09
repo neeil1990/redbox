@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ClickTracking;
 use App\Common;
 use App\MainProject;
 use App\User;
@@ -26,12 +27,14 @@ class MainProjectsController extends Controller
     public function index()
     {
         $data = MainProject::orderBy('position', 'asc')->get();
+
         return view('main-projects.index', compact('data'));
     }
 
     public function create()
     {
         $roles = $this->roles;
+
         return view('main-projects.create', compact('roles'));
     }
 
@@ -47,10 +50,14 @@ class MainProjectsController extends Controller
             'position.unique' => 'Такая позиция уже существует',
         ]);
 
-        $request = $request->all();
-        $request['show'] = $request['show'] === 'on';
+        $record = $request->all();
 
-        MainProject::create($request);
+        $record['show'] = $record['show'] === 'on';
+
+        $record['buttons'] = json_encode(explode("\r\n", $record['buttons']));
+
+        MainProject::create($record);
+
         return redirect()->route('main-projects.index');
     }
 
@@ -77,6 +84,8 @@ class MainProjectsController extends Controller
         $request = $request->all();
 
         $request['show'] = isset($request['show']);
+        $request['buttons'] = json_encode(explode("\r\n", $request['buttons']));
+
         $project->update($request);
 
         return redirect()->route('main-projects.index');
@@ -91,40 +100,40 @@ class MainProjectsController extends Controller
 
     public function statistics(MainProject $project)
     {
-        $usersIds = User::where('statistic', 1)->with('roles')->get(['id'])->pluck('id')->toArray();
+        $usersIds = User::where('statistic', 1)->pluck('id')->toArray();
 
         $statistics = VisitStatistic::where('project_id', $project->id)
             ->whereIn('user_id', $usersIds)
             ->with('user')
             ->get(['date', 'user_id', 'actions_counter', 'refresh_page_counter', 'seconds'])
-            ->groupBy('date')
-            ->toArray();
+            ->groupBy('date');
 
-        $result = [];
-        foreach ($statistics as $date => $info) {
-            $result[$date]['actionsCounter'] = 0;
-            $result[$date]['refreshPageCounter'] = 0;
-            $result[$date]['time'] = 0;
-            $users = [];
+        $result = $statistics->map(function ($info, $date) {
+            $actionsCounter = $info->sum('actions_counter');
+            $refreshPageCounter = $info->sum('refresh_page_counter');
+            $time = $info->sum('seconds');
 
-            foreach ($info as $elem) {
-                $result[$date]['actionsCounter'] += $elem['actions_counter'];
-                $result[$date]['refreshPageCounter'] += $elem['refresh_page_counter'];
-                $result[$date]['time'] += $elem['seconds'];
+            $users = $info->map(function ($elem) {
+                $user = $elem['user'];
+                $user['actionsCounter'] = $elem['actions_counter'];
+                $user['refreshPageCounter'] = $elem['refresh_page_counter'];
+                $user['time'] = Common::secondsToDate($elem['seconds']);
 
-                $elem['user']['actionsCounter'] = $elem['actions_counter'];
-                $elem['user']['refreshPageCounter'] = $elem['refresh_page_counter'];
-                $elem['user']['time'] = Common::secondsToDate($elem['seconds']);
+                return $user;
+            });
 
-                $users[] = $elem['user'];
-            }
+            return [
+                'actionsCounter' => $actionsCounter,
+                'refreshPageCounter' => $refreshPageCounter,
+                'time' => $time,
+                'users' => $users,
+            ];
+        });
 
-            $result[$date]['users'] = $users;
-        }
-
-        foreach ($result as $date => $info) {
-            $result[$date]['time'] = Common::secondsToDate($info['time']);
-        }
+        $result = $result->map(function ($info) {
+            $info['time'] = Common::secondsToDate($info['time']);
+            return $info;
+        });
 
         return view('main-projects.statistics', compact('result', 'project'));
     }
@@ -173,4 +182,57 @@ class MainProjectsController extends Controller
         );
     }
 
+    public function actions($id, Request $request)
+    {
+        $columnName_arr = $request['columns'];
+
+        $usersIds = User::where('statistic', 1);
+
+        foreach ($columnName_arr as $column) {
+            $search = $column['search']['value'];
+
+            if (isset($search)) {
+                if ($column['name'] === 'email') {
+                    $usersIds->where('email', 'like', "%$search%");
+                } else if ($column['name'] === 'roles' && $search !== 'Любой') {
+                    $usersIds->whereHas('roles', function ($query) use ($search) {
+                        $query->where('name', $search);
+                    })->with('roles');
+                }
+            }
+        }
+
+        $usersIds = $usersIds->pluck('id')->toArray();
+
+        $records = ClickTracking::where('project_id', 1)
+            ->whereIn('user_id', $usersIds)
+            ->with('user')
+            ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
+            ->groupBy('user.email');
+
+        $data = [];
+        $i = 0;
+        foreach ($records as $email => $pages) {
+            foreach ($pages->groupBy('url') as $actions) {
+                $data[$i] = [
+                    'email' => $email,
+                    'roles' => $actions[0]['user']['roles']->toArray(),
+                    'url' => $actions[0]['url'],
+                ];
+                foreach ($actions->toArray() as $page) {
+                    $data[$i][str_replace(' ', '_', $page['button_text'])] = $page;
+                }
+                $i++;
+            }
+        }
+
+        $filteredData = [
+            'draw' => intval($request['draw']),
+            'iTotalRecords' => count($records),
+            'iTotalDisplayRecords' => count($data),
+            'aaData' => $data
+        ];
+
+        return json_encode($filteredData);
+    }
 }

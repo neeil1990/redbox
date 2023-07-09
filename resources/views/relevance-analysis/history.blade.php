@@ -421,7 +421,7 @@
         </div>
         <div class="card-body">
             <div class="tab-content">
-                <div class="tab-pane active" id="tab_1">
+                <span class="tab-pane active" id="tab_1">
                     <table id="main_history_table"
                            class="table table-bordered table-hover dtr-inline no-footer dataTable mb-3">
                         <thead>
@@ -440,18 +440,15 @@
                         @foreach($main as $item)
                             <tr id="story-id-{{ $item->id }}">
                                 <td data-order="{{ $item->name }}">
-                                    <span class="project_name"
-                                          style="cursor:pointer;"
-                                          data-order="{{ $item->id }}">
-                                        {{ $item->name }}
+                                    <span>
+                                        <span class="project_name" style="cursor: pointer" data-order="{{ $item->id }}">{{ $item->name }}</span>
                                         <i class="fa fa-table project_name"
                                            data-order="{{ $item->id }}"
                                            style="opacity: 0.6; cursor:pointer;"></i>
-
-                                    <i class="fa fa-list project_name_v2"
-                                       data-order="{{ $item->id }}"
-                                       style="opacity: 0.6; cursor:pointer;"></i>
-
+                                        <i class="fa fa-list project_name_v2"
+                                           data-order="{{ $item->id }}"
+                                           style="opacity: 0.6; cursor:pointer;"></i>
+                                    </span>
                                     <div class="dropdown" style="display: inline">
                                         <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
                                            aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
@@ -483,7 +480,6 @@
                                             </span>
                                         </div>
                                     </div>
-                                    </span>
                                 </td>
                                 <td id="project-{{ $item->id }}" data-order="{{ count($item->relevanceTags) }}">
                                     @foreach($item->relevanceTags as $tag)
@@ -760,20 +756,20 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Запустить анализ сквозных слов у
-                                            проекта {{ $item->name }}</h5>
+                                        <h5 class="modal-title">{{ __('Run an analysis of the end-to-end results of the project') }} {{ $item->name }}</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        Будет произведён анализ сквозных слов у
+                                        {{ __('The analysis of end-to-end words will be performed at') }}
                                         <b>{{ $item->count_sites }}</b>
                                         {{ __('unique pages, are you sure?') }}
                                     </div>
                                     <div class="modal-footer">
                                         <button data-target="{{ $item->id }}" type="button"
-                                                class="btn btn-secondary start-through-analyse"
+                                                data-click="Start through scan"
+                                                class="btn btn-secondary start-through-analyse click_tracking"
                                                 data-dismiss="modal">{{ __('Start') }}</button>
                                         <button type="button" class="btn btn-default"
                                                 data-dismiss="modal">{{ __('Close') }}</button>

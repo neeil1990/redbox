@@ -161,7 +161,7 @@
                     </div>
 
                     <div class="pb-3 pt-3 text" style="display:none">
-                        <h3>{{ __('Comparing the amount of text') }}</h3>
+                        <h2>{{ __('Comparing the amount of text') }}</h2>
                         <table class="table table-bordered table-striped dataTable dtr-inline">
                             <thead>
                             <tr>
@@ -190,9 +190,10 @@
                     </div>
 
                     <div class="pb-3 clouds" style="display:none;">
-                        <h3>{{ __('The clouds') }}</h3>
+                        <h2>{{ __('The clouds') }}</h2>
                         <div class="d-flex flex-column pb-3">
-                            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3"
+                            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3 click_tracking"
+                                    data-click="TF-idf clouds of sites from the top and landing page"
                                     style="cursor: pointer">
                                 {{ __('TF-idf clouds of sites from the top and landing page') }}
                             </button>
@@ -242,7 +243,8 @@
 
                                 </div>
                             </div>
-                            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5"
+                            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5 click_tracking"
+                                    data-click="Clouds of site text from the top and landing page"
                                     style="cursor: pointer;">
                                 {{ __("Clouds of site text from the top and landing page") }}
                             </button>
@@ -288,7 +290,7 @@
 
                     <div id="rec" style="display: none" class="mb-3">
                         <h2>{{ __('TLP Recommendations and Spam check') }}</h2>
-                        <button class="btn btn-secondary" id="recButton">{{ __('Show') }}</button>
+                        <button class="btn btn-secondary click_tracking" data-click="TLP Recommendations and Spam check" id="recButton">{{ __('show') }}</button>
                     </div>
 
                     <div class="pb-3 recommendations" style="display:none;">
@@ -509,7 +511,7 @@
                     </div>
 
                     <div class="phrases" style="display:none;">
-                        <h3>{{ __('Top list of phrases (TLPs)') }}</h3>
+                        <h2>{{ __('Top list of phrases (TLPs)') }}</h2>
                         <table id="phrases" class="table table-bordered table-hover dataTable dtr-inline w-100">
                             <thead>
                             <tr>
@@ -597,7 +599,7 @@
                     </div>
 
                     <div class="sites" style="display:none;">
-                        <h3>{{ __('Analyzed sites') }}</h3>
+                        <h2>{{ __('Analyzed sites') }}</h2>
                         <table id="scanned-sites" class="table table-bordered table-hover dataTable dtr-inline">
                             <thead>
                             <tr style="position: relative; z-index: 100" id="scanned-sites-row">
@@ -701,7 +703,8 @@
 
                     <div class="pb-3 pt-3" id="competitorsTfClouds" style="display: none !important;">
                         <div class="align-items-end clouds-div">
-                            <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
+                            <button class="btn btn-secondary col-lg-3 col-md-5 click_tracking" id="coverage-clouds-button"
+                            data-click="Clouds of the first 200 important (tf-idf) words from competitors">
                                 {{ __('Clouds of the first 200 important (tf-idf) words from competitors') }}
                             </button>
                         </div>
@@ -978,7 +981,7 @@
                             </div>
                         </div>
                     @else
-                        <h3>{{ __("You don't have access to this object") }}</h3>
+                        <h2>{{ __("You don't have access to this object") }}</h2>
                     @endif
                 </div>
             </div>

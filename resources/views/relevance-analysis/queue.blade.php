@@ -247,7 +247,9 @@
 
                     <div class="d-flex flex-column">
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <input type="submit" class="btn btn-secondary" id="add-in-queue" value="{{ __('Add to queue') }}">
+                            <input type="submit" class="btn btn-secondary click_tracking"
+                                   data-click="Add to queue"
+                                   id="add-in-queue" value="{{ __('Add to queue') }}">
                         </div>
                     </div>
                 </div>

@@ -150,7 +150,9 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         }
 
         $('#scanned-sites_wrapper > .dt-buttons').after(
-            "<button class='btn btn-secondary ml-1' id='copySites' style='cursor: pointer'>" + words.copyLinks + "</button>"
+            "<button class='btn btn-secondary ml-1 click_tracking'" +
+            ` data-click="${words.copyLinks}"` +
+            " id='copySites' style='cursor: pointer'>" + words.copyLinks + "</button>"
         )
 
         $('#copySites').click(function () {

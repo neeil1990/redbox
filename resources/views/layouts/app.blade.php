@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+@php use App\Session; @endphp
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Google Tag Manager -->
@@ -253,6 +254,29 @@
         <div><img src="https://mc.yandex.ru/watch/89500732" style="; left:-9999px;" alt=""/></div>
     </noscript>
     <!-- /Yandex.Metrika counter -->
+@endif
+
+@if(request()->route()->parameter('statistic_project_id') !== null)
+    <script>
+        const tracking_project_id = {{ request()->route()->parameter('statistic_project_id') }};
+
+        $('.click_tracking').on('click', function () {
+            $.ajax({
+                type: 'post',
+                url: "{{ route('click.tracking') }}",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    button_text: $(this).attr('data-click'),
+                    url: location.href,
+                    project_id: tracking_project_id
+                },
+                success: function (response) {
+                },
+                error: function () {
+                }
+            })
+        })
+    </script>
 @endif
 </body>
 </html>

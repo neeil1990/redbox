@@ -1,9 +1,7 @@
 @component('component.card', ['title' => __('News and updates')])
-@section('content')
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/scroll/style.css') }}"/>
     @endslot
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @if(\App\User::isUserAdmin())
         <a href="{{ route('create.news') }}" class="btn btn-secondary mb-3" style="margin-left: 7.5px">
@@ -130,6 +128,7 @@
             </div>
         </div>
     @endisset
+
     @slot('js')
         <script>
             $(".scroll_arrow").on("click", function (e) {
@@ -143,6 +142,7 @@
             $(document).ready(function () {
                 $('html').height($('.col-lg-8.col-md-12.pb-3').height() + 200)
             });
+
             $('.btn.btn-secondary.remove-news').click(function () {
                 var id = $(this).attr('target')
                 $.ajax({
@@ -336,5 +336,4 @@
             })
         </script>
     @endslot
-@endsection
 @endcomponent

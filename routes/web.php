@@ -11,7 +11,9 @@
 |
 */
 
+use App\ClickTracking;
 use App\TextAnalyzer;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -41,6 +43,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::resource('main-projects', 'MainProjectsController');
     Route::get('/main-projects/statistics/{project}', 'MainProjectsController@statistics')->name('main-projects.statistics');
+    Route::get('/get-click-actions/{id}', 'MainProjectsController@actions');
     Route::get('/modules-statistics/', 'MainProjectsController@moduleVisitStatistics')->name('statistics.modules');
     Route::post('/update-statistics', 'PublicController@updateStatistics')->name('update.statistics');
 
@@ -392,4 +395,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/admin', 'PartnersController@admin')->name('partners.admin');
     Route::post('/partners/edit-item/', 'PartnersController@editItem')->name('partners.save.edit.item');
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
+
+    Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
 });

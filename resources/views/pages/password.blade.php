@@ -68,7 +68,8 @@
                 </div>
                 <input type="submit"
                        value="{{__('Generate password')}}"
-                       class="btn btn-secondary"
+                       class="btn btn-secondary click_tracking"
+                       data-click="Generate password"
                        onclick="saveState()">
             </form>
             <div class="passwords col-6">
@@ -131,7 +132,7 @@
                         </div>
                     </td>
                     <td class="col-1 align-baseline">
-                        <div class="__helper-link ui_tooltip_w btn btn-default">
+                        <div class="__helper-link ui_tooltip_w btn btn-default click_tracking" data-click="Copy to Clipboard">
                             <span style="display: none" class="hidden-password">
                                 {{ $password->password }}
                             </span>
@@ -140,7 +141,7 @@
                                 <span class="ui_tooltip_content">{{ __('Copy to Clipboard') }}</span>
                             </span>
                         </div>
-                        <button class="btn btn-default remove-password" data-order="{{ $password->id }}"
+                        <button class="btn btn-default remove-password click_tracking" data-click="Remove" data-order="{{ $password->id }}"
                                 data-toggle="modal" data-target="#removePasswordWindow">
                             <i aria-hidden="true" class="fa fa-trash"></i>
                         </button>

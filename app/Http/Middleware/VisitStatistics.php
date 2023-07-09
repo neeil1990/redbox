@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\MainProject;
+use App\Session;
 use App\User;
 use App\VisitStatistic;
 use Carbon\Carbon;
@@ -62,6 +63,8 @@ class VisitStatistics
                     return $next($request);
                 } else if ($this->findAction('@', $action, $callAction)) {
                     $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
+                    $request->route()->setParameter('statistic_project_id', $project->id);
+
                     return $next($request);
                 }
             }

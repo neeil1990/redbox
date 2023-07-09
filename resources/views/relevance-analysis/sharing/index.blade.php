@@ -89,11 +89,47 @@
                             <tbody>
                             @foreach($projects as $item)
                                 <tr id="story-id-{{ $item->id }}">
-                                    <td class="project_name" style="cursor:pointer;"
-                                        data-order="{{ $item->id }}">
-                                        <a href="#history_table_{{ $item->name }}">
-                                            {{ $item->name }}
-                                        </a>
+                                    <td>
+                                    <span>
+                                        <span class="project_name" style="cursor: pointer" data-order="{{ $item->id }}">{{ $item->name }}</span>
+                                        <i class="fa fa-table project_name"
+                                           data-order="{{ $item->id }}"
+                                           style="opacity: 0.6; cursor:pointer;"></i>
+                                        <i class="fa fa-list project_name_v2"
+                                           data-order="{{ $item->id }}"
+                                           style="opacity: 0.6; cursor:pointer;"></i>
+                                    </span>
+                                        <div class="dropdown" style="display: inline">
+                                            <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
+                                               aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <span class="dropdown-item project_name"
+                                                  style="cursor:pointer;"
+                                                  data-order="{{ $item->id }}">
+                                                <i class="fa fa-table"></i>
+                                                {{ __('Show the results of the analysis') }}
+                                            </span>
+                                                <span class="dropdown-item project_name_v2"
+                                                      style="cursor:pointer;"
+                                                      data-order="{{ $item->id }}">
+                                                <i class="fa fa-list"></i>
+                                                {{ __('View the results in a list') }}
+                                            </span>
+                                                <span class="dropdown-item"
+                                                      style="cursor:pointer;"
+                                                      data-toggle="modal" data-target="#removeModal{{ $item->id }}">
+                                                <i class="fa fa-trash"></i>
+                                                {{ __('Delete results without comments') }}
+                                            </span>
+                                                <span class="dropdown-item"
+                                                      style="cursor:pointer;"
+                                                      data-toggle="modal"
+                                                      data-target="#removeWithFiltersModal{{ $item->id }}">
+                                                <i class="fa fa-trash"></i>
+                                                {{ __('Delete using filters') }}
+                                            </span>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td id="project-{{ $item->id }}">
                                         @foreach($item->relevanceTags as $tag)
@@ -212,12 +248,15 @@
                                     @endforeach
                                 </select>
                             </div>
-
                         </div>
+
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                    data-dismiss="modal">{{ __('Close') }}</button>
-                            <button class="set-access-button btn btn-secondary">{{ __('Give access') }}</button>
+                            <button class="set-access-button btn btn-secondary click_tracking" data-click="Give access">
+                                {{ __('Give access') }}
+                            </button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                {{ __('Close') }}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -250,9 +289,12 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                    data-dismiss="modal">{{ __('Close') }}</button>
-                            <button class="off-access-button btn btn-secondary">{{ __('Take access rights') }}</button>
+                            <button class="off-access-button btn btn-secondary click_tracking" data-click="Take access rights">
+                                {{ __('Take access rights') }}
+                            </button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                {{ __('Close') }}
+                            </button>
                         </div>
                     </div>
                 </div>

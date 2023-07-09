@@ -22,19 +22,25 @@
                 #actions-table_wrapper {
                     width: 75%;
                 }
+                .dt-buttons.btn-group.flex-wrap{
+                    float: left;
+                    margin-bottom: 5px;
+                }
             </style>
+
         @endslot
 
-        <div class="mb-3">
+        <div class="mb-5">
             <a class="btn btn-default" href="{{ $project->link }}" target="_blank">Перейти в модуль</a>
         </div>
 
+        <h3>Общая статистика</h3>
         <table id="table" class="table table-striped no-footer border">
             <thead>
             <tr>
-                <th>Дата</th>
-                <th>
-                    Время
+                <th class="col-1">Дата</th>
+                <th class="col-1">
+                    Общее время
                     <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
                         <i class="fa fa-question-circle" style="color: grey"></i>
                         <span class="ui_tooltip __bottom">
@@ -45,7 +51,7 @@
                         </span>
                     </span>
                 </th>
-                <th>
+                <th class="col-2">
                     Количество обновлений страницы
                     <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
                         <i class="fa fa-question-circle" style="color: grey"></i>
@@ -56,7 +62,7 @@
                         </span>
                     </span>
                 </th>
-                <th>
+                <th class="col-2">
                     Количество действий
                     <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
                         <i class="fa fa-question-circle" style="color: grey"></i>
@@ -67,8 +73,8 @@
                         </span>
                     </span>
                 </th>
-                <th>Всего действий</th>
-                <th>Пользователь</th>
+                <th class="col-2">Всего действий</th>
+                <th class="col-4">Пользователи</th>
             </tr>
             </thead>
             <tbody>
@@ -91,7 +97,7 @@
                                 <thead>
                                 <tr>
                                     <th>Email</th>
-                                    <th>Время проведённое на станице</th>
+                                    <th>Время</th>
                                     <th>Обновления страницы</th>
                                     <th>Другие действия</th>
                                     <th>Всего действий</th>
@@ -115,6 +121,9 @@
             @endforeach
             </tbody>
         </table>
+
+        @include('main-projects.templates.clicks_buttons_table', ['id' => $project->id, 'columns' => json_decode($project->buttons)])
+
         @slot('js')
             <!-- datatables -->
             <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
@@ -129,7 +138,7 @@
             <script>
                 $(document).ready(function () {
                     $('#table').DataTable({
-                        "order": [[0, 'desc']],
+                        order: [[0, 'desc']],
                         lengthMenu: [10, 25, 50, 100],
                         pageLength: 10,
                         language: {

@@ -333,7 +333,7 @@
 
                     <div class="d-flex flex-column">
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <button class="btn btn-secondary" id="full-analyse">
+                            <button class="btn btn-secondary click_tracking" data-click="Full analysis" id="full-analyse" data-name="Full analysis">
                                 {{ __('Full analysis') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
@@ -349,7 +349,9 @@
                             </button>
                         </div>
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <button type="button" class="btn btn-secondary" id="repeat-relevance-analyse" disabled>
+                            <button type="button" class="btn btn-secondary click_tracking"
+                                    data-click="Repeated analysis of competitor sites"
+                                    id="repeat-relevance-analyse" disabled>
                                 {{ __('Repeated analysis of competitor sites') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
@@ -364,7 +366,9 @@
                             </button>
                         </div>
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <button class="btn btn-secondary" id="repeat-main-page-analyse" disabled>
+                            <button class="btn btn-secondary click_tracking"
+                                    data-click="Repeated analysis of the landing page"
+                                    id="repeat-main-page-analyse" disabled>
                                 {{ __('Repeated analysis of the landing page') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
@@ -415,7 +419,8 @@
                     <div class="pb-3 clouds" style="display:none;">
                         <h3>{{ __('The clouds') }}</h3>
                         <div class="d-flex flex-column pb-3">
-                            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3"
+                            <button id="tf-idf-clouds" class="btn btn-secondary col-lg-3 col-md-5 mb-3 click_tracking"
+                                    data-click="TF-idf clouds of sites from the top and landing page"
                                     style="cursor: pointer">
                                 {{ __('TF-idf clouds of sites from the top and landing page') }}
                             </button>
@@ -464,9 +469,10 @@
 
                                 </div>
                             </div>
-                            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5"
+                            <button id="text-clouds" class="btn btn-secondary col-lg-3 col-md-5 click_tracking"
+                                    data-click="Clouds of site text from the top and landing page"
                                     style="cursor: pointer;">
-                                {{ __("Clouds of site text from the top and landing page") }}
+                                {{ __('Clouds of site text from the top and landing page') }}
                             </button>
                             <div class="text-clouds" style=" display: none">
                                 <div class="d-lg-flex mt-4 justify-content-around">
@@ -510,7 +516,11 @@
 
                     <div id="rec" style="display: none" class="mb-3">
                         <h2>{{ __('TLP Recommendations and Spam check') }}</h2>
-                        <button class="btn btn-secondary" id="recButton">{{ __('Show') }}</button>
+                        <button class="btn btn-secondary click_tracking"
+                                data-click="TLP Recommendations and Spam check"
+                                id="recButton">
+                            {{ __('show') }}
+                        </button>
                     </div>
 
                     <div class="pb-3 recommendations" style="display:none;">
@@ -921,7 +931,9 @@
 
                     <div class="pb-3" id="competitorsTfClouds" style="display: none !important;">
                         <div class="align-items-end clouds-div">
-                            <button class="btn btn-secondary col-lg-3 col-md-5" id="coverage-clouds-button">
+                            <button class="btn btn-secondary col-lg-3 col-md-5 click_tracking"
+                                    data-click="Clouds of the first 200 important (tf-idf) words from competitors"
+                                    id="coverage-clouds-button">
                                 {{ __('Clouds of the first 200 important (tf-idf) words from competitors') }}
                             </button>
                         </div>

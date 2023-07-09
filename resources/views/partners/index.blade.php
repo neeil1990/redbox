@@ -52,9 +52,10 @@
                                     <p class="card-text">{{ $item['description_'. $lang] }}</p>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-end">
-                                <a href="/partners/r/{{ $item['short_link_' . $lang] }}" class="btn btn-secondary"
-                                   target="_blank"> >>> </a>
+                            <div class="d-flex justify-content-end click_tracking">
+                                <a href="/partners/r/{{ $item['short_link_' . $lang] }}"
+                                   class="btn btn-secondary click_tracking"
+                                   target="_blank" data-click="{{ $item['name_'. $lang] }}"> >>> </a>
                             </div>
                         </div>
                     </div>
