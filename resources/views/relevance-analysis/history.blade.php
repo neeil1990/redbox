@@ -421,7 +421,7 @@
         </div>
         <div class="card-body">
             <div class="tab-content">
-                <span class="tab-pane active" id="tab_1">
+                <div class="tab-pane active" id="tab_1">
                     <table id="main_history_table"
                            class="table table-bordered table-hover dtr-inline no-footer dataTable mb-3">
                         <thead>
@@ -441,7 +441,8 @@
                             <tr id="story-id-{{ $item->id }}">
                                 <td data-order="{{ $item->name }}">
                                     <span>
-                                        <span class="project_name" style="cursor: pointer" data-order="{{ $item->id }}">{{ $item->name }}</span>
+                                        <span class="project_name" style="cursor: pointer"
+                                              data-order="{{ $item->id }}">{{ $item->name }}</span>
                                         <i class="fa fa-table project_name"
                                            data-order="{{ $item->id }}"
                                            style="opacity: 0.6; cursor:pointer;"></i>
@@ -561,7 +562,9 @@
                                         </p>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary remove-empty-results"
+                                        <button type="button"
+                                                class="btn btn-secondary remove-empty-results click_tracking"
+                                                data-click="Remove empty results"
                                                 data-target="{{ $item->id }}" data-dismiss="modal">
                                             {{ __('Remove') }}
                                         </button>
@@ -716,7 +719,9 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary remove-with-filters"
+                                        <button type="button"
+                                                class="btn btn-secondary remove-with-filters click_tracking"
+                                                data-click="Remove with filters"
                                                 data-dismiss="modal" data-target="{{ $item->id }}">
                                             {{ __('Remove') }}
                                         </button>
@@ -743,7 +748,8 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button data-target="{{ $item->id }}" type="button"
-                                                class="btn btn-secondary repeat-scan-unique-sites"
+                                                class="btn btn-secondary repeat-scan-unique-sites click_tracking"
+                                                data-click="Repeat scan unique sites"
                                                 data-dismiss="modal">{{ __('Start') }}</button>
                                         <button type="button" class="btn btn-default"
                                                 data-dismiss="modal">{{ __('Close') }}</button>
