@@ -45,21 +45,20 @@ class HomeController extends Controller
 
     public function clickTracking(Request $request): JsonResponse
     {
-//        try {
-        ClickTracking::updateOrCreate([
-            'project_id' => $request->project_id,
-            'button_text' => $request->button_text,
-            'url' => $request->url,
-            'user_id' => Auth::id(),
-        ], [
-            'button_counter' => DB::raw('button_counter + 1')
-        ]);
-//        } catch (\Throwable $e) {
-//            Log::debug('click tracking error', [
-//                'message' => $e->getMessage()
-//            ]);
-//        }
-
+        try {
+            ClickTracking::updateOrCreate([
+                'project_id' => $request->project_id,
+                'button_text' => $request->button_text,
+                'url' => $request->url,
+                'user_id' => Auth::id(),
+            ], [
+                'button_counter' => DB::raw('button_counter + 1')
+            ]);
+        } catch (\Throwable $e) {
+            Log::debug('click tracking error', [
+                'message' => $e->getMessage()
+            ]);
+        }
 
         return response()->json([], 201);
     }

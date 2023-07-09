@@ -10,6 +10,7 @@ use App\VisitStatistic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
@@ -204,11 +205,15 @@ class MainProjectsController extends Controller
 
         $usersIds = $usersIds->pluck('id')->toArray();
 
+        Log::debug('$usersIds', $usersIds);
+
         $records = ClickTracking::where('project_id', 1)
             ->whereIn('user_id', $usersIds)
             ->with('user')
             ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
             ->groupBy('user.email');
+
+        Log::debug('$records', [$records]);
 
         $data = [];
         $i = 0;
@@ -226,6 +231,7 @@ class MainProjectsController extends Controller
             }
         }
 
+        Log::debug('data', [$data]);
         $filteredData = [
             'draw' => intval($request['draw']),
             'iTotalRecords' => count($records),
