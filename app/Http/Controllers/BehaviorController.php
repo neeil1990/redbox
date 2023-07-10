@@ -239,4 +239,30 @@ class BehaviorController extends Controller
     {
         $behavior->phrases()->delete();
     }
+
+    public function phraseSortUpdate($phrase, BehaviorsPhrase $behaviorsPhrase, Request $request)
+    {
+        $sort = $request->input('sort', null);
+
+        if(!$sort)
+            return;
+
+        $phrase = $behaviorsPhrase->findOrFail($phrase);
+
+        $phrase->sort = $sort;
+        $phrase->save();
+    }
+
+    public function sortMixed(Behavior $behavior)
+    {
+        $phrases = $behavior->phrases()->sortOrder()->get();
+        $count = $phrases->count();
+
+        foreach ($phrases as $phrase){
+            $rand = rand(1, $count);
+            $phrase->update(['sort' => $rand]);
+        }
+
+        return redirect()->back();
+    }
 }

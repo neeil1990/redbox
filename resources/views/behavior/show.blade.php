@@ -1,6 +1,8 @@
 @component('component.card', ['title' => __('Behavior')])
 
     @slot('css')
+        <!-- Toastr -->
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
         <!-- CodeMirror -->
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/codemirror.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/codemirror/theme/monokai.css') }}">
@@ -79,16 +81,18 @@
                         <tr>
                             <th>{{ __('Phrase') }}</th>
                             <th>{{ __('Code') }}</th>
+                            <th style="width: 40px" class="text-center">{{ __('Sort') }} <a href="{{ route('behavior.sort.mixed', $behavior->id) }}" title="Отсортировать рандомно" data-toggle="tooltip"><i class="fas fa-random"></i></a></th>
                             <th style="width: 20px"></th>
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($behavior->phrases as $phrase)
-                            <tr>
+                        @foreach($behavior->phrases()->sortOrder()->get() as $phrase)
+                            <tr data-id="{{ $phrase->id }}">
                                 <td>{{ $phrase->phrase }}</td>
                                 <td><span class="badge @if($phrase->status) bg-success @else bg-danger @endif">{{ $phrase->code }}</span></td>
+                                <td><input type="number" class="form-control sort" data-route="{{ route('behavior.phrase.sort.update', $phrase->id) }}" value="{{ $phrase->sort }}" placeholder="{{ $phrase->sort }}"></td>
                                 <td class="text-center">
-                                    <a href="#" class="text-red phrase-destroy" data-id="{{ $phrase->id }}">
+                                    <a href="#" class="text-red phrase-destroy">
                                         <i class="fas fa-ban"></i>
                                     </a>
                                 </td>
@@ -134,6 +138,8 @@
     </div>
 
     @slot('js')
+        <!-- Toastr -->
+        <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <!-- CodeMirror -->
         <script src="{{ asset('plugins/codemirror/codemirror.js') }}"></script>
         <script src="{{ asset('plugins/codemirror/mode/css/css.js') }}"></script>
@@ -150,7 +156,7 @@
                     e.preventDefault();
 
                     let self = $(this);
-                    let id = self.data('id');
+                    let id = self.closest('tr').data('id');
 
                     axios.delete(`/behavior/phrase/${id}`).then(function (response) {
                         if(response.status === 200){
@@ -173,6 +179,23 @@
                         else
                             window.location.href = response.data;
                     });
+                });
+
+                $('.sort').focusout(function () {
+                    let self = $(this);
+                    let route = self.data('route');
+                    let sort = self.val();
+
+                    axios.post( route, {
+                        sort: sort,
+                    }).then(function (response) {
+                        console.log(response);
+                    })
+                });
+
+                $('[data-toggle="tooltip"]').tooltip({
+                    animation: false,
+                    trigger: 'hover',
                 });
 
             });

@@ -81,9 +81,11 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/meta-tags/getTariffMetaTagsPages', 'MetaTagsController@getTariffMetaTagsPages');
     Route::resource('meta-tags', 'MetaTagsController');
 
+    Route::get('behavior/{behavior}/sort-mixed', 'BehaviorController@sortMixed')->name('behavior.sort.mixed');
     Route::get('behavior/{behavior}/edit-project', 'BehaviorController@editProject')->name('behavior.edit_project');
     Route::patch('behavior/{behavior}/update-project', 'BehaviorController@updateProject')->name('behavior.update_project');
 
+    Route::post('behavior/phrase/{phrase}/sort', 'BehaviorController@phraseSortUpdate')->name('behavior.phrase.sort.update');
     Route::delete('behavior/phrase/{phrase}', 'BehaviorController@phraseDestroy')->name('behavior.phrase.destroy');
     Route::delete('behavior/phrases/{behavior}', 'BehaviorController@destroyPhrases')->name('behavior.phrases.destroy');
 

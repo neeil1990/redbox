@@ -26,7 +26,7 @@ class PublicController extends Controller
     public function checkBehavior($id)
     {
         $behavior = Behavior::findOrFail($id);
-        $phrases = $behavior->phrases()->where('status', 0)->first();
+        $phrases = $behavior->phrases()->where('status', 0)->sortOrder()->first();
 
         if (!$phrases) {
             Session::flash('adding_phrases', __('Please adding phrases.'));
