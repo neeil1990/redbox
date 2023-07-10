@@ -11,9 +11,6 @@
 |
 */
 
-use App\ClickTracking;
-use App\TextAnalyzer;
-use App\User;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
