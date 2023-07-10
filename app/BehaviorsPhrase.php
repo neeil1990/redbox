@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BehaviorsPhrase extends Model
 {
-    protected $fillable = ['code', 'phrase'];
+    protected $fillable = ['code', 'phrase', 'sort'];
 
     public function behavior()
     {
@@ -26,5 +26,10 @@ class BehaviorsPhrase extends Model
     public function scopeUnique($query)
     {
         return $query->groupBy('phrase');
+    }
+
+    public function scopeSortOrder($query)
+    {
+        return $query->orderBy('sort', 'asc');
     }
 }
