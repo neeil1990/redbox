@@ -1212,7 +1212,6 @@ class Relevance
             $this->parseSites($xmlResponse);
         } catch (\Throwable $exception) {
             $this->saveError($exception);
-            die();
         }
     }
 
