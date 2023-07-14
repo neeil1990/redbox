@@ -211,6 +211,8 @@ class Common
             ->select(
                 DB::raw('COUNT(CASE WHEN queue = "relevance_high" OR queue = "relevance_medium" OR queue = "relevance_normal" THEN 1 END) AS count_relevance'),
                 DB::raw('COUNT(CASE WHEN queue != "relevance_high" AND queue != "relevance_medium" AND queue != "relevance_normal" THEN 1 END) AS another')
-            )->first();
+            )
+            ->where('attempts', '>=', '1')
+            ->first();
     }
 }
