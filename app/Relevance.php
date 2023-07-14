@@ -193,7 +193,7 @@ class Relevance
             $this->saveHistory($historyId);
 
             RemoveRelevanceProgress::dispatch($this->scanHash)
-                ->onQueue('normal')
+                ->onQueue('default')
                 ->delay(now()->addSeconds(100));
 
         } catch (\Throwable $exception) {
