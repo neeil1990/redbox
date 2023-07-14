@@ -43,13 +43,13 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public function handle()
     {
-        Log::debug('loadavg', [sys_getloadavg()[0]]);
-        if (sys_getloadavg()[0] > 0.5) {
-            RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
-                ->onQueue($this->job->getQueue())
-                ->onConnection('database')
-                ->delay(Carbon::now()->addSeconds(10));
-        } else {
+//        Log::debug('loadavg', [sys_getloadavg()[0]]);
+//        if (sys_getloadavg()[0] > 0.5) {
+//            RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
+//                ->onQueue($this->job->getQueue())
+//                ->onConnection('database')
+//                ->delay(Carbon::now()->addSeconds(10));
+//        } else {
             $this->relevance = new Relevance($this->request, $this->userId);
 
             if ($this->type === 'full') {
@@ -86,6 +86,6 @@ class RelevanceAnalyseQueue implements ShouldQueue
             }
 
             $this->relevance->analysis();
-        }
+//        }
     }
 }
