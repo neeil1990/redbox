@@ -422,6 +422,8 @@ Route::get('/system-load', function () {
         }
     }
 
+    dump($coreStats);
+
 // Вычисляем суммарную нагрузку на все ядра
     $totalLoad = 0;
     foreach ($coreStats as $coreStat) {
