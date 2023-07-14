@@ -13,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalyseQueue implements ShouldQueue
 {
@@ -32,6 +33,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public function __construct($request, $exp, $userId, $type)
     {
+        Log::info('construct');
         $this->request = $request;
         $this->exp = $exp;
         $this->type = $type;
@@ -40,6 +42,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public function handle()
     {
+        Log::debug('loadavg', [sys_getloadavg()[0]]);
         if (sys_getloadavg()[0] > 0.5) {
             RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
                 ->onQueue($this->job->getQueue())
