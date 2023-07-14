@@ -41,9 +41,8 @@ class RelevanceAnalyseQueue implements ShouldQueue
     public function handle()
     {
         $jobs = Common::analyseRelevanceJobs();
-        Log::debug('$jobs', [$jobs]);
 
-        if ($jobs->count_relevance <= 1 || ($jobs->count_relevance == 2 && $jobs->another == 0)) {
+        if ($jobs->count_relevance <= 2 || ($jobs->count_relevance <= 3 && $jobs->another == 0)) {
             $this->relevance = new Relevance($this->request, $this->userId);
 
             if ($this->type === 'full') {

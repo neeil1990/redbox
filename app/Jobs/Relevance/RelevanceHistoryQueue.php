@@ -46,7 +46,7 @@ class RelevanceHistoryQueue implements ShouldQueue
     {
         $jobs = Common::analyseRelevanceJobs();
 
-        if ($jobs->count_relevance <= 1 || ($jobs->count_relevance == 2 && $jobs->another == 0)) {
+        if ($jobs->count_relevance <= 2 || ($jobs->count_relevance <= 3 && $jobs->another == 0)) {
             $this->relevance = new Relevance($this->request, $this->userId, true);
             if ($this->type == 'full') {
                 $this->relevance->getMainPageHtml();
