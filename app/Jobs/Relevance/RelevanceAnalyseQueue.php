@@ -19,15 +19,15 @@ class RelevanceAnalyseQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 1;
+    public $tries = 1;
 
-    public array $request;
+    public $request;
 
-    public bool $exp;
+    public $exp;
 
-    public string $type;
+    public $type;
 
-    public int $userId;
+    public $userId;
 
     public Relevance $relevance;
 
@@ -38,6 +38,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
         $this->exp = $exp;
         $this->type = $type;
         $this->userId = $userId;
+        Log::info('construct end');
     }
 
     public function handle()
