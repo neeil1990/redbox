@@ -43,13 +43,11 @@ class RelevanceAnalyseQueue implements ShouldQueue
         $jobs = Common::analyseRelevanceJobs();
 
         if ($jobs->count_relevance <= 1 || ($jobs->count_relevance == 2 && $jobs->another == 0)) {
-            Log::debug('start_analyse');
             $this->relevance = new Relevance($this->request, $this->userId);
 
             if ($this->type === 'full') {
 
                 $this->relevance->getMainPageHtml();
-                Log::debug('start_analyse');
                 if ($this->request['type'] == 'phrase') {
                     $this->relevance->analysisByPhrase($this->request, $this->exp);
                 } elseif ($this->request['type'] == 'list') {
