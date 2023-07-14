@@ -29,7 +29,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public $userId;
 
-    public Relevance $relevance;
+    public $relevance;
 
     public function __construct($request, $exp, $userId, $type)
     {
