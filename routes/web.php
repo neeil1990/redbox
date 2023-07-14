@@ -399,5 +399,40 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/system-load', function () {
-    dd(sys_getloadavg());
+    $cpuStat = file_get_contents('/proc/stat');
+    $lines = explode("\n", $cpuStat);
+
+    $coreStats = array();
+
+    foreach ($lines as $line) {
+        if (preg_match('/^cpu[0-9]+/', $line)) {
+            $parts = preg_split('/\s+/', $line);
+            $coreStats[] = array(
+                'user' => $parts[1],
+                'nice' => $parts[2],
+                'system' => $parts[3],
+                'idle' => $parts[4],
+                'iowait' => $parts[5],
+                'irq' => $parts[6],
+                'softirq' => $parts[7],
+                'steal' => $parts[8],
+                'guest' => $parts[9],
+                'guest_nice' => $parts[10]
+            );
+        }
+    }
+
+// Вычисляем суммарную нагрузку на все ядра
+    $totalLoad = 0;
+    foreach ($coreStats as $coreStat) {
+        $totalLoad += $coreStat['user'] + $coreStat['nice'] + $coreStat['system'] + $coreStat['iowait'] + $coreStat['irq'] + $coreStat['softirq'] + $coreStat['steal'] + $coreStat['guest'] + $coreStat['guest_nice'];
+    }
+
+// Выводим нагрузку на каждое ядро процессора
+    foreach ($coreStats as $coreIndex => $coreStat) {
+        $coreLoad = $coreStat['user'] + $coreStat['nice'] + $coreStat['system'] + $coreStat['iowait'] + $coreStat['irq'] + $coreStat['softirq'] + $coreStat['steal'] + $coreStat['guest'] + $coreStat['guest_nice'];
+        $coreLoadPercentage = ($coreLoad / $totalLoad) * 100;
+
+        echo "Ядро $coreIndex: $coreLoadPercentage%<br>";
+    }
 });
