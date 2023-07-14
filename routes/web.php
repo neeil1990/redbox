@@ -397,3 +397,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
 });
+
+Route::get('/system-load', function () {
+    dd(sys_getloadavg());
+});
