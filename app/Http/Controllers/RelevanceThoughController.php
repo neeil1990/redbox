@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\RelevanceThoughAnalysisQueue;
+use App\Jobs\Relevance\RelevanceThoughAnalysisQueue;
 use App\ProjectRelevanceThough;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class RelevanceThoughController extends Controller
 {
-    public $slice = 10;
+    public int $slice = 10;
 
     public function show(ProjectRelevanceThough $though)
     {
@@ -96,7 +95,7 @@ class RelevanceThoughController extends Controller
         return response()->json([
             'success' => false,
             'code' => 200,
-            'message' => "Сквозной анализ успешно добавлен в очередь",
+            'message' => 'Сквозной анализ успешно добавлен в очередь',
         ]);
 
     }

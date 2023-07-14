@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Relevance;
 
 use App\ProjectRelevanceThough;
 use Illuminate\Bus\Queueable;
@@ -21,17 +21,10 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
 
     public $stage;
 
-    public $state;
-
-    public $config;
-
-    public $object;
+    public array $config;
 
     public $countRecords;
 
-    /**
-     * @param array $config
-     */
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -46,11 +39,6 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
 
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
         if ($this->stage == 1) {

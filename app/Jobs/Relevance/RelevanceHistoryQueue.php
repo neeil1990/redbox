@@ -6,6 +6,7 @@ use App\Relevance;
 use App\RelevanceHistory;
 use App\TelegramBot;
 use App\UsersJobs;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,22 +17,22 @@ class RelevanceHistoryQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 1;
+    public int $tries = 1;
 
-    public $request;
+    public array $request;
 
-    public $userId;
+    public int $userId;
 
-    public $historyId;
+    public int $historyId;
 
-    public $type;
+    public string $type;
 
-    public $relevance;
+    public Relevance $relevance;
 
     public function __construct($userId, $request, $historyId, $link = false, $phrase = false, $type = 'full')
     {
-        $this->request = $request;
         $this->userId = $userId;
+        $this->request = $request;
         $this->historyId = $historyId;
         $this->type = $type;
 
@@ -43,31 +44,45 @@ class RelevanceHistoryQueue implements ShouldQueue
 
     public function handle()
     {
-        $this->relevance = new Relevance($this->request, $this->userId, true);
-        if ($this->type == 'full') {
-            $this->relevance->getMainPageHtml();
+        if (sys_getloadavg()[0] > 0.5) {
+            RelevanceHistoryQueue::dispatch(
+                $this->userId,
+                $this->request,
+                $this->historyId,
+                $this->request['link'] ?? false,
+                $this->request['phrase'] ?? false,
+                $this->type
+            )
+                ->onQueue($this->job->getQueue())
+                ->onConnection('database')
+                ->delay(Carbon::now()->addSeconds(10));
+        } else {
+            $this->relevance = new Relevance($this->request, $this->userId, true);
+            if ($this->type == 'full') {
+                $this->relevance->getMainPageHtml();
 
-            if ($this->request['type'] == 'phrase') {
-                $this->relevance->analysisByPhrase($this->request, false);
+                if ($this->request['type'] == 'phrase') {
+                    $this->relevance->analysisByPhrase($this->request, false);
 
-            } elseif ($this->request['type'] == 'list') {
-                $this->relevance->analysisByList($this->request);
+                } elseif ($this->request['type'] == 'list') {
+                    $this->relevance->analysisByList($this->request);
+                }
+
+            } elseif ($this->type == 'mainPage') {
+                $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
+
+                $this->relevance->getMainPageHtml();
+                $this->relevance->setSites($info->sites);
+
+            } elseif ($this->type == 'competitors') {
+                $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
+
+                $this->relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
+                $this->relevance->setDomains($info->sites);
+                $this->relevance->parseSites();
             }
 
-        } elseif ($this->type == 'mainPage') {
-            $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
-
-            $this->relevance->getMainPageHtml();
-            $this->relevance->setSites($info->sites);
-
-        } elseif ($this->type == 'competitors') {
-            $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
-
-            $this->relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
-            $this->relevance->setDomains($info->sites);
-            $this->relevance->parseSites();
+            $this->relevance->analysis($this->historyId);
         }
-
-        $this->relevance->analysis($this->historyId);
     }
 }
