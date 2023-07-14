@@ -399,42 +399,69 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/system-load', function () {
-    $cpuStat = file_get_contents('/proc/stat');
-    $lines = explode("\n", $cpuStat);
+    function getServerLoad()
+    {
+        $load = null;
 
-    $coreStats = array();
+        if (stristr(PHP_OS, "win"))
+        {
+            $cmd = "wmic cpu get loadpercentage /all";
+            @exec($cmd, $output);
 
-    foreach ($lines as $line) {
-        if (preg_match('/^cpu[0-9]+/', $line)) {
-            $parts = preg_split('/\s+/', $line);
-            $coreStats[] = array(
-                'user' => $parts[1],
-                'nice' => $parts[2],
-                'system' => $parts[3],
-                'idle' => $parts[4],
-                'iowait' => $parts[5],
-                'irq' => $parts[6],
-                'softirq' => $parts[7],
-                'steal' => $parts[8],
-                'guest' => $parts[9],
-                'guest_nice' => $parts[10]
-            );
+            if ($output)
+            {
+                foreach ($output as $line)
+                {
+                    if ($line && preg_match("/^[0-9]+\$/", $line))
+                    {
+                        $load = $line;
+                        break;
+                    }
+                }
+            }
         }
+        else
+        {
+            if (is_readable("/proc/stat"))
+            {
+                // Collect 2 samples - each with 1 second period
+                // See: https://de.wikipedia.org/wiki/Load#Der_Load_Average_auf_Unix-Systemen
+                $statData1 = _getServerLoadLinuxData();
+                sleep(1);
+                $statData2 = _getServerLoadLinuxData();
+
+                if
+                (
+                    (!is_null($statData1)) &&
+                    (!is_null($statData2))
+                )
+                {
+                    // Get difference
+                    $statData2[0] -= $statData1[0];
+                    $statData2[1] -= $statData1[1];
+                    $statData2[2] -= $statData1[2];
+                    $statData2[3] -= $statData1[3];
+
+                    // Sum up the 4 values for User, Nice, System and Idle and calculate
+                    // the percentage of idle time (which is part of the 4 values!)
+                    $cpuTime = $statData2[0] + $statData2[1] + $statData2[2] + $statData2[3];
+
+                    // Invert percentage to get CPU time, not idle time
+                    $load = 100 - ($statData2[3] * 100 / $cpuTime);
+                }
+            }
+        }
+
+        return $load;
     }
 
-    dump($coreStats);
+    //----------------------------
 
-// Вычисляем суммарную нагрузку на все ядра
-    $totalLoad = 0;
-    foreach ($coreStats as $coreStat) {
-        $totalLoad += $coreStat['user'] + $coreStat['nice'] + $coreStat['system'] + $coreStat['iowait'] + $coreStat['irq'] + $coreStat['softirq'] + $coreStat['steal'] + $coreStat['guest'] + $coreStat['guest_nice'];
+    $cpuLoad = getServerLoad();
+    if (is_null($cpuLoad)) {
+        echo "CPU load not estimateable (maybe too old Windows or missing rights at Linux or Windows)";
     }
-
-// Выводим нагрузку на каждое ядро процессора
-    foreach ($coreStats as $coreIndex => $coreStat) {
-        $coreLoad = $coreStat['user'] + $coreStat['nice'] + $coreStat['system'] + $coreStat['iowait'] + $coreStat['irq'] + $coreStat['softirq'] + $coreStat['steal'] + $coreStat['guest'] + $coreStat['guest_nice'];
-        $coreLoadPercentage = ($coreLoad / $totalLoad) * 100;
-
-        echo "Ядро $coreIndex: $coreLoadPercentage%<br>";
+    else {
+        echo $cpuLoad . "%";
     }
 });
