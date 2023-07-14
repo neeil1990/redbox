@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Relevance;
 
+use App\Common;
 use App\Relevance;
 use App\RelevanceHistory;
 use Carbon\Carbon;
@@ -43,46 +44,47 @@ class RelevanceHistoryQueue implements ShouldQueue
 
     public function handle()
     {
-//        Log::debug('loadavg', [sys_getloadavg()[0]]);
-//        if (sys_getloadavg()[0] > 2) {
-//            RelevanceHistoryQueue::dispatch(
-//                $this->userId,
-//                $this->request,
-//                $this->historyId,
-//                $this->request['link'] ?? false,
-//                $this->request['phrase'] ?? false,
-//                $this->type
-//            )
-//                ->onQueue($this->job->getQueue())
-//                ->onConnection('database')
-//                ->delay(Carbon::now()->addSeconds(10));
-//        } else {
-        $this->relevance = new Relevance($this->request, $this->userId, true);
-        if ($this->type == 'full') {
-            $this->relevance->getMainPageHtml();
+        $jobs = Common::analyseRelevanceJobs();
 
-            if ($this->request['type'] == 'phrase') {
-                $this->relevance->analysisByPhrase($this->request, false);
+        if ($jobs->count_relevance <= 1 || ($jobs->count_relevance === 2 && $jobs->another === 0)) {
+            $this->relevance = new Relevance($this->request, $this->userId, true);
+            if ($this->type == 'full') {
+                $this->relevance->getMainPageHtml();
 
-            } elseif ($this->request['type'] == 'list') {
-                $this->relevance->analysisByList($this->request);
+                if ($this->request['type'] == 'phrase') {
+                    $this->relevance->analysisByPhrase($this->request, false);
+
+                } elseif ($this->request['type'] == 'list') {
+                    $this->relevance->analysisByList($this->request);
+                }
+
+            } elseif ($this->type == 'mainPage') {
+                $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
+
+                $this->relevance->getMainPageHtml();
+                $this->relevance->setSites($info->sites);
+
+            } elseif ($this->type == 'competitors') {
+                $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
+
+                $this->relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
+                $this->relevance->setDomains($info->sites);
+                $this->relevance->parseSites();
             }
 
-        } elseif ($this->type == 'mainPage') {
-            $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
-
-            $this->relevance->getMainPageHtml();
-            $this->relevance->setSites($info->sites);
-
-        } elseif ($this->type == 'competitors') {
-            $info = RelevanceHistory::where('id', '=', $this->request['id'])->first();
-
-            $this->relevance->setMainPage(gzuncompress(base64_decode($info->html_main_page)));
-            $this->relevance->setDomains($info->sites);
-            $this->relevance->parseSites();
+            $this->relevance->analysis($this->historyId);
+        } else {
+            RelevanceHistoryQueue::dispatch(
+                $this->userId,
+                $this->request,
+                $this->historyId,
+                $this->request['link'] ?? false,
+                $this->request['phrase'] ?? false,
+                $this->type
+            )
+                ->onQueue($this->job->getQueue())
+                ->onConnection('database')
+                ->delay(Carbon::now()->addSeconds(10));
         }
-
-        $this->relevance->analysis($this->historyId);
-//        }
     }
 }

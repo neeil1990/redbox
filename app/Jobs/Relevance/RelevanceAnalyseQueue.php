@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Relevance;
 
+use App\Common;
 use App\Relevance;
 use App\RelevanceAnalyseResults;
 use App\RelevanceProgress;
@@ -11,7 +12,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceAnalyseQueue implements ShouldQueue
 {
@@ -39,49 +39,48 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public function handle()
     {
-//        Log::debug('loadavg', [sys_getloadavg()[0]]);
-//        if (sys_getloadavg()[0] > 2) {
-//            RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
-//                ->onQueue($this->job->getQueue())
-//                ->onConnection('database')
-//                ->delay(Carbon::now()->addSeconds(10));
-//        } else {
-        $this->relevance = new Relevance($this->request, $this->userId);
+        $jobs = Common::analyseRelevanceJobs();
 
-        if ($this->type === 'full') {
+        if ($jobs->count_relevance <= 1 || ($jobs->count_relevance === 2 && $jobs->another === 0)) {
+            $this->relevance = new Relevance($this->request, $this->userId);
 
-            $this->relevance->getMainPageHtml();
+            if ($this->type === 'full') {
 
-            if ($this->request['type'] == 'phrase') {
-                $this->relevance->analysisByPhrase($this->request, $this->exp);
-            } elseif ($this->request['type'] == 'list') {
-                $this->relevance->analysisByList($this->request);
+                $this->relevance->getMainPageHtml();
+
+                if ($this->request['type'] == 'phrase') {
+                    $this->relevance->analysisByPhrase($this->request, $this->exp);
+                } elseif ($this->request['type'] == 'list') {
+                    $this->relevance->analysisByList($this->request);
+                }
+
+            } else if ($this->type === 'competitors') {
+
+                RelevanceProgress::editProgress(15, $this->request);
+
+                $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
+                    ->where('page_hash', '=', $this->request['pageHash'])
+                    ->first();
+                $this->relevance->setMainPage($params->html_main_page);
+                $this->relevance->setDomains($params->sites);
+                $this->relevance->parseSites();
+
+            } else if ($this->type === 'main') {
+
+                RelevanceProgress::editProgress(15, $this->request);
+
+                $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
+                    ->where('page_hash', '=', $this->request['pageHash'])
+                    ->first();
+                $this->relevance->getMainPageHtml();
+                $this->relevance->setSites($params->sites);
+
             }
-
-        } else if ($this->type === 'competitors') {
-
-            RelevanceProgress::editProgress(15, $this->request);
-
-            $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
-                ->where('page_hash', '=', $this->request['pageHash'])
-                ->first();
-            $this->relevance->setMainPage($params->html_main_page);
-            $this->relevance->setDomains($params->sites);
-            $this->relevance->parseSites();
-
-        } else if ($this->type === 'main') {
-
-            RelevanceProgress::editProgress(15, $this->request);
-
-            $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
-                ->where('page_hash', '=', $this->request['pageHash'])
-                ->first();
-            $this->relevance->getMainPageHtml();
-            $this->relevance->setSites($params->sites);
-
+        } else {
+            RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
+                ->onQueue($this->job->getQueue())
+                ->onConnection('database')
+                ->delay(Carbon::now()->addSeconds(10));
         }
-
-        $this->relevance->analysis();
     }
-//    }
 }

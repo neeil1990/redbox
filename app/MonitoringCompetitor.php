@@ -113,7 +113,6 @@ class MonitoringCompetitor extends Model
         }
 
         if (isset($lastDate)) {
-            $start = microtime(true);
             $records = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                 ->where('search_indices.lr', $lastDate['engine']['lr'])
                 ->whereDate('search_indices.created_at', $lastDate['dateOnly'])

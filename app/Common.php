@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Common
 {
@@ -201,6 +202,15 @@ class Common
 
     public static function secondsToDate($seconds): string
     {
-        return Carbon::createFromTimestampUTC($seconds)->toTimeString() ;
+        return Carbon::createFromTimestampUTC($seconds)->toTimeString();
+    }
+
+    public static function analyseRelevanceJobs()
+    {
+        return DB::table('jobs')
+            ->select(
+                DB::raw('COUNT(CASE WHEN type = "relevance_high" OR type = "relevance_medium" OR type = "relevance_normal" THEN 1 END) AS count_relevance'),
+                DB::raw('COUNT(CASE WHEN type != "relevance_high" AND type != "relevance_medium" AND type != "relevance_normal" THEN 1 END) AS another')
+            )->first();
     }
 }

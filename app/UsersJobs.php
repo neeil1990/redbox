@@ -18,19 +18,18 @@ class UsersJobs extends Model
 
         if (isset($job)) {
             if ($job->count_jobs <= 10) {
-                $priority = 'high';
+                $priority = 'relevance_high';
             } elseif ($job->count_jobs <= 20) {
-                $priority = 'medium';
+                $priority = 'relevance_medium';
             } else {
-                $priority = 'normal';
+                $priority = 'relevance_normal';
             }
-            $job->count_jobs++;
+            $job->increment('count_jobs');
         } else {
-            $priority = 'high';
+            $priority = 'relevance_high';
             $job->count_jobs = 1;
+            $job->save();
         }
-
-        $job->save();
 
         return $priority;
     }
