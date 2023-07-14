@@ -209,8 +209,8 @@ class Common
     {
         return DB::table('jobs')
             ->select(
-                DB::raw('COUNT(CASE WHEN type = "relevance_high" OR type = "relevance_medium" OR type = "relevance_normal" THEN 1 END) AS count_relevance'),
-                DB::raw('COUNT(CASE WHEN type != "relevance_high" AND type != "relevance_medium" AND type != "relevance_normal" THEN 1 END) AS another')
+                DB::raw('COUNT(CASE WHEN queue = "relevance_high" OR queue = "relevance_medium" OR queue = "relevance_normal" THEN 1 END) AS count_relevance'),
+                DB::raw('COUNT(CASE WHEN queue != "relevance_high" AND queue != "relevance_medium" AND queue != "relevance_normal" THEN 1 END) AS another')
             )->first();
     }
 }
