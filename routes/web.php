@@ -397,12 +397,3 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
 });
-
-Route::get('/clean-table', function () {
-    $records = \App\ClickTracking::get();
-
-    foreach ($records as $record) {
-        $record->url = preg_replace('/[0-9]+/', '', $record->url);
-        $record->save();
-    }
-});
