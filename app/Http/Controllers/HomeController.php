@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use App\ClickTracking;
 use App\MainProject;
-use App\ProjectsPositions;
+
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -49,7 +46,7 @@ class HomeController extends Controller
             ClickTracking::updateOrCreate([
                 'project_id' => $request->project_id,
                 'button_text' => $request->button_text,
-                'url' => $request->url,
+                'url' => preg_replace('/[0-9]+/', '', $request->url),
                 'user_id' => Auth::id(),
             ], [
                 'button_counter' => DB::raw('button_counter + 1')

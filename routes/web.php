@@ -398,9 +398,11 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
 });
 
-Route::get('/system-load', function () {
-    $loads = sys_getloadavg();
-    $core_nums = trim(shell_exec("grep -P '^processor' /proc/cpuinfo|wc -l"));
-    $load = round($loads[0]/($core_nums + 1)*100, 2);
-    echo $load;
+Route::get('/clean-table', function () {
+    $records = \App\ClickTracking::get();
+
+    foreach ($records as $record) {
+        $record->url = preg_replace('/[0-9]+/', '', $record->url);
+        $record->save();
+    }
 });
