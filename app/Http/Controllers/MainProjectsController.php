@@ -10,6 +10,7 @@ use App\VisitStatistic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
@@ -201,6 +202,7 @@ class MainProjectsController extends Controller
         }
 
         $usersIds = $usersIds->pluck('id')->toArray();
+
         $columnSortOrder = $request['order'][0]['dir'];
 
         $records = ClickTracking::orderBy('url', $columnSortOrder)
@@ -224,8 +226,8 @@ class MainProjectsController extends Controller
                 }
                 $i++;
 
-                if (count($data) >= $request['length']) {
-                    continue 2;
+                if (count($data) == $request['length']) {
+                    break 2;
                 }
             }
         }
