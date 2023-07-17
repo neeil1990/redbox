@@ -1298,8 +1298,6 @@ class Relevance
 
     public function saveError($exception)
     {
-        Log::info('ошибка в анализе');
-
         $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
         if ($toDay->id) {
             $toDay->count_fails += 1;
@@ -1308,12 +1306,8 @@ class Relevance
         }
         $toDay->save();
 
-        Log::info('Фиксация ежедневной ошибки');
-
         UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
         RelevanceProgress::where('hash', $this->scanHash)->update(['error' => 1]);
-
-        Log::info('Доп обработка');
 
         Log::debug('Relevance Error', [
             'file' => $exception->getFile(),

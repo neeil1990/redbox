@@ -11,6 +11,7 @@
 |
 */
 
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {

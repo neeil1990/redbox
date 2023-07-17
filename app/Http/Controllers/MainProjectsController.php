@@ -208,6 +208,8 @@ class MainProjectsController extends Controller
         $records = ClickTracking::where('project_id', $id)
             ->whereIn('user_id', $usersIds)
             ->with('user')
+            ->skip($request['start'])
+            ->take($request['length'])
             ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
             ->groupBy('user.email');
 
@@ -227,7 +229,6 @@ class MainProjectsController extends Controller
             }
         }
 
-        Log::debug('data', [$data]);
         $filteredData = [
             'draw' => intval($request['draw']),
             'iTotalRecords' => count($records),
