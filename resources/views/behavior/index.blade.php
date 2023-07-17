@@ -18,10 +18,10 @@
                 <thead>
                 <tr>
                     <th>{{ __('Domain') }}</th>
+                    <th>Количество</th>
                     <th>Выполнено</th>
                     <th>Не выполнено</th>
                     <th>Количество уникальных фраз</th>
-                    <th>Количество</th>
                     <th></th>
                     <th>{{ __('Url') }}</th>
                     <th></th>
@@ -34,10 +34,10 @@
                         <td><a href="{{ route('behavior.show', [$behavior->id]) }}"
                                class="text-muted text-bold">{{ $behavior->domain }}</a>
                         </td>
+                        <td>{{ $behavior->phrases()->count() }}</td>
                         <td>{{ $behavior->phrases()->success()->count() }}</td>
                         <td>{{ $behavior->phrases()->fail()->count() }}</td>
                         <td>{{ $behavior->phrases()->unique()->get()->count() }}</td>
-                        <td>{{ $behavior->phrases()->count() }}</td>
                         <td>
                             <a href="{{ route('behavior.show', [$behavior->id]) }}" class="btn btn-app">
                                 <i class="fas fa-project-diagram"></i> {{ __('Go to project') }}

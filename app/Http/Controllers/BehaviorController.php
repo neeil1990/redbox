@@ -199,7 +199,7 @@ class BehaviorController extends Controller
         $count = $request->input('count');
 
         foreach ($phrases as $k => $phrase){
-            if(strlen($phrase) > 3){
+            if(strlen($phrase) > 1){
                 for ($i = 1; $i <= $count[$k]; $i++) {
                     $data[] = $phrase;
                 }
@@ -209,7 +209,7 @@ class BehaviorController extends Controller
         shuffle($phrases);
 
         foreach ($phrases as $phrase){
-            if(strlen($phrase) > 3)
+            if(strlen($phrase) > 1)
                 $behavior->phrases()->create([
                     'code' => $this->getCodeByDomain($behavior->domain),
                     'phrase' => $phrase
