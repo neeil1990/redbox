@@ -185,11 +185,9 @@ class MainProjectsController extends Controller
 
     public function actions($id, Request $request)
     {
-        $columnName_arr = $request['columns'];
-
         $usersIds = User::where('statistic', 1);
 
-        foreach ($columnName_arr as $column) {
+        foreach ($request['columns'] as $column) {
             $search = $column['search']['value'];
 
             if (isset($search)) {
@@ -205,21 +203,26 @@ class MainProjectsController extends Controller
 
         $usersIds = $usersIds->pluck('id')->toArray();
 
+        $sortByUniqueColumn = false;
         $columnSortOrder = $request['order'][0]['dir'];
         $columnIndex = $request['order'][0]['column'];
 
         if ($columnIndex == 2) {
-            $columnName = 'url';
+            $records = ClickTracking::orderBy('url', $columnSortOrder)
+                ->where('project_id', $id)
+                ->whereIn('user_id', $usersIds)
+                ->with('user')
+                ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
+                ->groupBy('user.email');
         } else {
-            $columnName = $request['columns'][$columnIndex]['data'];
-        }
+            $records = ClickTracking::where('project_id', $id)
+                ->whereIn('user_id', $usersIds)
+                ->with('user')
+                ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
+                ->groupBy('user.email');
 
-        $records = ClickTracking::orderBy($columnName, $columnSortOrder)
-            ->where('project_id', $id)
-            ->whereIn('user_id', $usersIds)
-            ->with('user')
-            ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
-            ->groupBy('user.email');
+            $sortByUniqueColumn = $request['columns'][$columnIndex]['name'];
+        }
 
         $data = [];
         $i = 0;
@@ -235,10 +238,22 @@ class MainProjectsController extends Controller
                 }
                 $i++;
 
-                if (count($data) == $request['length']) {
+                if (count($data) >= $request['length']) {
                     continue 2;
                 }
             }
+        }
+
+        if ($sortByUniqueColumn) {
+            $data = collect($data);
+
+            if ($columnSortOrder === 'asc') {
+                $data->sortBy($sortByUniqueColumn);
+            } else {
+                $data->sortByDesc($sortByUniqueColumn);
+            }
+
+            $data = $data->values()->all();
         }
 
         $filteredData = [
