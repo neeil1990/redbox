@@ -100,7 +100,7 @@
             columnDefs: [
                 { orderable: false, targets: '_all' },
                 { orderable: true, targets: [2] }
-            ]
+            ],
             language: {
                 lengthMenu: "_MENU_",
                 search: "_INPUT_",
