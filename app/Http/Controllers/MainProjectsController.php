@@ -245,15 +245,18 @@ class MainProjectsController extends Controller
         }
 
         if ($sortByUniqueColumn) {
-            $data = collect($data);
+            $collect = collect($data);
 
             if ($columnSortOrder === 'asc') {
-                $data->sortBy($sortByUniqueColumn);
+                Log::info('asc');
+                $collect->sortBy($sortByUniqueColumn);
             } else {
-                $data->sortByDesc($sortByUniqueColumn);
+                Log::info('desc');
+                $collect->sortByDesc($sortByUniqueColumn);
             }
 
-            $data = $data->values()->all();
+            Log::info($sortByUniqueColumn);
+            $data = $collect->values()->all();
         }
 
         $filteredData = [
