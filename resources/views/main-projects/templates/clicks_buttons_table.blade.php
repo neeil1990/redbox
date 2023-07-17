@@ -82,22 +82,22 @@
                     },"
                  !!}
                 @endforeach
-            @endif()
+                @endif()
         ]
 
         let table = $('#actionsTable').DataTable({
             processing: true,
             serverSide: true,
             ajax: "/get-click-actions/{{ $id }}",
-            lengthMenu: [10, 25, 50, 100],
-            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100, 1000, 2000, 3000, 5000],
+            pageLength: 100,
             columns: columns,
             dom: 'lBfrtip',
             buttons: [
                 'copy', 'csv', 'excel'
             ],
             columnDefs: [
-                { orderable: false, targets: '_all' },
+                {orderable: false, targets: '_all'},
             ],
             language: {
                 lengthMenu: "_MENU_",
@@ -120,6 +120,9 @@
                         table.column($(this).attr('data-index')).search($(this).val()).draw();
                     }, 500)
                 });
+
+                $('#actionsTable_info').hide()
+                $('#actionsTable_filter').hide()
             }
         })
 

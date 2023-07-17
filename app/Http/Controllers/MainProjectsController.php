@@ -209,6 +209,8 @@ class MainProjectsController extends Controller
             ->where('project_id', $id)
             ->whereIn('user_id', $usersIds)
             ->with('user')
+            ->skip($request['start'])
+            ->take($request['length'])
             ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
             ->groupBy('user.email');
 
@@ -225,10 +227,6 @@ class MainProjectsController extends Controller
                     $data[$i][str_replace(' ', '_', $page['button_text'])] = $page;
                 }
                 $i++;
-
-                if (count($data) == $request['length']) {
-                    break 2;
-                }
             }
         }
 
