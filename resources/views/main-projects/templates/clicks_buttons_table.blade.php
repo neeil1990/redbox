@@ -96,7 +96,11 @@
             buttons: [
                 'copy', 'csv', 'excel'
             ],
-            ordering: false,
+            order: [[2, 'desc']],
+            columnDefs: [
+                { orderable: false, targets: '_all' },
+                { orderable: true, targets: [2] }
+            ]
             language: {
                 lengthMenu: "_MENU_",
                 search: "_INPUT_",
