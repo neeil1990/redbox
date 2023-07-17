@@ -14,7 +14,19 @@
     @endslot
 
     <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
+        <div class="col-md-2 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text"><a href="{{ route('behavior.index') }}">{{ __('My projects') }}</a></span>
+                    <span class="info-box-number">{{ Auth::user()->behaviors->count() }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <div class="col-md-2 col-sm-6 col-12">
             <div class="info-box">
                 <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
 
@@ -26,7 +38,7 @@
             </div>
             <!-- /.info-box -->
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
+        <div class="col-md-2 col-sm-6 col-12">
             <div class="info-box">
                 <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
 
@@ -38,7 +50,7 @@
             </div>
             <!-- /.info-box -->
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
+        <div class="col-md-2 col-sm-6 col-12">
             <div class="info-box">
                 <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
 
@@ -50,7 +62,7 @@
             </div>
             <!-- /.info-box -->
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
+        <div class="col-md-2 col-sm-6 col-12">
             <div class="info-box">
                 <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
 

@@ -8,9 +8,10 @@
 
 @section('content')
 
-    @if(\App\User::isUserAdmin())
+    @if(\App\User::isUserAdmin() && count(explode('/', $code)) == 1)
         <a href="{{ route('description.edit', [$code, 'top']) }}"
-           class="btn btn-secondary mb-4">{{ __('Add description') }}</a>
+           class="btn btn-secondary mb-4">{{ __('Add description') }}
+        </a>
     @endif
 
     @if(isset($description['top']))

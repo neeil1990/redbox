@@ -26,6 +26,10 @@
             {!! Form::open(['method' => 'PATCH', 'route' => ['behavior.update', $behavior->id]]) !!}
             <div class="card-body">
 
+                <div class="callout callout-info">
+                    <p>После добавления фраз  вы можете отсортировать их рандомно используя <i class="fas fa-random"></i> в таблице фраз.</p>
+                </div>
+
                 <div class="row">
                     <div class="col-12 mb-4">
                         <label>Диапазон повторений</label>
@@ -34,17 +38,39 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-12 mb-4">
+                        <button type="button" id="js-range-slider-click" class="btn btn-danger">Применить диапазон повторений</button>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-9">
-                        <div class="form-group">
-                            {!! Form::text('phrases[]', null, ['class' => 'form-control' . ($errors->has('phrases') ? ' is-invalid' : '')]) !!}
-                            @error('phrases') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                        <div class="form-group mb-0">
+                            <label>Запрос</label>
                         </div>
                     </div>
                     <div class="col-md-3">
+                        <div class="form-group mb-0">
+                            <label>Кол-во повторений</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            {!! Form::text('phrases[]', null, ['class' => 'form-control' . ($errors->has('phrases') ? ' is-invalid' : ''), 'minlength' => 2, 'required' => true]) !!}
+                            @error('phrases') <span class="error invalid-feedback">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="form-group">
                             {!! Form::number('count[]', 1, ['min' => 1, 'max' => 500, 'class' => 'form-control' . ($errors->has('count') ? ' is-invalid' : ''), 'placeholder' => __('Count')]) !!}
                             @error('count') <span class="error invalid-feedback">{{ $message }}</span> @enderror
                         </div>
+                    </div>
+                    <div class="col-md-1">
+                        <a class="btn btn-danger deleteCurrent"><i class="fas fa-trash"></i></a>
                     </div>
                 </div>
 
@@ -82,23 +108,25 @@
                 input.clone().insertAfter($('.row').last()).find('input[type="text"]').val('');
             });
 
-            $(".js-range-slider").ionRangeSlider({
+            let rangeSlider = $(".js-range-slider").ionRangeSlider({
                 type: "double",
-                min: 0,
+                min: 1,
                 max: 500,
                 from: 200,
                 to: 400,
                 grid: true,
-                onFinish: function(data) {
-                    $('input[name="count[]"]').each(function(i, el){
-                        let input = $(el);
+            });
 
-                        let min = Math.ceil(data.from);
-                        let max = Math.floor(data.to);
+            $('#js-range-slider-click').on("click", function(){
+                let slider = rangeSlider.data("ionRangeSlider");
 
-                        input.val(Math.floor(Math.random() * (max - min + 1) + min));
-                    });
-                }
+                let min = Math.ceil(slider.result.from);
+                let max = Math.floor(slider.result.to);
+
+                $('input[name="count[]"]').each(function(i, el){
+                    let input = $(el);
+                    input.val(Math.floor(Math.random() * (max - min + 1) + min));
+                });
             });
 
             $('#upload-request').click(function () {
@@ -111,7 +139,7 @@
                             label: 'Вставьте фразы новую с каждой строки',
                             params: [{
                                 val: "",
-                                placeholder: "Ваши фразы...",
+                                placeholder: "Фразы менее 2 символов будут проигнорированы",
                             }]
                         },
                     ],
@@ -120,6 +148,9 @@
                         let orig = $('#adding-request').prev();
 
                         $.each(phrases, function(i, val){
+                            if(val.length < 2)
+                                return;
+
                             let clone = orig.clone();
 
                             clone.find('input[name="phrases[]"]').val(val);
@@ -127,13 +158,21 @@
                         });
 
                         $('input[name="phrases[]"]').each(function(i, el){
-                            if(!$(el).val())
-                                $(el).closest('.row').remove();
+                            if($('input[name="phrases[]"]').length > 1){
+                                if(!$(el).val())
+                                    $(el).closest('.row').remove();
+                            }
                         });
 
                         m.modal('hide');
                     }
                 });
+            });
+
+            $('.card-body').on("click", ".deleteCurrent", function () {
+                if($(".card-body").find('input[name="phrases[]"]').length > 1){
+                    $(this).closest('.row').remove();
+                }
             });
         </script>
     @endslot
