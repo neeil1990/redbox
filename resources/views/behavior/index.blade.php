@@ -37,7 +37,7 @@
                         <td>{{ $behavior->phrases()->count() }}</td>
                         <td>{{ $behavior->phrases()->success()->count() }}</td>
                         <td>{{ $behavior->phrases()->fail()->count() }}</td>
-                        <td>{{ $behavior->phrases()->unique()->get()->count() }}</td>
+                        <td><a href="{{ route('behavior.unique.phrases', $behavior->id) }}">{{ $behavior->phrases()->unique()->get()->count() }}</a></td>
                         <td>
                             <a href="{{ route('behavior.show', [$behavior->id]) }}" class="btn btn-app">
                                 <i class="fas fa-project-diagram"></i> {{ __('Go to project') }}
