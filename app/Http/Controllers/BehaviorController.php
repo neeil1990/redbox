@@ -265,4 +265,21 @@ class BehaviorController extends Controller
 
         return redirect()->back();
     }
+
+    public function uniquePhrases(Behavior $behavior)
+    {
+        $collect = collect([]);
+        $phrases = $behavior->phrases()->groupBy('phrase')->get('phrase')->pluck('phrase');
+
+        foreach($phrases as $phrase){
+            $collect->push(collect([
+                'phrase' => $phrase,
+                'count' => $behavior->phrases()->where('phrase', $phrase)->count(),
+                'success' => $behavior->phrases()->where('phrase', $phrase)->success()->count(),
+                'fail' => $behavior->phrases()->where('phrase', $phrase)->fail()->count(),
+            ]));
+        }
+
+        return view('behavior.unique', compact('collect', 'behavior'));
+    }
 }

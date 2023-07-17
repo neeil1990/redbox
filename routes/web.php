@@ -79,6 +79,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/meta-tags/getTariffMetaTagsPages', 'MetaTagsController@getTariffMetaTagsPages');
     Route::resource('meta-tags', 'MetaTagsController');
 
+    Route::get('behavior/{behavior}/unique', 'BehaviorController@uniquePhrases')->name('behavior.unique.phrases');
     Route::get('behavior/{behavior}/sort-mixed', 'BehaviorController@sortMixed')->name('behavior.sort.mixed');
     Route::get('behavior/{behavior}/edit-project', 'BehaviorController@editProject')->name('behavior.edit_project');
     Route::patch('behavior/{behavior}/update-project', 'BehaviorController@updateProject')->name('behavior.update_project');
