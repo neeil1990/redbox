@@ -1,10 +1,11 @@
 function renderRecommendationsTable(recommendations, count, words) {
     $('#rec').show()
     let tBody = $('#recommendationsTBody')
+    let newRows = ''
 
     $.each(recommendations, function (key, value) {
-        var add = ''
-        var remove = ''
+        let add = ''
+        let remove = ''
         if (value['add'] != '0') {
             add = 'bg-warning-elem'
         } else {
@@ -19,7 +20,7 @@ function renderRecommendationsTable(recommendations, count, words) {
         let removeOrder = String(value['remove'])
         removeOrder = removeOrder.substr(removeOrder.length - 2)
 
-        tBody.append(
+        newRows +=
             "<tr class='render'>" +
             "<td class='text-center'> <i class='fa fa-trash remove-recommendation'></i> </td>" +
             "<td class='col-1'>" + key + "</td>" +
@@ -31,9 +32,9 @@ function renderRecommendationsTable(recommendations, count, words) {
             "<td class='col-1 " + add + "' data-order='" + addOrder + "'>" + value['add'] + "</td>" +
             "<td class='col-1 " + remove + "'  data-order='" + removeOrder + "'>" + value['remove'] + "</td>" +
             "</tr>"
-        )
     })
 
+    tBody.html(newRows)
 
     if ($.fn.DataTable.fnIsDataTable($('#recommendations'))) {
         $('#recommendations').dataTable().fnDestroy();

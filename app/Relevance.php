@@ -580,28 +580,26 @@ class Relevance
     {
         RelevanceProgress::editProgress(80, $this->request);
         $countSites = 0;
-        // считаем количество сайтов, которые не в списке игнорируемых
         foreach ($this->sites as $site) {
             if (!$site['ignored']) {
                 $countSites++;
             }
         }
 
-        $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
-        $myText = explode(" ", $myText);
-        $myText = array_count_values($myText);
+        $myText = "{$this->mainPage['html']} {$this->mainPage['hiddenText']}";
+        $myText = array_count_values(explode(" ", $myText));
 
-        $myLink = explode(" ", $this->mainPage['linkText']);
-        $myLink = array_count_values($myLink);
+        $myLink = array_count_values(explode(" ", $this->mainPage['linkText']));
 
-        $myPassages = explode(" ", $this->mainPage['passages']);
-        $myPassages = array_count_values($myPassages);
+        $myPassages = array_count_values(explode(" ", $this->mainPage['passages']));
 
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
+
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = $numberPassageOccurrences = 0;
                 $occurrences = [];
+
                 foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
                         $htmlCount = substr_count(' ' . $this->sites[$key]['html'] . ' ', " $word ");
@@ -636,6 +634,7 @@ class Relevance
                 }
 
                 arsort($occurrences);
+
                 $repeatInTextMainPage = $myText[$word] ?? 0;
                 $repeatLinkInMainPage = $myLink[$word] ?? 0;
                 $repeatInPassagesMainPage = $myPassages[$word] ?? 0;

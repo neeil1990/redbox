@@ -1,7 +1,7 @@
 function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, boostPercent, avg = null) {
     $('.sites').show(300)
     let iterator = 1;
-    let tbody = $('#scanned-sites-tbody')
+    let rows = ''
     $.each(sites, function (key, value) {
         let site = value['site']
 
@@ -72,7 +72,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         }
 
         let width = value['width']
-        tbody.append(
+        rows +=
             "<tr class='render" + ignorClass + "'>" +
             position +
             "<td data-target='" + iterator + "' style='max-width: 450px;' class='" + className + "'>" +
@@ -87,9 +87,11 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
             "<td data-target='" + value['countSymbols'] + "'>" + value['countSymbols'] + "</td>" +
             warning +
             "</tr>"
-        )
+
         iterator++
     });
+
+    $('#scanned-sites-tbody').html(rows)
 
     $(document).ready(function () {
         if ($.fn.DataTable.isDataTable('#scanned-sites')) {
@@ -100,6 +102,12 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
             "order": [[0, "asc"]],
             "pageLength": count,
             "searching": true,
+            aoColumnDefs: [
+                {
+                    bSortable: false,
+                    aTargets: [8]
+                }
+            ],
             dom: 'lBfrtip',
             buttons: [
                 'copy', 'csv', 'excel'

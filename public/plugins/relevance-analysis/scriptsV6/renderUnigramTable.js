@@ -32,10 +32,13 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
 
     $('.pb-3.unigram').show()
     let tBody = $('#unigramTBody')
+    let newRows = ''
 
     $.each(unigramTable, function (key, wordWorm) {
-        renderMainTr(tBody, key, wordWorm, searchPassages)
+        newRows += renderMainTr(key, wordWorm, searchPassages)
     })
+
+    tBody.html(newRows)
 
     $(document).ready(function () {
         if ($.fn.DataTable.fnIsDataTable($('#unigram'))) {
@@ -255,12 +258,13 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
     });
 }
 
-function renderMainTr(tBody, key, wordWorm, searchPassages) {
+function renderMainTr(key, wordWorm, searchPassages) {
     let links = '';
     $.each(wordWorm['total']['occurrences'], function (elem, value) {
         let url = new URL(elem);
         links += "<a href='" + elem + "' target='_blank'>" + url.host + "</a>(" + value + ")<br>"
     });
+
     let className = wordWorm['total']['danger'] ? "bg-warning-elem" : ""
     let tf = crop(wordWorm['total']['tf'])
     let idf = crop(wordWorm['total']['idf'])
@@ -316,7 +320,7 @@ function renderMainTr(tBody, key, wordWorm, searchPassages) {
         newRow += "</tr>";
     }
 
-    tBody.append(newRow)
+    return newRow
 }
 
 function renderChildTr(elem, key, word, stats) {

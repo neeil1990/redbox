@@ -1,9 +1,11 @@
 function renderPhrasesTable(phrases, count, words) {
     $('.phrases').show()
-    let tBody = $('#phrasesTBody')
+    let newRows = ''
     $.each(phrases, function (key, item) {
-        renderTr(tBody, key, item)
+        newRows += renderTr(key, item)
     })
+
+    $('#phrasesTBody').html(newRows)
 
     $(document).ready(function () {
         if ($.fn.DataTable.fnIsDataTable($('#phrases'))) {
@@ -152,50 +154,42 @@ function renderPhrasesTable(phrases, count, words) {
     });
 }
 
-function renderTr(tBody, key, item) {
-    let occurrences = item['occurrences']
+function renderTr(key, item) {
     let links = '';
-    $.each(occurrences, function (elem, value) {
+
+    $.each(item['occurrences'], function (elem, value) {
         let url = new URL(elem)
         links += "<a href='" + elem + "' target='_blank'>" + url.host + "</a>(" + value + ")<br>"
     });
-    let tf = item['tf']
-    let idf = item['idf']
-    let numberOccurrences = item['numberOccurrences']
-    let reSpam = item['reSpam']
-    let avgInTotalCompetitors = item['avgInTotalCompetitors']
-    let totalRepeatMainPage = item['totalRepeatMainPage']
-    let avgInText = item['avgInText']
+
     let repeatInTextMainPage = item['repeatInTextMainPage']
-    let avgInLink = item['avgInLink']
     let repeatInLinkMainPage = item['repeatInLinkMainPage']
     let repeatInTextMainPageWarning = repeatInTextMainPage == 0 ? "class='bg-warning-elem'" : ""
     let repeatInLinkMainPageWarning = repeatInLinkMainPage == 0 ? " class='bg-warning-elem'" : ""
     let totalInMainPage = repeatInLinkMainPage == 0 && repeatInTextMainPage == 0 ? " class='bg-warning-elem'" : ""
-    tBody.append(
-        "<tr class='render'>" +
-        "<td>" + key + "</td>" +
-        "<td>" + tf + "</td>" +
-        "<td>" + idf + "</td>" +
-        "<td>" + numberOccurrences + "" +
-        "<span class='__helper-link ui_tooltip_w'>" +
-        "    <i class='fa fa-paperclip'></i>" +
-        "    <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
-        "        <span class='ui_tooltip_content'>" + links + "</span>" +
-        "    </span>" +
-        "</span>" +
 
-        "</td>" +
-        "<td>" + reSpam + "</td>" +
+    return "<tr class='render'>" +
+    "<td>" + key + "</td>" +
+    "<td>" + item['tf'] + "</td>" +
+    "<td>" + item['idf'] + "</td>" +
+    "<td>" + item['numberOccurrences'] + "" +
+    "<span class='__helper-link ui_tooltip_w'>" +
+    "    <i class='fa fa-paperclip'></i>" +
+    "    <span class='ui_tooltip __right' style='min-width: 250px; max-width: 450px;'>" +
+    "        <span class='ui_tooltip_content'>" + links + "</span>" +
+    "    </span>" +
+    "</span>" +
 
-        "<td>" + avgInTotalCompetitors + "</td>" +
-        "<td " + totalInMainPage + ">" + totalRepeatMainPage + "</td>" +
+    "</td>" +
+    "<td>" + item['reSpam'] + "</td>" +
 
-        "<td>" + avgInText + "</td>" +
-        "<td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
+    "<td>" + item['avgInTotalCompetitors'] + "</td>" +
+    "<td " + totalInMainPage + ">" + item['totalRepeatMainPage'] + "</td>" +
 
-        "<td>" + avgInLink + "</td>" +
-        "<td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>" +
-        "</tr>"
-    )
+    "<td>" + item['avgInText'] + "</td>" +
+    "<td " + repeatInTextMainPageWarning + ">" + repeatInTextMainPage + "</td>" +
+
+    "<td>" + item['avgInLink'] + "</td>" +
+    "<td " + repeatInLinkMainPageWarning + ">" + repeatInLinkMainPage + "</td>" +
+    "</tr>"
 }
