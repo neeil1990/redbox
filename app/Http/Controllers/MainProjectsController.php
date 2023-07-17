@@ -202,22 +202,13 @@ class MainProjectsController extends Controller
 
         $usersIds = $usersIds->pluck('id')->toArray();
         $columnSortOrder = $request['order'][0]['dir'];
-        $columnIndex = $request['order'][0]['column'];
 
-        if ($columnIndex == 2) {
-            $records = ClickTracking::orderBy('url', $columnSortOrder)
-                ->where('project_id', $id)
-                ->whereIn('user_id', $usersIds)
-                ->with('user')
-                ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
-                ->groupBy('user.email');
-        } else {
-            $records = ClickTracking::where('project_id', $id)
-                ->whereIn('user_id', $usersIds)
-                ->with('user')
-                ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
-                ->groupBy('user.email');
-        }
+        $records = ClickTracking::orderBy('url', $columnSortOrder)
+            ->where('project_id', $id)
+            ->whereIn('user_id', $usersIds)
+            ->with('user')
+            ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
+            ->groupBy('user.email');
 
         $data = [];
         $i = 0;
