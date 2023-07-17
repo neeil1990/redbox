@@ -17,20 +17,24 @@
                 <option value="Free">Free</option>
             </select>
         </th>
-        <th></th>
+        <th data-index="2"></th>
+        @php($i = 3)
         @if(is_array($columns))
             @foreach($columns as $column)
-                <th></th>
+                <th data-index="{{ $i }}"></th>
+                @php($i++)
             @endforeach
         @endif
     </tr>
     <tr>
-        <th>Пользователь</th>
-        <th>Роли пользователя</th>
-        <th>URL</th>
+        <th data-index="0">Пользователь</th>
+        <th data-index="1">Роли пользователя</th>
+        <th data-index="2">URL</th>
+        @php($i = 3)
         @if(is_array($columns))
             @foreach($columns as $column)
-                <th>{{ __($column) }}</th>
+                <th data-index="{{ $i }}">{{ __($column) }}</th>
+                @php($i++)
             @endforeach
         @endif
     </tr>
@@ -78,7 +82,7 @@
                     },"
                  !!}
                 @endforeach
-            @endif()
+                @endif()
         ]
 
         let table = $('#actionsTable').DataTable({
@@ -91,6 +95,13 @@
             dom: 'lBfrtip',
             buttons: [
                 'copy', 'csv', 'excel'
+            ],
+            order: [[2, 'desc']],
+            aoColumnDefs: [
+                {
+                    bSortable: false,
+                    aTargets: [0, 1]
+                }
             ],
             language: {
                 lengthMenu: "_MENU_",

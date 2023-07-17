@@ -205,11 +205,19 @@ class MainProjectsController extends Controller
 
         $usersIds = $usersIds->pluck('id')->toArray();
 
-        $records = ClickTracking::where('project_id', $id)
+        $columnSortOrder = $request['order'][0]['dir'];
+        $columnIndex = $request['order'][0]['column'];
+
+        if ($columnIndex == 2) {
+            $columnName = 'url';
+        } else {
+            $columnName = $request['columns'][$columnIndex]['data'];
+        }
+
+        $records = ClickTracking::orderBy($columnName, $columnSortOrder)
+            ->where('project_id', $id)
             ->whereIn('user_id', $usersIds)
             ->with('user')
-            ->skip($request['start'])
-            ->take($request['length'])
             ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
             ->groupBy('user.email');
 
@@ -226,13 +234,21 @@ class MainProjectsController extends Controller
                     $data[$i][str_replace(' ', '_', $page['button_text'])] = $page;
                 }
                 $i++;
+
+                if (count($data) == $request['length']) {
+                    continue 2;
+                }
             }
         }
 
         $filteredData = [
             'draw' => intval($request['draw']),
             'iTotalRecords' => count($records),
-            'iTotalDisplayRecords' => count($data),
+            'iTotalDisplayRecords' => ClickTracking::where('project_id', $id)
+                ->whereIn('user_id', $usersIds)
+                ->with('user')
+                ->get(['user_id', 'project_id'])
+                ->groupBy('user.email'),
             'aaData' => $data
         ];
 
