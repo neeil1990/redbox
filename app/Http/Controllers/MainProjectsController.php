@@ -10,7 +10,6 @@ use App\VisitStatistic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
@@ -202,8 +201,6 @@ class MainProjectsController extends Controller
         }
 
         $usersIds = $usersIds->pluck('id')->toArray();
-
-        $sortByUniqueColumn = false;
         $columnSortOrder = $request['order'][0]['dir'];
         $columnIndex = $request['order'][0]['column'];
 
@@ -220,8 +217,6 @@ class MainProjectsController extends Controller
                 ->with('user')
                 ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
                 ->groupBy('user.email');
-
-            $sortByUniqueColumn = $request['columns'][$columnIndex]['name'];
         }
 
         $data = [];
@@ -242,21 +237,6 @@ class MainProjectsController extends Controller
                     continue 2;
                 }
             }
-        }
-
-        if ($sortByUniqueColumn) {
-            $collect = collect($data);
-
-            if ($columnSortOrder === 'asc') {
-                Log::info('asc');
-                $collect->sortBy($sortByUniqueColumn);
-            } else {
-                Log::info('desc');
-                $collect->sortByDesc($sortByUniqueColumn);
-            }
-
-            Log::info($sortByUniqueColumn);
-            $data = $collect->values()->all();
         }
 
         $filteredData = [

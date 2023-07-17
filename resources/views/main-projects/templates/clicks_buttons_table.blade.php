@@ -82,7 +82,7 @@
                     },"
                  !!}
                 @endforeach
-                @endif()
+            @endif()
         ]
 
         let table = $('#actionsTable').DataTable({
@@ -96,13 +96,7 @@
             buttons: [
                 'copy', 'csv', 'excel'
             ],
-            order: [[2, 'desc']],
-            aoColumnDefs: [
-                {
-                    bSortable: false,
-                    aTargets: [0, 1]
-                }
-            ],
+            ordering: false,
             language: {
                 lengthMenu: "_MENU_",
                 search: "_INPUT_",
