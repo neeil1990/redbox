@@ -7,7 +7,7 @@
             <input type="text" class="form form-control filter-input" name="email" id="email" data-index="0"
                    placeholder="email">
         </th>
-        <th>
+        <th class="col-2">
             <label for="role">Тарифы</label>
             <select name="role" id="role" class="custom-select filter-input" data-index="1">
                 <option value="Любой">Любой</option>
@@ -27,7 +27,7 @@
         @endif
     </tr>
     <tr>
-        <th data-index="0">Пользователь</th>
+        <th data-index="0" class="col-2">Пользователь</th>
         <th data-index="1">Роли пользователя</th>
         <th data-index="2">URL</th>
         @php($i = 3)
