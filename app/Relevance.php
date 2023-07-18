@@ -197,12 +197,13 @@ class Relevance
                 ->delay(now()->addSeconds(100));
 
         } catch (\Throwable $exception) {
+            $this->saveError($exception);
+
             if ($historyId !== false) {
                 RelevanceHistory::where('id', '=', $historyId)->update([
                     'state' => '-1'
                 ]);
             }
-            $this->saveError($exception);
         }
     }
 
@@ -1298,6 +1299,12 @@ class Relevance
 
     public function saveError($exception)
     {
+        Log::debug('Relevance Error', [
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'message' => $exception->getMessage(),
+        ]);
+
         $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
         if ($toDay->id) {
             $toDay->count_fails += 1;
@@ -1308,12 +1315,6 @@ class Relevance
 
         UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
         RelevanceProgress::where('hash', $this->scanHash)->update(['error' => 1]);
-
-        Log::debug('Relevance Error', [
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'message' => $exception->getMessage(),
-        ]);
     }
 
     public static function uncompress($history)
