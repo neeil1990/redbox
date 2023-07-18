@@ -42,9 +42,12 @@ class RelevanceAnalyseQueue implements ShouldQueue
     {
         $jobs = Common::analyseRelevanceJobs();
 
+        Log::debug('jobs', [$jobs]);
         if ($jobs->count_relevance <= 2 || ($jobs->count_relevance <= 3 && $jobs->another == 0)) {
+            Log::debug('go');
             $this->relevance = new Relevance($this->request, $this->userId);
 
+            Log::debug($this->type);
             if ($this->type === 'full') {
 
                 $this->relevance->getMainPageHtml();
@@ -77,8 +80,10 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
             }
 
+            Log::info('analysis');
             $this->relevance->analysis();
         } else {
+            Log::info('w8');
             RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
                 ->onQueue($this->job->getQueue())
                 ->onConnection('database')
