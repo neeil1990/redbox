@@ -175,38 +175,38 @@ class Relevance
 
     public function analysis($historyId = false)
     {
-        Log::info('...');
+        Log::debug('...');
         try {
             $this->removeNoIndex();
-            Log::info('removeNoIndex');
+            Log::debug('removeNoIndex', [$this->scanHash]);
             $this->getHiddenData();
-            Log::info('getHiddenData');
+            Log::debug('getHiddenData', [$this->scanHash]);
             $this->separateLinksFromText();
-            Log::info('separateLinksFromText');
+            Log::debug('separateLinksFromText', [$this->scanHash]);
             $this->removePartsOfSpeech();
-            Log::info('removePartsOfSpeech');
+            Log::debug('removePartsOfSpeech', [$this->scanHash]);
             $this->removeListWords();
-            Log::info('removeListWords');
+            Log::debug('removeListWords', [$this->scanHash]);
             $this->getTextFromCompetitors();
-            Log::info('getTextFromCompetitors');
+            Log::debug('getTextFromCompetitors', [$this->scanHash]);
             $this->separateAllText();
-            Log::info('separateAllText');
+            Log::debug('separateAllText', [$this->scanHash]);
             $this->preparePhrasesTable();
-            Log::info('preparePhrasesTable');
+            Log::debug('preparePhrasesTable', [$this->scanHash]);
             $this->searchWordForms();
-            Log::info('searchWordForms');
+            Log::debug('searchWordForms', [$this->scanHash]);
             $this->processingOfGeneralInformation();
-            Log::info('processingOfGeneralInformation');
+            Log::debug('processingOfGeneralInformation', [$this->scanHash]);
             $this->prepareUnigramTable();
-            Log::info('prepareUnigramTable');
+            Log::debug('prepareUnigramTable', [$this->scanHash]);
             $this->analyzeRecommendations();
-            Log::info('analyzeRecommendations');
+            Log::debug('analyzeRecommendations', [$this->scanHash]);
             $this->prepareAnalysedSitesTable();
-            Log::info('prepareAnalysedSitesTable');
+            Log::debug('prepareAnalysedSitesTable', [$this->scanHash]);
             $this->prepareClouds();
-            Log::info('prepareClouds');
+            Log::debug('prepareClouds', [$this->scanHash]);
             $this->saveHistory($historyId);
-            Log::info('saveHistory');
+            Log::debug('saveHistory', [$this->scanHash]);
 
             RemoveRelevanceProgress::dispatch($this->scanHash)
                 ->onQueue('default')
