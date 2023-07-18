@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RelevanceProgress extends Model
 {
@@ -27,9 +28,16 @@ class RelevanceProgress extends Model
 
     public static function editProgress($percent, $request)
     {
-        if (isset($request['hash'])) {
-            RelevanceProgress::where('hash', $request['hash'])->update(['progress' => $percent]);
+        try {
+            if (isset($request['hash'])) {
+                RelevanceProgress::where('hash', $request['hash'])->update(['progress' => $percent]);
+            }
+        } catch (\Throwable $e){
+            Log::debug('edit progress error', [
+                'message' => $e->getMessage()
+            ]);
         }
+
     }
 
     public static function endProgress($hash)
