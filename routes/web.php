@@ -11,7 +11,6 @@
 |
 */
 
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -301,6 +300,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/competitors/remove-analyse', 'MonitoringController@removeChangesDatesState')->name('monitoring.changes.dates.remove');
     Route::get('/monitoring/competitors/result-analyse/{project}', 'MonitoringController@resultChangesDatesState')->name('monitoring.changes.dates.result');
 
+    Route::get('/monitoring/top-100/{project}', 'MonitoringTopController@index')->name('monitoring.top100');
+
     Route::get('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
     Route::post('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
 
@@ -398,4 +399,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
+});
+
+Route::get('/test', function (){
+    \Illuminate\Support\Facades\Log::debug(123, []);
 });
