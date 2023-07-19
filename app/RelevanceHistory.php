@@ -30,8 +30,11 @@ class RelevanceHistory extends Model
      */
     public static function createOrUpdate($phrase, $link, $request, $site, $time, $mainHistory, $state, $historyId, $html = null, $sites = null): int
     {
-        if ($historyId > 0) {
+        if ($historyId !== false) {
             $history = RelevanceHistory::where('id', '=', $historyId)->first();
+            Log::debug($historyId, [$history]);
+
+            //add log
             if ($history->state == -1) {
                 $history->delete();
             } else {
@@ -40,7 +43,7 @@ class RelevanceHistory extends Model
             }
         }
 
-        $history = new RelevanceHistory([
+        $history = RelevanceHistory::create([
             'phrase' => $phrase,
             'main_link' => $link,
             'region' => $request['region'],
@@ -58,8 +61,6 @@ class RelevanceHistory extends Model
             'sites' => $sites,
             'user_id' => $mainHistory->user_id
         ]);
-
-        $history->save();
 
         return $history->id;
     }
