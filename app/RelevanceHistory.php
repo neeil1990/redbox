@@ -32,9 +32,7 @@ class RelevanceHistory extends Model
     {
         if ($historyId !== false) {
             $history = RelevanceHistory::where('id', '=', $historyId)->first();
-            Log::debug($historyId, [$history]);
 
-            //add log
             if ($history->state == -1) {
                 $history->delete();
             } else {
