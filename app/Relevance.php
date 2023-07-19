@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Relevance\RemoveRelevanceProgress;
 use Carbon\Carbon;
@@ -74,6 +75,8 @@ class Relevance
 
     public $scanHash;
 
+    public $document;
+
     public function __construct($request, $userId, bool $queue = false)
     {
         $this->queue = $queue;
@@ -97,11 +100,13 @@ class Relevance
         $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
+
+        $this->document = new HtmlDocument();
     }
 
     public function getMainPageHtml()
     {
-        $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
+        $html = $this->removeExtraHtml(TextAnalyzer::curlInit($this->params['main_page_link']));
         $this->setMainPage($html);
     }
 
@@ -112,7 +117,7 @@ class Relevance
 
         foreach ($this->domains as $item) {
             $domain = Str::lower($item['item']);
-            $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
+            $result = $this->removeExtraHtml(TextAnalyzer::curlInit($domain));
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
@@ -124,11 +129,9 @@ class Relevance
 
             $this->sites[$domain]['equallyHost'] = isset($compUrl['host']) && $host === $compUrl['host'];
 
-            if (
-                $domain === Str::lower($this->params['main_page_link']) ||
+            if ($domain === Str::lower($this->params['main_page_link']) ||
                 $domain === Str::lower($this->params['main_page_link']) . '/' ||
-                $domain . '/' === Str::lower($this->params['main_page_link'])
-            ) {
+                $domain . '/' === Str::lower($this->params['main_page_link'])) {
                 $this->mainPageIsRelevance = true;
                 $this->sites[$domain]['mainPage'] = true;
                 $this->sites[$domain]['inRelevance'] = $item['inRelevance'] ?? true;
@@ -137,6 +140,8 @@ class Relevance
                 $this->sites[$domain]['mainPage'] = false;
                 $this->sites[$domain]['ignored'] = $item['ignored'];
             }
+
+            usleep(15000);
         }
 
         if (!$this->mainPageIsRelevance) {
@@ -153,7 +158,7 @@ class Relevance
 
             $this->sites[$this->params['main_page_link']] = [
                 'inRelevance' => false,
-                'danger' => $this->mainPage['html'] === "",
+                'danger' => $this->mainPage['html'] === '',
                 'ignored' => false,
                 'mainPage' => true,
                 'defaultHtml' => $this->mainPage['html'],
@@ -164,12 +169,30 @@ class Relevance
         }
     }
 
+    protected function removeExtraHtml($html)
+    {
+        $document = $this->document;
+        $document->load(mb_strtolower($html));
+        $document->removeElements('.js_img-for-color.hidden');
+        $document->removeElements('link');
+        $document->removeElements('style');
+        $document->removeElements('meta');
+        $document->removeElements('script');
+        $document->removeElements('path');
+        $document->removeElements('noscript');
+        $document->removeElements('comment');
+
+        if ($this->request['noIndex'] == 'false') {
+            $document->removeElements('noindex');
+        }
+
+        return $document->outertext;
+    }
+
     public function analysis($historyId = false)
     {
         Log::debug('...');
         try {
-            $this->removeNoIndex();
-            Log::debug('removeNoIndex', [$this->scanHash]);
             $this->getHiddenData();
             Log::debug('getHiddenData', [$this->scanHash]);
             $this->separateLinksFromText();
@@ -222,16 +245,6 @@ class Relevance
         $this->mainPage['linkText'] = $this->separateText($this->mainPage['linkText']);
         $this->mainPage['hiddenText'] = $this->separateText($this->mainPage['hiddenText']);
         $this->competitorsTextAndLinks = ' ' . $this->competitorsLinks . ' ' . $this->competitorsText . ' ';
-    }
-
-    public function removeNoIndex()
-    {
-        if ($this->request['noIndex'] == 'false') {
-            $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
-            foreach ($this->sites as $key => $page) {
-                $this->sites[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
-            }
-        }
     }
 
     public function separateLinksFromText()
@@ -655,10 +668,10 @@ class Relevance
                     'idf' => $idf,
                     'numberOccurrences' => $numberOccurrences,
                     'reSpam' => $reSpam,
-                    'avgInTotalCompetitors' => (int) ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
-                    'avgInLink' => (int) ceil($numberLinkOccurrences / $countSites),
-                    'avgInText' => (int) ceil($numberTextOccurrences / $countSites),
-                    'avgInPassages' => (int) ceil($numberPassageOccurrences / $countSites),
+                    'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
+                    'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
+                    'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
+                    'avgInPassages' => (int)ceil($numberPassageOccurrences / $countSites),
                     'repeatInLinkMainPage' => $repeatLinkInMainPage,
                     'repeatInTextMainPage' => $repeatInTextMainPage,
                     'repeatInPassagesMainPage' => $repeatInPassagesMainPage,
@@ -1380,5 +1393,4 @@ class Relevance
             return $data;
         }
     }
-
 }
