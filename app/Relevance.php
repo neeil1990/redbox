@@ -191,7 +191,6 @@ class Relevance
 
     public function analysis($historyId = false)
     {
-        Log::debug('...');
         try {
             $this->getHiddenData();
             Log::debug($this->scanHash, ['getHiddenData']);
@@ -239,6 +238,7 @@ class Relevance
 
     public function separateAllText()
     {
+        usleep(15000);
         $this->competitorsLinks = $this->separateText($this->competitorsLinks);
         $this->competitorsText = $this->separateText($this->competitorsText);
         $this->mainPage['html'] = $this->separateText($this->mainPage['html']);
@@ -249,6 +249,7 @@ class Relevance
 
     public function separateLinksFromText()
     {
+        usleep(15000);
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
             $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));
@@ -303,6 +304,7 @@ class Relevance
 
     public function getHiddenData()
     {
+        usleep(15000);
         RelevanceProgress::editProgress(20, $this->request);
         if ($this->request['hiddenText'] == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
@@ -319,6 +321,7 @@ class Relevance
 
     public function getTextFromCompetitors()
     {
+        usleep(15000);
         RelevanceProgress::editProgress(40, $this->request);
         foreach ($this->sites as $key => $page) {
             if (!$this->sites[$key]['ignored']) {
@@ -428,6 +431,7 @@ class Relevance
 
     public function analyseRecommendations()
     {
+        usleep(15000);
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($wordForm['total']['avgInTotalCompetitors'] >= 10) {
@@ -470,6 +474,7 @@ class Relevance
 
     public function prepareAnalysedSitesTable()
     {
+        usleep(15000);
         $this->calculateDensity();
         $this->calculateCoveragePoints();
         $this->calculateWidthPoints();
@@ -510,6 +515,7 @@ class Relevance
 
     public function removePartsOfSpeech()
     {
+        usleep(15000);
         if ($this->request['conjunctionsPrepositionsPronouns'] == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
@@ -524,6 +530,7 @@ class Relevance
 
     public function removeListWords()
     {
+        usleep(15000);
         if (filter_var($this->request['switchMyListWords'], FILTER_VALIDATE_BOOLEAN)) {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $this->request['listWords']);
             $this->ignoredWords = explode("\n", $listWords);
@@ -557,6 +564,7 @@ class Relevance
 
     public function searchWordForms()
     {
+        usleep(15000);
         $m = new Morphy();
         $wordWorms = [];
 
@@ -598,6 +606,7 @@ class Relevance
 
     public function processingOfGeneralInformation()
     {
+        usleep(15000);
         RelevanceProgress::editProgress(80, $this->request);
         $countSites = 0;
         foreach ($this->sites as $site) {
@@ -684,6 +693,7 @@ class Relevance
 
     public function prepareUnigramTable()
     {
+        usleep(15000);
         $this->coverageInfo['sum'] = 0;
 
         foreach ($this->wordForms as $key => $wordForm) {
@@ -757,6 +767,7 @@ class Relevance
 
     public function prepareClouds()
     {
+        usleep(15000);
         RelevanceProgress::editProgress(90, $this->request);
         $mainPage = Relevance::concatenation([
             $this->mainPage['html'],
@@ -969,6 +980,7 @@ class Relevance
 
     public function preparePhrasesTable()
     {
+        usleep(15000);
         $result = [];
         $phrases = $this->searchPhrases();
         $totalCount = count($phrases);
@@ -1121,6 +1133,7 @@ class Relevance
 
     public function saveHistory($historyId)
     {
+        usleep(15000);
         RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
         $this->saveStatistic();
