@@ -13,10 +13,6 @@ class TextAnalyzer extends Model
 
     protected $table = 'text_analyser_count_checks';
 
-    /**
-     * @param $link
-     * @return array|null
-     */
     public static function curlInit($link)
     {
         $refers = ['google.com', 'yandex.ru'];

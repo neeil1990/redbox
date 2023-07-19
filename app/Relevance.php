@@ -87,16 +87,10 @@ class Relevance
             ? filter_var($this->request['searchPassages'], FILTER_VALIDATE_BOOLEAN)
             : false;
 
-        if ($this->queue) {
-            $params = [
-                'user_id' => $this->userId,
-            ];
-        } else {
-            $params = [
-                'user_id' => $this->userId,
-                'page_hash' => $request['pageHash']
-            ];
-        }
+        $params = [
+            'user_id' => $this->userId,
+            'page_hash' => $this->queue ? null : $request['pageHash']
+        ];
 
         $this->params = RelevanceAnalyseResults::firstOrNew($params);
 
@@ -127,11 +121,8 @@ class Relevance
             $this->sites[$domain]['position'] = $item['position'];
 
             $compUrl = parse_url($domain);
-            if (isset($compUrl['host']) && $host == $compUrl['host']) {
-                $this->sites[$domain]['equallyHost'] = true;
-            } else {
-                $this->sites[$domain]['equallyHost'] = false;
-            }
+
+            $this->sites[$domain]['equallyHost'] = isset($compUrl['host']) && $host === $compUrl['host'];
 
             if (
                 $domain === Str::lower($this->params['main_page_link']) ||
@@ -199,8 +190,8 @@ class Relevance
             Log::debug('processingOfGeneralInformation', [$this->scanHash]);
             $this->prepareUnigramTable();
             Log::debug('prepareUnigramTable', [$this->scanHash]);
-            $this->analyzeRecommendations();
-            Log::debug('analyzeRecommendations', [$this->scanHash]);
+            $this->analyseRecommendations();
+            Log::debug('analyseRecommendations', [$this->scanHash]);
             $this->prepareAnalysedSitesTable();
             Log::debug('prepareAnalysedSitesTable', [$this->scanHash]);
             $this->prepareClouds();
@@ -406,9 +397,8 @@ class Relevance
     public function calculateTextInfo()
     {
         foreach ($this->sites as $key => $site) {
-            $totalWords = TextAnalyzer::deleteEverythingExceptCharacters($site['defaultHtml']);
-            $countSymbols = Str::length($totalWords);
-            $countWords = count(explode(' ', $totalWords));
+            $countSymbols = Str::length($site['defaultHtml']);
+            $countWords = count(explode(' ', $site['defaultHtml']));
 
             if ($this->sites[$key]['mainPage']) {
                 $this->countSymbolsInMyPage = $countSymbols;
@@ -423,7 +413,7 @@ class Relevance
         }
     }
 
-    public function analyzeRecommendations()
+    public function analyseRecommendations()
     {
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
@@ -566,7 +556,7 @@ class Relevance
                 $this->ignoredWords[] = $key;
 
                 $root = $m->base($key);
-                if ($root == null) {
+                if (empty($root)) {
                     $root = $key;
                 }
 
@@ -613,6 +603,7 @@ class Relevance
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
 
         foreach ($this->wordForms as $root => $wordForm) {
+
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = $numberPassageOccurrences = 0;
                 $occurrences = [];
@@ -664,10 +655,10 @@ class Relevance
                     'idf' => $idf,
                     'numberOccurrences' => $numberOccurrences,
                     'reSpam' => $reSpam,
-                    'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
-                    'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
-                    'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
-                    'avgInPassages' => (int)ceil($numberPassageOccurrences / $countSites),
+                    'avgInTotalCompetitors' => (int) ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
+                    'avgInLink' => (int) ceil($numberLinkOccurrences / $countSites),
+                    'avgInText' => (int) ceil($numberTextOccurrences / $countSites),
+                    'avgInPassages' => (int) ceil($numberPassageOccurrences / $countSites),
                     'repeatInLinkMainPage' => $repeatLinkInMainPage,
                     'repeatInTextMainPage' => $repeatInTextMainPage,
                     'repeatInPassagesMainPage' => $repeatInPassagesMainPage,
@@ -959,6 +950,7 @@ class Relevance
                 unset($text[$key]);
             }
         }
+
         return implode(" ", $text);
     }
 
@@ -968,60 +960,64 @@ class Relevance
         $phrases = $this->searchPhrases();
         $totalCount = count($phrases);
         foreach ($phrases as $phrase) {
-            if ($phrase != "") {
-                $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
-                $occurrences = [];
-                foreach ($this->sites as $key => $page) {
-                    if (!$page['ignored']) {
-                        $htmlCount = preg_match_all("/ ($phrase) /", ' ' . $page['html'] . ' ');
-                        if ($htmlCount > 0) {
-                            $numberTextOccurrences += $htmlCount;
-                        }
 
-                        $hiddenTextCount = preg_match_all("/ ($phrase) /", ' ' . $page['hiddenText'] . ' ');
-                        if ($hiddenTextCount > 0) {
-                            $numberTextOccurrences += $hiddenTextCount;
-                        }
+            if ($phrase === "") {
+                continue;
+            }
 
-                        $linkTextCount = preg_match_all("/ ($phrase) /", ' ' . $page['linkText'] . ' ');
-                        if ($linkTextCount > 0) {
-                            $numberLinkOccurrences += $linkTextCount;
-                        }
+            $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = 0;
+            $occurrences = [];
 
-                        if ($linkTextCount > 0 || $hiddenTextCount > 0 || $htmlCount > 0) {
-                            $countRepeat = $linkTextCount + $hiddenTextCount + $htmlCount;
-                            $numberOccurrences++;
-                            $occurrences[$key] = $countRepeat;
-                            if ($reSpam < $countRepeat) {
-                                $reSpam = $countRepeat;
-                            }
+            foreach ($this->sites as $key => $page) {
+                if (!$page['ignored']) {
+                    $htmlCount = preg_match_all("/ ($phrase) /", ' ' . $page['html'] . ' ');
+                    if ($htmlCount > 0) {
+                        $numberTextOccurrences += $htmlCount;
+                    }
+
+                    $hiddenTextCount = preg_match_all("/ ($phrase) /", ' ' . $page['hiddenText'] . ' ');
+                    if ($hiddenTextCount > 0) {
+                        $numberTextOccurrences += $hiddenTextCount;
+                    }
+
+                    $linkTextCount = preg_match_all("/ ($phrase) /", ' ' . $page['linkText'] . ' ');
+                    if ($linkTextCount > 0) {
+                        $numberLinkOccurrences += $linkTextCount;
+                    }
+
+                    if ($linkTextCount > 0 || $hiddenTextCount > 0 || $htmlCount > 0) {
+                        $countRepeat = $linkTextCount + $hiddenTextCount + $htmlCount;
+                        $numberOccurrences++;
+                        $occurrences[$key] = $countRepeat;
+                        if ($reSpam < $countRepeat) {
+                            $reSpam = $countRepeat;
                         }
                     }
                 }
-                if ($numberOccurrences > 0) {
-                    $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
-                    $tf = round($countOccurrences / $totalCount, 6);
-                    $idf = round(log10($totalCount / $countOccurrences), 6);
+            }
+            if ($numberOccurrences > 0) {
+                $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
+                $tf = round($countOccurrences / $totalCount, 6);
+                $idf = round(log10($totalCount / $countOccurrences), 6);
 
-                    $repeatInTextMainPage = mb_substr_count(Relevance::concatenation([$this->mainPage['html'], $this->mainPage['hiddenText']]), "$phrase");
-                    $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$phrase");
-                    $countSites = count($this->sites);
-                    arsort($occurrences);
+                $repeatInTextMainPage = mb_substr_count(Relevance::concatenation([$this->mainPage['html'], $this->mainPage['hiddenText']]), "$phrase");
+                $repeatLinkInMainPage = mb_substr_count($this->mainPage['linkText'], "$phrase");
+                $countSites = count($this->sites);
+                arsort($occurrences);
 
-                    $result[$phrase] = [
-                        'tf' => $tf,
-                        'idf' => $idf,
-                        'numberOccurrences' => $numberOccurrences,
-                        'reSpam' => $reSpam,
-                        'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
-                        'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
-                        'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
-                        'repeatInLinkMainPage' => $repeatLinkInMainPage,
-                        'repeatInTextMainPage' => $repeatInTextMainPage,
-                        'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
-                        'occurrences' => $occurrences
-                    ];
-                }
+                $result[$phrase] = [
+                    'tf' => $tf,
+                    'idf' => $idf,
+                    'numberOccurrences' => $numberOccurrences,
+                    'reSpam' => $reSpam,
+                    'avgInTotalCompetitors' => (int)ceil(($numberLinkOccurrences + $numberTextOccurrences) / $countSites),
+                    'avgInLink' => (int)ceil($numberLinkOccurrences / $countSites),
+                    'avgInText' => (int)ceil($numberTextOccurrences / $countSites),
+                    'repeatInLinkMainPage' => $repeatLinkInMainPage,
+                    'repeatInTextMainPage' => $repeatInTextMainPage,
+                    'totalRepeatMainPage' => $repeatLinkInMainPage + $repeatInTextMainPage,
+                    'occurrences' => $occurrences
+                ];
             }
         }
 
@@ -1035,19 +1031,14 @@ class Relevance
     {
         $phrases = [];
         $array = explode(' ', $this->competitorsTextAndLinks);
+        $array = array_slice($array, 1);
 
         $grouped = array_chunk($array, 2);
         foreach ($grouped as $two_words) {
             $phrases[] = implode(' ', $two_words);
         }
-        unset($array[0]);
-        $grouped = array_chunk($array, 2);
-        foreach ($grouped as $two_words) {
-            $phrases[] = implode(' ', $two_words);
-        }
 
-        $phrases = collect($phrases);
-        return $phrases->unique()->toArray();
+        return array_unique($phrases);
     }
 
     public function calculateDensity()
@@ -1321,12 +1312,8 @@ class Relevance
             'message' => $exception->getMessage(),
         ]);
 
-        $toDay = RelevanceStatistics::firstOrNew(['date' => Carbon::now()->toDateString()]);
-        if ($toDay->id) {
-            $toDay->count_fails += 1;
-        } else {
-            $toDay->count_fails = 1;
-        }
+        $toDay = RelevanceStatistics::firstOrNew(['date' => date('Y-m-d')]);
+        $toDay->increment('count_fails');
         $toDay->save();
 
         UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
