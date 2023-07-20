@@ -13,6 +13,8 @@ class RelevanceThoughAnalysisQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 0;
+
     public $items;
 
     public $mainId;
