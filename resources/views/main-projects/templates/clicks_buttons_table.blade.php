@@ -61,6 +61,7 @@
 </table>
 
 <script>
+    let updatedSelect = false
     $(document).ready(function () {
         let columns = [
             {
@@ -152,19 +153,26 @@
                     $('#actionsTable > thead > tr:nth-child(2) > th:nth-child(' + i + ')').html('Общее количество нажатий: ' + sum)
                 }
 
-                let links = []
-                $.each($('#actionsTable > tbody > tr > td:nth-child(3)'), function () {
-                    links.push($(this).children('a').eq(0).text())
-                })
-                let uniqueLinks = [...new Set(links)];
-
-                console.log(uniqueLinks)
-                $.each(uniqueLinks, function (key, value) {
-                    $('#filter-url').append('<option value="' + value + '">' + value + '</option>')
-                })
+                addOptions();
             }
         })
 
         $('#actionsTable').wrap('<div style="width:100%; overflow: auto"></div>')
     })
+
+    function addOptions() {
+        if (updatedSelect === false) {
+            let links = []
+            $.each($('#actionsTable > tbody > tr > td:nth-child(3)'), function () {
+                links.push($(this).children('a').eq(0).text())
+            })
+            let uniqueLinks = [...new Set(links)];
+
+            $.each(uniqueLinks, function (key, value) {
+                $('#filter-url').append('<option value="' + value + '">' + value + '</option>')
+            })
+
+            updatedSelect = true
+        }
+    }
 </script>
