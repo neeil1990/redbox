@@ -28,6 +28,11 @@ class SimplifiedXmlFacade extends XmlFacade
         $this->count = $count;
     }
 
+    public function setAttempt($attempt = 0)
+    {
+        $this->attempt = $attempt;
+    }
+
     public function getXMLResponse(string $searchEngine = 'yandex')
     {
         $this->attempt += 1;
@@ -40,6 +45,7 @@ class SimplifiedXmlFacade extends XmlFacade
             $result = $this->sendRequest($searchEngine);
 
             if (isset($result['response']['results']['grouping']['group'])) {
+                $this->setAttempt();
 
                 return $this->parseResult($result['response']['results']['grouping']['group']);
 
