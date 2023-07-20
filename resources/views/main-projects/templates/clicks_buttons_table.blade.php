@@ -4,8 +4,7 @@
     <tr>
         <th>
             <label for="email">Почта пользователя</label>
-            <input type="text" class="form form-control filter-input" name="email" id="email" data-index="0"
-                   placeholder="email">
+            <input type="text" class="form form-control filter-input" name="email" id="email" data-index="0">
         </th>
         <th class="col-2">
             <label for="role">Тарифы</label>
@@ -17,11 +16,29 @@
                 <option value="Free">Free</option>
             </select>
         </th>
-        <th data-index="2"></th>
+        <th>
+            <label for="url">URL</label>
+            <select name="url" id="filter-url" class="custom-select filter-input" data-index="2"></select>
+        </th>
         @php($i = 3)
         @if(is_array($columns))
             @foreach($columns as $column)
-                <th data-index="{{ $i }}"></th>
+                <th>
+                    <label for="url">{{ __($column) }}</label>
+                    <input type="text" class="form form-control filter-input" name="url" id="url" data-index="{{ $i }}">
+                </th>
+                @php($i++)
+            @endforeach
+        @endif
+    </tr>
+    <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        @php($i = 3)
+        @if(is_array($columns))
+            @foreach($columns as $column)
+                <th></th>
                 @php($i++)
             @endforeach
         @endif
@@ -74,7 +91,7 @@
                         name: \"$column\",
                         data: function(row) {
                             if(row.".str_replace(' ', '_', $column)." != undefined) {
-                                return row.".str_replace(' ', '_', $column).".button_counter
+                                return row.".str_replace(' ', '_', $column)."
                             }
 
                             return 0;
@@ -96,11 +113,8 @@
             buttons: [
                 'copy', 'csv', 'excel'
             ],
-            columnDefs: [
-                {orderable: false, targets: '_all'},
-            ],
             language: {
-                lengthMenu: "_MENU_",
+                lengthMenu: "количество юзеров _MENU_",
                 search: "_INPUT_",
                 searchPlaceholder: "{{ __('Search') }}",
                 paginate: {
@@ -112,6 +126,7 @@
                 emptyTable: "{{ __('No records') }}"
             },
             drawCallback: function () {
+                console.clear()
                 let timeout
 
                 $('.filter-input').unbind().on('input', function () {
@@ -123,6 +138,29 @@
 
                 $('#actionsTable_info').hide()
                 $('#actionsTable_filter').hide()
+
+                for (let i = 4; i <= {{ $i }}; i++) {
+                    let sum = 0;
+                    $('#actionsTable tbody td:nth-child(' + i + ')').each(function () {
+                        const value = parseFloat($(this).text());
+                        if (!isNaN(value)) {
+                            sum += value;
+                        }
+                    });
+
+
+                    $('#actionsTable > thead > tr:nth-child(2) > th:nth-child(' + i + ')').html('Общее количество нажатий: ' + sum)
+                }
+
+                let links = []
+                $.each($('#actionsTable > tbody > tr > td:nth-child(3)'), function () {
+                    links.push($(this).children('a').eq(0).text())
+                })
+                let uniqueLinks = [...new Set(links)];
+
+                $.each(uniqueLinks, function (key, value) {
+                    $('#filter-url').append('<option value="' + value + '">' + value + '</option>')
+                })
             }
         })
 

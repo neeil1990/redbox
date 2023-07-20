@@ -10,6 +10,7 @@ use App\VisitStatistic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
@@ -186,6 +187,7 @@ class MainProjectsController extends Controller
     public function actions($id, Request $request)
     {
         $usersIds = User::where('statistic', 1);
+        $records = ClickTracking::where('project_id', $id);
 
         foreach ($request['columns'] as $column) {
             $search = $column['search']['value'];
@@ -193,24 +195,30 @@ class MainProjectsController extends Controller
             if (isset($search)) {
                 if ($column['name'] === 'email') {
                     $usersIds->where('email', 'like', "%$search%");
+                } else if ($column['name'] === 'url') {
+                    $records->where('url', $search);
                 } else if ($column['name'] === 'roles' && $search !== 'Любой') {
                     $usersIds->whereHas('roles', function ($query) use ($search) {
                         $query->where('name', $search);
                     })->with('roles');
+                } else {
+                    $records->where('button_text', $column['name'])
+                        ->where('button_counter', $search);
                 }
             }
         }
 
-        $usersIds = $usersIds->pluck('id')->toArray();
+        $usersIds = $usersIds->take($request['length'])
+            ->pluck('id');
 
+        $columnIndex = $request['order'][0]['column'];
+        $columnName = $request['columns'][$columnIndex]['name'];
         $columnSortOrder = $request['order'][0]['dir'];
 
-        $records = ClickTracking::orderBy('url', $columnSortOrder)
-            ->where('project_id', $id)
+
+        $records = $records
             ->whereIn('user_id', $usersIds)
             ->with('user')
-            ->skip($request['start'])
-            ->take($request['length'])
             ->get(['user_id', 'url', 'project_id', 'button_text', 'button_counter'])
             ->groupBy('user.email');
 
@@ -224,21 +232,27 @@ class MainProjectsController extends Controller
                     'url' => $actions[0]['url'],
                 ];
                 foreach ($actions->toArray() as $page) {
-                    $data[$i][str_replace(' ', '_', $page['button_text'])] = $page;
+                    $data[$i][str_replace(' ', '_', $page['button_text'])] = $page['button_counter'];
                 }
                 $i++;
             }
         }
 
+        $collection = collect($data);
+
+        if ($columnSortOrder === 'asc') {
+            $sortedCollection = $collection->sortBy(str_replace(' ', '_', $columnName));
+        } else {
+            $sortedCollection = $collection->sortByDesc(str_replace(' ', '_', $columnName));
+        }
+
+        $sortedArray = $sortedCollection->values()->all();
+
         $filteredData = [
             'draw' => intval($request['draw']),
             'iTotalRecords' => count($records),
-            'iTotalDisplayRecords' => ClickTracking::where('project_id', $id)
-                ->whereIn('user_id', $usersIds)
-                ->with('user')
-                ->get(['user_id', 'project_id'])
-                ->groupBy('user.email'),
-            'aaData' => $data
+            'iTotalDisplayRecords' => count($records),
+            'aaData' => $sortedArray
         ];
 
         return json_encode($filteredData);
