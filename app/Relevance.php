@@ -101,7 +101,7 @@ class Relevance
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
 
-        $this->document = new HtmlDocument();
+//        $this->document = new HtmlDocument();
     }
 
     public function getMainPageHtml()
@@ -171,20 +171,40 @@ class Relevance
 
     protected function removeExtraHtml($html)
     {
-        $document = $this->document;
-        $document->load(mb_strtolower($html));
-        $document->removeElements('.js_img-for-color.hidden');
-        $document->removeElements('link');
-        $document->removeElements('style');
-        $document->removeElements('meta');
-        $document->removeElements('script');
-        $document->removeElements('path');
-        $document->removeElements('noscript');
-        $document->removeElements('comment');
+        $html = mb_strtolower($html);
 
-        if ($this->request['noIndex'] == 'false') {
-            $document->removeElements('noindex');
+        $regex = [
+            '/<!--.*?-->/si',
+            '/<script.*?>(.*?)<\/script>/is',
+            '/<style.*?>(.*?)<\/style>/is',
+            '/<pre\s+style="display:none;">.*?<\/pre>/is',
+            "'<div.*?class=\"js_img-for-color hidden\">.*?</div>'si",
+        ];
+
+        foreach ($regex as $rule) {
+            $newHtml = preg_replace($rule, '', $html);
+
+            if (strlen($newHtml) > 0) {
+                $html = $newHtml;
+            }
         }
+
+        return $html;
+//
+//        $document = $this->document;
+//        $document->load(mb_strtolower($html));
+//        $document->removeElements('.js_img-for-color.hidden');
+//        $document->removeElements('link');
+//        $document->removeElements('style');
+//        $document->removeElements('meta');
+//        $document->removeElements('script');
+//        $document->removeElements('path');
+//        $document->removeElements('noscript');
+//        $document->removeElements('comment');
+//
+//        if ($this->request['noIndex'] == 'false') {
+//            $document->removeElements('noindex');
+//        }
 
         return $document->outertext;
     }
