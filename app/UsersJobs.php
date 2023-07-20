@@ -26,9 +26,12 @@ class UsersJobs extends Model
             }
             $job->increment('count_jobs');
         } else {
+            UsersJobs::create([
+                'user_id' => $userId,
+                'count_jobs' => 1
+            ]);
+
             $priority = 'relevance_high';
-            $job->count_jobs = 1;
-            $job->save();
         }
 
         return $priority;
