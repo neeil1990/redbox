@@ -158,6 +158,7 @@
                 })
                 let uniqueLinks = [...new Set(links)];
 
+                console.log(uniqueLinks)
                 $.each(uniqueLinks, function (key, value) {
                     $('#filter-url').append('<option value="' + value + '">' + value + '</option>')
                 })
