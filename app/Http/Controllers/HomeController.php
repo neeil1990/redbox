@@ -46,7 +46,7 @@ class HomeController extends Controller
             ClickTracking::updateOrCreate([
                 'project_id' => $request->project_id,
                 'button_text' => $request->button_text,
-                'url' => preg_replace('/[0-9]+/', '', $request->url),
+                'url' => preg_replace('/[0-9#]+/', '', $request->url),
                 'user_id' => Auth::id(),
             ], [
                 'button_counter' => DB::raw('button_counter + 1')
