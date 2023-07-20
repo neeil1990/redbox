@@ -14,7 +14,7 @@ class UsersJobs extends Model
 
     public static function getPriority($userId): string
     {
-        $job = UsersJobs::firstOrNew(['user_id' => $userId]);
+        $job = UsersJobs::where(['user_id' => $userId])->first();
 
         if (isset($job)) {
             if ($job->count_jobs <= 10) {
