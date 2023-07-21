@@ -336,7 +336,7 @@ class Relevance
                     }
                 }
             }
-            usleep(200);
+            usleep(300);
         }
 
         foreach ($this->wordForms as $wordForm) {
@@ -347,7 +347,7 @@ class Relevance
                     }
                 }
             }
-            usleep(200);
+            usleep(300);
         }
 
         return [
@@ -444,7 +444,7 @@ class Relevance
                     break;
                 }
             }
-            usleep(200);
+            usleep(300);
         }
     }
 
@@ -658,7 +658,7 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
-            usleep(200);
+            usleep(300);
         }
     }
 
@@ -701,7 +701,7 @@ class Relevance
                     }
                 }
             }
-            usleep(200);
+            usleep(300);
             arsort($occurrences);
 
             $this->wordForms[$key]['total'] = [
@@ -1068,7 +1068,7 @@ class Relevance
                     break;
                 }
             }
-            usleep(200);
+            usleep(300);
             $testMainIterator++;
         }
 
@@ -1284,7 +1284,7 @@ class Relevance
             $this->calculate('width', $width[$i] / 5);
             $this->calculate('points', $points[$i] / 5);
             $this->calculate('countSymbols', $countSymbols[$i] / 5);
-            usleep(200);
+            usleep(300);
         }
     }
 
