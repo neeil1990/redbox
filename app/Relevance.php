@@ -336,7 +336,7 @@ class Relevance
                     }
                 }
             }
-            usleep(300);
+            usleep(450);
         }
 
         foreach ($this->wordForms as $wordForm) {
@@ -347,7 +347,7 @@ class Relevance
                     }
                 }
             }
-            usleep(300);
+            usleep(450);
         }
 
         return [
@@ -444,7 +444,7 @@ class Relevance
                     break;
                 }
             }
-            usleep(300);
+            usleep(450);
         }
     }
 
@@ -658,7 +658,7 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
-            usleep(300);
+            usleep(450);
         }
     }
 
@@ -701,7 +701,7 @@ class Relevance
                     }
                 }
             }
-            usleep(300);
+            usleep(450);
             arsort($occurrences);
 
             $this->wordForms[$key]['total'] = [
@@ -1068,7 +1068,7 @@ class Relevance
                     break;
                 }
             }
-            usleep(300);
+            usleep(450);
             $testMainIterator++;
         }
 
@@ -1102,7 +1102,9 @@ class Relevance
     {
         RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
+        usleep(450);
         $this->saveStatistic();
+        usleep(450);
 
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
@@ -1284,7 +1286,7 @@ class Relevance
             $this->calculate('width', $width[$i] / 5);
             $this->calculate('points', $points[$i] / 5);
             $this->calculate('countSymbols', $countSymbols[$i] / 5);
-            usleep(300);
+            usleep(450);
         }
     }
 
