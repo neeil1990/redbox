@@ -656,7 +656,7 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
-            usleep(50);
+            usleep(5);
         }
     }
 
