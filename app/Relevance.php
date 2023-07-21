@@ -442,7 +442,7 @@ class Relevance
                     break;
                 }
             }
-            usleep(50);
+            usleep(100);
         }
     }
 
@@ -656,7 +656,7 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
-            usleep(5);
+            usleep(100);
         }
     }
 
@@ -699,7 +699,7 @@ class Relevance
                     }
                 }
             }
-            usleep(50);
+            usleep(100);
             arsort($occurrences);
 
             $this->wordForms[$key]['total'] = [
