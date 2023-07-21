@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\Classes\Xml\SimplifiedXmlFacade;
 use App\Jobs\Relevance\RemoveRelevanceProgress;
 use Carbon\Carbon;
@@ -398,8 +397,9 @@ class Relevance
     public function calculateTextInfo()
     {
         foreach ($this->sites as $key => $site) {
-            $countSymbols = Str::length($site['defaultHtml']);
-            $countWords = count(explode(' ', $site['defaultHtml']));
+            $totalWords = TextAnalyzer::deleteEverythingExceptCharacters($site['defaultHtml']);
+            $countSymbols = Str::length($totalWords);
+            $countWords = count(explode(' ', $totalWords));
 
             if ($this->sites[$key]['mainPage']) {
                 $this->countSymbolsInMyPage = $countSymbols;
@@ -594,21 +594,21 @@ class Relevance
             }
         }
 
-        $myText = "{$this->mainPage['html']} {$this->mainPage['hiddenText']}";
-        $myText = array_count_values(explode(" ", $myText));
+        $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
+        $myText = explode(" ", $myText);
+        $myText = array_count_values($myText);
 
-        $myLink = array_count_values(explode(" ", $this->mainPage['linkText']));
+        $myLink = explode(" ", $this->mainPage['linkText']);
+        $myLink = array_count_values($myLink);
 
-        $myPassages = array_count_values(explode(" ", $this->mainPage['passages']));
+        $myPassages = explode(" ", $this->mainPage['passages']);
+        $myPassages = array_count_values($myPassages);
 
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
-
         foreach ($this->wordForms as $root => $wordForm) {
-
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = $numberPassageOccurrences = 0;
                 $occurrences = [];
-
                 foreach ($this->sites as $key => $page) {
                     if (!$page['ignored']) {
                         $htmlCount = substr_count(' ' . $this->sites[$key]['html'] . ' ', " $word ");
@@ -643,7 +643,6 @@ class Relevance
                 }
 
                 arsort($occurrences);
-
                 $repeatInTextMainPage = $myText[$word] ?? 0;
                 $repeatLinkInMainPage = $myLink[$word] ?? 0;
                 $repeatInPassagesMainPage = $myPassages[$word] ?? 0;
@@ -667,6 +666,7 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
+            usleep(5000);
         }
     }
 
@@ -708,7 +708,7 @@ class Relevance
                         $occurrences[$key2] = $value;
                     }
                 }
-
+                usleep(5000);
             }
             arsort($occurrences);
 
@@ -773,6 +773,7 @@ class Relevance
 
         foreach ($this->sites as $key => $page) {
             $this->tfCompClouds[$key] = $this->prepareTfCloud($this->separateText($page['html'] . ' ' . $page['linkText']));
+            usleep(5000);
         }
     }
 
@@ -1032,7 +1033,6 @@ class Relevance
     {
         $phrases = [];
         $array = explode(' ', $this->competitorsTextAndLinks);
-        $array = array_slice($array, 1);
 
         $grouped = array_chunk($array, 2);
         foreach ($grouped as $two_words) {
@@ -1098,7 +1098,6 @@ class Relevance
 
                 $saveObject[$key] = $this->sites[$key];
             }
-
         }
 
         if (!$this->queue) {

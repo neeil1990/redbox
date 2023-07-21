@@ -180,7 +180,6 @@ class TextAnalyzer extends Model
     {
         $document = new HtmlDocument();
         $document->load(mb_strtolower($html));
-//        $document->removeElements('[style="display: none;"]');
         $document->removeElements('.js_img-for-color.hidden');
         $document->removeElements('link');
         $document->removeElements('style');
