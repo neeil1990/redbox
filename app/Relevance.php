@@ -75,8 +75,6 @@ class Relevance
 
     public $scanHash;
 
-    public $document;
-
     public function __construct($request, $userId, bool $queue = false)
     {
         $this->queue = $queue;
@@ -100,13 +98,11 @@ class Relevance
         $this->params['main_page_link'] = $request['link'];
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
-
-        $this->document = new HtmlDocument();
     }
 
     public function getMainPageHtml()
     {
-        $html = $this->removeExtraHtml(TextAnalyzer::curlInit($this->params['main_page_link']));
+        $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
         $this->setMainPage($html);
     }
 
@@ -117,7 +113,7 @@ class Relevance
 
         foreach ($this->domains as $item) {
             $domain = Str::lower($item['item']);
-            $result = $this->removeExtraHtml(TextAnalyzer::curlInit($domain));
+            $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
@@ -166,26 +162,6 @@ class Relevance
                 'position' => $position
             ];
         }
-    }
-
-    protected function removeExtraHtml($html)
-    {
-        $document = $this->document;
-        $document->load(mb_strtolower($html));
-        $document->removeElements('.js_img-for-color.hidden');
-        $document->removeElements('link');
-        $document->removeElements('style');
-        $document->removeElements('meta');
-        $document->removeElements('script');
-        $document->removeElements('path');
-        $document->removeElements('noscript');
-        $document->removeElements('comment');
-
-        if ($this->request['noIndex'] == 'false') {
-            $document->removeElements('noindex');
-        }
-
-        return $document->outertext;
     }
 
     public function analysis($historyId = false)
