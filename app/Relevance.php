@@ -180,22 +180,20 @@ class Relevance
             $this->preparePhrasesTable();
             Log::debug($this->scanHash, ['preparePhrasesTable']);
             $this->searchWordForms();
-            usleep(5000);
             Log::debug($this->scanHash, ['searchWordForms']);
             $this->processingOfGeneralInformation();
-            usleep(5000);
             Log::debug($this->scanHash, ['processingOfGeneralInformation']);
             $this->prepareUnigramTable();
-            usleep(5000);
+            sleep(1);
             Log::debug($this->scanHash, ['prepareUnigramTable']);
             $this->analyseRecommendations();
-            usleep(5000);
+            sleep(1);
             Log::debug($this->scanHash, ['analyseRecommendations']);
             $this->prepareAnalysedSitesTable();
-            usleep(5000);
+            sleep(1);
             Log::debug($this->scanHash, ['prepareAnalysedSitesTable']);
             $this->prepareClouds();
-            usleep(5000);
+            sleep(1);
             Log::debug($this->scanHash, ['prepareClouds']);
             $this->saveHistory($historyId);
             Log::debug($this->scanHash, ['saveHistory']);
@@ -444,7 +442,7 @@ class Relevance
                     break;
                 }
             }
-            usleep(500);
+            usleep(50);
         }
     }
 
@@ -658,7 +656,7 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
-            usleep(500);
+            usleep(50);
         }
     }
 
@@ -701,7 +699,7 @@ class Relevance
                     }
                 }
             }
-            usleep(500);
+            usleep(50);
             arsort($occurrences);
 
             $this->wordForms[$key]['total'] = [
@@ -988,8 +986,6 @@ class Relevance
                     }
                 }
             }
-
-            usleep(500);
             if ($numberOccurrences > 0) {
                 $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
                 $tf = round($countOccurrences / $totalCount, 6);
@@ -1133,7 +1129,6 @@ class Relevance
                     base64_encode(gzcompress($this->params['html_main_page'], 9)),
                     json_encode($this->sites)
                 );
-                usleep(500);
 
                 RelevanceHistory::where('user_id', '=', $this->userId)
                     ->where('phrase', '=', $this->request['phrase'])
@@ -1257,7 +1252,6 @@ class Relevance
 
             $link = parse_url($url);
             RelevanceAllUniqueDomains::firstOrCreate(['name' => Str::lower($link['host'])]);
-            usleep(50);
         }
     }
 
