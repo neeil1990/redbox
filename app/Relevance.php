@@ -141,7 +141,6 @@ class Relevance
                 $this->sites[$domain]['ignored'] = $item['ignored'];
             }
 
-            sleep(1);
         }
 
         if (!$this->mainPageIsRelevance) {
@@ -238,7 +237,6 @@ class Relevance
 
     public function separateAllText()
     {
-        sleep(1);
         $this->competitorsLinks = $this->separateText($this->competitorsLinks);
         $this->competitorsText = $this->separateText($this->competitorsText);
         $this->mainPage['html'] = $this->separateText($this->mainPage['html']);
@@ -249,7 +247,6 @@ class Relevance
 
     public function separateLinksFromText()
     {
-        sleep(1);
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
             $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));
@@ -304,7 +301,6 @@ class Relevance
 
     public function getHiddenData()
     {
-        sleep(1);
         RelevanceProgress::editProgress(20, $this->request);
         if ($this->request['hiddenText'] == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
@@ -321,7 +317,6 @@ class Relevance
 
     public function getTextFromCompetitors()
     {
-        sleep(1);
         RelevanceProgress::editProgress(40, $this->request);
         foreach ($this->sites as $key => $page) {
             if (!$this->sites[$key]['ignored']) {
@@ -431,7 +426,6 @@ class Relevance
 
     public function analyseRecommendations()
     {
-        sleep(1);
         foreach ($this->wordForms as $wordForm) {
             foreach ($wordForm as $word => $form) {
                 if ($wordForm['total']['avgInTotalCompetitors'] >= 10) {
@@ -474,7 +468,6 @@ class Relevance
 
     public function prepareAnalysedSitesTable()
     {
-        sleep(1);
         $this->calculateDensity();
         $this->calculateCoveragePoints();
         $this->calculateWidthPoints();
@@ -515,7 +508,6 @@ class Relevance
 
     public function removePartsOfSpeech()
     {
-        sleep(1);
         if ($this->request['conjunctionsPrepositionsPronouns'] == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['html']);
             $this->mainPage['linkText'] = TextAnalyzer::removeConjunctionsPrepositionsPronouns($this->mainPage['linkText']);
@@ -530,7 +522,6 @@ class Relevance
 
     public function removeListWords()
     {
-        sleep(1);
         if (filter_var($this->request['switchMyListWords'], FILTER_VALIDATE_BOOLEAN)) {
             $listWords = str_replace(["\r\n", "\n\r"], "\n", $this->request['listWords']);
             $this->ignoredWords = explode("\n", $listWords);
@@ -564,7 +555,6 @@ class Relevance
 
     public function searchWordForms()
     {
-        sleep(1);
         $m = new Morphy();
         $wordWorms = [];
 
@@ -606,7 +596,6 @@ class Relevance
 
     public function processingOfGeneralInformation()
     {
-        sleep(1);
         RelevanceProgress::editProgress(80, $this->request);
         $countSites = 0;
         foreach ($this->sites as $site) {
@@ -693,7 +682,6 @@ class Relevance
 
     public function prepareUnigramTable()
     {
-        sleep(1);
         $this->coverageInfo['sum'] = 0;
 
         foreach ($this->wordForms as $key => $wordForm) {
@@ -767,7 +755,6 @@ class Relevance
 
     public function prepareClouds()
     {
-        sleep(1);
         RelevanceProgress::editProgress(90, $this->request);
         $mainPage = Relevance::concatenation([
             $this->mainPage['html'],
@@ -980,7 +967,6 @@ class Relevance
 
     public function preparePhrasesTable()
     {
-        sleep(1);
         $result = [];
         $phrases = $this->searchPhrases();
         $totalCount = count($phrases);
@@ -1133,7 +1119,6 @@ class Relevance
 
     public function saveHistory($historyId)
     {
-        sleep(1);
         RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
         $this->saveStatistic();
@@ -1188,7 +1173,6 @@ class Relevance
 
     public function saveHistoryResult($id)
     {
-        sleep(1);
         $result = RelevanceHistoryResult::firstOrNew(['project_id' => $id]);
 
         $result->clouds_competitors = base64_encode(gzcompress(json_encode([
