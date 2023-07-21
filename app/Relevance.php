@@ -916,6 +916,8 @@ class Relevance
                     unset($cloud[$key2]);
                 }
             }
+
+            usleep(900);
             $totalWeight = $item1['weight'] + $weight;
             $wordForms[] = [
                 'text' => $item1['text'],
