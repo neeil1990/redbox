@@ -135,7 +135,6 @@ class Relevance
                 $this->sites[$domain]['mainPage'] = false;
                 $this->sites[$domain]['ignored'] = $item['ignored'];
             }
-            usleep(50000);
         }
 
         if (!$this->mainPageIsRelevance) {
@@ -167,46 +166,38 @@ class Relevance
     {
         try {
             $this->getHiddenData();
-            usleep(500000);
             Log::debug($this->scanHash, ['getHiddenData']);
             $this->separateLinksFromText();
-            usleep(500000);
             Log::debug($this->scanHash, ['separateLinksFromText']);
             $this->removePartsOfSpeech();
-            usleep(500000);
             Log::debug($this->scanHash, ['removePartsOfSpeech']);
             $this->removeListWords();
-            usleep(500000);
             Log::debug($this->scanHash, ['removeListWords']);
             $this->getTextFromCompetitors();
-            usleep(500000);
             Log::debug($this->scanHash, ['getTextFromCompetitors']);
             $this->separateAllText();
-            usleep(500000);
             Log::debug($this->scanHash, ['separateAllText']);
             $this->preparePhrasesTable();
-            usleep(500000);
             Log::debug($this->scanHash, ['preparePhrasesTable']);
             $this->searchWordForms();
-            usleep(500000);
+            usleep(5000);
             Log::debug($this->scanHash, ['searchWordForms']);
             $this->processingOfGeneralInformation();
-            usleep(500000);
+            usleep(5000);
             Log::debug($this->scanHash, ['processingOfGeneralInformation']);
             $this->prepareUnigramTable();
-            usleep(500000);
+            usleep(5000);
             Log::debug($this->scanHash, ['prepareUnigramTable']);
             $this->analyseRecommendations();
-            usleep(500000);
+            usleep(5000);
             Log::debug($this->scanHash, ['analyseRecommendations']);
             $this->prepareAnalysedSitesTable();
-            usleep(500000);
+            usleep(5000);
             Log::debug($this->scanHash, ['prepareAnalysedSitesTable']);
             $this->prepareClouds();
-            usleep(500000);
+            usleep(5000);
             Log::debug($this->scanHash, ['prepareClouds']);
             $this->saveHistory($historyId);
-            usleep(500000);
             Log::debug($this->scanHash, ['saveHistory']);
 
             RemoveRelevanceProgress::dispatch($this->scanHash)
@@ -453,6 +444,7 @@ class Relevance
                     break;
                 }
             }
+            usleep(500);
         }
     }
 
@@ -666,7 +658,7 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
-            usleep(5000);
+            usleep(500);
         }
     }
 
@@ -708,8 +700,8 @@ class Relevance
                         $occurrences[$key2] = $value;
                     }
                 }
-                usleep(5000);
             }
+            usleep(500);
             arsort($occurrences);
 
             $this->wordForms[$key]['total'] = [
@@ -773,7 +765,6 @@ class Relevance
 
         foreach ($this->sites as $key => $page) {
             $this->tfCompClouds[$key] = $this->prepareTfCloud($this->separateText($page['html'] . ' ' . $page['linkText']));
-            usleep(5000);
         }
     }
 
@@ -998,7 +989,7 @@ class Relevance
                 }
             }
 
-            usleep(50000);
+            usleep(500);
             if ($numberOccurrences > 0) {
                 $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
                 $tf = round($countOccurrences / $totalCount, 6);
@@ -1079,7 +1070,6 @@ class Relevance
                     break;
                 }
             }
-            usleep(50000);
             $testMainIterator++;
         }
 
@@ -1143,6 +1133,7 @@ class Relevance
                     base64_encode(gzcompress($this->params['html_main_page'], 9)),
                     json_encode($this->sites)
                 );
+                usleep(500);
 
                 RelevanceHistory::where('user_id', '=', $this->userId)
                     ->where('phrase', '=', $this->request['phrase'])
@@ -1266,6 +1257,7 @@ class Relevance
 
             $link = parse_url($url);
             RelevanceAllUniqueDomains::firstOrCreate(['name' => Str::lower($link['host'])]);
+            usleep(50);
         }
     }
 
