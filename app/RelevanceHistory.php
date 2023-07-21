@@ -33,11 +33,13 @@ class RelevanceHistory extends Model
         if ($historyId !== false) {
             $history = RelevanceHistory::where('id', '=', $historyId)->first();
 
-            if ($history->state == -1) {
-                $history->delete();
-            } else {
-                $history->state = $state;
-                $history->save();
+            if (isset($history)) {
+                if ($history->state == -1) {
+                    $history->delete();
+                } else {
+                    $history->state = $state;
+                    $history->save();
+                }
             }
         }
 
@@ -55,8 +57,8 @@ class RelevanceHistory extends Model
             'density' => $site['density'],
             'position' => $site['position'],
             'project_relevance_history_id' => $mainHistory->id,
-            'html_main_page' => $html,
-            'sites' => $sites,
+            'html_main_page' => $html ?? '',
+            'sites' => $sites ?? '',
             'user_id' => $mainHistory->user_id
         ]);
 

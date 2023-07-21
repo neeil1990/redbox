@@ -76,6 +76,8 @@ class ProjectRelevanceHistory extends Model
                 ->latest('last_check')
                 ->first();
 
+            usleep(500);
+
             if (isset($record)) {
                 $points += $record->points;
                 $position += $record->position == 0 ? 100 : $record->position;

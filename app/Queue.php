@@ -6,14 +6,11 @@ use App\Jobs\Relevance\RelevanceHistoryQueue;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Queue
 {
-    /**
-     * @param $row
-     * @param $request
-     * @return void
-     */
+
     public static function addInQueue($row, $request)
     {
         try {
@@ -48,10 +45,7 @@ class Queue
     {
         $time = Carbon::now()->toDateTimeString();
 
-        $mainHistory = DB::transaction(function () use ($request, $time, $link, $userId, $phrase) {
-            $host = parse_url($link);
-            return ProjectRelevanceHistory::createOrUpdate($host['host'], $time, $userId);
-        });
+        $mainHistory = ProjectRelevanceHistory::createOrUpdate(parse_url($link)['host'], $time, $userId);
 
         $default = [
             'mainPoints' => 0,

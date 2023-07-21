@@ -184,16 +184,12 @@ class Relevance
             $this->processingOfGeneralInformation();
             Log::debug($this->scanHash, ['processingOfGeneralInformation']);
             $this->prepareUnigramTable();
-            sleep(1);
             Log::debug($this->scanHash, ['prepareUnigramTable']);
             $this->analyseRecommendations();
-            sleep(1);
             Log::debug($this->scanHash, ['analyseRecommendations']);
             $this->prepareAnalysedSitesTable();
-            sleep(1);
             Log::debug($this->scanHash, ['prepareAnalysedSitesTable']);
             $this->prepareClouds();
-            sleep(1);
             Log::debug($this->scanHash, ['prepareClouds']);
             $this->saveHistory($historyId);
             Log::debug($this->scanHash, ['saveHistory']);
@@ -1104,9 +1100,9 @@ class Relevance
     {
         RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
-        usleep(900);
+//        usleep(900);
         $this->saveStatistic();
-        usleep(900);
+//        usleep(900);
 
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
