@@ -336,7 +336,7 @@ class Relevance
                     }
                 }
             }
-            usleep(10);
+            usleep(200);
         }
 
         foreach ($this->wordForms as $wordForm) {
@@ -347,7 +347,7 @@ class Relevance
                     }
                 }
             }
-            usleep(10);
+            usleep(200);
         }
 
         return [
@@ -1284,7 +1284,7 @@ class Relevance
             $this->calculate('width', $width[$i] / 5);
             $this->calculate('points', $points[$i] / 5);
             $this->calculate('countSymbols', $countSymbols[$i] / 5);
-            usleep(10);
+            usleep(200);
         }
     }
 
