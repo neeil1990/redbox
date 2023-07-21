@@ -997,6 +997,8 @@ class Relevance
                     }
                 }
             }
+
+            usleep(50000);
             if ($numberOccurrences > 0) {
                 $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
                 $tf = round($countOccurrences / $totalCount, 6);
@@ -1077,6 +1079,7 @@ class Relevance
                     break;
                 }
             }
+            usleep(50000);
             $testMainIterator++;
         }
 
