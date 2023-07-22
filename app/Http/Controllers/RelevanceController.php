@@ -12,6 +12,7 @@ use App\UsersJobs;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
@@ -196,15 +197,10 @@ class RelevanceController extends Controller
             $counter += Queue::addInQueue($row, $request);
         }
 
-        $job = UsersJobs::where(['user_id' => Auth::id()])->first();
-        if (isset($job)) {
-            $job->increment('count_jobs');
-        } else {
-            UsersJobs::create([
-                'user_id' => Auth::id(),
-                'count_jobs' => $counter
-            ]);
-        }
+        UsersJobs::updateOrCreate(
+            ['user_id' => Auth::id()],
+            ['count_jobs' => DB::raw('count_jobs + ' . $counter)]
+        );
 
         return response()->json([
             'code' => 200
