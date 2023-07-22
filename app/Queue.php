@@ -11,14 +11,17 @@ use Illuminate\Support\Facades\Log;
 class Queue
 {
 
-    public static function addInQueue($row, $request)
+    public static function addInQueue($row, $request): int
     {
+        $count = 0;
+
         try {
             $userId = Auth::id();
             $item = explode(';', $row);
             $link = parse_url(trim($item[1]));
 
             if (count($item) == 2 && isset($link['host'])) {
+                $count++;
                 $historyId = Queue::prepareHistory($request->all(), trim($item[1]), $userId, trim($item[0]));
 
                 RelevanceHistoryQueue::dispatch(
@@ -27,11 +30,13 @@ class Queue
                     $historyId,
                     trim($item[1]),
                     trim($item[0])
-                )->onQueue(UsersJobs::getPriority($userId));
+                )->onQueue('relevance_normal');
             }
         } catch (\Throwable $e) {
 
         }
+
+        return $count;
     }
 
     /**
