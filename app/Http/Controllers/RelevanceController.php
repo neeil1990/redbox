@@ -191,8 +191,19 @@ class RelevanceController extends Controller
             ]);
         }
 
+        $counter = 0;
         foreach ($rows as $row) {
-            Queue::addInQueue($row, $request);
+            $counter += Queue::addInQueue($row, $request);
+        }
+
+        $job = UsersJobs::where(['user_id' => Auth::id()])->first();
+        if (isset($job)) {
+            $job->increment('count_jobs');
+        } else {
+            UsersJobs::create([
+                'user_id' => Auth::id(),
+                'count_jobs' => $counter
+            ]);
         }
 
         return response()->json([
