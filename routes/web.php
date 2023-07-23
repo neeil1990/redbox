@@ -301,6 +301,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/competitors/result-analyse/{project}', 'MonitoringController@resultChangesDatesState')->name('monitoring.changes.dates.result');
 
     Route::get('/monitoring/top-100/{project}', 'MonitoringTopController@index')->name('monitoring.top100');
+    Route::post('/monitoring/get-top/sites', 'MonitoringTopController@getTopSites')->name('monitoring.get.top.sites');
 
     Route::get('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
     Route::post('/monitoring/{project_id}/table', 'MonitoringKeywordsController@showDataTable')->name('monitoring.get.table.keywords');
