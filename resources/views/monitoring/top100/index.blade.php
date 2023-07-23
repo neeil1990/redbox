@@ -13,7 +13,6 @@
                 margin-bottom: 0;
                 min-height: 60px;
                 max-height: 60px;
-                display: flex;
                 justify-content: center;
                 align-items: center;
             }
@@ -459,13 +458,13 @@
                 $.each(items.reverse(), function (k, v) {
                     kanbanItems +=
                         '<div class="kanban-item w-100 border-bottom" data-index="' + v.position + '">' +
-                        '    <div class="col-2">' + v.position + ' </div>' +
-                        '    <div class="col-9 fixed-lines"' +
+                        '    <div class="col-2 mt-2" style="float:left">' + v.position + ' </div>' +
+                        '    <div class="col-9 fixed-lines mt-2" style="float:left"' +
                         ' data-url="' + v.url + '" ' +
                         ' data-domain="' + new URL(v.url)['origin'] + '"' +
                         ' data-toggle="tooltip" data-placement="top" title="' + v.url + '">' + v.url + ' </div>' +
-                        '<div class="dropdown show" style="display: inline;">' +
-                        '    <i id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="true" class="fa fa-cogs" style="opacity: 0.6; cursor: pointer;"></i>' +
+                        '<div class="dropdown show" style="display: inline;" style="float:left">' +
+                        '    <i id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="true" class="fa fa-cogs mt-3" style="opacity: 0.6; cursor: pointer;"></i>' +
                         '    <div aria-labelledby="dropdownMenuButton" class="dropdown-menu hide" style="position: absolute; transform: translate3d(0px, 18px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="bottom-start">' +
                         '        <span class="dropdown-item" style="cursor: pointer;">' +
                         '            <a href="' + v.url + '" target="_blank">Перейти на сайт</a>' +
@@ -515,10 +514,10 @@
                     })
                 }
 
-                let filterValue = $('#filter').val().trim()
+                let filterValue = $('#filter').val().trim().toLowerCase()
                 if (filterValue !== '') {
                     $.each($('.fixed-lines'), function () {
-                        if ($(this).html().indexOf(filterValue) === -1) {
+                        if ($(this).html().toLowerCase().indexOf(filterValue) === -1) {
                             $(this).parent().addClass('hide-element')
                         } else {
                             $(this).parent().removeClass('hide-element')
