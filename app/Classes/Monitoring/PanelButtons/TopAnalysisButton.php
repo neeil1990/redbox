@@ -15,7 +15,7 @@ class TopAnalysisButton extends Buttons
         $temp = new DefaultButtonTemplate();
 
         $temp->content = $this->wrapTag(__('TOP-100 analysis'), 'p');
-        $temp->href = route('monitoring.competitors.positions', $this->project->id);
+        $temp->href = route('monitoring.top100', $this->project->id);
         $temp->icon = 'fas fa-chart-pie';
         $temp->bg = 'bg-warning';
         $temp->small = __('In developing');
