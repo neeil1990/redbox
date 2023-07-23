@@ -40,8 +40,8 @@
                 z-index: 1000;
             }
 
-            .hide-element, .extra-element {
-                display: none;
+            .hide-element {
+                display: none !important;
             }
 
             .connection {
