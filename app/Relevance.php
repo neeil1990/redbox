@@ -166,33 +166,19 @@ class Relevance
     {
         try {
             $this->getHiddenData();
-            Log::debug($this->scanHash, ['getHiddenData']);
             $this->separateLinksFromText();
-            Log::debug($this->scanHash, ['separateLinksFromText']);
             $this->removePartsOfSpeech();
-            Log::debug($this->scanHash, ['removePartsOfSpeech']);
             $this->removeListWords();
-            Log::debug($this->scanHash, ['removeListWords']);
             $this->getTextFromCompetitors();
-            Log::debug($this->scanHash, ['getTextFromCompetitors']);
             $this->separateAllText();
-            Log::debug($this->scanHash, ['separateAllText']);
             $this->preparePhrasesTable();
-            Log::debug($this->scanHash, ['preparePhrasesTable']);
             $this->searchWordForms();
-            Log::debug($this->scanHash, ['searchWordForms']);
             $this->processingOfGeneralInformation();
-            Log::debug($this->scanHash, ['processingOfGeneralInformation']);
             $this->prepareUnigramTable();
-            Log::debug($this->scanHash, ['prepareUnigramTable']);
             $this->analyseRecommendations();
-            Log::debug($this->scanHash, ['analyseRecommendations']);
             $this->prepareAnalysedSitesTable();
-            Log::debug($this->scanHash, ['prepareAnalysedSitesTable']);
             $this->prepareClouds();
-            Log::debug($this->scanHash, ['prepareClouds']);
             $this->saveHistory($historyId);
-            Log::debug($this->scanHash, ['saveHistory']);
 
             RemoveRelevanceProgress::dispatch($this->scanHash)
                 ->onQueue('default')
@@ -447,25 +433,16 @@ class Relevance
     public function prepareAnalysedSitesTable()
     {
         $this->calculateDensity();
+        usleep(1000);
         $this->calculateCoveragePoints();
+        usleep(1000);
         $this->calculateWidthPoints();
+        usleep(1000);
         $this->calculateTotalPoints();
+        usleep(1000);
         $this->calculateTextInfo();
+        usleep(1000);
         $this->calculateAvg();
-    }
-
-    public function calculateCoverageTF($wordsInText): float
-    {
-        $sum = 0;
-        foreach ($wordsInText as $key => $value) {
-            if (array_key_exists($key, $this->coverageInfo['words'])) {
-                $sum += $this->coverageInfo['words'][$key];
-            }
-        }
-
-        $percent = $this->coverageInfo['sum'] / 100;
-
-        return $sum / $percent;
     }
 
     public static function getHiddenText($html)
@@ -554,12 +531,18 @@ class Relevance
                 if (count($wordWorms) >= 3500) {
                     break;
                 }
+
+                if(count($wordWorms) % 100 == 0){
+                    usleep(100);
+                }
             }
         }
 
         foreach ($wordWorms as $wordWorm) {
             $this->wordForms[array_key_first($wordWorm)] = $wordWorm;
         }
+
+        usleep(1000);
 
         uasort($this->wordForms, function ($l, $r) {
             $first = array_sum($r);
@@ -568,6 +551,8 @@ class Relevance
             if ($first == $second) return 0;
             return ($first < $second) ? -1 : 1;
         });
+
+        usleep(1000);
 
         $this->wordForms = array_slice($this->wordForms, 0, 1000);
     }
@@ -1100,9 +1085,9 @@ class Relevance
     {
         RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
-//        usleep(900);
+        usleep(900);
         $this->saveStatistic();
-//        usleep(900);
+        usleep(900);
 
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
