@@ -318,7 +318,7 @@ class Relevance
                     }
                 }
             }
-            usleep(54000);
+            usleep(18000);
         }
 
         foreach ($this->wordForms as $wordForm) {
@@ -329,7 +329,7 @@ class Relevance
                     }
                 }
             }
-            usleep(54000);
+            usleep(18000);
         }
 
         return [
@@ -426,22 +426,22 @@ class Relevance
                     break;
                 }
             }
-            usleep(54000);
+            usleep(18000);
         }
     }
 
     public function prepareAnalysedSitesTable()
     {
         $this->calculateDensity();
-        usleep(54000);
+        usleep(18000);
         $this->calculateCoveragePoints();
-        usleep(54000);
+        usleep(18000);
         $this->calculateWidthPoints();
-        usleep(54000);
+        usleep(18000);
         $this->calculateTotalPoints();
-        usleep(54000);
+        usleep(18000);
         $this->calculateTextInfo();
-        usleep(54000);
+        usleep(18000);
         $this->calculateAvg();
     }
 
@@ -639,7 +639,7 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
-            usleep(54000);
+            usleep(18000);
         }
     }
 
@@ -682,7 +682,7 @@ class Relevance
                     }
                 }
             }
-            usleep(54000);
+            usleep(18000);
             arsort($occurrences);
 
             $this->wordForms[$key]['total'] = [
@@ -898,7 +898,7 @@ class Relevance
                 }
             }
 
-            usleep(54000);
+            usleep(18000);
             $totalWeight = $item1['weight'] + $weight;
             $wordForms[] = [
                 'text' => $item1['text'],
@@ -1051,7 +1051,7 @@ class Relevance
                     break;
                 }
             }
-            usleep(54000);
+            usleep(18000);
             $testMainIterator++;
         }
 
@@ -1085,9 +1085,9 @@ class Relevance
     {
         RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
-        usleep(54000);
+        usleep(18000);
         $this->saveStatistic();
-        usleep(54000);
+        usleep(18000);
 
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
@@ -1269,7 +1269,7 @@ class Relevance
             $this->calculate('width', $width[$i] / 5);
             $this->calculate('points', $points[$i] / 5);
             $this->calculate('countSymbols', $countSymbols[$i] / 5);
-            usleep(54000);
+            usleep(18000);
         }
     }
 
