@@ -157,7 +157,7 @@ class ProfilesController extends Controller
 
         $this->resetPassword($user, $request->input('password'));
 
-        flash()->overlay(__('User password successfully'), __('Update user'))->success();
+        flash()->overlay(__('User password successfully changed'), __('Update user'))->success();
 
         $user->sendProfilePasswordResetNotification($request, $user);
 
