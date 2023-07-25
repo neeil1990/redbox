@@ -475,6 +475,7 @@
                 maxTop()
                 changeVisual()
                 filter()
+                $('.dropdown').show()
             }
 
             function sendAjaxRequest(word, date) {
@@ -524,7 +525,7 @@
                         '<div class="kanban-item w-100 border-bottom ' + hide + '" data-index="' + v.position + '" data-toggle="tooltip" data-placement="top" title="' + v.url + '">' +
                         '    <div class="site-position">' + v.position + ' </div>' +
                         '    <div class="col-10 fixed-lines" data-url="' + v.url + '" data-domain="' + new URL(v.url)['origin'] + '">' + url + ' </div>' +
-                        '    <div class="dropdown show" style="float:left">' +
+                        '    <div class="dropdown" style="float:left; display: none">' +
                         '        <i id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="true" class="fa fa-cogs mt-3 ml-2" style="opacity: 0.6; cursor: pointer;"></i>' +
                         '        <div aria-labelledby="dropdownMenuButton" class="dropdown-menu hide" style="position: absolute; transform: translate3d(0px, 18px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="bottom-start">' +
                         '            <span class="dropdown-item" style="cursor: pointer;">' +
