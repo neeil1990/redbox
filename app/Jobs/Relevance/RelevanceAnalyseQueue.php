@@ -78,10 +78,10 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
             $this->relevance->analysis();
         } else {
-            RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
-                ->onQueue($this->job->getQueue())
-                ->onConnection('database')
-                ->delay(Carbon::now()->addSeconds(10));
+//            RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
+//                ->onQueue($this->job->getQueue())
+//                ->onConnection('database')
+//                ->delay(Carbon::now()->addSeconds(10));
         }
     }
 }
