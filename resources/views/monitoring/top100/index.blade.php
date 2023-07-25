@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
 
         <style>
             .kanban-item {
@@ -17,12 +17,34 @@
             }
 
             .fixed-lines {
+                float: left;
                 word-wrap: break-word;
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 cursor: pointer;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                height: 100%;
+            }
+
+            .fixed-lines:hover {
+                box-shadow: 0 0 6px grey;
+            }
+
+            .site-position {
+                float: left;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                width: 26px;
+            }
+
+            .dropdown.show {
+
             }
 
             .kanban-card {
@@ -66,6 +88,7 @@
             .color-domain {
                 background-color: #a8cae9;
             }
+
         </style>
     @endslot
 
@@ -203,7 +226,8 @@
         <div id="progress" style="display: none">
             <img src="/img/1485.gif" style="width: 50px; height: 50px;">
             <br>
-            {{ __('Analyzed') }} <span id="analysed-days">0</span> из <span id="total-days">0</span> {{ __('selected dates') }}
+            {{ __('Analyzed') }} <span id="analysed-days">0</span> из <span
+                id="total-days">0</span> {{ __('selected dates') }}
         </div>
     </div>
 
@@ -217,34 +241,34 @@
         <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
         <!-- date-range-picker -->
         <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+        <script src="{{ asset('/plugins/select2/js/select2.min.js') }}"></script>
         <script>
             const COLORS = [
-                "rgba(220, 51, 10, 0.6)",
-                "rgba(121, 25, 6, 1)",
-                "rgba(214, 96, 110, 1)",
-                "rgba(214, 2, 86, 0.6)",
+                "rgba(151, 186, 229, 1)",
                 "rgba(214, 2, 86, 1)",
-                "rgba(204, 118, 32, 0.6)",
-                "rgba(255,89,0,0.6)",
-                "rgba(255, 89, 0, 1)",
-                "rgba(73, 28, 1, 0.6)",
+                "rgba(0, 69, 255, 0.6)",
+                "rgba(239, 50, 223, 0.6)",
+                "rgba(6, 136, 165, 0.6)",
+                "rgba(214, 96, 110, 1)",
                 "rgba(246, 223, 78, 1)",
+                "rgba(220, 51, 10, 0.6)",
                 "rgba(1, 253, 215, 1)",
                 "rgba(1, 79, 66, 0.6)",
+                "rgba(204, 118, 32, 0.6)",
+                "rgba(255, 89, 0, 1)",
+                "rgba(73, 28, 1, 0.6)",
                 "rgba(154, 205, 50, 1)",
+                "rgba(121, 25, 6, 1)",
                 "rgb(17, 255, 0)",
-                "rgba(151, 186, 229, 1)",
-                "rgba(0, 69, 255, 0.6)",
-                "rgba(6, 136, 165, 0.6)",
+                "rgba(214, 2, 86, 0.6)",
                 "rgba(19,212,224, 1)",
-                "rgba(239, 50, 223, 0.6)",
                 "rgba(239, 50, 223, 1)",
-                "rgba(252, 194, 243, 1)",
+                "rgba(255,89,0,0.6)",
                 "rgba(244, 139, 200, 1)",
                 "rgba(87, 64, 64, 0.6)",
                 "rgba(163, 209, 234, 0.6)",
                 "rgba(232,194,90,0.6)",
+                "rgba(252, 194, 243, 1)",
             ]
             $('#words-select').select2();
             let range = $('#date-range');
@@ -498,29 +522,27 @@
 
                     kanbanItems +=
                         '<div class="kanban-item w-100 border-bottom ' + hide + '" data-index="' + v.position + '" data-toggle="tooltip" data-placement="top" title="' + v.url + '">' +
-                        '    <div class="col-2 mt-2" style="float:left">' + v.position + ' </div>' +
-                        '    <div class="col-9 fixed-lines mt-2" style="float:left"' +
-                        ' data-url="' + v.url + '" ' +
-                        ' data-domain="' + new URL(v.url)['origin'] + '">' + url + ' </div>' +
-                        '<div class="dropdown show" style="display: inline;" style="float:left">' +
-                        '    <i id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="true" class="fa fa-cogs mt-3" style="opacity: 0.6; cursor: pointer;"></i>' +
-                        '    <div aria-labelledby="dropdownMenuButton" class="dropdown-menu hide" style="position: absolute; transform: translate3d(0px, 18px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="bottom-start">' +
-                        '        <span class="dropdown-item" style="cursor: pointer;">' +
-                        '            <a href="' + v.url + '" target="_blank">Перейти на сайт</a>' +
-                        '        </span> ' +
-                        '        <span class="dropdown-item" style="cursor: pointer;">' +
-                        '            <a href="/redirect-to-text-analyzer/' + v.url.replaceAll('/', 'abc') + '" target="_blank">{{ __('Analyse') }}</a>' +
-                        '        </span> ' +
-                        '        <span class="dropdown-item copy" style="cursor: pointer;" data-target="' + v.url + '">' +
-                        '            <span>{{ __('Copy URL') }}</span>' +
-                        '        </span> ' +
-                        '        <span class="dropdown-item copy" style="cursor: pointer;"  data-target="' + new URL(v.url)['origin'] + '">' +
-                        '            <a>{{ __('Copy domain') }}</a>' +
-                        '        </span> ' +
-                        '        <span class="dropdown-item set-relationships" style="cursor: pointer;" data-target="' + v.url + '">' +
-                        '            {{ __('View positions') }}' +
-                        '        </span> ' +
-                        '</div>' +
+                        '    <div class="site-position">' + v.position + ' </div>' +
+                        '    <div class="col-10 fixed-lines" data-url="' + v.url + '" data-domain="' + new URL(v.url)['origin'] + '">' + url + ' </div>' +
+                        '    <div class="dropdown show" style="float:left">' +
+                        '        <i id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="true" class="fa fa-cogs mt-3 ml-2" style="opacity: 0.6; cursor: pointer;"></i>' +
+                        '        <div aria-labelledby="dropdownMenuButton" class="dropdown-menu hide" style="position: absolute; transform: translate3d(0px, 18px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="bottom-start">' +
+                        '            <span class="dropdown-item" style="cursor: pointer;">' +
+                        '                <a href="' + v.url + '" target="_blank">Перейти на сайт</a>' +
+                        '            </span> ' +
+                        '            <span class="dropdown-item" style="cursor: pointer;">' +
+                        '                <a href="/redirect-to-text-analyzer/' + v.url.replaceAll('/', 'abc') + '" target="_blank">{{ __('Analyse') }}</a>' +
+                        '            </span> ' +
+                        '            <span class="dropdown-item copy" style="cursor: pointer;" data-target="' + v.url + '">' +
+                        '                <span>{{ __('Copy URL') }}</span>' +
+                        '            </span> ' +
+                        '            <span class="dropdown-item copy" style="cursor: pointer;"  data-target="' + new URL(v.url)['origin'] + '">' +
+                        '                <a>{{ __('Copy domain') }}</a>' +
+                        '            </span> ' +
+                        '            <span class="dropdown-item set-relationships" style="cursor: pointer;" data-target="' + v.url + '">' +
+                        '                {{ __('View positions') }}' +
+                        '            </span> ' +
+                        '    </div>' +
                         '</div>' +
                         '</div>'
                 })
@@ -539,7 +561,7 @@
                 return Math.floor(rand);
             }
 
-            function drawConnect(from, to, color, id) {
+            function drawConnect(from, to, color, id, extra = false) {
 
                 function createConnection() {
                     return $("<div />")
@@ -547,36 +569,41 @@
                         .css('background', color);
                 }
 
-                let $from = from
-                    , $to = to
+                let $from = $(from)
+                    , $to = $(to)
                     , $main = $("#result");
-
-                let position = $from.children('div').eq(0).html().trim() - $to.children('div').eq(0).html().trim()
-                if (position === 0) {
-                    position = ''
-                } else if (position >= 1) {
-                    position = '\u00A0\u00A0+' + position
-                } else {
-                    position = '\u00A0\u00A0' + position
-                }
 
                 let mainTop = $main.offset().top  //Расстояние сверху от контейнера
                     , mainLeft = $main.offset().left //Расстояние сбоку от контейнера
                     , mainHeight = $main.outerHeight() //Высота контейнера
                     , fromLeft = $from.offset().left + $from.outerWidth() - mainLeft //Точка ИЗ (сбоку)
                     , toLeft = $to.offset().left - mainLeft //Точка В (сбоку)
-                    , fromTop = $from.offset().top + $from.outerHeight() / 2 - mainTop //Точка ИЗ (сверху)
+                    , fromTop = ($from.offset().top + $from.outerHeight() / 2 - mainTop) - 20 //Точка ИЗ (сверху)
                     , toTop = $to.offset().top + $to.outerHeight() / 2 - mainTop //Точка В (сверху)
                     , width = toLeft - fromLeft
                     , height = toTop - fromTop;
 
-                let w1 = Math.round(Math.abs(width / 6)),
+                let position = $from.children('div').eq(0).html().trim() - $to.children('div').eq(0).html().trim()
+                if (position === 0) {
+                    position = ''
+                } else if (position >= 1) {
+                    position = '+' + position
+                } else {
+                    position = '' + position
+                }
+
+                if (extra) {
+                    fromTop += 30
+                }
+
+                let w1 = Math.round(Math.abs(width / 2)),
                     w2 = width - w1;
 
                 createConnection()
                     .css('left', fromLeft + 'px')
                     .css('top', fromTop + 'px')
                     .css('width', w1 + 'px')
+                    .html(position)
                     .appendTo($main);
 
                 let $c = createConnection()
@@ -598,7 +625,6 @@
                     .css('left', fromLeft + w1 + 'px')
                     .css('top', fromTop + height + 'px')
                     .css('width', w2)
-                    .html(position)
                     .appendTo($main);
 
                 return id;
@@ -651,59 +677,44 @@
                 }, 5000)
             }
 
+            function getElements(domain) {
+                let elements = [];
+                $.each($('.card.card-row.card-secondary.kanban-card.mr-5'), function (key, value) {
+                    elements.push($($(value).find(".fixed-lines[data-domain='" + domain + "']")).parent())
+                })
+
+                return elements
+            }
+
             function setRelationShips() {
                 let colorArray = COLORS
 
                 $('.set-relationships').unbind().on('click', function () {
                     let color = colorArray.shift()
-
-                    let targetElement = $(this)
-                    let targetUrl = targetElement.parents().eq(2).children('div').eq(1).html()
-                    let blocks = $('.card.card-row.card-secondary.kanban-card.mr-5')
+                    let targetUrl = $(this).parents().eq(2).children('div').eq(1).attr('data-domain')
                     let id = randomInteger(0, 90000000)
-                    let firstElem = false
-                    let secondElem = false
                     let find = false
 
-                    for (let i = 0; i < blocks.length; i++) {
-                        let parent = $(blocks[i]).find(".fixed-lines:contains(" + targetUrl + ")").parent()
-
-                        if (firstElem === false) {
-                            if (parent.length !== 0 && parent.is(':visible')) {
-                                firstElem = $(blocks[i]).find(".fixed-lines:contains(" + targetUrl + ")").parent()
-                            }
-                        } else if (firstElem !== false && secondElem === false) {
-                            if (parent.length !== 0 && parent.is(':visible')) {
-                                secondElem = $(blocks[i]).find(".fixed-lines:contains(" + targetUrl + ")").parent();
-                            } else {
-                                firstElem = false
+                    let elements = getElements(targetUrl)
+                    for (let i = 0; i < elements.length; i++) {
+                        if (elements[i + 1] !== undefined) {
+                            for (let j = 0; j < elements[i].length; j++) {
+                                let will = []
+                                for (let k = 0; k < elements[i + 1].length; k++) {
+                                    find = true
+                                    let extra = will.includes(elements[i][j])
+                                    drawConnect(elements[i][j], elements[i + 1][k], color, id, extra);
+                                    changeActions(elements[i][j], id)
+                                    changeActions(elements[i + 1][k][j], id)
+                                    will.push(elements[i][j])
+                                }
                             }
                         }
+                    }
 
-                        if (firstElem !== false && secondElem !== false) {
-                            drawConnect(firstElem, secondElem, color, id);
-                            if (firstElem.children('div').eq(2).children('div').eq(0).find('.dropdown-item.remove-relationships').length === 0) {
-                                firstElem.children('div').eq(2).children('div').eq(0).append(
-                                    '<span class="dropdown-item remove-relationships" data-id="' + id + '">' +
-                                    '{{ __('Delete a link of positions') }}' +
-                                    '</span>'
-                                )
-                            }
-                            firstElem.children('div').eq(2).children('div').eq(0).find('.dropdown-item.set-relationships').remove()
-
-                            if (secondElem.children('div').eq(2).children('div').eq(0).find('.dropdown-item.remove-relationships').length === 0) {
-                                secondElem.children('div').eq(2).children('div').eq(0).append(
-                                    '<span class="dropdown-item remove-relationships" data-id="' + id + '">' +
-                                    '{{ __('Delete a link of positions') }}' +
-                                    '</span>'
-                                )
-                            }
-                            secondElem.children('div').eq(2).children('div').eq(0).find('.dropdown-item.set-relationships').remove()
-
-                            firstElem = secondElem
-                            secondElem = false
-                            find = true
-                        }
+                    let last = elements.length - 1
+                    for (let i = 0; i < elements[last].length; i++) {
+                        changeActions(elements[last][i], id)
                     }
 
                     if (find === false) {
@@ -722,7 +733,7 @@
                             setRelationShipsFromLink()
                         })
 
-                        targetElement.remove()
+                        $(this).remove()
                     }
                 });
             }
@@ -736,58 +747,35 @@
                     if (targetElement.parent().children('div').eq(2).children('div').eq(0).children('span.dropdown-item.remove-relationships').eq(0).length > 0) {
                         targetElement.parent().children('div').eq(2).children('div').eq(0).children('span.dropdown-item.remove-relationships').eq(0).trigger('click')
                     } else {
-
                         let color = colorArray.shift()
-                        let targetUrl = $(this).html()
-                        let blocks = $('.card.card-row.card-secondary.kanban-card.mr-5')
+                        let targetUrl = $(this).attr('data-domain')
                         let id = randomInteger(0, 90000000)
-                        let firstElem = false
-                        let secondElem = false
                         let find = false
 
-                        for (let i = 0; i < blocks.length; i++) {
-                            let parent = $(blocks[i]).find(".fixed-lines:contains(" + targetUrl + ")").parent()
-
-                            if (firstElem === false) {
-                                if (parent.length !== 0 && parent.is(':visible')) {
-                                    firstElem = $(blocks[i]).find(".fixed-lines:contains(" + targetUrl + ")").parent()
+                        let elements = getElements(targetUrl)
+                        for (let i = 0; i < elements.length; i++) {
+                            if (elements[i + 1] !== undefined) {
+                                for (let j = 0; j < elements[i].length; j++) {
+                                    let will = []
+                                    for (let k = 0; k < elements[i + 1].length; k++) {
+                                        find = true
+                                        let extra = will.includes(elements[i][j])
+                                        drawConnect(elements[i][j], elements[i + 1][k], color, id, extra);
+                                        changeActions(elements[i][j], id)
+                                        changeActions(elements[i + 1][k][j], id)
+                                        will.push(elements[i][j])
+                                    }
                                 }
-                            } else if (firstElem !== false && secondElem === false) {
-                                if (parent.length !== 0 && parent.is(':visible')) {
-                                    secondElem = $(blocks[i]).find(".fixed-lines:contains(" + targetUrl + ")").parent();
-                                } else {
-                                    firstElem = false
-                                }
-                            }
-
-                            if (firstElem !== false && secondElem !== false) {
-                                drawConnect(firstElem, secondElem, color, id);
-                                if (firstElem.children('div').eq(2).children('div').eq(0).find('.dropdown-item.remove-relationships').length === 0) {
-                                    firstElem.children('div').eq(2).children('div').eq(0).append(
-                                        '<span class="dropdown-item remove-relationships" data-id="' + id + '">' +
-                                        '{{ __('Delete a link of positions') }}' +
-                                        '</span>'
-                                    )
-                                }
-                                firstElem.children('div').eq(2).children('div').eq(0).find('.dropdown-item.set-relationships').remove()
-
-                                if (secondElem.children('div').eq(2).children('div').eq(0).find('.dropdown-item.remove-relationships').length === 0) {
-                                    secondElem.children('div').eq(2).children('div').eq(0).append(
-                                        '<span class="dropdown-item remove-relationships" data-id="' + id + '">' +
-                                        '{{ __('Delete a link of positions') }}' +
-                                        '</span>'
-                                    )
-                                }
-                                secondElem.children('div').eq(2).children('div').eq(0).find('.dropdown-item.set-relationships').remove()
-
-                                firstElem = secondElem
-                                secondElem = false
-                                find = true
                             }
                         }
 
+                        let last = elements.length - 1
+                        for (let i = 0; i < elements[last].length; i++) {
+                            changeActions(elements[last][i], id)
+                        }
+
                         if (find === false) {
-                            errorMessage('Совпадений не найдено')
+                            errorMessage("{{ __('No matches found') }}")
                         } else {
                             $('.remove-relationships').on('click', function () {
                                 $('.' + $(this).attr('data-id')).remove()
@@ -804,6 +792,19 @@
                         }
                     }
                 });
+            }
+
+            function changeActions(element, id) {
+                let $element = $(element)
+
+                if ($element.children('div').eq(2).children('div').eq(0).find('.dropdown-item.remove-relationships').length === 0) {
+                    $element.children('div').eq(2).children('div').eq(0).append(
+                        '<span class="dropdown-item remove-relationships" data-id="' + id + '">' +
+                        '{{ __('Delete a link of positions') }}' +
+                        '</span>'
+                    )
+                }
+                $element.children('div').eq(2).children('div').eq(0).find('.dropdown-item.set-relationships').remove()
             }
 
             function filter() {
@@ -895,11 +896,17 @@
                         if (find) {
                             $(this).attr('data-action', 'uncolor')
                             $(this).html('{{ __('Remove project selection') }}')
+                            if ($(".color-domain").first().children('div').eq(2).children('div').eq(0).find('span.set-relationships').length > 0) {
+                                $(".color-domain").first().children('div').eq(1).trigger('click')
+                            }
                         } else {
                             errorMessage('{{ __('Domain not found') }}')
                         }
 
                     } else {
+                        if ($(".color-domain").first().children('div').eq(2).children('div').eq(0).find('span.remove-relationships').length > 0) {
+                            $(".color-domain").first().children('div').eq(1).trigger('click')
+                        }
                         $('.color-domain').removeClass('color-domain')
                         $(this).attr('data-action', 'color')
                         $(this).html('{{ __('Select the project domain') }}')
