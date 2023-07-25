@@ -196,18 +196,18 @@
                 <div class="d-flex flex-column col-4">
                     <label>{{ __('Display') }}</label>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <button class="btn btn-secondary active change-filter-name" data-action="URL">
-                            <input type="radio" name="options" autocomplete="off" checked="">
+                        <button class="btn btn-secondary active change-filter-name" data-action="URL" disabled>
+                            <input type="radio" name="options" autocomplete="off">
                             URL
                         </button>
-                        <button class="btn btn-secondary change-filter-name" data-action="домену">
+                        <button class="btn btn-secondary change-filter-name" data-action="домену" disabled>
                             <input type="radio" name="options" autocomplete="off">
                             {{ __('Domain') }}
                         </button>
                     </div>
                 </div>
                 <div class="col-4">
-                    <label for="filter">{{ __('Filter by') }}<span id="filter-target">URL</span></label>
+                    <label for="filter">{{ __('Filter by') }} <span id="filter-target">URL</span></label>
                     <input type="text" id="filter" name="filter" class="form form-control" disabled>
                 </div>
             </div>
@@ -232,7 +232,7 @@
     </div>
 
     <div style="overflow-x: auto; width: 100%" class="d-flex">
-        <div class="d-flex mt-3" style="display: flex; min-width: 100%" id="result"></div>
+        <div class="d-flex mt-3" style="display: flex; min-width: 100%; padding-bottom: 55px;" id="result"></div>
     </div>
 
     @slot('js')
