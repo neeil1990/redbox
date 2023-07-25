@@ -697,18 +697,16 @@
                     let find = false
 
                     let elements = getElements(targetUrl)
-                    for (let i = 0; i < elements.length; i++) {
-                        if (elements[i + 1] !== undefined) {
-                            for (let j = 0; j < elements[i].length; j++) {
-                                let will = []
-                                for (let k = 0; k < elements[i + 1].length; k++) {
-                                    find = true
-                                    let extra = will.includes(elements[i][j])
-                                    drawConnect(elements[i][j], elements[i + 1][k], color, id, extra);
-                                    changeActions(elements[i][j], id)
-                                    changeActions(elements[i + 1][k][j], id)
-                                    will.push(elements[i][j])
-                                }
+                    for (let i = 0; i < elements.length - 1; i++) {
+                        for (let j = 0; j < elements[i].length; j++) {
+                            let will = [];
+
+                            for (let k = 0; k < elements[i + 1].length; k++) {
+                                let extra = will.includes(elements[i][j]);
+                                drawConnect(elements[i][j], elements[i + 1][k], color, id, extra);
+                                changeActions(elements[i][j], id);
+                                changeActions(elements[i + 1][k], id);
+                                will.push(elements[i][j]);
                             }
                         }
                     }
