@@ -18,8 +18,6 @@ class RelevanceHistoryQueue implements ShouldQueue
 
     public $timeout = 0;
 
-    public $tries = 5;
-
     public $request;
 
     public $userId;
