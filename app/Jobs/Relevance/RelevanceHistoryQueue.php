@@ -73,6 +73,7 @@ class RelevanceHistoryQueue implements ShouldQueue
 
             $this->relevance->analysis($this->historyId);
         } else {
+			/*
             RelevanceHistoryQueue::dispatch(
                 $this->userId,
                 $this->request,
@@ -83,7 +84,7 @@ class RelevanceHistoryQueue implements ShouldQueue
             )
                 ->onQueue($this->job->getQueue())
                 ->onConnection('database')
-                ->delay(Carbon::now()->addSeconds(10));
+                ->delay(Carbon::now()->addSeconds(10)); */
         }
     }
 }
