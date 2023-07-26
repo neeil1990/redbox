@@ -89,6 +89,10 @@
                 background-color: #a8cae9;
             }
 
+            .competitor-domain {
+                background-color: #c9111140;
+            }
+
         </style>
     @endslot
 
@@ -791,13 +795,21 @@
                         } else {
                             $('.remove-relationships').on('click', function () {
                                 $('.' + $(this).attr('data-id')).remove()
+                                let element = $('.remove-relationships[data-id="' + $(this).attr('data-id') + '"]')
+                                let parent = element.parent()
 
-                                $('.remove-relationships[data-id="' + $(this).attr('data-id') + '"]').parent().append(
+                                element.remove()
+                                parent.append(
                                     '<span class="dropdown-item set-relationships" style="cursor: pointer;">' +
                                     '{{ __('View positions') }}' +
                                     '</span> '
                                 )
-                                $('.remove-relationships[data-id="' + $(this).attr('data-id') + '"]').remove()
+
+                                if (parent.parent().parent().hasClass('competitor-domain')) {
+                                    let domain = parent.parent().parent().children('div:eq(1)').data('domain');
+                                    $('#result > div > div.kanban-item.w-100.border-bottom.competitor-domain > div.col-10.fixed-lines[data-domain="' + domain + '"]').parent().removeClass('competitor-domain');
+                                }
+
                                 setRelationShips()
                                 setRelationShipsFromLink()
                             })
@@ -940,6 +952,9 @@
 
                             if ($setRelationships.length > 0) {
                                 $element.trigger('click');
+                                $.each($fixedLines, function () {
+                                    $(this).parent().addClass('competitor-domain')
+                                })
                             }
                         } else {
                             notFound.push(competitor.url);
