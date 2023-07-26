@@ -212,12 +212,21 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-3 mt-4">
-                    <button class="btn btn-outline-secondary"
-                            data-action="color"
-                            id="select-my-project"
-                            data-target="{{ $project->url }}" disabled>{{ __('Select the project domain') }}
-                    </button>
+                <div class="mt-4">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary"
+                                data-action="color"
+                                id="select-my-project"
+                                data-target="{{ $project->url }}" disabled>
+                            {{ __('Select the project domain') }}
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                data-action="color"
+                                id="select-my-competitors"
+                                disabled>
+                            {{ __('Select my competitors') }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -580,7 +589,7 @@
                     , fromLeft = $from.offset().left + $from.outerWidth() - mainLeft //Точка ИЗ (сбоку)
                     , toLeft = $to.offset().left - mainLeft //Точка В (сбоку)
                     , fromTop = ($from.offset().top + $from.outerHeight() / 2 - mainTop) - 20 //Точка ИЗ (сверху)
-                    , toTop = $to.offset().top + $to.outerHeight() / 2 - mainTop //Точка В (сверху)
+                    , toTop = ($to.offset().top + $to.outerHeight() / 2 - mainTop) - 20 //Точка В (сверху)
                     , width = toLeft - fromLeft
                     , height = toTop - fromTop;
 
@@ -588,9 +597,9 @@
                 if (position === 0) {
                     position = ''
                 } else if (position >= 1) {
-                    position = '+' + position
+                    position = '&nbsp;+' + position
                 } else {
-                    position = '' + position
+                    position = '&nbsp;' + position
                 }
 
                 if (extra) {
@@ -752,18 +761,22 @@
                         let find = false
 
                         let elements = getElements(targetUrl)
-                        for (let i = 0; i < elements.length; i++) {
-                            if (elements[i + 1] !== undefined) {
-                                for (let j = 0; j < elements[i].length; j++) {
-                                    let will = []
-                                    for (let k = 0; k < elements[i + 1].length; k++) {
-                                        find = true
-                                        let extra = will.includes(elements[i][j])
-                                        drawConnect(elements[i][j], elements[i + 1][k], color, id, extra);
-                                        changeActions(elements[i][j], id)
-                                        changeActions(elements[i + 1][k][j], id)
-                                        will.push(elements[i][j])
-                                    }
+                        let will = [];
+                        for (let i = 0; i < elements.length - 1; i++) {
+                            for (let j = 0; j < elements[i].length; j++) {
+                                let currentElement = elements[i][j];
+                                let nextElements = elements[i + 1];
+
+                                for (let k = 0; k < nextElements.length; k++) {
+                                    let nextElement = nextElements[k];
+                                    let extra = will.includes(currentElement);
+
+                                    find = true;
+                                    drawConnect(currentElement, nextElement, color, id, extra);
+                                    changeActions(currentElement, id);
+                                    changeActions(nextElement, id);
+
+                                    will.push(currentElement);
                                 }
                             }
                         }
@@ -857,6 +870,7 @@
             }
 
             function disableElements() {
+                $('#select-my-competitors').prop('disabled', true)
                 $('#select-my-project').prop('disabled', true)
                 $('#top').prop('disabled', true)
                 $('.change-filter-name').prop('disabled', true)
@@ -869,6 +883,7 @@
 
             function enableElements() {
                 $('#select-my-project').prop('disabled', false)
+                $('#select-my-competitors').prop('disabled', false)
                 $('#top').prop('disabled', false)
                 $('.change-filter-name').prop('disabled', false)
                 $('#filter').prop('disabled', false)
@@ -909,6 +924,30 @@
                         $('.color-domain').removeClass('color-domain')
                         $(this).attr('data-action', 'color')
                         $(this).html('{{ __('Select the project domain') }}')
+                    }
+                })
+
+                $('#select-my-competitors').unbind().on('click', function () {
+                    let notFound = []
+                    let array = {!! json_encode($project->competitors->toArray()) !!};
+                    $.each(array, function (key, competitor) {
+                        let domain = "https://" + competitor.url;
+                        let $fixedLines = $(".fixed-lines[data-domain='" + domain + "']");
+
+                        if ($fixedLines.length > 0) {
+                            let $element = $fixedLines.first();
+                            let $setRelationships = $element.parent().children('div').eq(2).children('div').eq(0).find('span.set-relationships');
+
+                            if ($setRelationships.length > 0) {
+                                $element.trigger('click');
+                            }
+                        } else {
+                            notFound.push(competitor.url);
+                        }
+                    });
+
+                    if (notFound.length > 0) {
+                        errorMessage('Не найденые домены: ' + notFound.join(', '))
                     }
                 })
             }
