@@ -940,30 +940,53 @@
                 })
 
                 $('#select-my-competitors').unbind().on('click', function () {
-                    let notFound = []
                     let array = {!! json_encode($project->competitors->toArray()) !!};
-                    $.each(array, function (key, competitor) {
-                        let domain = "https://" + competitor.url;
-                        let $fixedLines = $(".fixed-lines[data-domain='" + domain + "']");
 
-                        if ($fixedLines.length > 0) {
-                            let $element = $fixedLines.first();
-                            let $setRelationships = $element.parent().children('div').eq(2).children('div').eq(0).find('span.set-relationships');
+                    if ($(this).attr('data-action') === 'color') {
+                        $(this).attr('data-action', 'uncolor')
+                        $(this).html('{{ __('Remove the selection of competitors') }}')
 
-                            if ($setRelationships.length > 0) {
-                                $element.trigger('click');
-                                $.each($fixedLines, function () {
-                                    $(this).parent().addClass('competitor-domain')
-                                })
+                        let notFound = []
+                        $.each(array, function (key, competitor) {
+                            let domain = "https://" + competitor.url;
+                            let $fixedLines = $(".fixed-lines[data-domain='" + domain + "']");
+
+                            if ($fixedLines.length > 0) {
+                                let $element = $fixedLines.first();
+                                let $setRelationships = $element.parent().children('div').eq(2).children('div').eq(0).find('span.set-relationships');
+
+                                if ($setRelationships.length > 0) {
+                                    $element.trigger('click');
+                                    $.each($fixedLines, function () {
+                                        $(this).parent().addClass('competitor-domain')
+                                    })
+                                }
+                            } else {
+                                notFound.push(competitor.url);
                             }
-                        } else {
-                            notFound.push(competitor.url);
-                        }
-                    });
+                        });
 
-                    if (notFound.length > 0) {
-                        errorMessage('Не найденые домены: ' + notFound.join(', '))
+                        if (notFound.length > 0) {
+                            errorMessage('{{ __('Domains not found') }}: ' + notFound.join(', '))
+                        }
+                    } else {
+                        $(this).html('{{ __('Select my competitors') }}')
+                        $(this).attr('data-action', 'color')
+                        $.each(array, function (key, competitor) {
+                            let domain = "https://" + competitor.url;
+                            let $fixedLines = $(".fixed-lines[data-domain='" + domain + "']");
+
+                            if ($fixedLines.length > 0) {
+                                let $element = $fixedLines.first();
+                                let $setRelationships = $element.parent().children('div').eq(2).children('div').eq(0).find('span.remove-relationships');
+
+                                if ($setRelationships.length > 0) {
+                                    $element.trigger('click');
+                                }
+                            }
+                        });
                     }
+
                 })
             }
         </script>
