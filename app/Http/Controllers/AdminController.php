@@ -192,4 +192,9 @@ class AdminController extends Controller
             'document' => $docs[$request->input('type')]
         ]);
     }
+
+    public function removeUserJobs()
+    {
+        return UsersJobs::truncate();
+    }
 }

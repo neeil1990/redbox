@@ -163,7 +163,7 @@
                                 </thead>
                                 <tbody id="user_jobs_table_body">
                                 @foreach($usersJobs as $job)
-                                    <tr class="joFb-row">
+                                    <tr class="job-row">
                                         <td>
                                             {{ $job->user->email }}
                                             <div class="text-muted">
@@ -197,131 +197,6 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($projects as $item)
-                            <tr id="story-id-{{ $item->id }}">
-                                <td>
-                                    <span>
-                                        <span class="project_name" style="cursor: pointer" data-order="{{ $item->id }}">{{ $item->name }}</span>
-                                        <i class="fa fa-table project_name"
-                                           data-order="{{ $item->id }}"
-                                           style="opacity: 0.6; cursor:pointer;"></i>
-                                        <i class="fa fa-list project_name_v2"
-                                           data-order="{{ $item->id }}"
-                                           style="opacity: 0.6; cursor:pointer;"></i>
-                                    </span>
-                                    <div class="dropdown" style="display: inline">
-                                        <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
-                                           aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <span class="dropdown-item project_name"
-                                                  style="cursor:pointer;"
-                                                  data-order="{{ $item->id }}">
-                                                <i class="fa fa-table"></i>
-                                                {{ __('Show the results of the analysis') }}
-                                            </span>
-                                            <span class="dropdown-item project_name_v2"
-                                                  style="cursor:pointer;"
-                                                  data-order="{{ $item->id }}">
-                                                <i class="fa fa-list"></i>
-                                                {{ __('View the results in a list') }}
-                                            </span>
-                                            <span class="dropdown-item"
-                                                  style="cursor:pointer;"
-                                                  data-toggle="modal" data-target="#removeModal{{ $item->id }}">
-                                                <i class="fa fa-trash"></i>
-                                                {{ __('Delete results without comments') }}
-                                            </span>
-                                            <span class="dropdown-item"
-                                                  style="cursor:pointer;"
-                                                  data-toggle="modal"
-                                                  data-target="#removeWithFiltersModal{{ $item->id }}">
-                                                <i class="fa fa-trash"></i>
-                                                {{ __('Delete using filters') }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td id="project-{{ $item->id }}">
-                                    @foreach($item->relevanceTags as $tag)
-                                        <div style="color: {{ $tag->color }}"
-                                             id="tag-{{ $tag->id }}-item-{{ $item->id }}">
-                                            {{ $tag->name }}
-                                        </div>
-                                        <div class="modal fade" id="removeTagModal{{ $tag->id }}{{ $item->id }}"
-                                             aria-labelledby="removeTagModal{{ $tag->id }}{{ $item->id }}Label"
-                                             aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        {{ $item->name }}
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                                aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        {{ __('Are you going to untie the label from the project, are you sure?') }}
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button"
-                                                                class="btn btn-secondary remove-project-relevance-link"
-                                                                data-tag="{{ $tag->id }}"
-                                                                data-history="{{ $item->id }}"
-                                                                data-dismiss="modal">
-                                                            {{ __('Untie the label from the project') }}
-                                                        </button>
-                                                        <button type="button" class="btn btn-default"
-                                                                data-dismiss="modal">
-                                                            {{ __('Close') }}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </td>
-                                <td data-target="{{ $item->user->email }}">
-                                    {{ $item->user->email }}
-                                    <span class="text-muted">
-                                        {{ $item->user->name }}
-                                        {{ $item->user->last_name }}
-                                    </span>
-                                </td>
-                                <td class="col-2" data-order="{{ $item->count_sites }}">
-                                    <span class="count-sites-{{ $item->id }}">
-                                        {{ $item->count_sites }}
-                                    </span>
-                                    <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"
-                                       data-target="#repeatUniqueScan{{ $item->id }}"
-                                       data-toggle="modal" data-placement="top"
-                                       title="{{ __('restart analyzed pages') }}"></i>
-                                </td>
-                                <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
-                                <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
-                                <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
-                                <td>
-                                    <button class="btn btn-secondary"
-                                            data-target="#startThroughScan{{ $item->id }}"
-                                            data-toggle="modal" data-placement="top">
-                                        {{ __('Analysis of end-to-end words') }}
-                                    </button>
-
-                                    @isset($item->though)
-                                        <div id="though{{ $item->id }}" class="mt-2 mb-2">
-                                            <a href="{{ route('show-though', $item->though->id) }}" target="_blank">
-                                                {{ __('Results of end-to-end analysis') }}
-                                            </a>
-                                            <div class="text-muted">
-                                                {{ __('Last analysis') }} {{ $item->though->updated_at }}
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div id="though{{ $item->id }}"></div>
-                                    @endisset
-                                </td>
-                                <td>{{ $item->last_check }}</td>
-                            </tr>
-                        @endforeach
                         </tbody>
                     </table>
 
@@ -564,7 +439,8 @@
                                     <div class="modal-footer">
                                         <button data-target="{{ $item->id }}" type="button"
                                                 class="btn btn-secondary start-through-analyse click_tracking"
-                                                data-dismiss="modal" data-click="Start through scan">{{ __('Start') }}</button>
+                                                data-dismiss="modal"
+                                                data-click="Start through scan">{{ __('Start') }}</button>
                                         <button type="button" class="btn btn-default"
                                                 data-dismiss="modal">{{ __('Close') }}</button>
                                     </div>
@@ -1338,6 +1214,19 @@
                         },
                     });
                 }, 10000)
+
+                $('#user_jobs_table_length').append('<button class="btn btn-secondary ml-3" id="reset-statistic">Очистить статистику</button>')
+
+                $('#reset-statistic').on('click', function () {
+                    $.ajax({
+                        type: "get",
+                        dataType: "json",
+                        url: "{{ route('remove.user.jobs') }}",
+                        success: function (response) {
+                            $('#user_jobs_table').DataTable().rows().remove().draw();
+                        },
+                    });
+                })
             });
 
             function getRegionName(id) {
@@ -1467,9 +1356,140 @@
                 }
             }
 
+            let columns = [
+                {
+                    name: 'id',
+                    data: function (row) {
+                        return '<span>' +
+                            '    <span class="project_name" style="cursor: pointer"' +
+                            '          data-order="' + row.id + '">' + row.name + '</span>' +
+                            '    <i class="fa fa-table project_name"' +
+                            '       data-order="' + row.id + '" style="opacity: 0.6; cursor:pointer;"></i>' +
+                            '    <i class="fa fa-list project_name_v2"' +
+                            '       data-order="' + row.id + '"' +
+                            '       style="opacity: 0.6; cursor:pointer;"></i>' +
+                            '</span>' +
+                            '<div class="dropdown" style="display: inline">' +
+                            '    <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"' +
+                            '       aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>' +
+                            '    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+                            '                   <span class="dropdown-item project_name"' +
+                            '  style="cursor:pointer;"' +
+                            '  data-order="' + row.id + '">' +
+                            '<i class="fa fa-table"></i>' +
+                            '{{ __('Show the results of the analysis') }}' +
+                            '                   </span>' +
+                            '        <span class="dropdown-item project_name_v2"' +
+                            '              style="cursor:pointer;"' +
+                            '              data-order="' + row.id + '">' +
+                            '<i class="fa fa-list"></i>' +
+                            '{{ __('View the results in a list') }}' +
+                            '                   </span>' +
+                            '        <span class="dropdown-item"' +
+                            '              style="cursor:pointer;"' +
+                            '              data-toggle="modal" data-target="#removeModal' + row.id + '">' +
+                            '<i class="fa fa-trash"></i>' +
+                            '{{ __('Delete results without comments') }}' +
+                            '                   </span>' +
+                            '        <span class="dropdown-item"' +
+                            '              style="cursor:pointer;"' +
+                            '              data-toggle="modal"' +
+                            '              data-target="#removeWithFiltersModal' + row.id + '">' +
+                            '<i class="fa fa-trash"></i>' +
+                            '{{ __('Delete using filters') }}' +
+                            '                   </span>' +
+                            '    </div>' +
+                            '</div>'
+                    }
+                },
+                {
+                    name: 'relevanceTags',
+                    data: function (row) {
+                        let content = ''
+
+                        $.each(row.relevanceTags, function (key, value) {
+                            content +=
+                                '<div class="d-flex justify-content-between align-items-center" style="color: ' + value.color + '" id="tag-' + value.id + '-item-' + row.id + '">' +
+                                value.name +
+                                '    <i class="fa fa-trash"' +
+                                '       style="opacity: 0.5; cursor: pointer"' +
+                                '       data-toggle="modal"' +
+                                '       data-target="#removeTagModal' + value.id + '' + row.id + '">' +
+                                '    </i>' +
+                                '</div>'
+                        })
+
+                        return content;
+                    },
+                },
+                {
+                    name: 'owner',
+                    data: function (row) {
+                        return row.owner.email + '<br><span class="text-muted">' + row.owner.name + '' + row.owner.last_name + '</span>'
+                    },
+                },
+                {
+                    name: 'count_sites',
+                    data: function (row) {
+                        return '<span class="count-sites-' + row.id + '">' + row.count_sites + '</span>' +
+                            '<i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"' +
+                            '   data-target="#repeatUniqueScan' + row.id + '"' +
+                            '   data-toggle="modal" data-placement="top"' +
+                            '   title="{{ __('restart analyzed pages') }}"></i>'
+                    },
+
+                },
+                {
+                    name: 'count_checks',
+                    data: 'count_checks',
+                },
+                {
+                    name: 'total_points',
+                    data: 'total_points',
+                },
+                {
+                    name: 'avg_position',
+                    data: 'avg_position',
+                },
+                {
+                    name: 'though',
+                    data: function (row) {
+                        if (row.though.length > 0) {
+                            return '<div id="though' + row.id + '" class="mt-2 mb-2">' +
+                                '    <a href="/show-though/' + row.though.id + '" target="_blank">' +
+                                '        {{ __('Results of end-to-end analysis') }}' +
+                                '    </a>' +
+                                '    <div class="text-muted">' +
+                                '        {{ __('Last analysis') }} ' + '' + row.though.updated_at +
+                                '    </div>' +
+                                '</div>'
+                        } else {
+                            return '<button data-target="#startThroughScan' + row.id + '" ' +
+                                ' data-toggle="modal"' +
+                                ' data-placement="top" class="btn btn-secondary">' +
+                                ' Сквозной анализ' +
+                                '</button>'
+                        }
+                    },
+                },
+                {
+                    name: 'last_check',
+                    data: 'last_check',
+                },
+            ];
+
             let usersProjects = $('#users_projects').DataTable({
-                order: [[0, "desc"]],
                 pageLength: 10,
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('get.all.relevance.projects') }}",
+                columns: columns,
+                aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [1, 7]
+                    }
+                ],
                 language: {
                     paginate: {
                         "first": "«",
@@ -1478,7 +1498,7 @@
                         "previous": "«"
                     },
                 },
-                "oLanguage": {
+                oLanguage: {
                     "sSearch": words.search + ":",
                     "sLengthMenu": words.show + " _MENU_ " + words.records,
                     "sEmptyTable": words.noRecords,

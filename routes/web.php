@@ -11,6 +11,7 @@
 |
 */
 
+use App\ProjectRelevanceHistory;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -19,7 +20,7 @@ Route::get('info', function () {
 
 Route::get('jobs', function () {
 	set_time_limit(0);
-	
+
     $job = App\Jobs::find(7373087);
 
 	dd(unserialize($job->payload['data']['command'])->handle());
@@ -237,11 +238,14 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/check-state', 'HistoryRelevanceController@checkAnalyseProgress')->name('check.state');
     Route::get('/show-missing-words/{result}', 'HistoryRelevanceController@showMissingWords')->name('show.missing.words');
     Route::get('/show-child-words/{result}', 'HistoryRelevanceController@showChildrenRows')->name('show.children.rows');
+    Route::get('/get-relevance-projects/', 'HistoryRelevanceController@getProjects')->name('get.relevance.projects');
+    Route::get('/get-all-relevance-projects/', 'HistoryRelevanceController@getAllProjects')->name('get.all.relevance.projects');
 
     Route::post('/create-tag', 'RelevanceTagsController@store')->name('store.relevance.tag');
     Route::post('/destroy-tag', 'RelevanceTagsController@destroy')->name('destroy.relevance.tag');
     Route::post('/edit-tag', 'RelevanceTagsController@edit')->name('edit.relevance.tag');
 
+    Route::get('/remove-user-jobs', 'AdminController@removeUserJobs')->name('remove.user.jobs');
     Route::get('/relevance-config', 'AdminController@showConfig')->name('show.config');
     Route::post('/change-config', 'AdminController@changeConfig')->name('changeConfig');
     Route::post('/change-cleaning-interval', 'AdminController@changeCleaningInterval')->name('change.cleaning.interval');
@@ -409,3 +413,4 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
 });
+

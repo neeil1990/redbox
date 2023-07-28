@@ -165,20 +165,37 @@ class Relevance
     public function analysis($historyId = false)
     {
         try {
+            Log::info('removeNoIndex');
+            $this->removeNoIndex();
+            Log::info('removeNoIndex');
             $this->getHiddenData();
+            Log::info('getHiddenData');
             $this->separateLinksFromText();
+            Log::info('separateLinksFromText');
             $this->removePartsOfSpeech();
+            Log::info('removePartsOfSpeech');
             $this->removeListWords();
+            Log::info('removeListWords');
             $this->getTextFromCompetitors();
+            Log::info('getTextFromCompetitors');
             $this->separateAllText();
+            Log::info('separateAllText');
             $this->preparePhrasesTable();
+            Log::info('preparePhrasesTable');
             $this->searchWordForms();
+            Log::info('searchWordForms');
             $this->processingOfGeneralInformation();
+            Log::info('processingOfGeneralInformation');
             $this->prepareUnigramTable();
+            Log::info('prepareUnigramTable');
             $this->analyseRecommendations();
+            Log::info('analyseRecommendations');
             $this->prepareAnalysedSitesTable();
+            Log::info('prepareAnalysedSitesTable');
             $this->prepareClouds();
+            Log::info('prepareClouds');
             $this->saveHistory($historyId);
+            Log::info('saveHistory');
 
             RemoveRelevanceProgress::dispatch($this->scanHash)
                 ->onQueue('default')
@@ -191,6 +208,22 @@ class Relevance
                 RelevanceHistory::where('id', '=', $historyId)->update([
                     'state' => '-1'
                 ]);
+            }
+        }
+    }
+
+    /**
+     * Удалить текст, который помечен <noindex>
+     * @return void
+     */
+    public function removeNoIndex()
+    {
+        RelevanceProgress::editProgress(20, $this->request);
+
+        if (isset($this->request['noIndex']) && $this->request['noIndex'] == 'false') {
+            $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
+            foreach ($this->sites as $key => $page) {
+                $this->sites[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
             }
         }
     }
@@ -261,8 +294,7 @@ class Relevance
 
     public function getHiddenData()
     {
-        RelevanceProgress::editProgress(20, $this->request);
-        if ($this->request['hiddenText'] == 'true') {
+        if (isset($this->request['hiddenText']) && $this->request['hiddenText'] == 'true') {
             $this->mainPage['hiddenText'] = Relevance::getHiddenText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
                 $this->sites[$key]['hiddenText'] = Relevance::getHiddenText($this->sites[$key]['html']);
@@ -318,7 +350,6 @@ class Relevance
                     }
                 }
             }
-            usleep(300);
         }
 
         foreach ($this->wordForms as $wordForm) {
@@ -329,7 +360,6 @@ class Relevance
                     }
                 }
             }
-            usleep(300);
         }
 
         return [
@@ -426,22 +456,16 @@ class Relevance
                     break;
                 }
             }
-            usleep(300);
         }
     }
 
     public function prepareAnalysedSitesTable()
     {
         $this->calculateDensity();
-        usleep(300);
         $this->calculateCoveragePoints();
-        usleep(300);
         $this->calculateWidthPoints();
-        usleep(300);
         $this->calculateTotalPoints();
-        usleep(300);
         $this->calculateTextInfo();
-        usleep(300);
         $this->calculateAvg();
     }
 
@@ -532,8 +556,7 @@ class Relevance
                     break;
                 }
 
-                if(count($wordWorms) % 100 == 0){
-                    usleep(300);
+                if (count($wordWorms) % 100 == 0) {
                 }
             }
         }
@@ -541,8 +564,6 @@ class Relevance
         foreach ($wordWorms as $wordWorm) {
             $this->wordForms[array_key_first($wordWorm)] = $wordWorm;
         }
-
-        usleep(300);
 
         uasort($this->wordForms, function ($l, $r) {
             $first = array_sum($r);
@@ -552,7 +573,6 @@ class Relevance
             return ($first < $second) ? -1 : 1;
         });
 
-        usleep(300);
 
         $this->wordForms = array_slice($this->wordForms, 0, 1000);
     }
@@ -639,7 +659,6 @@ class Relevance
                     'occurrences' => $occurrences,
                 ];
             }
-            usleep(300);
         }
     }
 
@@ -682,7 +701,6 @@ class Relevance
                     }
                 }
             }
-            usleep(300);
             arsort($occurrences);
 
             $this->wordForms[$key]['total'] = [
@@ -898,7 +916,6 @@ class Relevance
                 }
             }
 
-            usleep(300);
             $totalWeight = $item1['weight'] + $weight;
             $wordForms[] = [
                 'text' => $item1['text'],
@@ -1051,7 +1068,6 @@ class Relevance
                     break;
                 }
             }
-            usleep(300);
             $testMainIterator++;
         }
 
@@ -1085,9 +1101,7 @@ class Relevance
     {
         RelevanceProgress::editProgress(100, $this->request);
         $this->saveResults();
-        usleep(300);
         $this->saveStatistic();
-        usleep(300);
 
         $time = Carbon::now()->toDateTimeString();
         $link = parse_url($this->params['main_page_link']);
@@ -1269,7 +1283,6 @@ class Relevance
             $this->calculate('width', $width[$i] / 5);
             $this->calculate('points', $points[$i] / 5);
             $this->calculate('countSymbols', $countSymbols[$i] / 5);
-            usleep(300);
         }
     }
 

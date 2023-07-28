@@ -437,99 +437,99 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($main as $item)
-                            <tr id="story-id-{{ $item->id }}">
-                                <td data-order="{{ $item->name }}">
-                                    <span>
-                                        <span class="project_name" style="cursor: pointer"
-                                              data-order="{{ $item->id }}">{{ $item->name }}</span>
-                                        <i class="fa fa-table project_name"
-                                           data-order="{{ $item->id }}"
-                                           style="opacity: 0.6; cursor:pointer;"></i>
-                                        <i class="fa fa-list project_name_v2"
-                                           data-order="{{ $item->id }}"
-                                           style="opacity: 0.6; cursor:pointer;"></i>
-                                    </span>
-                                    <div class="dropdown" style="display: inline">
-                                        <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
-                                           aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <span class="dropdown-item project_name"
-                                                  style="cursor:pointer;"
-                                                  data-order="{{ $item->id }}">
-                                                <i class="fa fa-table"></i>
-                                                {{ __('Show the results of the analysis') }}
-                                            </span>
-                                            <span class="dropdown-item project_name_v2"
-                                                  style="cursor:pointer;"
-                                                  data-order="{{ $item->id }}">
-                                                <i class="fa fa-list"></i>
-                                                {{ __('View the results in a list') }}
-                                            </span>
-                                            <span class="dropdown-item"
-                                                  style="cursor:pointer;"
-                                                  data-toggle="modal" data-target="#removeModal{{ $item->id }}">
-                                                <i class="fa fa-trash"></i>
-                                                {{ __('Delete results without comments') }}
-                                            </span>
-                                            <span class="dropdown-item"
-                                                  style="cursor:pointer;"
-                                                  data-toggle="modal"
-                                                  data-target="#removeWithFiltersModal{{ $item->id }}">
-                                                <i class="fa fa-trash"></i>
-                                                {{ __('Delete using filters') }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td id="project-{{ $item->id }}" data-order="{{ count($item->relevanceTags) }}">
-                                    @foreach($item->relevanceTags as $tag)
-                                        <div style="color: {{ $tag->color }}"
-                                             id="tag-{{ $tag->id }}-item-{{ $item->id }}">
-                                            {{ $tag->name }}
-                                            <i class="fa fa-trash"
-                                               style="opacity: 0.5; cursor: pointer"
-                                               data-toggle="modal"
-                                               data-target="#removeTagModal{{ $tag->id }}{{ $item->id }}">
-                                            </i>
-                                        </div>
-                                    @endforeach
-                                </td>
-                                <td data-order="{{ $item->count_sites }}">
-                                    <span class="count-sites-{{ $item->id }}">
-                                        {{ $item->count_sites }}
-                                    </span>
-                                    <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"
-                                       data-target="#repeatUniqueScan{{ $item->id }}"
-                                       data-toggle="modal" data-placement="top"
-                                       title="{{ __('restart analyzed pages') }}"></i>
-                                </td>
-                                <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>
-                                <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>
-                                <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>
-                                <td>
-                                    <button class="btn btn-secondary"
-                                            data-target="#startThroughScan{{ $item->id }}"
-                                            data-toggle="modal" data-placement="top">
-                                        {{ __('Analysis of end-to-end') }}
-                                    </button>
+                        {{--                        @foreach($main as $item)--}}
+                        {{--                            <tr id="story-id-{{ $item->id }}">--}}
+                        {{--                                <td data-order="{{ $item->name }}">--}}
+                        {{--                                    <span>--}}
+                        {{--                                        <span class="project_name" style="cursor: pointer"--}}
+                        {{--                                              data-order="{{ $item->id }}">{{ $item->name }}</span>--}}
+                        {{--                                        <i class="fa fa-table project_name"--}}
+                        {{--                                           data-order="{{ $item->id }}"--}}
+                        {{--                                           style="opacity: 0.6; cursor:pointer;"></i>--}}
+                        {{--                                        <i class="fa fa-list project_name_v2"--}}
+                        {{--                                           data-order="{{ $item->id }}"--}}
+                        {{--                                           style="opacity: 0.6; cursor:pointer;"></i>--}}
+                        {{--                                    </span>--}}
+                        {{--                                    <div class="dropdown" style="display: inline">--}}
+                        {{--                                        <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"--}}
+                        {{--                                           aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>--}}
+                        {{--                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">--}}
+                        {{--                                            <span class="dropdown-item project_name"--}}
+                        {{--                                                  style="cursor:pointer;"--}}
+                        {{--                                                  data-order="{{ $item->id }}">--}}
+                        {{--                                                <i class="fa fa-table"></i>--}}
+                        {{--                                                {{ __('Show the results of the analysis') }}--}}
+                        {{--                                            </span>--}}
+                        {{--                                            <span class="dropdown-item project_name_v2"--}}
+                        {{--                                                  style="cursor:pointer;"--}}
+                        {{--                                                  data-order="{{ $item->id }}">--}}
+                        {{--                                                <i class="fa fa-list"></i>--}}
+                        {{--                                                {{ __('View the results in a list') }}--}}
+                        {{--                                            </span>--}}
+                        {{--                                            <span class="dropdown-item"--}}
+                        {{--                                                  style="cursor:pointer;"--}}
+                        {{--                                                  data-toggle="modal" data-target="#removeModal{{ $item->id }}">--}}
+                        {{--                                                <i class="fa fa-trash"></i>--}}
+                        {{--                                                {{ __('Delete results without comments') }}--}}
+                        {{--                                            </span>--}}
+                        {{--                                            <span class="dropdown-item"--}}
+                        {{--                                                  style="cursor:pointer;"--}}
+                        {{--                                                  data-toggle="modal"--}}
+                        {{--                                                  data-target="#removeWithFiltersModal{{ $item->id }}">--}}
+                        {{--                                                <i class="fa fa-trash"></i>--}}
+                        {{--                                                {{ __('Delete using filters') }}--}}
+                        {{--                                            </span>--}}
+                        {{--                                        </div>--}}
+                        {{--                                    </div>--}}
+                        {{--                                </td>--}}
+                        {{--                                <td id="project-{{ $item->id }}" data-order="{{ count($item->relevanceTags) }}">--}}
+                        {{--                                    @foreach($item->relevanceTags as $tag)--}}
+                        {{--                                        <div style="color: {{ $tag->color }}"--}}
+                        {{--                                             id="tag-{{ $tag->id }}-item-{{ $item->id }}">--}}
+                        {{--                                            {{ $tag->name }}--}}
+                        {{--                                            <i class="fa fa-trash"--}}
+                        {{--                                               style="opacity: 0.5; cursor: pointer"--}}
+                        {{--                                               data-toggle="modal"--}}
+                        {{--                                               data-target="#removeTagModal{{ $tag->id }}{{ $item->id }}">--}}
+                        {{--                                            </i>--}}
+                        {{--                                        </div>--}}
+                        {{--                                    @endforeach--}}
+                        {{--                                </td>--}}
+                        {{--                                <td data-order="{{ $item->count_sites }}">--}}
+                        {{--                                    <span class="count-sites-{{ $item->id }}">--}}
+                        {{--                                        {{ $item->count_sites }}--}}
+                        {{--                                    </span>--}}
+                        {{--                                    <i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"--}}
+                        {{--                                       data-target="#repeatUniqueScan{{ $item->id }}"--}}
+                        {{--                                       data-toggle="modal" data-placement="top"--}}
+                        {{--                                       title="{{ __('restart analyzed pages') }}"></i>--}}
+                        {{--                                </td>--}}
+                        {{--                                <td class="count-checks-{{ $item->id }}">{{ $item->count_checks }}</td>--}}
+                        {{--                                <td class="total-points-{{ $item->id }}">{{ $item->total_points }}</td>--}}
+                        {{--                                <td class="total-positions-{{ $item->id }}">{{ $item->avg_position }}</td>--}}
+                        {{--                                <td>--}}
+                        {{--                                    <button class="btn btn-secondary"--}}
+                        {{--                                            data-target="#startThroughScan{{ $item->id }}"--}}
+                        {{--                                            data-toggle="modal" data-placement="top">--}}
+                        {{--                                        {{ __('Analysis of end-to-end') }}--}}
+                        {{--                                    </button>--}}
 
-                                    @isset($item->though)
-                                        <div id="though{{ $item->id }}" class="mt-2 mb-2">
-                                            <a href="{{ route('show-though', $item->though->id) }}" target="_blank">
-                                                {{ __('Results of end-to-end analysis') }}
-                                            </a>
-                                            <div class="text-muted">
-                                                {{ __('Last analysis') }} {{ $item->though->updated_at }}
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div id="though{{ $item->id }}"></div>
-                                    @endisset
-                                </td>
-                                <td>{{ $item->last_check }}</td>
-                            </tr>
-                        @endforeach
+                        {{--                                    @isset($item->though)--}}
+                        {{--                                        <div id="though{{ $item->id }}" class="mt-2 mb-2">--}}
+                        {{--                                            <a href="{{ route('show-though', $item->though->id) }}" target="_blank">--}}
+                        {{--                                                {{ __('Results of end-to-end analysis') }}--}}
+                        {{--                                            </a>--}}
+                        {{--                                            <div class="text-muted">--}}
+                        {{--                                                {{ __('Last analysis') }} {{ $item->though->updated_at }}--}}
+                        {{--                                            </div>--}}
+                        {{--                                        </div>--}}
+                        {{--                                    @else--}}
+                        {{--                                        <div id="though{{ $item->id }}"></div>--}}
+                        {{--                                    @endisset--}}
+                        {{--                                </td>--}}
+                        {{--                                <td>{{ $item->last_check }}</td>--}}
+                        {{--                            </tr>--}}
+                        {{--                        @endforeach--}}
                         </tbody>
                     </table>
 
@@ -957,10 +957,134 @@
                 entries: "{{ __('entries') }}"
             };
 
+            let columns = [
+                {
+                    name: 'id',
+                    data: function (row) {
+                        return '<span>' +
+                            '    <span class="project_name" style="cursor: pointer"' +
+                            '          data-order="' + row.id + '">' + row.name + '</span>' +
+                            '    <i class="fa fa-table project_name"' +
+                            '       data-order="' + row.id + '" style="opacity: 0.6; cursor:pointer;"></i>' +
+                            '    <i class="fa fa-list project_name_v2"' +
+                            '       data-order="' + row.id + '"' +
+                            '       style="opacity: 0.6; cursor:pointer;"></i>' +
+                            '</span>' +
+                            '<div class="dropdown" style="display: inline">' +
+                            '    <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"' +
+                            '       aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>' +
+                            '    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+                            '                   <span class="dropdown-item project_name"' +
+                            '  style="cursor:pointer;"' +
+                            '  data-order="' + row.id + '">' +
+                            '<i class="fa fa-table"></i>' +
+                            '{{ __('Show the results of the analysis') }}' +
+                            '                   </span>' +
+                            '        <span class="dropdown-item project_name_v2"' +
+                            '              style="cursor:pointer;"' +
+                            '              data-order="' + row.id + '">' +
+                            '<i class="fa fa-list"></i>' +
+                            '{{ __('View the results in a list') }}' +
+                            '                   </span>' +
+                            '        <span class="dropdown-item"' +
+                            '              style="cursor:pointer;"' +
+                            '              data-toggle="modal" data-target="#removeModal' + row.id + '">' +
+                            '<i class="fa fa-trash"></i>' +
+                            '{{ __('Delete results without comments') }}' +
+                            '                   </span>' +
+                            '        <span class="dropdown-item"' +
+                            '              style="cursor:pointer;"' +
+                            '              data-toggle="modal"' +
+                            '              data-target="#removeWithFiltersModal' + row.id + '">' +
+                            '<i class="fa fa-trash"></i>' +
+                            '{{ __('Delete using filters') }}' +
+                            '                   </span>' +
+                            '    </div>' +
+                            '</div>'
+                    }
+                },
+                {
+                    name: 'relevanceTags',
+                    data: function (row) {
+                        let content = ''
+
+                        $.each(row.relevanceTags, function (key, value) {
+                            content +=
+                                '<div class="d-flex justify-content-between align-items-center" style="color: ' + value.color + '" id="tag-' + value.id + '-item-' + row.id + '">' +
+                                value.name +
+                                '    <i class="fa fa-trash"' +
+                                '       style="opacity: 0.5; cursor: pointer"' +
+                                '       data-toggle="modal"' +
+                                '       data-target="#removeTagModal' + value.id + '' + row.id + '">' +
+                                '    </i>' +
+                                '</div>'
+                        })
+
+                        return content;
+                    },
+                },
+                {
+                    name: 'count_sites',
+                    data: function (row) {
+                        return '<span class="count-sites-' + row.id + '">' + row.count_sites + '</span>' +
+                            '<i class="fa fa-repeat" style="opacity: 0.6; cursor: pointer"' +
+                            '   data-target="#repeatUniqueScan' + row.id + '"' +
+                            '   data-toggle="modal" data-placement="top"' +
+                            '   title="{{ __('restart analyzed pages') }}"></i>'
+                    },
+
+                },
+                {
+                    name: 'count_checks',
+                    data: 'count_checks',
+                },
+                {
+                    name: 'total_points',
+                    data: 'total_points',
+                },
+                {
+                    name: 'avg_position',
+                    data: 'avg_position',
+                },
+                {
+                    name: 'though',
+                    data: function (row) {
+                        if (row.though.length > 0) {
+                            return '<div id="though' + row.id + '" class="mt-2 mb-2">' +
+                                '    <a href="/show-though/' + row.though.id + '" target="_blank">' +
+                                '        {{ __('Results of end-to-end analysis') }}' +
+                                '    </a>' +
+                                '    <div class="text-muted">' +
+                                '        {{ __('Last analysis') }} ' + '' + row.though.updated_at +
+                                '    </div>' +
+                                '</div>'
+                        } else {
+                            return '<button data-target="#startThroughScan' + row.id + '" ' +
+                                ' data-toggle="modal"' +
+                                ' data-placement="top" class="btn btn-secondary">' +
+                                ' Сквозной анализ' +
+                                '</button>'
+                        }
+                    },
+                },
+                {
+                    name: 'last_check',
+                    data: 'last_check',
+                },
+            ];
+
             $('#main_history_table').DataTable({
-                "order": [[0, "desc"]],
-                "pageLength": 10,
-                "searching": true,
+                pageLength: 10,
+                processing: true,
+                serverSide: true,
+                aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [1, 6]
+                    }
+                ],
+                ajax: "{{ route('get.relevance.projects') }}",
+                columns: columns,
                 dom: 'lBfrtip',
                 buttons: [
                     'copy', 'csv', 'excel'
@@ -973,7 +1097,7 @@
                         "previous": "«"
                     },
                 },
-                "oLanguage": {
+                oLanguage: {
                     "sSearch": "{{ __('Search') }}:",
                     "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
                     "sEmptyTable": "{{ __('No records') }}",

@@ -18,7 +18,9 @@ use App\UsersJobs;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
@@ -38,6 +40,73 @@ class HistoryRelevanceController extends Controller
             'config' => $config,
             'tags' => $tags,
         ]);
+    }
+
+    private function prepareData($records, $request, $owner = false)
+    {
+        $aaData = [];
+        foreach ($records as $record) {
+            $data = [
+                'id' => $record['id'],
+                'name' => $record['name'],
+                'relevanceTags' => $record['relevance_tags'] ?? [],
+                'count_sites' => $record['count_sites'],
+                'count_checks' => $record['count_checks'],
+                'total_points' => $record['total_points'],
+                'avg_position' => $record['avg_position'],
+                'though' => $record['though'] ?? [],
+                'last_check' => Carbon::parse($record['last_check'])->format('d.m.Y h:m:s')
+            ];
+
+            Log::info('', [$owner]);
+            if ($owner) {
+                Log::debug('owner', $record['user']);
+                $data['owner'] = $record['user'];
+            }
+
+            $aaData[] = $data;
+        }
+
+        return json_encode([
+            'draw' => intval($request['draw']),
+            'iTotalRecords' => ProjectRelevanceHistory::select('count(*) as allcount')->count(),
+            'iTotalDisplayRecords' => count($records),
+            'aaData' => $aaData
+        ]);
+    }
+
+    public function getAllProjects(Request $request)
+    {
+        $columnIndex = $request['order'][0]['column'];
+        $columnSortOrder = $request['order'][0]['dir'];
+        $columnName = $request['columns'][$columnIndex]['name'];
+
+        $records = ProjectRelevanceHistory::orderBy($columnName, $columnSortOrder)
+            ->skip($request['start'])
+            ->take($request['length'])
+            ->with('relevanceTags')
+            ->with('user')
+            ->get()
+            ->toArray();
+
+        return $this->prepareData($records, $request, true);
+    }
+
+    public function getProjects(Request $request)
+    {
+        $columnIndex = $request['order'][0]['column'];
+        $columnSortOrder = $request['order'][0]['dir'];
+        $columnName = $request['columns'][$columnIndex]['name'];
+
+        $records = ProjectRelevanceHistory::orderBy($columnName, $columnSortOrder)
+            ->skip($request['start'])
+            ->take($request['length'])
+            ->where('user_id', '=', Auth::id())
+            ->with('relevanceTags')
+            ->get()
+            ->toArray();
+
+        return $this->prepareData($records, $request);
     }
 
     public function getStories(Request $request): JsonResponse
