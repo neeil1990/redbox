@@ -42,7 +42,7 @@ class HistoryRelevanceController extends Controller
         ]);
     }
 
-    private function prepareData($records, $request, $owner = false)
+    private function prepareData($records, $totalRecords, $request, $owner = false)
     {
         $aaData = [];
         foreach ($records as $record) {
@@ -67,53 +67,59 @@ class HistoryRelevanceController extends Controller
 
         return json_encode([
             'draw' => intval($request['draw']),
-            'iTotalRecords' => ProjectRelevanceHistory::select('count(*) as allcount')->count(),
-            'iTotalDisplayRecords' => count($records),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
             'aaData' => $aaData
         ]);
     }
 
     public function getAllProjects(Request $request)
     {
-        $columnIndex = $request['order'][0]['column'];
-        $columnSortOrder = $request['order'][0]['dir'];
-        $columnName = $request['columns'][$columnIndex]['name'];
-        $search = $request['search']['value'];
+        $start = $request->input('start');
+        $pageNumber = floor($start / $request->input('length')) + 1;
+
+        $columnIndex = $request->input('order.0.column');
+        $columnSortOrder = $request->input('order.0.dir');
+        $columnName = $request->input('columns.' . $columnIndex . '.name');
+        $search = $request->input('search.value');
+
+        $totalRecords = ProjectRelevanceHistory::where('name', 'like', "%$search%")->count();
 
         $records = ProjectRelevanceHistory::orderBy($columnName, $columnSortOrder)
-            ->with('relevanceTags')
+            ->with('user')
             ->whereHas('user', function ($query) use ($search) {
                 $query->where('email', 'like', "%$search%");
             })
             ->orWhere('name', 'like', "%$search%")
-            ->with('user')
+            ->with('relevanceTags')
             ->with('though')
-            ->skip($request['start'])
-            ->take($request['length'])
-            ->get()
-            ->toArray();
+            ->paginate($request->input('length'), ['*'], 'page', $pageNumber);
 
-        return $this->prepareData($records, $request, true);
+        return $this->prepareData($records, $totalRecords, $request, true);
     }
 
     public function getProjects(Request $request)
     {
-        $columnIndex = $request['order'][0]['column'];
-        $columnSortOrder = $request['order'][0]['dir'];
-        $columnName = $request['columns'][$columnIndex]['name'];
-        $search = $request['search']['value'];
+        $start = $request->input('start');
+        $pageNumber = floor($start / $request->input('length')) + 1;
+
+        $columnIndex = $request->input('order.0.column');
+        $columnSortOrder = $request->input('order.0.dir');
+        $columnName = $request->input('columns.' . $columnIndex . '.name');
+        $search = $request->input('search.value');
+
+        $totalRecords = ProjectRelevanceHistory::where('user_id', '=', Auth::id())
+            ->where('name', 'like', "%$search%")
+            ->count();
 
         $records = ProjectRelevanceHistory::orderBy($columnName, $columnSortOrder)
             ->where('user_id', '=', Auth::id())
             ->where('name', 'like', "%$search%")
             ->with('relevanceTags')
             ->with('though')
-            ->skip($request['start'])
-            ->take($request['length'])
-            ->get()
-            ->toArray();
+            ->paginate($request->input('length'), ['*'], 'page', $pageNumber);
 
-        return $this->prepareData($records, $request);
+        return $this->prepareData($records, $totalRecords, $request);
     }
 
     public function getStories(Request $request): JsonResponse

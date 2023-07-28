@@ -1074,7 +1074,9 @@
             ];
 
             $('#main_history_table').DataTable({
-                pageLength: 10,
+                ajax: "{{ route('get.relevance.projects') }}",
+                columns: columns,
+                paging: true,
                 processing: true,
                 serverSide: true,
                 order: [[7, 'desc']],
@@ -1084,8 +1086,6 @@
                         aTargets: [1, 2, 6]
                     }
                 ],
-                ajax: "{{ route('get.relevance.projects') }}",
-                columns: columns,
                 dom: 'lBfrtip',
                 buttons: [
                     'copy', 'csv', 'excel'
