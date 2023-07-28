@@ -1077,6 +1077,7 @@
                 pageLength: 10,
                 processing: true,
                 serverSide: true,
+                order: [[7, 'desc']],
                 aoColumnDefs: [
                     {
                         bSortable: false,

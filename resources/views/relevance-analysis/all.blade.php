@@ -1484,6 +1484,7 @@
                 serverSide: true,
                 ajax: "{{ route('get.all.relevance.projects') }}",
                 columns: columns,
+                order: [[8, 'desc']],
                 aoColumnDefs: [
                     {
                         bSortable: false,
