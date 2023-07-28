@@ -59,7 +59,6 @@ class HistoryRelevanceController extends Controller
             ];
 
             if ($owner) {
-                Log::debug('owner', $record['user']);
                 $data['owner'] = $record['user'];
             }
 
@@ -88,6 +87,7 @@ class HistoryRelevanceController extends Controller
             })
             ->orWhere('name', 'like', "%$search%")
             ->with('user')
+            ->with('though')
             ->skip($request['start'])
             ->take($request['length'])
             ->get()
@@ -107,6 +107,7 @@ class HistoryRelevanceController extends Controller
             ->where('user_id', '=', Auth::id())
             ->where('name', 'like', "%$search%")
             ->with('relevanceTags')
+            ->with('though')
             ->skip($request['start'])
             ->take($request['length'])
             ->get()

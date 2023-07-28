@@ -1454,7 +1454,7 @@
                 {
                     name: 'though',
                     data: function (row) {
-                        if (row.though.length > 0) {
+                        if (row.though.id) {
                             return '<div id="though' + row.id + '" class="mt-2 mb-2">' +
                                 '    <a href="/show-though/' + row.though.id + '" target="_blank">' +
                                 '        {{ __('Results of end-to-end analysis') }}' +
