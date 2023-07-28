@@ -55,7 +55,6 @@ table.dataTable tbody th.dt-body-nowrap, table.dataTable tbody td.dt-body-nowrap
 }
 
 table.dataTable {
-    width: 100%;
     margin: 0 auto;
     clear: both;
     border-collapse: separate;
@@ -307,8 +306,8 @@ table.dataTable th, table.dataTable td {
     box-shadow: 0 0 5px black;
     position: absolute;
     top: 50%;
-    left: 50%;
-    width: 100%;
+    left: 75%;
+    width: 50%;
     height: 40px;
     margin-left: -50%;
     padding-top: -16px;
