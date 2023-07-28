@@ -58,7 +58,6 @@ class HistoryRelevanceController extends Controller
                 'last_check' => Carbon::parse($record['last_check'])->format('d.m.Y h:m:s')
             ];
 
-            Log::info('', [$owner]);
             if ($owner) {
                 Log::debug('owner', $record['user']);
                 $data['owner'] = $record['user'];
@@ -80,12 +79,17 @@ class HistoryRelevanceController extends Controller
         $columnIndex = $request['order'][0]['column'];
         $columnSortOrder = $request['order'][0]['dir'];
         $columnName = $request['columns'][$columnIndex]['name'];
+        $search = $request['search']['value'];
 
         $records = ProjectRelevanceHistory::orderBy($columnName, $columnSortOrder)
+            ->with('relevanceTags')
+            ->whereHas('user', function ($query) use ($search) {
+                $query->where('email', 'like', "%$search%");
+            })
+            ->orWhere('name', 'like', "%$search%")
+            ->with('user')
             ->skip($request['start'])
             ->take($request['length'])
-            ->with('relevanceTags')
-            ->with('user')
             ->get()
             ->toArray();
 
@@ -97,12 +101,14 @@ class HistoryRelevanceController extends Controller
         $columnIndex = $request['order'][0]['column'];
         $columnSortOrder = $request['order'][0]['dir'];
         $columnName = $request['columns'][$columnIndex]['name'];
+        $search = $request['search']['value'];
 
         $records = ProjectRelevanceHistory::orderBy($columnName, $columnSortOrder)
+            ->where('user_id', '=', Auth::id())
+            ->where('name', 'like', "%$search%")
+            ->with('relevanceTags')
             ->skip($request['start'])
             ->take($request['length'])
-            ->where('user_id', '=', Auth::id())
-            ->with('relevanceTags')
             ->get()
             ->toArray();
 
