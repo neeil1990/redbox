@@ -193,10 +193,10 @@ class AdminController extends Controller
         ]);
     }
 
-    public function removeUserJobs(): bool
+    public function removeUserJobs(): JsonResponse
     {
         UsersJobs::truncate();
 
-        return true;
+        return response()->json([]);
     }
 }

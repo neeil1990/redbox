@@ -119,7 +119,7 @@
 <!-- Bootstrap -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- app -->
-@unless(request()->path() == 'utm-marks')
+@unless(request()->path() == 'utm-marks' || request()->path() == 'all-projects')
     <script src="{{ asset('js/app.js') }}"></script>
 @endunless
 <!-- AdminLTE -->
