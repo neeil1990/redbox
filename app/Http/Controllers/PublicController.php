@@ -28,10 +28,8 @@ class PublicController extends Controller
         $behavior = Behavior::findOrFail($id);
         $phrases = $behavior->phrases()->where('status', 0)->sortOrder()->first();
 
-        if (!$phrases) {
-            Session::flash('adding_phrases', __('Please adding phrases.'));
-            return redirect()->route('behavior.edit', [$id]);
-        }
+        if (!$phrases)
+            return view('behavior.errors.task');
 
         $arDomain = explode('.', $behavior->domain);
         $domain = preg_replace('/(.)./iu', '$1*', $arDomain[0]);
