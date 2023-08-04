@@ -200,254 +200,10 @@
                         </tbody>
                     </table>
 
-                    @foreach($projects as $item)
-                        <div class="modal fade" id="removeModal{{ $item->id }}" tabindex="-1"
-                             aria-labelledby="removeModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="removeModalLabel">
-                                            {{ __('Deleting results from a project') }} {{ $item->name }}
-                                        </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                            <span class="__helper-link ui_tooltip_w">
-                                                {{ __('How it works') }}
-                                                <i class="fa fa-question-circle" style="color: grey"></i>
-                                                <span class="ui_tooltip __right" style="width: 350px">
-                                                    <span class="ui_tooltip_content">
-                                                        {{ __('All scan results that have no comment will be deleted.') }} <br>
-                                                        {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}
-                                                    </span>
-                                                </span>
-                                            </span>
-                                        <p>
-                                            <b>{{ __('You will not be able to recover the data.') }}</b>
-                                        </p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary remove-empty-results"
-                                                data-target="{{ $item->id }}" data-dismiss="modal">
-                                            {{ __('Remove') }}
-                                        </button>
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">
-                                            {{ __('Do not delete') }}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal fade" id="removeWithFiltersModal{{ $item->id }}" tabindex="-1"
-                             aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title"
-                                            id="removeWithFiltersModalLabel">
-                                            {{ __('Deleting results from a project') }} {{ $item->name }}
-                                        </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
+                    <div id="block-for-modals">
 
-                                        <div class="d-flex flex-row">
-                                            <div>
-                                                <label>{{ __('Scans performed after (inclusive)') }}</label>
-                                                <input class="form form-control" type="date"
-                                                       id="date-filter-after-{{ $item->id }}">
-                                            </div>
+                    </div>
 
-                                            <div>
-                                                <label>{{ __('Scans performed before (inclusive)') }}</label>
-                                                <input class="form form-control" type="date"
-                                                       id="date-filter-before-{{ $item->id }}">
-                                            </div>
-                                        </div>
-
-                                        <label class="mt-3">{{ __('Comment') }}</label>
-                                        <input type="text" class="form form-control" name="comment-filter"
-                                               id="comment-filter-{{ $item->id }}">
-
-                                        <label class="mt-3">{{ __('Phrase') }}</label>
-                                        <input type="text" class="form form-control" name="phrase-filter"
-                                               id="phrase-filter-{{ $item->id }}">
-
-                                        <label class="mt-3">{{ __('Region') }}</label>
-                                        {!! Form::select('region', [
-                                               'none' => __("Don't search for matches by region"),
-                                               'all' => 'Любой регион',
-                                               '213' => __('Moscow'),
-                                               '1' => __('Moscow and the area'),
-                                               '20' => __('Arkhangelsk'),
-                                               '37' => __('Astrakhan'),
-                                               '197' => __('Barnaul'),
-                                               '4' => __('Belgorod'),
-                                               '77' => __('Blagoveshchensk'),
-                                               '191' => __('Bryansk'),
-                                               '24' => __('Veliky Novgorod'),
-                                               '75' => __('Vladivostok'),
-                                               '33' => __('Vladikavkaz'),
-                                               '192' => __('Vladimir'),
-                                               '38' => __('Volgograd'),
-                                               '21' => __('Vologda'),
-                                               '193' => __('Voronezh'),
-                                               '1106' => __('Grozny'),
-                                               '54' => __('Ekaterinburg'),
-                                               '5' => __('Ivanovo'),
-                                               '63' => __('Irkutsk'),
-                                               '41' => __('Yoshkar-ola'),
-                                               '43' => __('Kazan'),
-                                               '22' => __('Kaliningrad'),
-                                               '64' => __('Kemerovo'),
-                                               '7' => __('Kostroma'),
-                                               '35' => __('Krasnodar'),
-                                               '62' => __('Krasnoyarsk'),
-                                               '53' => __('Kurgan'),
-                                               '8' => __('Kursk'),
-                                               '9' => __('Lipetsk'),
-                                               '28' => __('Makhachkala'),
-                                               '23' => __('Murmansk'),
-                                               '1092' => __('Nazran'),
-                                               '30' => __('Nalchik'),
-                                               '47' => __('Nizhniy Novgorod'),
-                                               '65' => __('Novosibirsk'),
-                                               '66' => __('Omsk'),
-                                               '10' => __('Eagle'),
-                                               '48' => __('Orenburg'),
-                                               '49' => __('Penza'),
-                                               '50' => __('Perm'),
-                                               '25' => __('Pskov'),
-                                               '39' => __('Rostov-on-Don'),
-                                               '11' => __('Ryazan'),
-                                               '51' => __('Samara'),
-                                               '42' => __('Saransk'),
-                                               '2' => __('Saint-Petersburg'),
-                                               '12' => __('Smolensk'),
-                                               '239' => __('Sochi'),
-                                               '36' => __('Stavropol'),
-                                               '10649' => __('Stary Oskol'),
-                                               '973' => __('Surgut'),
-                                               '13' => __('Tambov'),
-                                               '14' => __('Tver'),
-                                               '67' => __('Tomsk'),
-                                               '15' => __('Tula'),
-                                               '195' => __('Ulyanovsk'),
-                                               '172' => __('Ufa'),
-                                               '76' => __('Khabarovsk'),
-                                               '45' => __('Cheboksary'),
-                                               '56' => __('Chelyabinsk'),
-                                               '1104' => __('Cherkessk'),
-                                               '16' => __('Yaroslavl'),
-                                               ], null, ['class' => 'custom-select rounded-0 region', 'id' => 'region-filter-'. $item->id]) !!}
-
-                                        <label class="mt-3">{{ __('Link') }}</label>
-                                        <input type="text" class="form form-control"
-                                               name="link-filter"
-                                               id="link-filter-{{ $item->id }}">
-
-                                        <div class="d-flex flex-row mt-3 mb-3">
-                                            <div>
-                                                <label>{{ __('Position from (inclusive)') }}</label>
-                                                <input class="form form-control" type="number"
-                                                       id="position-filter-after-{{ $item->id }}"
-                                                       placeholder="{{ __('0 - did not get into the top 100') }}">
-                                            </div>
-
-                                            <div>
-                                                <label>{{ __('Position up to (inclusive)') }}</label>
-                                                <input class="form form-control" type="number"
-                                                       id="position-filter-before-{{ $item->id }}"
-                                                       placeholder="{{ __('0 - did not get into the top 100') }}">
-                                            </div>
-                                        </div>
-
-                                        <span class="__helper-link ui_tooltip_w">
-                                                {{ __('How it works') }}
-                                                <i class="fa fa-question-circle" style="color: grey"></i>
-                                                <span class="ui_tooltip __right" style="width: 350px">
-                                                    <span class="ui_tooltip_content">
-                                                        {{ __('According to your project') }} {{ $item->name }} {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>
-                                                        {{ __('All matches found will be deleted.') }} <br>
-                                                        {{ __("If you don't want to search by any parameter, then leave the field empty.") }}
-                                                    </span>
-                                                </span>
-                                            </span>
-
-                                        <div class="text-danger mt-3 mb-3">
-                                            {{ __('You can delete all the results associated with the project') }} {{ $item->name }}
-                                            , {{ __('if you leave all fields empty, be careful') }}
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary remove-with-filters"
-                                                data-dismiss="modal" data-target="{{ $item->id }}">
-                                            {{ __('Remove') }}
-                                        </button>
-                                        <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">{{ __('Do not delete') }}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal fade" id="repeatUniqueScan{{ $item->id }}" tabindex="-1"
-                             aria-labelledby="repeatUniqueScan{{ $item->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">{{ __('restart analyzed pages') }} {{ $item->name }}</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        {{ __('Are you going to restart the scan') }}
-                                        <b>{{ $item->count_sites }}</b>
-                                        {{ __('unique pages, are you sure?') }}
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button data-target="{{ $item->id }}" type="button"
-                                                class="btn btn-secondary repeat-scan-unique-sites"
-                                                data-dismiss="modal">{{ __('Start') }}</button>
-                                        <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">{{ __('Close') }}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal fade" id="startThroughScan{{ $item->id }}" tabindex="-1"
-                             aria-labelledby="repeatUniqueScan{{ $item->id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">
-                                            {{ __('Run an analysis of the end-to-end results of the project') }} {{ $item->name }}
-                                        </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        {{ __('The analysis of end-to-end words will be performed at') }}
-                                        <b>{{ $item->count_sites }}</b>
-                                        {{ __('unique pages, are you sure?') }}
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button data-target="{{ $item->id }}" type="button"
-                                                class="btn btn-secondary start-through-analyse click_tracking"
-                                                data-dismiss="modal"
-                                                data-click="Start through scan">{{ __('Start') }}</button>
-                                        <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">{{ __('Close') }}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
                     <div style="display:none;" class="history">
                         <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog"
                              aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -770,6 +526,8 @@
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script>
+            let usersProjects
+            let gettedProjects
             let words = {
                 search: "{{ __('Search') }}",
                 show: "{{ __('show') }}",
@@ -1227,6 +985,342 @@
                         },
                     });
                 })
+
+                usersProjects = $('#users_projects').DataTable({
+                    pageLength: 10,
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('get.all.relevance.projects') }}",
+                    columns: columns,
+                    order: [[8, 'desc']],
+                    aoColumnDefs: [
+                        {
+                            bSortable: false,
+                            aTargets: [1, 2, 7]
+                        }
+                    ],
+                    language: {
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
+                    oLanguage: {
+                        "sSearch": words.search + ":",
+                        "sLengthMenu": words.show + " _MENU_ " + words.records,
+                        "sEmptyTable": words.noRecords,
+                        "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                    },
+                    drawCallback: function () {
+                        $('#users_projects').css({
+                            width: '100%'
+                        })
+
+                        let api = this.api();
+                        let currentPageData = api.rows({page: 'current'}).data();
+                        let newModals = ''
+                        $.each(currentPageData, function (key, value) {
+                            let select = getSelect(value.id)
+
+                            newModals += ' <div class="modal fade" id="removeModal' + value.id + '" tabindex="-1"' +
+                                '      aria-labelledby="removeModalLabel" aria-hidden="true">' +
+                                '     <div class="modal-dialog">' +
+                                '         <div class="modal-content">' +
+                                '             <div class="modal-header">' +
+                                '                 <h5 class="modal-title" id="removeModalLabel">' +
+                                '                     {{ __('Deleting results from a project') }} ' + value.name +
+                                '                 </h5>' +
+                                '                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                '                     <span aria-hidden="true">&times;</span>' +
+                                '                 </button>' +
+                                '             </div>' +
+                                '             <div class="modal-body">' +
+                                '             <span class="__helper-link ui_tooltip_w">' +
+                                '                 {{ __('How it works') }}' +
+                                '                 <i class="fa fa-question-circle" style="color: grey"></i>' +
+                                '                 <span class="ui_tooltip __right" style="width: 350px">' +
+                                '                     <span class="ui_tooltip_content">' +
+                                '                         {{ __('All scan results that have no comment will be deleted.') }} <br>' +
+                                '                         {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}' +
+                                '                     </span>' +
+                                '                 </span>' +
+                                '             </span>' +
+                                '                 <p>' +
+                                '                     <b>{{ __('You will not be able to recover the data.') }}</b>' +
+                                '                 </p>' +
+                                '             </div>' +
+                                '             <div class="modal-footer">' +
+                                '                 <button type="button" class="btn btn-secondary remove-empty-results"' +
+                                '                         data-target="' + value.id + '" data-dismiss="modal">' +
+                                '                     {{ __('Remove') }}' +
+                                '                 </button>' +
+                                '                 <button type="button" class="btn btn-default" data-dismiss="modal">' +
+                                '                     {{ __('Do not delete') }}' +
+                                '                 </button>' +
+                                '             </div>' +
+                                '         </div>' +
+                                '     </div>' +
+                                ' </div>' +
+                                ' <div class="modal fade" id="startThroughScan' + value.id + '" tabindex="-1" ' +
+                                '    aria-labelledby="repeatUniqueScan' + value.id + '" aria-hidden="true">' +
+                                '        <div class="modal-dialog">' +
+                                '        <div class="modal-content">' +
+                                '        <div class="modal-header">' +
+                                '        <h5 class="modal-title">' +
+                                '        {{ __('Run an analysis of the end-to-end results of the project') }} ' + value.name +
+                                '        </h5>' +
+                                '    <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                '        <span aria-hidden="true">&times;</span>' +
+                                '    </button>' +
+                                '</div>' +
+                                '    <div class="modal-body">' +
+                                '        {{ __('The analysis of end-to-end words will be performed at') }}' +
+                                '        <b>' + value.count_sites + '</b>' +
+                                '        {{ __('unique pages, are you sure?') }}' +
+                                '    </div>' +
+                                '    <div class="modal-footer">' +
+                                '        <button data-target="' + value.id + '" type="button"' +
+                                '                class="btn btn-secondary start-through-analyse click_tracking"' +
+                                '                data-dismiss="modal"' +
+                                '                data-click="Start through scan">{{ __('Start') }}</button>' +
+                                '        <button type="button" class="btn btn-default"' +
+                                '                data-dismiss="modal">{{ __('Close') }}</button>' +
+                                '    </div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '        <div class="modal fade" id="repeatUniqueScan' + value.id + '" tabindex="-1"' +
+                                '    aria-labelledby="repeatUniqueScan' + value.id + '" aria-hidden="true">' +
+                                '        <div class="modal-dialog">' +
+                                '        <div class="modal-content">' +
+                                '        <div class="modal-header">' +
+                                '        <h5 class="modal-title">{{ __('restart analyzed pages') }} ' + value.name + '</h5>' +
+                                '    <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                '        <span aria-hidden="true">&times;</span>' +
+                                '    </button>' +
+                                '</div>' +
+                                '    <div class="modal-body">' +
+                                '        {{ __('Are you going to restart the scan') }}' +
+                                '        <b>' + value.count_sites + '</b>' +
+                                '        {{ __('unique pages, are you sure?') }}' +
+                                '    </div>' +
+                                '    <div class="modal-footer">' +
+                                '        <button data-target="' + value.id + '" type="button"' +
+                                '                class="btn btn-secondary repeat-scan-unique-sites"' +
+                                '                data-dismiss="modal">{{ __('Start') }}</button>' +
+                                '        <button type="button" class="btn btn-default"' +
+                                '                data-dismiss="modal">{{ __('Close') }}</button>' +
+                                '    </div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div class="modal fade" id="removeWithFiltersModal' + value.id + '" tabindex="-1"' +
+                                '     aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">' +
+                                '         <div class="modal-dialog">' +
+                                '         <div class="modal-content">' +
+                                '         <div class="modal-header">' +
+                                '         <h5 class="modal-title"' +
+                                '     id="removeWithFiltersModalLabel">' +
+                                '         {{ __('Deleting results from a project') }} ' + value.name +
+                                '         </h5>' +
+                                '     <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                '         <span aria-hidden="true">&times;</span>' +
+                                '     </button>' +
+                                ' </div>' +
+                                '     <div class="modal-body">' +
+
+                                '         <div class="d-flex flex-row">' +
+                                '             <div>' +
+                                '                 <label>{{ __('Scans performed after (inclusive)') }}</label>' +
+                                '                 <input class="form form-control" type="date"' +
+                                '                        id="date-filter-after-' + value.id + '">' +
+                                '             </div>' +
+
+                                '             <div>' +
+                                '                 <label>{{ __('Scans performed before (inclusive)') }}</label>' +
+                                '                 <input class="form form-control" type="date"' +
+                                '                        id="date-filter-before-' + value.id + '">' +
+                                '             </div>' +
+                                '         </div>' +
+
+                                '         <label class="mt-3">{{ __('Comment') }}</label>' +
+                                '         <input type="text" class="form form-control" name="comment-filter"' +
+                                '                id="comment-filter-' + value.id + '">' +
+
+                                '             <label class="mt-3">{{ __('Phrase') }}</label>' +
+                                '             <input type="text" class="form form-control" name="phrase-filter"' +
+                                '                    id="phrase-filter-' + value.id + '">' +
+
+                                '                 <label class="mt-3">{{ __('Region') }}</label>'
+                                + select +
+                                '                 <label class="mt-3">{{ __('Link') }}</label>' +
+                                '                 <input type="text" class="form form-control"' +
+                                '                        name="link-filter"' +
+                                '                        id="link-filter-' + value.id + '">' +
+
+                                '                     <div class="d-flex flex-row mt-3 mb-3">' +
+                                '                         <div>' +
+                                '                             <label>{{ __('Position from (inclusive)') }}</label>' +
+                                '                             <input class="form form-control" type="number"' +
+                                '                                    id="position-filter-after-' + value.id + '"' +
+                                '                                    placeholder="{{ __('0 - did not get into the top 100') }}">' +
+                                '                         </div>' +
+                                '                         <div>' +
+                                '                             <label>{{ __('Position up to (inclusive)') }}</label>' +
+                                '                             <input class="form form-control" type="number"' +
+                                '                                    id="position-filter-before-' + value.id + '"' +
+                                '                                    placeholder="{{ __('0 - did not get into the top 100') }}">' +
+                                '                         </div>' +
+                                '                     </div>' +
+                                '                     <span class="__helper-link ui_tooltip_w">' +
+                                '                             {{ __('How it works') }}' +
+                                '                             <i class="fa fa-question-circle" style="color: grey"></i>' +
+                                '                             <span class="ui_tooltip __right" style="width: 350px">' +
+                                '                                 <span class="ui_tooltip_content">' +
+                                '                                    {{ __('According to your project') }} ' + value.name + ' {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>' +
+                                '                                     {{ __('All matches found will be deleted.') }} <br>' +
+                                '                                     {{ __("If you don't want to search by any parameter, then leave the field empty.") }}' +
+                                '                                 </span>' +
+                                '                             </span>' +
+                                '                         </span>' +
+                                '                     <div class="text-danger mt-3 mb-3">' +
+                                '                         {{ __('You can delete all the results associated with the project') }}' + value.name +
+                                '                         , {{ __('if you leave all fields empty, be careful') }}' +
+                                '                     </div>' +
+                                '     </div>' +
+                                '     <div class="modal-footer">' +
+                                '         <button type="button" class="btn btn-secondary remove-with-filters"' +
+                                '                 data-dismiss="modal" data-target="' + value.id + '">' +
+                                '             {{ __('Remove') }}' +
+                                '         </button>' +
+                                '         <button type="button" class="btn btn-default"' +
+                                '                 data-dismiss="modal">{{ __('Do not delete') }}</button>' +
+                                '     </div>' +
+                                ' </div>' +
+                                ' </div>' +
+                                ' </div>'
+
+                        })
+
+                        $('#block-for-modals').html(newModals)
+
+                        $('.repeat-scan-unique-sites').on('click', function () {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/repeat-scan-unique-sites",
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    id: $(this).attr('data-target'),
+                                },
+                                success: function (response) {
+                                    if (response.code === 200) {
+                                        getSuccessMessage(response.message)
+                                        $.each(response.object, function (key, value) {
+                                            $('#history-state-' + value).html(
+                                                '<p>Обрабатывается..</p>' +
+                                                '<div class="text-center" id="preloaderBlock">' +
+                                                '        <div class="three col">' +
+                                                '            <div class="loader" id="loader-1"></div>' +
+                                                '        </div>' +
+                                                '</div>'
+                                            )
+                                        })
+
+                                    } else if (response.code === 415) {
+                                        getErrorMessage(response.message)
+                                    }
+                                },
+                            });
+                        })
+
+                        $('.start-through-analyse').on('click', function () {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/start-through-analyse",
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    id: $(this).attr('data-target'),
+                                },
+                                success: function (response) {
+                                    if (response.code === 200) {
+                                        getSuccessMessage(response.message, 5000)
+                                    } else if (response.code === 415) {
+                                        getErrorMessage(response.message, 15000)
+                                    }
+                                },
+                            });
+                        })
+
+                        $('.remove-empty-results').on('click', function () {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/remove-scan-results",
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    id: $(this).attr('data-target'),
+                                },
+                                success: function (response) {
+                                    if (response.code === 200) {
+                                        getSuccessMessage(response.message)
+                                        setValues(response)
+                                        usersProjects.draw()
+                                    } else if (response.code === 415) {
+                                        getErrorMessage(response.message)
+                                    }
+                                },
+                            });
+                        })
+
+                        $('.remove-with-filters').on('click', function () {
+                            let id = $(this).attr('data-target');
+
+                            if ($('#comment-filter-' + id).val() === '' &&
+                                $('#phrase-filter-' + id).val() === '' &&
+                                $('#region-filter-' + id).val() === 'none' &&
+                                $('#link-filter-' + id).val() === '' &&
+                                $('#date-filter-before-' + id).val() === '' &&
+                                $('#date-filter-after-' + id).val() === '' &&
+                                $('#position-filter-after-' + id).val() === '' &&
+                                $('#position-filter-before-' + id).val() === ''
+                            ) {
+                                if (!confirm('У вас будут удалены ВСЕ результаты проекта.')) {
+                                    getSuccessMessage('Удаление было отменено')
+                                    return;
+                                }
+                            }
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/remove-scan-results-with-filters",
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    id: id,
+                                    comment: $('#comment-filter-' + id).val(),
+                                    phrase: $('#phrase-filter-' + id).val(),
+                                    region: $('#region-filter-' + id).val(),
+                                    link: $('#link-filter-' + id).val(),
+                                    before: $('#date-filter-before-' + id).val(),
+                                    after: $('#date-filter-after-' + id).val(),
+                                    positionAfter: $('#position-filter-after-' + id).val(),
+                                    positionBefore: $('#position-filter-before-' + id).val()
+                                },
+                                success: function (response) {
+                                    if (response.code === 200) {
+                                        getSuccessMessage(response.message)
+                                        usersProjects.draw()
+                                    } else if (response.code === 415) {
+                                        getErrorMessage(response.message)
+                                    }
+                                },
+                            });
+                        })
+                    }
+                });
             });
 
             function getRegionName(id) {
@@ -1478,35 +1572,6 @@
                 },
             ];
 
-            let usersProjects = $('#users_projects').DataTable({
-                pageLength: 10,
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('get.all.relevance.projects') }}",
-                columns: columns,
-                order: [[8, 'desc']],
-                aoColumnDefs: [
-                    {
-                        bSortable: false,
-                        aTargets: [1, 2, 7]
-                    }
-                ],
-                language: {
-                    paginate: {
-                        "first": "«",
-                        "last": "»",
-                        "next": "»",
-                        "previous": "«"
-                    },
-                },
-                oLanguage: {
-                    "sSearch": words.search + ":",
-                    "sLengthMenu": words.show + " _MENU_ " + words.records,
-                    "sEmptyTable": words.noRecords,
-                    "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
-                }
-            });
-
             $(".dt-button").addClass('btn btn-secondary')
 
             function getSuccessMessage(message, time = 3000) {
@@ -1633,6 +1698,87 @@
 
             function getTextResult(result, ideal) {
                 return "{{ __('The landing page received') }}" + ' <b>' + result + '</b>.<br> ' + ' {{ __('Recommended value')}}' + ' <b>' + ideal + '.</b>';
+            }
+
+            function getSelect(id) {
+                return '<select class="custom-select rounded-0 region" id="region-filter-' + id + '">' +
+                    '    <option value="none">' + "{{ __("Don't search for matches by region") }}" + '</option>' +
+                    '    <option value="all">Любой регион</option>' +
+                    '    <option value="213">' + "{{ __('Moscow') }}" + '</option>' +
+                    '    <option value="1">' + "{{ __('Moscow and the area') }}" + '</option>' +
+                    '    <option value="20">' + "{{ __('Arkhangelsk') }}" + '</option>' +
+                    '    <option value="37">' + "{{ __('Astrakhan') }}" + '</option>' +
+                    '    <option value="197">' + "{{ __('Barnaul') }}" + '</option>' +
+                    '    <option value="4">' + "{{ __('Belgorod') }}" + '</option>' +
+                    '    <option value="77">' + "{{ __('Blagoveshchensk') }}" + '</option>' +
+                    '    <option value="191">' + "{{ __('Bryansk') }}" + '</option>' +
+                    '    <option value="24">' + "{{ __('Veliky Novgorod') }}" + '</option>' +
+                    '    <option value="75">' + "{{ __('Vladivostok') }}" + '</option>' +
+                    '    <option value="33">' + "{{ __('Vladikavkaz') }}" + '</option>' +
+                    '    <option value="192">' + "{{ __('Vladimir') }}" + '</option>' +
+                    '    <option value="38">' + "{{ __('Volgograd') }}" + '</option>' +
+                    '    <option value="21">' + "{{ __('Vologda') }}" + '</option>' +
+                    '    <option value="193">' + "{{ __('Voronezh') }}" + '</option>' +
+                    '    <option value="1106">' + "{{ __('Grozny') }}" + '</option>' +
+                    '    <option value="54">' + "{{ __('Ekaterinburg') }}" + '</option>' +
+                    '    <option value="5">' + "{{ __('Ivanovo') }}" + '</option>' +
+                    '    <option value="63">' + "{{ __('Irkutsk') }}" + '</option>' +
+                    '    <option value="41">' + "{{ __('Yoshkar-ola') }}" + '</option>' +
+                    '    <option value="43">' + "{{ __('Kazan') }}" + '</option>' +
+                    '    <option value="22">' + "{{ __('Kaliningrad') }}" + '</option>' +
+                    '    <option value="64">' + "{{ __('Kemerovo') }}" + '</option>' +
+                    '    <option value="7">' + "{{ __('Kostroma') }}" + '</option>' +
+                    '    <option value="35">' + "{{ __('Krasnodar') }}" + '</option>' +
+                    '    <option value="62">' + "{{ __('Krasnoyarsk') }}" + '</option>' +
+                    '    <option value="53">' + "{{ __('Kurgan') }}" + '</option>' +
+                    '    <option value="8">' + "{{ __('Kursk') }}" + '</option>' +
+                    '    <option value="9">' + "{{ __('Lipetsk') }}" + '</option>' +
+                    '    <option value="28">' + "{{ __('Makhachkala') }}" + '</option>' +
+                    '    <option value="23">' + "{{ __('Murmansk') }}" + '</option>' +
+                    '    <option value="1092">' + "{{ __('Nazran') }}" + '</option>' +
+                    '    <option value="30">' + "{{ __('Nalchik') }}" + '</option>' +
+                    '    <option value="47">' + "{{ __('Nizhniy Novgorod') }}" + '</option>' +
+                    '    <option value="65">' + "{{ __('Novosibirsk') }}" + '</option>' +
+                    '    <option value="66">' + "{{ __('Omsk') }}" + '</option>' +
+                    '    <option value="10">' + "{{ __('Eagle') }}" + '</option>' +
+                    '    <option value="48">' + "{{ __('Orenburg') }}" + '</option>' +
+                    '    <option value="49">' + "{{ __('Penza') }}" + '</option>' +
+                    '    <option value="50">' + "{{ __('Perm') }}" + '</option>' +
+                    '    <option value="25">' + "{{ __('Pskov') }}" + '</option>' +
+                    '    <option value="39">' + "{{ __('Rostov-on-Don') }}" + '</option>' +
+                    '    <option value="11">' + "{{ __('Ryazan') }}" + '</option>' +
+                    '    <option value="51">' + "{{ __('Samara') }}" + '</option>' +
+                    '    <option value="42">' + "{{ __('Saransk') }}" + '</option>' +
+                    '    <option value="2">' + "{{ __('Saint-Petersburg') }}" + '</option>' +
+                    '    <option value="12">' + "{{ __('Smolensk') }}" + '</option>' +
+                    '    <option value="239">' + "{{ __('Sochi') }}" + '</option>' +
+                    '    <option value="36">' + "{{ __('Stavropol') }}" + '</option>' +
+                    '    <option value="10649">' + "{{ __('Stary Oskol') }}" + '</option>' +
+                    '    <option value="973">' + "{{ __('Surgut') }}" + '</option>' +
+                    '    <option value="13">' + "{{ __('Tambov') }}" + '</option>' +
+                    '    <option value="14">' + "{{ __('Tver') }}" + '</option>' +
+                    '    <option value="67">' + "{{ __('Tomsk') }}" + '</option>' +
+                    '    <option value="15">' + "{{ __('Tula') }}" + '</option>' +
+                    '    <option value="195">' + "{{ __('Ulyanovsk') }}" + '</option>' +
+                    '    <option value="172">' + "{{ __('Ufa') }}" + '</option>' +
+                    '    <option value="76">' + "{{ __('Khabarovsk') }}" + '</option>' +
+                    '    <option value="45">' + "{{ __('Cheboksary') }}" + '</option>' +
+                    '    <option value="56">' + "{{ __('Chelyabinsk') }}" + '</option>' +
+                    '    <option value="1104">' + "{{ __('Cherkessk') }}" + '</option>' +
+                    '    <option value="16">' + "{{ __('Yaroslavl') }}" + '</option>' +
+                    '</select>'
+            }
+
+            function setValues(response) {
+                $('.count-sites-' + response.objectId).html(response.countSites)
+                $('.total-points-' + response.objectId).html(response.points)
+                $('.count-checks-' + response.objectId).html(response.countChecks)
+                $('.total-positions-' + response.objectId).html(response.avgPosition)
+                if (response.removed == 1) {
+                    $('#story-id-' + response.objectId).remove()
+                } else {
+                    $('a[data-order="' + response.objectId + '"]').trigger('click')
+                }
             }
         </script>
     @endslot
