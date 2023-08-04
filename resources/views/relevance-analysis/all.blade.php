@@ -1488,7 +1488,7 @@
                 aoColumnDefs: [
                     {
                         bSortable: false,
-                        aTargets: [1, 7]
+                        aTargets: [1, 2, 7]
                     }
                 ],
                 language: {
