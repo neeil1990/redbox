@@ -58,10 +58,15 @@
             cookies.set(name, 'expand');
         });
 
-        if (cookies.get(name) == 'collapse') {
-            $('.card-widget').addClass('collapsed-card');
-        } else {
-            $('.card-widget').removeClass('collapsed-card');
+        try {
+            if (cookies.get(name) == 'collapse') {
+                $('.card-widget').addClass('collapsed-card');
+            } else {
+                $('.card-widget').removeClass('collapsed-card');
+            }
+        } catch (e) {
+
         }
+
     </script>
 @stop
