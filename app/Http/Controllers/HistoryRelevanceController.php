@@ -649,19 +649,16 @@ class HistoryRelevanceController extends Controller
                 ->latest('last_check')
                 ->first();
 
-            if ($record->state != 0) {
-                RelevanceHistoryQueue::dispatch(
-                    $ownerId,
-                    json_decode($record->request, true),
-                    $record->id
-                )->onQueue(UsersJobs::getPriority($ownerId))->onConnection('database');
+            RelevanceHistoryQueue::dispatch(
+                $ownerId,
+                json_decode($record->request, true),
+                $record->id
+            )->onQueue(UsersJobs::getPriority($ownerId))->onConnection('database');
 
-                $record->state = 0;
-                $record->save();
+            $record->state = 0;
+            $record->save();
 
-                $ids[] = $record->id;
-            }
-
+            $ids[] = $record->id;
         }
 
         return response()->json([
