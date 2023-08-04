@@ -1519,7 +1519,7 @@
                 {
                     name: 'owner',
                     data: function (row) {
-                        return row.owner.email + '<br><span class="text-muted">' + row.owner.name + '' + row.owner.last_name + '</span>'
+                        return row.owner.email + '<br><span class="text-muted">' + row.owner.name + ' ' + row.owner.last_name + '</span>'
                     },
                 },
                 {
