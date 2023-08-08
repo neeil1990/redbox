@@ -434,7 +434,6 @@
                             <th class="table-header">{{ __('Total score') }}</th>
                             <th class="table-header">{{ __('Avg position') }}</th>
                             <th class="table-header">{{ __('end-to-end analysis') }}</th>
-                            <th style="width: 230px;" class="table-header">Результаты</th>
                             <th class="table-header">{{ __('Last check') }}</th>
                         </tr>
                         </thead>
@@ -976,19 +975,6 @@
                     },
                 },
                 {
-                    name: 'story',
-                    data: function (row) {
-                        return '<div class="btn-group">' +
-                            '    <button class="btn btn-secondary project_name"  data-order="' + row.id + '">' +
-                            '        История' +
-                            '    </button>' +
-                            '    <button class="btn btn-secondary project_name_v2"  data-order="' + row.id + '">' +
-                            '        История фраз' +
-                            '    </button' +
-                            '</div>'
-                    }
-                },
-                {
                     name: 'last_check',
                     data: 'last_check',
                 },
@@ -1000,11 +986,11 @@
                 paging: true,
                 processing: true,
                 serverSide: true,
-                order: [[8, 'desc']],
+                order: [[7, 'desc']],
                 aoColumnDefs: [
                     {
                         bSortable: false,
-                        aTargets: [1, 2, 6, 7, 8]
+                        aTargets: [1, 2, 6, 7]
                     }
                 ],
                 dom: 'lBfrtip',
