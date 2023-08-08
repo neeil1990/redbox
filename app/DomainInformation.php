@@ -36,12 +36,12 @@ class DomainInformation extends Model
                 DomainInformation::sendNotifications($project, $oldState, $oldDNS, $freeDate);
             } else {
                 $project->broken = true;
-                $project->domain_information = __('This domain has been removed from delegation/is free and it can be registered.');
+                $project->domain_information = __('This domain has been removed from delegation(is free) and it can be registered.');
                 DomainInformation::sendNotifications($project, $oldState);
             }
         } catch (\Exception $exception) {
             $project->broken = true;
-            $project->domain_information = __('This domain has been removed from delegation/is free and it can be registered.');
+            $project->domain_information = __('This domain has been removed from delegation(is free) and it can be registered.');
             DomainInformation::sendNotifications($project, $oldState);
         }
 

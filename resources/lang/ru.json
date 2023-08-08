@@ -641,6 +641,7 @@
     "through": "через",
     "days": "дней",
     "No records were found for the selected source": "Для выбранного источника не найдено записей",
+    "This domain has been removed from delegation(is free) and it can be registered.": "Данный домен снят с делегирования (свободный) и его можно зарегистрировать.",
     "Domain information": "Информация о домене",
     "Delete a domain": "Удалить домен",
     "Tracking the domain registration period": "Отслеживание срока регистрации доменов",
