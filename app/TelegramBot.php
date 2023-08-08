@@ -73,7 +73,9 @@ class TelegramBot extends Model
             __('Domain') .
             ' ' . $project->domain
             . "\n"
+            . "\n"
             . $project->domain_information
+            . "\n"
             . "\n"
             . __('Go to the service:')
             . " <a href='https://lk.redbox.su/domain-information' target='_blank'>https://lk.redbox.su/domain-information</a>";
