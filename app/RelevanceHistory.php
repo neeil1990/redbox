@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class RelevanceHistory extends Model
 {
@@ -15,19 +14,6 @@ class RelevanceHistory extends Model
 
     protected $table = 'relevance_history';
 
-    /**
-     * @param $phrase
-     * @param $link
-     * @param $request
-     * @param $site
-     * @param $time
-     * @param $mainHistory
-     * @param $state
-     * @param $historyId
-     * @param $html
-     * @param $sites
-     * @return int
-     */
     public static function createOrUpdate($phrase, $link, $request, $site, $time, $mainHistory, $state, $historyId, $html = null, $sites = null): int
     {
         if ($historyId !== false) {

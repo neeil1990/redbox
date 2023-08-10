@@ -1111,19 +1111,18 @@
                                             phrase = "{{ __('An analysis without a keyword was used') }}"
                                         }
 
-                                        let newRow
+                                        let newRow = "<tr class='render'>" +
+                                            "   <td>" + val.last_check + "</td>" +
+                                            "   <td>" +
+                                            "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
+                                            "   </td>" +
+                                            "   <td>" + phrase + "</td>" +
+                                            "   <td>" + getRegionName(val.region) + "</td>" +
+                                            "   <td>" + val.main_link + "</td>" +
+                                            "   <td>" + position + "</td>"
 
                                         if (val.average_values == null) {
-                                            newRow = "<tr class='render'>" +
-                                                "   <td>" + val.last_check + "</td>" +
-                                                "   <td>" +
-                                                "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
-                                                "   </td>" +
-                                                "   <td>" + phrase + "</td>" +
-                                                "   <td>" + getRegionName(val.region) + "</td>" +
-                                                "   <td>" + val.main_link + "</td>" +
-                                                "   <td>" + position + "</td>" +
-                                                "   <td>" + val.points + "</td>" +
+                                            newRow += "   <td>" + val.points + "</td>" +
                                                 "   <td>" + val.coverage + "</td>" +
                                                 "   <td>" + val.coverage_tf + "</td>" +
                                                 "   <td>" + val.width + "</td>" +
@@ -1143,16 +1142,7 @@
                                                 "   </td>" +
                                                 "</tr>"
                                         } else {
-                                            newRow = "<tr class='render'>" +
-                                                "   <td>" + val.last_check + "</td>" +
-                                                "   <td>" +
-                                                "      <textarea style='height: 160px;' data-target='" + val.id + "' class='history-comment form form-control' >" + val.comment + "</textarea>" +
-                                                "   </td>" +
-                                                "   <td>" + phrase + "</td>" +
-                                                "   <td>" + getRegionName(val.region) + "</td>" +
-                                                "   <td>" + val.main_link + "</td>" +
-                                                "   <td>" + position + "</td>" +
-                                                "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + getTextResult(val.points, Math.round(val.average_values.points)) + "</td>" +
+                                            newRow += "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + getTextResult(val.points, Math.round(val.average_values.points)) + "</td>" +
                                                 "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + getTextResult(val.coverage, Math.round(val.average_values.coverage)) + "</td>" +
                                                 "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + getTextResult(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "</td>" +
                                                 "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + getTextResult(val.width, Math.round(val.average_values.width)) + "</td>" +

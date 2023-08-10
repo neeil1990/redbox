@@ -14,50 +14,35 @@ class ProjectRelevanceHistory extends Model
 
     protected $guarded = [];
 
-    /**
-     * @return HasMany
-     */
     public function stories(): HasMany
     {
         return $this->hasMany(RelevanceHistory::class)->orderByDesc('last_check');
     }
+    public function story(): hasOne
+    {
+        return $this->hasOne(RelevanceHistory::class)->orderByDesc('last_check');
+    }
 
-    /**
-     * @return BelongsToMany
-     */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'relevance_sharing', 'project_id');
     }
 
-    /**
-     * @return HasOne
-     */
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    /**
-     * @return HasMany
-     */
     public function sharing(): HasMany
     {
         return $this->hasMany(RelevanceSharing::class, 'project_id', 'id');
     }
 
-    /**
-     * @return BelongsToMany
-     */
     public function relevanceTags(): BelongsToMany
     {
         return $this->belongsToMany(RelevanceTags::class, 'project_relevance_history_tags', 'relevance_history_id', 'tags_id');
     }
 
-    /**
-     * @param $main
-     * @return array
-     */
     public static function calculateInfo($main): array
     {
         $points = 0;
@@ -105,12 +90,6 @@ class ProjectRelevanceHistory extends Model
         ];
     }
 
-    /**
-     * @param $host
-     * @param $time
-     * @param $userId
-     * @return ProjectRelevanceHistory
-     */
     public static function createOrUpdate($host, $time, $userId): ProjectRelevanceHistory
     {
         $main = ProjectRelevanceHistory::firstOrNew([
@@ -134,4 +113,5 @@ class ProjectRelevanceHistory extends Model
     {
         return $this->hasOne(ProjectRelevanceThough::class);
     }
+
 }
