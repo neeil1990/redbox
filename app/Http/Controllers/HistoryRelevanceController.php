@@ -46,6 +46,12 @@ class HistoryRelevanceController extends Controller
     {
         $aaData = [];
         foreach ($records as $record) {
+            $though = [];
+            if(isset($record['though'])) {
+                $though = $record['though'];
+                unset($though['result']);
+            }
+
             $data = [
                 'id' => $record['id'],
                 'name' => $record['name'],
@@ -54,7 +60,7 @@ class HistoryRelevanceController extends Controller
                 'count_checks' => $record['count_checks'],
                 'total_points' => $record['total_points'],
                 'avg_position' => $record['avg_position'],
-                'though' => $record['though'] ?? [],
+                'though' => $though,
                 'last_check' => Carbon::parse($record['last_check'])->format('d.m.Y h:m:s')
             ];
 
@@ -91,8 +97,7 @@ class HistoryRelevanceController extends Controller
                 $query->where('email', 'like', "%$search%");
             })
             ->orWhere('name', 'like', "%$search%")
-            ->with('relevanceTags')
-            ->with('though')
+            ->with(['relevanceTags', 'though'])
             ->paginate($request->input('length'), ['*'], 'page', $pageNumber);
 
         return $this->prepareData($records, $totalRecords, $request, true);
@@ -115,8 +120,7 @@ class HistoryRelevanceController extends Controller
         $records = ProjectRelevanceHistory::orderBy($columnName, $columnSortOrder)
             ->where('user_id', '=', Auth::id())
             ->where('name', 'like', "%$search%")
-            ->with('relevanceTags')
-            ->with('though')
+            ->with(['relevanceTags', 'though'])
             ->paginate($request->input('length'), ['*'], 'page', $pageNumber);
 
         return $this->prepareData($records, $totalRecords, $request);

@@ -956,6 +956,7 @@
                 {
                     name: 'though',
                     data: function (row) {
+                        console.log(row.though)
                         if (row.though.id) {
                             return '<div id="though' + row.id + '" class="mt-2 mb-2">' +
                                 '    <a href="/show-though/' + row.though.id + '" target="_blank">' +
