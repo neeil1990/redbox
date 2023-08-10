@@ -990,7 +990,7 @@
                 aoColumnDefs: [
                     {
                         bSortable: false,
-                        aTargets: [1, 2, 6, 7]
+                        aTargets: [1, 2, 6]
                     }
                 ],
                 dom: 'lBfrtip',
