@@ -61,7 +61,7 @@ class HistoryRelevanceController extends Controller
                 'total_points' => $record['total_points'],
                 'avg_position' => $record['avg_position'],
                 'though' => $though,
-                'last_check' => $record['story']['last_check']
+                'last_check' => $record->story->last_check
             ];
 
             if ($owner) {
@@ -97,7 +97,7 @@ class HistoryRelevanceController extends Controller
                 $query->where('email', 'like', "%$search%");
             })
             ->orWhere('name', 'like', "%$search%")
-            ->with(['relevanceTags', 'though', 'story'])
+            ->with(['relevanceTags', 'though'])
             ->paginate($request->input('length'), ['*'], 'page', $pageNumber);
 
         return $this->prepareData($records, $totalRecords, $request, true);
@@ -120,7 +120,7 @@ class HistoryRelevanceController extends Controller
         $records = ProjectRelevanceHistory::orderBy($columnName, $columnSortOrder)
             ->where('user_id', '=', Auth::id())
             ->where('name', 'like', "%$search%")
-            ->with(['relevanceTags', 'though', 'story'])
+            ->with(['relevanceTags', 'though'])
             ->paginate($request->input('length'), ['*'], 'page', $pageNumber);
 
         return $this->prepareData($records, $totalRecords, $request);
