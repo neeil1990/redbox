@@ -382,31 +382,29 @@ class TextAnalyzer extends Model
         $phrases = [];
         $array = explode(' ', $string);
         $generalCount = count($array);
-        for ($i = 1; $i < count($array); $i++) {
+
+        for ($i = 1; $i < $generalCount; $i++) {
             $phrases[] = [
                 'phrase' => $array[$i - 1] . ' ' . $array[$i]
             ];
         }
+
+        $phraseCounts = array_count_values(array_column($phrases, 'phrase'));
+
         $result = [];
-        foreach ($phrases as $phrase) {
-            $count = 0;
-            for ($i = 0; $i < count($phrases); $i++) {
-                if ($phrases[$i]['phrase'] === $phrase['phrase']) {
-                    $count++;
-                }
-            }
+        foreach ($phraseCounts as $phrase => $count) {
             $result[] = [
-                'phrase' => $phrase['phrase'],
+                'phrase' => $phrase,
                 'count' => $count,
                 'density' => round((100 / $generalCount) * $count, 2),
             ];
         }
 
-        $collection = collect($result);
-        $collection = $collection->unique();
-        $collection = $collection->sortByDesc('count')->toArray();
+        usort($result, function ($a, $b) {
+            return $b['count'] - $a['count'];
+        });
 
-        return array_slice($collection, 0, 26);
+        return array_splice($result, 0, 26);
     }
 
     /**
