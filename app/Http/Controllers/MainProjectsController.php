@@ -197,10 +197,14 @@ class MainProjectsController extends Controller
                     $usersIds->where('email', 'like', "%$search%");
                 } else if ($column['name'] === 'url') {
                     $records->where('url', $search);
-                } else if ($column['name'] === 'roles' && $search !== 'Любой') {
-                    $usersIds->whereHas('roles', function ($query) use ($search) {
-                        $query->where('name', $search);
-                    })->with('roles');
+                } else if ($column['name'] === 'roles') {
+                    if ($search !== 'Любой') {
+                        $usersIds->whereHas('roles', function ($query) use ($search) {
+                            $query->where('name', $search);
+                        })->with('roles');
+                    } else {
+                        $usersIds->with('roles');
+                    }
                 } else {
                     $records->where('button_text', $column['name'])
                         ->where('button_counter', $search);

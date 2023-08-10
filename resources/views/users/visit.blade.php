@@ -22,151 +22,79 @@
                 #actions-table_wrapper {
                     width: 75%;
                 }
+
+                #app {
+                    padding-bottom: 10px;
+                }
             </style>
         @endslot
+
         <div class="d-flex flex-column">
-            <div class="d-flex w-100">
-                <div class="col-8">
-                    <h3>Статистика пользователя {{ $user->email }} за всё время</h3>
-                    <table id="table" class="table table-striped no-footer border">
-                        <thead>
-                        <tr>
-                            <th>Модуль</th>
-                            <th>
-                                Время
-                                <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
-                                    <i class="fa fa-question-circle" style="color: grey"></i>
-                                    <span class="ui_tooltip __bottom">
-                                        <span class="ui_tooltip_content" style="width: 400px">
-                                            Счётчик времени проведённого в модуле <br>
-                                            Формат - часы:минуты:секунды
-                                        </span>
-                                    </span>
-                                </span>
-                            </th>
-                            <th>
-                                Количество обновлений страницы
-                                <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
-                                    <i class="fa fa-question-circle" style="color: grey"></i>
-                                    <span class="ui_tooltip __bottom">
-                                        <span class="ui_tooltip_content" style="width: 400px">
-                                            Учитывается переход на страницу и её обновление
-                                        </span>
-                                    </span>
-                                </span>
-                            </th>
-                            <th>
-                                Количество действий
-                                <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
-                                    <i class="fa fa-question-circle" style="color: grey"></i>
-                                    <span class="ui_tooltip __bottom">
-                                        <span class="ui_tooltip_content" style="width: 400px">
-                                            Учитывается нажатие кнопок для получения дополнительной инфомрации из бд и т.п.
-                                        </span>
-                                    </span>
-                                </span>
-                            </th>
-                            <th>Всего действий</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($summedCollection as $module)
-                            <tr>
-                                <td>
-                                    <a href="{{ $module->project->link }}"
-                                       target="_blank">{{ __($module->project->title) }}</a>
-                                </td>
-                                <td>{{ $module->time }}</td>
-                                <td>{{ $module->refreshPageCounter }}</td>
-                                <td>{{ $module->actionsCounter }}</td>
-                                <td>{{ $module->actionsCounter + $module->refreshPageCounter }}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-4">
-                    <canvas id="doughnut-chart" style="position: relative; width: 100%"></canvas>
-                </div>
-            </div>
-            <div class="mt-3">
-                <h3>Статистика за последние 30 дней</h3>
-                <canvas id="linear-chart" style="position: relative; width: 50%; height: 250px"></canvas>
-            </div>
             <div class="card mt-3">
-                <div class="card-header d-flex">
-                    <div class="d-flex flex-column">
-                        <h3>Фильтр по дате</h3>
+                <div class="card-header">
+                    <div class="d-flex flex-column w-25" style="float: left;"><h3>Фильтр по дате</h3>
                         <div class="form-group">
                             <div class="input-group">
-                                <div class="input-group-prepend">
-                                <span class="input-group-text">
-                                    <i class="far fa-calendar-alt"></i>
-                                </span>
-                                </div>
-                                <input type="text" class="form-control" id="date-range">
+                                <div class="input-group-prepend"><span class="input-group-text"><i
+                                            class="far fa-calendar-alt"></i></span></div>
+                                <input type="text" id="date-range" class="form-control">
                                 <button id="show-actions" class="btn btn-default btn-group"
-                                        style="border-top-left-radius: 0; border-bottom-left-radius: 0">
-                                    {{ __('show') }}
+                                        style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;">
+                                    Показать
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body" id="history-actions" style="display: none">
+                <div id="history-actions" class="card-body">
                     <div class="d-flex">
-                        <table id="actions-table" class="table table-hover border">
+                        <table id="actions-table" class="table table-striped border">
                             <thead>
                             <tr>
                                 <th>Модуль</th>
                                 <th>
                                     Время
-                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
-                                    <i class="fa fa-question-circle" style="color: grey"></i>
-                                    <span class="ui_tooltip __bottom">
-                                        <span class="ui_tooltip_content" style="width: 400px">
+                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal;"><i
+                                            class="fa fa-question-circle" style="color: grey;"></i> <span
+                                            class="ui_tooltip __bottom"><span class="ui_tooltip_content"
+                                                                              style="width: 400px;">
                                             Счётчик времени проведённого в модуле <br>
                                             Формат - часы:минуты:секунды
-                                        </span>
-                                    </span>
-                                </span>
-                                </th>
+                                        </span></span></span></th>
                                 <th>
                                     Количество обновлений страницы
-                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
-                                    <i class="fa fa-question-circle" style="color: grey"></i>
-                                    <span class="ui_tooltip __bottom">
-                                        <span class="ui_tooltip_content" style="width: 400px">
+                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal;"><i
+                                            class="fa fa-question-circle" style="color: grey;"></i> <span
+                                            class="ui_tooltip __bottom"><span class="ui_tooltip_content"
+                                                                              style="width: 400px;">
                                             Учитывается переход на страницу и её обновление
-                                        </span>
-                                    </span>
-                                </span>
-                                </th>
+                                        </span></span></span></th>
                                 <th>
                                     Количество действий
-                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal">
-                                    <i class="fa fa-question-circle" style="color: grey"></i>
-                                    <span class="ui_tooltip __bottom">
-                                        <span class="ui_tooltip_content" style="width: 400px">
+                                    <span class="__helper-link ui_tooltip_w" style="font-weight: normal;"><i
+                                            class="fa fa-question-circle" style="color: grey;"></i> <span
+                                            class="ui_tooltip __bottom"><span class="ui_tooltip_content"
+                                                                              style="width: 400px;">
                                             Учитывается нажатие кнопок для получения дополнительной инфомрации из бд и т.п.
-                                        </span>
-                                    </span>
-                                </span>
-                                </th>
+                                        </span></span></span></th>
                                 <th>Всего действий</th>
                             </tr>
                             </thead>
                             <tbody id="history-actions-tbody">
-
+                            <tr>
+                                <td colspan="5" style="height: 40px; text-align: center; vertical-align: inherit">
+                                    Используйте фильтр по дате
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                         <div class="col-3">
-                            <canvas id="history-doughnut-chart" style="position: relative; width: 100%"></canvas>
+                            <canvas id="history-doughnut-chart" style="position: relative; width: 100%;"></canvas>
                         </div>
                     </div>
                     <div class="mt-3">
                         <canvas id="another-linear-chart"
-                                style="position: relative; width: 50%; height: 100px"></canvas>
+                                style="position: relative; width: 50%; height: 100px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -279,51 +207,10 @@
                         });
                     })
                 });
-            </script>
-            <script>
-                $(document).ready(function () {
-                    $('#table').DataTable({
-                        "order": [[3, 'desc']],
-                        lengthMenu: [10, 25, 50, 100],
-                        pageLength: 10,
-                        language: {
-                            lengthMenu: "_MENU_",
-                            search: "_INPUT_",
-                            searchPlaceholder: "{{ __('Search') }}",
-                            paginate: {
-                                "first": "«",
-                                "last": "»",
-                                "next": "»",
-                                "previous": "«"
-                            },
-                        },
-                    })
-                })
-            </script>
-            <script>
                 let anotherChart
                 let historyChart
                 let colors = []
                 let results = {!! $counterActions !!};
-                renderChart('linear-chart', {!! $counterActions !!})
-
-                new Chart(document.getElementById("doughnut-chart"), {
-                    type: 'doughnut',
-                    data: {
-                        labels: {!! $info['labels'] !!},
-                        datasets: [
-                            {
-                                backgroundColor: {!! $info['colors'] !!},
-                                data: {!! $info['counters'] !!}
-                            }
-                        ]
-                    },
-                    options: {
-                        title: {
-                            display: false,
-                        }
-                    }
-                });
 
                 $('#show-actions').on('click', function () {
                     $.ajax({
@@ -336,6 +223,7 @@
                         success: function (response) {
                             let doughnutLabels = []
                             let targetBody = $('#history-actions-tbody')
+                            targetBody.html('')
                             let counters = response.info.counters;
                             let labels = response.info.labels;
                             let trs = ''
@@ -421,10 +309,16 @@
                                 }
                             }
 
-                            $('#history-actions').show()
+                            if ($('#history-actions').is(':hidden')) {
+                                $("#app > div > div > div.card-body > div > div.card.mt-3.collapsed-card > div.card-header > div.card-tools.d-inline > button:nth-child(1)").trigger('click')
+                            }
 
                         }
                     });
+                })
+
+                $(document).ready(function () {
+                    $('#show-actions').trigger('click')
                 })
 
                 function renderChart(chartId, data, returnChart = false) {

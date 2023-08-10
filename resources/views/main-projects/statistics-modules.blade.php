@@ -30,7 +30,7 @@
                 </td>
                 <td>{{ $project['statistics']['actions_counter'] }}</td>
                 <td>{{ $project['statistics']['refresh_page_counter'] }}</td>
-                <td>{{ $project['statistics']['seconds'] }}</td>
+                <td>{{ Carbon::now()->addSeconds($project['statistics']['seconds'])->diff(Carbon::now())->format('%H:%I:%S') }}</td>
             </tr>
         @endforeach
         </tbody>

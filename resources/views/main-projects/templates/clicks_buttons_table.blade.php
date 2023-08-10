@@ -1,6 +1,22 @@
 <h3 class="mt-5">Клики по кнопкам</h3>
 <table id="actionsTable" class="table table-striped no-footer border">
     <thead>
+    <tr id="empty" style="display: none">
+        <th>
+
+        </th>
+        <th class="col-2">
+
+        </th>
+        <th>
+
+        </th>
+        @if(is_array($columns))
+            @foreach($columns as $column)
+                <th></th>
+            @endforeach
+        @endif
+    </tr>
     <tr>
         <th>
             <label for="email">Почта пользователя</label>
@@ -20,21 +36,6 @@
             <label for="url">URL</label>
             <select name="url" id="filter-url" class="custom-select filter-input" data-index="2"></select>
         </th>
-        @php($i = 3)
-        @if(is_array($columns))
-            @foreach($columns as $column)
-                <th>
-                    <label for="url">{{ __($column) }}</label>
-                    <input type="text" class="form form-control filter-input" name="url" id="url" data-index="{{ $i }}">
-                </th>
-                @php($i++)
-            @endforeach
-        @endif
-    </tr>
-    <tr>
-        <th></th>
-        <th></th>
-        <th></th>
         @php($i = 3)
         @if(is_array($columns))
             @foreach($columns as $column)
@@ -154,6 +155,10 @@
                 }
 
                 addOptions();
+
+                $('#actionsTable').css({
+                    width: '100%'
+                })
             }
         })
 
