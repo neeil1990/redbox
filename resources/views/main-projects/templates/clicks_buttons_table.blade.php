@@ -1,65 +1,78 @@
-<h3 class="mt-5">Клики по кнопкам</h3>
-<table id="actionsTable" class="table table-striped no-footer border">
-    <thead>
-    <tr id="empty" style="display: none">
-        <th>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Клики по кнопкам</h3>
 
-        </th>
-        <th class="col-2">
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="actionsTable" class="table table-striped no-footer border">
+            <thead>
+            <tr id="empty" style="display: none">
+                <th>
 
-        </th>
-        <th>
+                </th>
+                <th class="col-2">
 
-        </th>
-        @if(is_array($columns))
-            @foreach($columns as $column)
-                <th></th>
-            @endforeach
-        @endif
-    </tr>
-    <tr>
-        <th>
-            <label for="email">Почта пользователя</label>
-            <input type="text" class="form form-control filter-input" name="email" id="email" data-index="0">
-        </th>
-        <th class="col-2">
-            <label for="role">Тарифы</label>
-            <select name="role" id="role" class="custom-select filter-input" data-index="1">
-                <option value="Любой">Любой</option>
-                <option value="Maximum">Максимальный</option>
-                <option value="Ultimate">Ultimate</option>
-                <option value="Optimal">Optimal</option>
-                <option value="Free">Free</option>
-            </select>
-        </th>
-        <th>
-            <label for="url">URL</label>
-            <select name="url" id="filter-url" class="custom-select filter-input" data-index="2"></select>
-        </th>
-        @php($i = 3)
-        @if(is_array($columns))
-            @foreach($columns as $column)
-                <th></th>
-                @php($i++)
-            @endforeach
-        @endif
-    </tr>
-    <tr>
-        <th data-index="0" class="col-2">Пользователь</th>
-        <th data-index="1">Роли пользователя</th>
-        <th data-index="2">URL</th>
-        @php($i = 3)
-        @if(is_array($columns))
-            @foreach($columns as $column)
-                <th data-index="{{ $i }}">{{ __($column) }}</th>
-                @php($i++)
-            @endforeach
-        @endif
-    </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+                </th>
+                <th>
+
+                </th>
+                @if(is_array($columns))
+                    @foreach($columns as $column)
+                        <th></th>
+                    @endforeach
+                @endif
+            </tr>
+            <tr>
+                <th>
+                    <label for="email">Почта пользователя</label>
+                    <input type="text" class="form form-control filter-input" name="email" id="email" data-index="0">
+                </th>
+                <th class="col-2">
+                    <label for="role">Тарифы</label>
+                    <select name="role" id="role" class="custom-select filter-input" data-index="1">
+                        <option value="Любой">Любой</option>
+                        <option value="Maximum">Максимальный</option>
+                        <option value="Ultimate">Ultimate</option>
+                        <option value="Optimal">Optimal</option>
+                        <option value="Free">Free</option>
+                    </select>
+                </th>
+                <th>
+                    <label for="url">URL</label>
+                    <select name="url" id="filter-url" class="custom-select filter-input" data-index="2"></select>
+                </th>
+                @php($i = 3)
+                @if(is_array($columns))
+                    @foreach($columns as $column)
+                        <th></th>
+                        @php($i++)
+                    @endforeach
+                @endif
+            </tr>
+            <tr>
+                <th data-index="0" class="col-2">Пользователь</th>
+                <th data-index="1">Роли пользователя</th>
+                <th data-index="2">URL</th>
+                @php($i = 3)
+                @if(is_array($columns))
+                    @foreach($columns as $column)
+                        <th data-index="{{ $i }}">{{ __($column) }}</th>
+                        @php($i++)
+                    @endforeach
+                @endif
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+    </div>
+</div>
 
 <script>
     let updatedSelect = false

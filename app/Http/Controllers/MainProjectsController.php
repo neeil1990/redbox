@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
@@ -260,5 +261,68 @@ class MainProjectsController extends Controller
         ];
 
         return json_encode($filteredData);
+    }
+
+    public function actionsHistory(Request $request): array
+    {
+        $usersIds = User::where('statistic', 1)->pluck('id')->toArray();
+        $date = explode(' - ', $request->dateRange);
+
+        $statistics = VisitStatistic::where('project_id', $request->projectId)
+            ->whereIn('user_id', $usersIds)
+            ->whereBetween('date', [
+                date('Y-m-d', strtotime($date[0])),
+                date('Y-m-d', strtotime($date[1]))
+            ])
+            ->with('user')
+            ->get(['date', 'user_id', 'actions_counter', 'refresh_page_counter', 'seconds'])
+            ->groupBy('date');
+
+        $days = [];
+        $seconds = [];
+        $refresh = [];
+        $actions = [];
+
+        foreach ($statistics as $day => $statistic) {
+
+            $secondsInDay = 0;
+            $refreshInDay = 0;
+            $actionsInDay = 0;
+
+            foreach ($statistic as $item) {
+                $secondsInDay += $item->time;
+                $refreshInDay += $item->refresh_page_counter;
+                $actionsInDay += $item->actions_counter;
+            }
+
+            $days[] = $day;
+            $seconds[] = $secondsInDay;
+            $refresh[] = $refreshInDay;
+            $actions[] = $actionsInDay;
+        }
+
+        return [
+            'days' => $days,
+            'refresh' => $refresh,
+            'seconds' => $seconds,
+            'actions' => $actions,
+        ];
+    }
+
+    public function getDateRangeModuleStatistics(MainProject $project): JsonResponse
+    {
+        if (!User::isUserAdmin()) {
+            return abort(403);
+        }
+
+        $usersIds = User::where('statistic', 1)->pluck('id')->toArray();
+
+        return response()->json([
+            'dates' => VisitStatistic::where('project_id', $project->id)
+                ->whereIn('user_id', $usersIds)
+                ->groupBy('date')
+                ->get('date')
+                ->toArray()
+        ]);
     }
 }

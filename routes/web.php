@@ -12,6 +12,7 @@
 */
 
 use App\ProjectRelevanceHistory;
+use App\VisitStatistic;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -19,11 +20,11 @@ Route::get('info', function () {
 });
 
 Route::get('jobs', function () {
-	set_time_limit(0);
+    set_time_limit(0);
 
     $job = App\Jobs::find(7373087);
 
-	dd(unserialize($job->payload['data']['command'])->handle());
+    dd(unserialize($job->payload['data']['command'])->handle());
 });
 
 Auth::routes(['verify' => true]);
@@ -57,7 +58,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/get-verified-users/{type}', 'UsersController@getFile')->name('get.verified.users');
     Route::get('/visit-statistics/{user}', 'UsersController@visitStatistics')->name('visit.statistics');
     Route::post('/user-actions-history', 'UsersController@userActionsHistory')->name('user.actions.history');
+    Route::post('/project-actions-history', 'MainProjectsController@actionsHistory')->name('module.actions.history');
     Route::get('/get-data-range-visit-statistics/{user}', 'UsersController@getDateRangeVisitStatistics')->name('visit.statistics.date.range');
+    Route::get('/get-data-range-module-statistics/{project}', 'MainProjectsController@getDateRangeModuleStatistics');
     Route::post('/get-filtered-users', 'UsersController@filterExportsUsers')->name('filter.exports.users');
     Route::get('/visits-statistics/', 'UsersController@userVisitStatistics')->name('users.statistics');
     Route::post('users/tariff', 'UsersController@storeTariff')->name('users.tariff');
@@ -414,3 +417,10 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
 });
 
+Route::get('/test', function (){
+   dd(VisitStatistic::where('project_id', 1)
+       ->whereIn('user_id', [1,2])
+       ->groupBy('date')
+       ->get('date')
+       ->toArray());
+});

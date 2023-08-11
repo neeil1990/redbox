@@ -32,11 +32,15 @@
         <div class="d-flex flex-column">
             <div class="card mt-3">
                 <div class="card-header">
-                    <div class="d-flex flex-column w-25" style="float: left;"><h3>Фильтр по дате</h3>
+                    <div class="d-flex flex-column w-25" style="float: left;">
+                        <h3>Фильтр по дате</h3>
                         <div class="form-group">
                             <div class="input-group">
-                                <div class="input-group-prepend"><span class="input-group-text"><i
-                                            class="far fa-calendar-alt"></i></span></div>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="far fa-calendar-alt"></i>
+                                    </span>
+                                </div>
                                 <input type="text" id="date-range" class="form-control">
                                 <button id="show-actions" class="btn btn-default btn-group"
                                         style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;">
@@ -93,8 +97,7 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <canvas id="another-linear-chart"
-                                style="position: relative; width: 50%; height: 100px;"></canvas>
+                        <canvas id="another-linear-chart" style="position: relative; width: 50%; height: 100px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -202,11 +205,17 @@
                                     return true;
                             });
 
-                            if (!found.el.hasClass('exist-position'))
-                                found.el.addClass('exist-position');
+                            try {
+                                if (!found.el.hasClass('exist-position')) {
+                                    found.el.addClass('exist-position');
+                                }
+                            } catch (e) {
+
+                            }
                         });
                     })
                 });
+
                 let anotherChart
                 let historyChart
                 let colors = []
