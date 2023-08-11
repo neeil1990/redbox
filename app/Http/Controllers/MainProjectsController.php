@@ -290,7 +290,7 @@ class MainProjectsController extends Controller
             $actionsInDay = 0;
 
             foreach ($statistic as $item) {
-                $secondsInDay += $item->time;
+                $secondsInDay += $item->seconds;
                 $refreshInDay += $item->refresh_page_counter;
                 $actionsInDay += $item->actions_counter;
             }
