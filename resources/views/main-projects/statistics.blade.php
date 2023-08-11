@@ -338,8 +338,8 @@
                     let graph = document.getElementById(chartId).getContext('2d');
 
                     let dataLine1 = {
-                        label: 'Время проведённое в модулях (сек)',
-                        data: data['seconds'],
+                        label: 'Время проведённое в модулях (мин)',
+                        data: data['seconds'].map(seconds => seconds / 60),
                         borderColor: 'red',
                         fill: false
                     };
