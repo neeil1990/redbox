@@ -264,7 +264,7 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-default" data-toggle="modal"
+                    <button type="button" class="btn btn-default click_tracking" data-click="Highlight site aggregators" data-toggle="modal"
                             data-target="#coloredAgrigators">
                         {{ __('Highlight site aggregators') }}
                     </button>
