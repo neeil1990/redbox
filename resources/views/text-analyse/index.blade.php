@@ -65,7 +65,7 @@
                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                     <input type="checkbox"
                            class="custom-control-input click_tracking"
-                           data-click="Track words in the alt, title, and data-text attributes"
+                           data-click="Track words in the alt title and data-text attributes"
                            id="switchAltAndTitle"
                            name="hiddenText"
                            @if(isset($request['hiddenText']) && $request['hiddenText']) checked @endif>

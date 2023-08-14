@@ -1,5 +1,8 @@
 {
     "######################## Other ###############################": "",
+    "Track words in the alt title and data-text attributes": "Отслеживать слова в атрибутах alt, tittle и data-text",
+    "Track conjunctions prepositions pronouns": "Отслеживать союзы, предлоги, местоимение по умолчанию",
+    "Exclude words": "Игнорируемые слова",
     "Domains not found": "Не найденные домены",
     "Select my competitors": "Выделить конкурентов",
     "Remove the selection of competitors": "Убрать выделение конкурентов",
