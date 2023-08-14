@@ -14,8 +14,14 @@
         </style>
     @endslot
 
-    <button class="btn btn-secondary click_tracking" data-click="Text Analysis" id="set-text" type="button">{{ __('Text Analysis') }}</button>
-    <button class="btn btn-outline-secondary click_tracking" data-click="URL Analysis" id="set-url" type="button">{{ __('URL Analysis') }}</button>
+    <div class="row">
+        <div class="click_tracking mr-2" data-click="Text Analysis">
+            <button class="btn btn-secondary" id="set-text" type="button">{{ __('Text Analysis') }}</button>
+        </div>
+        <div class="click_tracking" data-click="URL Analysis">
+            <button class="btn btn-outline-secondary" id="set-url" type="button">{{ __('URL Analysis') }}</button>
+        </div>
+    </div>
 
     {!! Form::open(['action' =>'TextAnalyzerController@analyze', 'method' => 'POST'])!!}
 
@@ -25,9 +31,7 @@
         <div class="collapse multi-collapse w-50 collapse show" id="analyse-text">
             <div class="form-group required text-or-html">
                 <textarea name="textarea" class="form form-control" rows="10" placeholder="{{ __('Your text') }}"
-                >@isset($request['textarea'])
-                        {{ $request['textarea'] }}
-                    @endisset</textarea>
+                >@isset($request['textarea']){{ $request['textarea'] }}@endisset</textarea>
             </div>
         </div>
         <div class="collapse multi-collapse w-50" id="analyse-url">
