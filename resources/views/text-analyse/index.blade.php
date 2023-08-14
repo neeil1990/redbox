@@ -13,6 +13,7 @@
             }
         </style>
     @endslot
+
     <button class="btn btn-secondary click_tracking" data-click="Text Analysis" id="set-text" type="button">{{ __('Text Analysis') }}</button>
     <button class="btn btn-outline-secondary click_tracking" data-click="URL Analysis" id="set-url" type="button">{{ __('URL Analysis') }}</button>
 
@@ -79,7 +80,7 @@
                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                     <input type="checkbox"
                            class="custom-control-input click_tracking"
-                           data-click="Track conjunctions, prepositions, pronouns"
+                           data-click="Track conjunctions prepositions pronouns"
                            id="switchConjunctionsPrepositionsPronouns"
                            name="conjunctionsPrepositionsPronouns"
                            @if(isset($request['conjunctionsPrepositionsPronouns']) && $request['conjunctionsPrepositionsPronouns']) checked @endif>
