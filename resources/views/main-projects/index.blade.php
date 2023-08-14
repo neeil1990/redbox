@@ -8,6 +8,14 @@
         </style>
     @endslot()
 
+    <div class="btn-group mb-3">
+        <button class="btn btn-secondary">
+            <a href="{{ route('users.statistics') }}" class="text-white" target="_blank">{{ __('General statistics users') }}</a>
+        </button>
+        <button class="btn btn-secondary">
+            <a href="{{ route('statistics.modules') }}" class="text-white" target="_blank">{{ __('General statistics modules') }}</a>
+        </button>
+    </div>
     <div>
         <table class="table-bordered table-striped">
             <thead>
@@ -32,7 +40,9 @@
                     <td>{!! $row->icon !!}</td>
                     <td>{{ $row->title }}</td>
                     <td>{{ $row->description }}</td>
-                    <td>{{ $row->link }}</td>
+                    <td>
+                        <a href="{{ $row->link }}" target="_blank">{{ $row->link }}</a>
+                    </td>
                     <td>{{ $row->show ? __('Yes') : __('No') }}</td>
                     <td class="d-flex border-0">
                         <a href="{{ route('main-projects.edit', $row->id)}}" class="btn btn-default mr-1"

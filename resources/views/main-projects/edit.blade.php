@@ -75,8 +75,16 @@
             </div>
 
             <div class="card">
-                <div class="card-body">
+                <div class="card-header">
                     <h3>Настройки статистики</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group required">
+                        <label for="color">{{ __('Color module') }}</label>
+                        <input type="color" id="color" name="color" class="form form-control col-1"
+                               value="{{ $data->color }}">
+                    </div>
+
                     <div class="form-group required">
                         <label for="description">{{ __('Controller') }}</label>
                         <span class="__helper-link ui_tooltip_w">
@@ -97,12 +105,6 @@
                             </span>
                         </span>
                         {!! Form::textarea("controller", $data->controller ,["class" => "form-control"]) !!}
-                    </div>
-
-                    <div class="form-group required">
-                        <label for="color">{{ __('Color module') }}</label>
-                        <input type="color" id="color" name="color" class="form form-control col-1"
-                               value="{{ $data->color }}">
                     </div>
 
                     <div class="form-group required">

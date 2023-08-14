@@ -80,32 +80,34 @@
             </div>
 
             <div class="card">
-                <div class="card-body">
+                <div class="card-header">
                     <h3>Настройки статистики</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group required">
+                        <label for="color">{{ __('Color module') }}</label>
+                        <input type="color" id="color" name="color" class="form form-control col-1">
+                    </div>
 
                     <div class="form-group required">
                         <label for="description">{{ __('Controller') }}</label>
                         <span class="__helper-link ui_tooltip_w">
-                    <i class="fa fa-question"></i>
-                    <span class="ui_tooltip __right" style="min-width: 550px;">
-                        <span class="ui_tooltip_content">
-                            Контроллер - связан с модулем, если контроллер указан, тогда для модуля начнёт собираться статистика.<br>
-                            Пример: <br>
-                            PasswordGeneratorController - <span class="text-muted">Название контроллера</span> <br>
-                            @index - <span class="text-muted">Метод, будет накапливать счётчик посещения и обновления страниц</span> <br>
-                            !generatePassword - <span class="text-muted">Метод, который будет накапливать счётчик действий</span> <br> <br>
+                            <i class="fa fa-question"></i>
+                            <span class="ui_tooltip __right" style="min-width: 550px;">
+                                <span class="ui_tooltip_content">
+                                    Контроллер - связан с модулем, если контроллер указан, тогда для модуля начнёт собираться статистика.<br>
+                                    Пример: <br>
+                                    PasswordGeneratorController - <span class="text-muted">Название контроллера</span> <br>
+                                    @index - <span class="text-muted">Метод, будет накапливать счётчик посещения и обновления страниц</span> <br>
+                                    !generatePassword - <span class="text-muted">Метод, который будет накапливать счётчик действий</span> <br> <br>
 
-                            <span class="text-muted">Путь до кода - app/Http/Middleware/VisitStatistics.php</span> <br> <br>
-                            <span class="text-info">Методы контроллера которые не были описани при помощи дирректив (@, !) будут игнорироваться</span>
+                                    <span class="text-muted">Путь до кода - app/Http/Middleware/VisitStatistics.php</span> <br> <br>
+                                    <span class="text-info">Методы контроллера которые не были описани при помощи дирректив (@, !) будут игнорироваться</span>
+                                </span>
+                            </span>
                         </span>
-                    </span>
-                </span>
                         {!! Form::textarea("controller", null ,["class" => "form-control"]) !!}
-                    </div>
-
-                    <div class="form-group required">
-                        <label for="color">{{ __('Color module') }}</label>
-                        <input type="color" id="color" name="color" class="form form-control col-1">
                     </div>
 
                     <div class="form-group required">
