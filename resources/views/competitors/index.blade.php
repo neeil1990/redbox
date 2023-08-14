@@ -215,19 +215,19 @@
             <div id="sites-block" class="mt-5" style="display:none;">
                 <h2>{{ __('Top sites based on your keywords') }}</h2>
                 <div class="site-block-buttons">
-                    <button class="btn btn-secondary colored-button mt-1" id="coloredEloquentUrls">
+                    <button class="btn btn-secondary colored-button mt-1 click_tracking" data-click="Highlight identical urls" id="coloredEloquentUrls">
                         {{ __('Highlight identical urls') }}
                     </button>
 
-                    <button class="btn btn-default colored-button mt-1" id="coloredEloquentDomains">
+                    <button class="btn btn-default colored-button mt-1 click_tracking" data-click="Highlight the same domains" id="coloredEloquentDomains">
                         {{ __('Highlight the same domains') }}
                     </button>
 
-                    <button class="btn btn-default colored-button mt-1" id="coloredMainPages">
+                    <button class="btn btn-default colored-button mt-1 click_tracking" data-click="Highlight all main pages" id="coloredMainPages">
                         {{ __('Highlight all main pages') }}
                     </button>
 
-                    <button type="button" class="btn btn-default mt-1" data-toggle="modal"
+                    <button type="button" class="btn btn-default click_tracking" data-click="Highlight your" data-toggle="modal"
                             data-target="#coloredEloquentMyTextModal">
                         {{ __('Highlight your') }}
                     </button>
@@ -264,7 +264,7 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-default mt-1" data-toggle="modal"
+                    <button type="button" class="btn btn-default" data-toggle="modal"
                             data-target="#coloredAgrigators">
                         {{ __('Highlight site aggregators') }}
                     </button>
@@ -452,7 +452,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer d-flex justify-content-end">
+                        <div class="card-footer d-flex justify-content-end click_tracking" data-click="Get recommendations">
                             <button class="btn btn-secondary" id="getRecommendations" data-dismiss="modal">
                                 {{ __('Get recommendations') }}
                             </button>
@@ -476,13 +476,13 @@
 
     @slot('js')
         <script src="{{ asset('plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.js') }}"></script>
-        <script src="{{ asset('plugins/competitor-analysis/js/render-top-sites-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitor-analysis/js/render-nesting-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitor-analysis/js/render-site-positions-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitor-analysis/js/render-tags-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitor-analysis/js/render-urls-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitor-analysis/js/refresh-all.js') }}"></script>
-        <script src="{{ asset('plugins/competitor-analysis/js/duallbox-block.js') }}"></script>
+        <script src="{{ asset('plugins/competitors/js/render-top-sites-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitors/js/render-nesting-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitors/js/render-site-positions-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitors/js/render-tags-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitors/js/render-urls-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitors/js/refresh-all.js') }}"></script>
+        <script src="{{ asset('plugins/competitors/js/duallbox-block.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>

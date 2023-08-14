@@ -28,21 +28,14 @@ class SearchCompetitorsController extends Controller
         $this->middleware(['permission:Competitor analysis']);
     }
 
-    /**
-     * @return array|false|Application|Factory|View|mixed
-     */
     public function index()
     {
         $admin = User::isUserAdmin();
         $config = CompetitorConfig::first();
 
-        return view('competitor-analysis.index', ['admin' => $admin, 'config' => $config]);
+        return view('competitors.index', ['admin' => $admin, 'config' => $config]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function analyseSites(Request $request): JsonResponse
     {
         $countPhrases = count(array_unique(array_diff(explode("\n", $request->input('phrases')), [''])));
@@ -77,10 +70,6 @@ class SearchCompetitorsController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function startProgressBar(Request $request): JsonResponse
     {
         $progress = CompetitorsProgressBar::firstOrNew([
@@ -95,10 +84,6 @@ class SearchCompetitorsController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function getProgressBar(Request $request): JsonResponse
     {
         $progress = CompetitorsProgressBar::where('page_hash', '=', $request->input('pageHash'))->first();
@@ -119,10 +104,6 @@ class SearchCompetitorsController extends Controller
 
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function removeProgressBar(Request $request): JsonResponse
     {
         return response()->json([
@@ -130,9 +111,6 @@ class SearchCompetitorsController extends Controller
         ]);
     }
 
-    /**
-     * @return array|false|Application|Factory|View|mixed|void
-     */
     public function config()
     {
         if (!User::isUserAdmin()) {
@@ -144,14 +122,10 @@ class SearchCompetitorsController extends Controller
             ->sum('counter');
         $config = CompetitorConfig::first();
 
-        return view('competitor-analysis.config', ['admin' => true, 'config' => $config, 'counter' => $counter]);
+        return view('competitors.config', ['admin' => true, 'config' => $config, 'counter' => $counter]);
 
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function editConfig(Request $request): RedirectResponse
     {
         $config = CompetitorConfig::first();
@@ -160,10 +134,6 @@ class SearchCompetitorsController extends Controller
         return Redirect::back();
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function getRecommendations(Request $request): JsonResponse
     {
         $phrases = json_decode($request->input('selectedPhrases'), true);

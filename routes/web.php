@@ -416,11 +416,3 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
 });
-
-Route::get('/test', function (){
-   dd(VisitStatistic::where('project_id', 1)
-       ->whereIn('user_id', [1,2])
-       ->groupBy('date')
-       ->get('date')
-       ->toArray());
-});
