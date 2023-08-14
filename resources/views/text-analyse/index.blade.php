@@ -50,7 +50,8 @@
             <div class="__helper-link ui_tooltip_w">
                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                     <input type="checkbox"
-                           class="custom-control-input"
+                           data-click="Track the text in the noindex tag"
+                           class="custom-control-input click_tracking"
                            id="switchNoindex"
                            name="noIndex"
                            @if(isset($request['noIndex']) && $request['noIndex']) checked @endif>
@@ -63,7 +64,8 @@
             <div class="__helper-link ui_tooltip_w">
                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                     <input type="checkbox"
-                           class="custom-control-input"
+                           class="custom-control-input click_tracking"
+                           data-click="Track words in the alt, title, and data-text attributes"
                            id="switchAltAndTitle"
                            name="hiddenText"
                            @if(isset($request['hiddenText']) && $request['hiddenText']) checked @endif>
@@ -76,7 +78,8 @@
             <div class="__helper-link ui_tooltip_w">
                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                     <input type="checkbox"
-                           class="custom-control-input"
+                           class="custom-control-input click_tracking"
+                           data-click="Track conjunctions, prepositions, pronouns"
                            id="switchConjunctionsPrepositionsPronouns"
                            name="conjunctionsPrepositionsPronouns"
                            @if(isset($request['conjunctionsPrepositionsPronouns']) && $request['conjunctionsPrepositionsPronouns']) checked @endif>
@@ -89,7 +92,8 @@
             <div class="__helper-link ui_tooltip_w">
                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
                     <input type="checkbox"
-                           class="custom-control-input"
+                           class="custom-control-input click_tracking"
+                           data-click="Exclude words"
                            id="removeWords"
                            name="removeWords"
                            @if(isset($request['removeWords']) && $request['removeWords']) checked @endif>
@@ -105,7 +109,7 @@
                 {{ $request['listWords'] }}
             @endif</textarea>
     </div>
-    <input type="submit" class="btn btn-secondary mt-2 click_tracking" data-click="Analyse" value="{{ __('Analyse') }}">
+    <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Analyse') }}">
 
     {!! Form::close() !!}
 
