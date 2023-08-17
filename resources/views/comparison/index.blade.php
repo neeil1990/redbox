@@ -46,7 +46,7 @@
         <div class="row">
             <div class="col-8 d-flex flex-column">
                 <label class="mt-3 mb-3">{{__('Comparison type:')}}</label>
-                <div class="custom-control custom-radio">
+                <div class="custom-control custom-radio click_tracking" data-click="Unique phrases that are in each of the two lists">
                     <input class="custom-control-input"
                            type="radio"
                            name="option"
@@ -67,7 +67,8 @@
                     </label>
                 </div>
                 <div class="custom-control custom-radio">
-                    <input class="custom-control-input"
+                    <input class="custom-control-input click_tracking"
+                           data-click="Unique phrases that are in either of the two lists"
                            type="radio"
                            name="option"
                            value="union"
@@ -86,7 +87,8 @@
                     </label>
                 </div>
                 <div class="custom-control custom-radio">
-                    <input class="custom-control-input"
+                    <input class="custom-control-input click_tracking"
+                           data-click="Unique phrases that are only in the first list"
                            type="radio"
                            name="option"
                            value="uniqueInFirstList"
@@ -105,7 +107,8 @@
                     </label>
                 </div>
                 <div class="custom-control custom-radio">
-                    <input class="custom-control-input"
+                    <input class="custom-control-input click_tracking"
+                           data-click="Unique phrases that are only in the second list"
                            type="radio"
                            name="option"
                            value="uniqueInSecondList"
@@ -125,7 +128,7 @@
                 </div>
             </div>
             <div class="col-sm-8 mt-3 mb-3 mt-3">
-                <input class="btn btn-secondary" type="button" value="{{__('Processing')}}">
+                <input class="btn btn-secondary click_tracking" data-click="Processing" type="button" value="{{__('Processing')}}">
             </div>
         </div>
     </form>

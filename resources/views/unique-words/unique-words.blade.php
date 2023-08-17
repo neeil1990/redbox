@@ -62,7 +62,7 @@
                       id="phrases"
                       required></textarea>
         </div>
-        <input class="btn btn-secondary mt-3 mr-2 d-flex align-items-center" type="button" value="{{__('Processing')}}">
+        <input class="btn btn-secondary mt-3 mr-2 d-flex align-items-center click_tracking" data-click="Processing" type="button" value="{{__('Processing')}}">
         <div id="progress-bar" class="mt-3 mb-3">
             <p>{{ __('Data processing') }}</p>
             <div class="progress-bar" role="progressbar"></div>
