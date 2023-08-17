@@ -165,37 +165,21 @@ class Relevance
     public function analysis($historyId = false)
     {
         try {
-            Log::info('removeNoIndex');
             $this->removeNoIndex();
-            Log::info('removeNoIndex');
             $this->getHiddenData();
-            Log::info('getHiddenData');
             $this->separateLinksFromText();
-            Log::info('separateLinksFromText');
             $this->removePartsOfSpeech();
-            Log::info('removePartsOfSpeech');
             $this->removeListWords();
-            Log::info('removeListWords');
             $this->getTextFromCompetitors();
-            Log::info('getTextFromCompetitors');
             $this->separateAllText();
-            Log::info('separateAllText');
             $this->preparePhrasesTable();
-            Log::info('preparePhrasesTable');
             $this->searchWordForms();
-            Log::info('searchWordForms');
             $this->processingOfGeneralInformation();
-            Log::info('processingOfGeneralInformation');
             $this->prepareUnigramTable();
-            Log::info('prepareUnigramTable');
             $this->analyseRecommendations();
-            Log::info('analyseRecommendations');
             $this->prepareAnalysedSitesTable();
-            Log::info('prepareAnalysedSitesTable');
             $this->prepareClouds();
-            Log::info('prepareClouds');
             $this->saveHistory($historyId);
-            Log::info('saveHistory');
 
             RemoveRelevanceProgress::dispatch($this->scanHash)
                 ->onQueue('default')

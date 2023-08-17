@@ -93,11 +93,11 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
                     <p>
-                        <button class="btn btn-secondary" id="classicMode">
+                        <button class="btn btn-secondary click_tracking" data-click="Classic mode" id="classicMode">
                             {{ __('Classic mode') }}
                         </button>
 
-                        <button class="btn btn-outline-secondary" id="ProfessionalMode">
+                        <button class="btn btn-outline-secondary click_tracking" data-click="Pro mode" id="ProfessionalMode">
                             {{ __('Pro mode') }}
                         </button>
                     </p>
@@ -249,21 +249,21 @@
 
                             saveAllUrls(response['objectId'])
 
-                            $('.copy-full-urls').unbind().on('click', function () {
-                                let target = $(this).attr('data-action')
-                                downloadSites(response['objectId'], target, 'copy')
-                            })
-
-                            $('.fa.fa-paperclip').hover(function () {
-                                let target = $(this).attr('data-action')
-                                downloadSites(response['objectId'], target, 'download')
-                            });
-
-                            $('.all-competitors').unbind().on('click', function () {
-                                downloadAllCompetitors(response['objectId'], $(this).attr('data-action'))
-                            })
-
                             setTimeout(() => {
+                                $('.copy-full-urls').unbind().on('click', function () {
+                                    let target = $(this).attr('data-action')
+                                    downloadSites(response['objectId'], target, 'copy')
+                                })
+
+                                $('.fa.fa-paperclip').hover(function () {
+                                    let target = $(this).attr('data-action')
+                                    downloadSites(response['objectId'], target, 'download')
+                                });
+
+                                $('.all-competitors').unbind().on('click', function () {
+                                    downloadAllCompetitors(response['objectId'], $(this).attr('data-action'))
+                                })
+
                                 $('#result-table').show()
                                 $('#block-for-downloads-files').show()
                             }, 1000)
