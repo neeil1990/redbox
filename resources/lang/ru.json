@@ -1175,6 +1175,7 @@
     "You need to specify the domain name in the format": "Вам необходимо указать доменное имя в формате",
     "Gain factor(%)": "Коэффициент усиления(%)",
     "View links phrases": "Посмотреть ссылки фразы",
+    "Viewing a related phrase": "Просмотр смежной фразы",
     "The selected phrases will be filled in automatically.": "Выбранные фразы будут заполнены автоматически.",
     "Minimum cluster size for re-bulkhead": "Минимальный размер кластера для повторной переборки",
     "In order for the clusters to merge, you need N number of matches between phrases that are in different clusters.": "Для того чтобы кластеры объединились нужно N количество совпадений между фразами которые находятся в разных кластерах.",

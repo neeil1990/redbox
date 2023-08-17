@@ -118,22 +118,22 @@
                     <a class="nav-link" href="{{ route('cluster') }}">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link"
+                    <a class="nav-link"
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link active" href="{{ route('show.cluster.result', $cluster['id']) }}">
+                    <a class="nav-link active" href="{{ route('show.cluster.result', $cluster['id']) }}">
                         {{ __('My project') }}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link" href="{{ route('edit.clusters', $cluster['id']) }}">
+                    <a class="nav-link" href="{{ route('edit.clusters', $cluster['id']) }}">
                         {{ __('Hands editor') }}
                     </a>
                 </li>
                 @if($admin)
                     <li>
-                        <a class="nav-link admin-link" href="{{ route('cluster.configuration') }}">
+                        <a class="nav-link text-primary" href="{{ route('cluster.configuration') }}">
                             {{ __('Module administration') }}
                         </a>
                     </li>
@@ -324,7 +324,8 @@
                                         </div>
 
                                         <div class="form-group required d-flex justify-content-end">
-                                            <button type="button" class="btn btn-secondary mr-2 click_tracking" data-click="Rebuild"
+                                            <button type="button" class="btn btn-secondary mr-2 click_tracking"
+                                                    data-click="Rebuild"
                                                     data-dismiss="modal"
                                                     id="brutForceFast">
                                                 {{ __('Rebuild') }}
@@ -456,6 +457,7 @@
     <a href="#" id="scroll_bottom"></a>
     <textarea name="hiddenForCopy" id="hiddenForCopy" style="display: none"></textarea>
     <input type="hidden" id="progressId">
+
     @slot('js')
         <script>
             $('#app > div > div > div.card-header').append($('#params').html())
@@ -488,6 +490,25 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
+            const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
+
+            $(document).on('click', '.click_tracking', function () {
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('click.tracking') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        button_text: $(this).attr('data-click'),
+                        url: location.href,
+                        project_id: tracking_project_id
+                    },
+                    success: function (response) {
+                    },
+                    error: function () {
+                    }
+                })
+            });
+
             function successCopiedMessage() {
                 $('.toast.toast-success').show(300)
                 $('.toast-message.success-msg').html("{{ __('Successfully copied') }}")

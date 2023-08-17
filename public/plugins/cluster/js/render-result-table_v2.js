@@ -70,7 +70,7 @@ function renderResultTable_v2(data, objectId) {
                                 let merge = ''
                                 if ('merge' in information) {
                                     $.each(information['merge'], function (key, value) {
-                                        merge = '<span class="__helper-link ui_tooltip_w">' +
+                                        merge = '<span class="__helper-link ui_tooltip_w click_tracking" data-click="Viewing a related phrase">' +
                                             '      <i class="fa fa-question"></i>' +
                                             '      <span class="ui_tooltip __right" style="min-width: 550px;">' +
                                             '          <span class="ui_tooltip_content">' + key + '<br> ' + value + '</span>' +
@@ -136,8 +136,8 @@ function renderResultTable_v2(data, objectId) {
                                     '          <div class="cluster-id-' + clusterId + '">' + string + '</div> ' +
                                     '          <div class="ml-1">' +
                                     '             <i class="fa fa-copy copy-full-urls click_tracking" data-click="Copy urls" data-action="' + phrase + '"></i>' +
-                                    '             <span class="__helper-link ui_tooltip_w">' +
-                                    '                 <i class="fa fa-paperclip click_tracking" data-click="View links phrases" data-action="' + phrase + '"></i>' +
+                                    '             <span class="__helper-link ui_tooltip_w click_tracking" data-click="View links phrases">' +
+                                    '                 <i class="fa fa-paperclip" data-action="' + phrase + '"></i>' +
                                     '                 <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
                                     '                     <span class="ui_tooltip_content" data-action="' + phrase + '"> </span>' +
                                     '                 </span>' +
@@ -187,20 +187,20 @@ function renderResultTable_v2(data, objectId) {
                             '</td>' +
                             '<td>' +
                             '<div class="row" style="cursor: pointer">' +
-                            '<p class="copy-cluster-phrases col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+                            '<p class="copy-cluster-phrases col mr-1 click_tracking" data-click="Copy phrase" data-target="' + clusterId + '" data-toggle="collapse">' +
                             '<i class="fa fa-copy pr-1"></i>ключевой запрос' +
                             '</p>'
                             + groupButton +
                             '</div>' +
                             '<div class="row" style="cursor: pointer">' +
-                            '<p class="copy-based col" data-target="' + clusterId + '" data-toggle="collapse">' +
-                            '<i class="fa fa-copy pr-1"></i>базовую' +
+                            '<p class="copy-based col click_tracking" data-click="Copy based" data-target="' + clusterId + '" data-toggle="collapse">' +
+                            '     <i class="fa fa-copy pr-1"></i>базовую' +
                             '</p>' +
-                            '<p class="copy-phrase col" data-target="' + clusterId + '" data-toggle="collapse">' +
-                            '<i class="fa fa-copy pr-1"></i>фразовую' +
+                            '<p class="copy-phrase col click_tracking" data-click="Copy phrased" data-target="' + clusterId + '" data-toggle="collapse">' +
+                            '     <i class="fa fa-copy pr-1"></i>фразовую' +
                             '</p>' +
-                            '<p class="copy-target col" data-target="' + clusterId + '" data-toggle="collapse">' +
-                            '<i class="fa fa-copy pr-1"></i>точную' +
+                            '<p class="copy-target col click_tracking" data-click="Copy target" data-target="' + clusterId + '" data-toggle="collapse">' +
+                            '     <i class="fa fa-copy pr-1"></i>точную' +
                             '</p>' +
                             '</div>' +
                             '<div class="row" style="cursor: pointer">' +
@@ -320,7 +320,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
                     let merge = ''
                     if ('merge' in information) {
                         $.each(information['merge'], function (key, value) {
-                            merge = '<span class="__helper-link ui_tooltip_w">' +
+                            merge = '<span class="__helper-link ui_tooltip_w click_tracking" data-click="Viewing a related phrase">' +
                                 '      <i class="fa fa-question"></i>' +
                                 '      <span class="ui_tooltip __right" style="min-width: 550px;">' +
                                 '          <span class="ui_tooltip_content">' + key + '<br> ' + value + '</span>' +
@@ -378,7 +378,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
                         '          <div class="cluster-id-' + clusterId + '">' + string + '</div> ' +
                         '          <div class="ml-1">' +
                         '             <i class="fa fa-copy copy-full-urls click_tracking" data-click="Copy urls" data-action="' + phrase + '"></i>' +
-                        '             <span class="__helper-link ui_tooltip_w">' +
+                        '             <span class="__helper-link ui_tooltip_w click_tracking" data-click="View links phrases">' +
                         '                 <i class="fa fa-paperclip" data-action="' + phrase + '"></i>' +
                         '                 <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
                         '                     <span class="ui_tooltip_content" data-action="' + phrase + '"> </span>' +

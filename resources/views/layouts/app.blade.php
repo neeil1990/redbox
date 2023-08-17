@@ -260,7 +260,7 @@
 
 @if(request()->route()->parameter('statistic_project_id') !== null)
     <script>
-        const tracking_project_id = {{ request()->route()->parameter('statistic_project_id') }};
+        const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
 
         $(document).on('click', '.click_tracking', function () {
             $.ajax({

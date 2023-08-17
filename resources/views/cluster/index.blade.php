@@ -334,6 +334,7 @@
                 let newCount = Number($('#list-phrases-counter').html())
                 $('#loss-limits').html(newCount * count)
             })
+
         </script>
     @endslot
 @endcomponent

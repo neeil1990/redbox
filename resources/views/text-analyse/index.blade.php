@@ -108,12 +108,14 @@
             <span>{{ __('Exclude') }}<span class="text-muted">{{ __('(your own list of words)') }}</span></span>
         </div>
     </div>
+
     <div class="form-group required list-words mt-1"
          @if(!(isset($request['removeWords']) && $request['removeWords'])) style="display: none" @endif>
         <textarea class="form form-control w-50" name="listWords" id="listWords" cols="8" rows="5">@if(isset($request['listWords']))
                 {{ $request['listWords'] }}
             @endif</textarea>
     </div>
+
     <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Analyse') }}">
 
     {!! Form::close() !!}
@@ -261,7 +263,7 @@
     @slot('js')
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>'
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script>
             $('#set-text').on('click', function () {
                 $('#hiddenInput').val('text')
