@@ -218,7 +218,7 @@
                             $('#progress-bar-state').html("{{ __('Parse xml') }}")
 
                             refreshAll()
-                            renderResultTable_v2(response['result'])
+                            renderResultTable_v2(response['result'], response['objectId'])
                             destroyProgress(interval)
 
                             $('#files-downloads').html(
@@ -250,20 +250,6 @@
                             saveAllUrls(response['objectId'])
 
                             setTimeout(() => {
-                                $('.copy-full-urls').unbind().on('click', function () {
-                                    let target = $(this).attr('data-action')
-                                    downloadSites(response['objectId'], target, 'copy')
-                                })
-
-                                $('.fa.fa-paperclip').hover(function () {
-                                    let target = $(this).attr('data-action')
-                                    downloadSites(response['objectId'], target, 'download')
-                                });
-
-                                $('.all-competitors').unbind().on('click', function () {
-                                    downloadAllCompetitors(response['objectId'], $(this).attr('data-action'))
-                                })
-
                                 $('#result-table').show()
                                 $('#block-for-downloads-files').show()
                             }, 1000)

@@ -1,4 +1,4 @@
-function renderResultTable_v2(data) {
+function renderResultTable_v2(data, objectId) {
     let iterator = 0
     let counter = 0
     let colspan = 4
@@ -231,11 +231,11 @@ function renderResultTable_v2(data) {
     variable.then(function (newRows) {
         $('#clusters-table-tbody').append(newRows.join(' '))
 
-        prepareFunctions(alone, iterator, colspan, copyGroupBool)
+        prepareFunctions(alone, iterator, colspan, copyGroupBool, objectId)
     });
 }
 
-function prepareFunctions(alone, iterator, colspan, copyGroupBool) {
+function prepareFunctions(alone, iterator, colspan, copyGroupBool, objectId) {
     renderAlonePhrases(alone, iterator, colspan)
     coloredPhrases()
     copyBased()
@@ -246,6 +246,20 @@ function prepareFunctions(alone, iterator, colspan, copyGroupBool) {
     if (copyGroupBool) {
         copyGroup()
     }
+
+    $('.copy-full-urls').unbind().on('click', function () {
+        let target = $(this).attr('data-action')
+        downloadSites(objectId, target, 'copy')
+    })
+
+    $('.fa.fa-paperclip').hover(function () {
+        let target = $(this).attr('data-action')
+        downloadSites(objectId, target, 'download')
+    });
+
+    $('.all-competitors').unbind().on('click', function () {
+        downloadAllCompetitors(objectId, $(this).attr('data-action'))
+    })
 }
 
 function renderAlonePhrases(alone, iterator, colspan) {
