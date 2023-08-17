@@ -133,7 +133,8 @@ function createRow(key, value) {
     icon.onclick = function () {
         $('#unique-words-id-' + key).remove()
     }
-    icon.className = 'fa fa-trash'
+    icon.className = 'fa fa-trash click_tracking'
+    icon.setAttribute('data-click', 'Remove word')
     td1.appendChild(icon)
     td2.appendChild(document.createTextNode(value.word))
     td3.appendChild(document.createTextNode(value.wordForms))

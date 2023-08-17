@@ -1,4 +1,5 @@
 @component('component.card', ['title' => __('Highlighting unique words in the text')])
+
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/unique-words/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
@@ -11,6 +12,7 @@
             }
         </style>
     @endslot
+
     <div id="toast-container" class="toast-top-right success-message">
         <div class="toast toast-success" aria-live="polite">
             <div class="toast-message">{{ __('The result was successfully copied to the clipboard') }}</div>
@@ -88,7 +90,7 @@
                 <input type="number" min="1" id="lessOrEqual" class="form-control">
             </div>
             <div class="w-25 d-flex flex-column-reverse mt-2">
-                <input type="button" class="btn btn-secondary btn-flat" value="{{__('Remove')}}" onclick="deleteItems()">
+                <input type="button" class="btn btn-secondary btn-flat click_tracking" data-click="Remove extra text" value="{{__('Remove')}}" onclick="deleteItems()">
             </div>
         </div>
         <div class="d-flex row m-3">
@@ -134,16 +136,18 @@
                     </label>
                 </div>
                 <div class="flex">
-                    <span class="__helper-link ui_tooltip_w btn btn-default mt-2"
+                    <span class="__helper-link ui_tooltip_w btn btn-default mt-2 click_tracking"
+                          data-click="Copy to Clipboard"
                           onclick="confirmTextForCopy()">
-                    <i aria-hidden="true" class="fa fa-clipboard"></i>
-                        <span class="ui_tooltip __right __l">
-                            <span class="ui_tooltip_content">
-                                {{__('Copy to Clipboard')}}
+                            <i aria-hidden="true" class="fa fa-clipboard"></i>
+                            <span class="ui_tooltip __right __l">
+                                <span class="ui_tooltip_content">
+                                    {{__('Copy to Clipboard')}}
+                                </span>
                             </span>
-                        </span>
                     </span>
-                    <button class="btn btn-default mt-2 __helper-link ui_tooltip_w"
+                    <button class="btn btn-default mt-2 __helper-link ui_tooltip_w click_tracking"
+                            data-click="Upload as a file"
                             data-toggle="modal"
                             data-target="#modal-default"
                             onclick="confirmTextForDownload()">
