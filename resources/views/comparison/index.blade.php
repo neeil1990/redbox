@@ -46,8 +46,9 @@
         <div class="row">
             <div class="col-8 d-flex flex-column">
                 <label class="mt-3 mb-3">{{__('Comparison type:')}}</label>
-                <div class="custom-control custom-radio click_tracking" data-click="Unique phrases that are in each of the two lists">
-                    <input class="custom-control-input"
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input click_tracking"
+                           data-click="Unique phrases that are in each of the two lists"
                            type="radio"
                            name="option"
                            value="unique"
