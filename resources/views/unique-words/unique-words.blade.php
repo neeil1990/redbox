@@ -95,7 +95,7 @@
         </div>
         <div class="d-flex row m-3">
             <div>
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox click_tracking" data-click="Word">
                     <input type="checkbox"
                            id="unique-word"
                            name="uniqueWord"
@@ -105,7 +105,7 @@
                         {{__('Word')}}
                     </label>
                 </div>
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox click_tracking" data-click="Word forms">
                     <input type="checkbox"
                            id="unique-word-forms"
                            name="uniqueWordForms"
@@ -115,7 +115,7 @@
                         {{__('Word forms')}}
                     </label>
                 </div>
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox click_tracking" data-click="Number of occurrences">
                     <input type="checkbox"
                            id="number-occurrences"
                            name="numberOccurrences"
@@ -125,7 +125,7 @@
                         {{__('Number of occurrences')}}
                     </label>
                 </div>
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox click_tracking" data-click="Key phrases">
                     <input type="checkbox"
                            id="key-phrases"
                            name="keyPhrases"
