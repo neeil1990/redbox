@@ -202,10 +202,10 @@
                     </div>
                 </div>
 
-                <a class="btn btn-secondary mb-2"
+                <a class="btn btn-secondary mb-2 click_tracking" data-click="Download csv"
                    href="/download-cluster-result/{{ $cluster['id'] }}/csv"
                    target="_blank">{{ __('Download csv') }}</a>
-                <a class="btn btn-secondary mb-2"
+                <a class="btn btn-secondary mb-2 click_tracking" data-click="Download xls"
                    href="/download-cluster-result/{{ $cluster['id'] }}/xls"
                    target="_blank">{{ __('Download xls') }}</a>
 
@@ -324,7 +324,7 @@
                                         </div>
 
                                         <div class="form-group required d-flex justify-content-end">
-                                            <button type="button" class="btn btn-secondary mr-2"
+                                            <button type="button" class="btn btn-secondary mr-2 click_tracking" data-click="Rebuild"
                                                     data-dismiss="modal"
                                                     id="brutForceFast">
                                                 {{ __('Rebuild') }}

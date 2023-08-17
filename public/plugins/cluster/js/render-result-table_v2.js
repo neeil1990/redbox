@@ -135,9 +135,9 @@ function renderResultTable_v2(data, objectId) {
                                     '       <div class="d-flex justify-content-between"> ' +
                                     '          <div class="cluster-id-' + clusterId + '">' + string + '</div> ' +
                                     '          <div class="ml-1">' +
-                                    '             <i class="fa fa-copy copy-full-urls" data-action="' + phrase + '"></i>' +
+                                    '             <i class="fa fa-copy copy-full-urls click_tracking" data-click="Copy urls" data-action="' + phrase + '"></i>' +
                                     '             <span class="__helper-link ui_tooltip_w">' +
-                                    '                 <i class="fa fa-paperclip" data-action="' + phrase + '"></i>' +
+                                    '                 <i class="fa fa-paperclip click_tracking" data-click="View links phrases" data-action="' + phrase + '"></i>' +
                                     '                 <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
                                     '                     <span class="ui_tooltip_content" data-action="' + phrase + '"> </span>' +
                                     '                 </span>' +
@@ -156,7 +156,7 @@ function renderResultTable_v2(data, objectId) {
                         })
 
                         let groupButton = copyGroupBool ?
-                            '<p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse"><i class="fa fa-copy pr-1"></i>группу</p>'
+                            '<p class="copy-group col mr-1 click_tracking" data-click="Copy group" data-target="' + clusterId + '" data-toggle="collapse"><i class="fa fa-copy pr-1"></i>группу</p>'
                             : ''
 
                         if (addColspan) {
@@ -205,7 +205,7 @@ function renderResultTable_v2(data, objectId) {
                             '</div>' +
                             '<div class="row" style="cursor: pointer">' +
                             '<div class="col-6"> ' +
-                            '<a class="btn btn-secondary all-competitors" data-action="' + key + '" data-toggle="collapse"' +
+                            '<a class="btn btn-secondary all-competitors click_tracking" data-click="Show competitors" data-action="' + key + '" data-toggle="collapse"' +
                             ' href="#competitors-' + key.replaceAll(' ', '-') + '" role="button" aria-expanded="false"' +
                             ' aria-controls="competitors-' + key.replaceAll(' ', '-') + '">' +
                             ' Конкуренты' +
@@ -377,7 +377,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
                         '       <div class="d-flex justify-content-between"> ' +
                         '          <div class="cluster-id-' + clusterId + '">' + string + '</div> ' +
                         '          <div class="ml-1">' +
-                        '             <i class="fa fa-copy copy-full-urls" data-action="' + phrase + '"></i>' +
+                        '             <i class="fa fa-copy copy-full-urls click_tracking" data-click="Copy urls" data-action="' + phrase + '"></i>' +
                         '             <span class="__helper-link ui_tooltip_w">' +
                         '                 <i class="fa fa-paperclip" data-action="' + phrase + '"></i>' +
                         '                 <span class="ui_tooltip __bottom" style="min-width: 250px;">' +
@@ -401,7 +401,7 @@ function renderAlonePhrases(alone, iterator, colspan) {
 
         let groupButton = ''
 
-        groupButton = '<p class="copy-group col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+        groupButton = '<p class="copy-group col mr-1 click_tracking" data-click="Copy group" data-target="' + clusterId + '" data-toggle="collapse">' +
             '   <i class="fa fa-copy pr-1"></i>группу' +
             '</p>'
 
@@ -430,19 +430,19 @@ function renderAlonePhrases(alone, iterator, colspan) {
             '   </td>' +
             '   <td>' +
             '       <div class="row" style="cursor: pointer">' +
-            '            <p class="copy-cluster-phrases col mr-1" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '            <p class="copy-cluster-phrases col mr-1 click_tracking" data-click="Copy phrase" data-target="' + clusterId + '" data-toggle="collapse">' +
             '                <i class="fa fa-copy pr-1"></i>ключевой запрос' +
             '            </p>' +
             groupButton +
             '       </div>' +
             '       <div class="row" style="cursor: pointer">' +
-            '              <p class="copy-based col" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '              <p class="copy-based col click_tracking" data-click="Copy based" data-target="' + clusterId + '" data-toggle="collapse">' +
             '                   <i class="fa fa-copy pr-1"></i>базовую' +
             '              </p>' +
-            '              <p class="copy-phrase col" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '              <p class="copy-phrase col click_tracking" data-click="Copy phrased" data-target="' + clusterId + '" data-toggle="collapse">' +
             '                   <i class="fa fa-copy pr-1"></i>фразовую' +
             '              </p>' +
-            '              <p class="copy-target col" data-target="' + clusterId + '" data-toggle="collapse">' +
+            '              <p class="copy-target col click_tracking" data-click="Copy target" data-target="' + clusterId + '" data-toggle="collapse">' +
             '                   <i class="fa fa-copy pr-1"></i>точную' +
             '              </p>' +
             '       </div>' +
