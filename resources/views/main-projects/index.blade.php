@@ -53,7 +53,7 @@
                             <i class="fa fa-trash"></i>
                         </button>
                         @if(isset($row->controller))
-                            <a href="{{ route('main-projects.statistics', $row->id)}}" class="btn btn-default"
+                            <a href="{{ route('main-projects.statistics', $row->id)}}" target="_blank" class="btn btn-default"
                                style="display: inline;">
                                 Статистика
                             </a>
