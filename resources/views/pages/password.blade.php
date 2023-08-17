@@ -31,25 +31,26 @@
                 <div class="d-flex flex-column">
                     <h3>{{__('Generator settings')}}:</h3>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" id="checkbox1" class="checkbox custom-control-input" name="enums">
+                        <input type="checkbox" id="checkbox1" class="checkbox custom-control-input click_tracking" data-click="Enums" name="enums">
                         <label for="checkbox1" class="custom-control-label">
                             {{__('Enums')}}
                         </label>
                     </div>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" id="checkbox2" class="checkbox custom-control-input" name="upperCase">
+                        <input type="checkbox" id="checkbox2" class="checkbox custom-control-input click_tracking" data-click="Upper case" name="upperCase">
                         <label for="checkbox2" class="custom-control-label">
                             {{__('Upper case')}}
                         </label>
                     </div>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" id="checkbox3" class="checkbox custom-control-input" name="lowerCase">
+                        <input type="checkbox" id="checkbox3" class="checkbox custom-control-input click_tracking" data-click="Lower case" name="lowerCase">
                         <label for="checkbox3" class="custom-control-label">
                             {{__('Lower case')}}
                         </label>
                     </div>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" id="checkbox4" class="checkbox custom-control-input"
+                        <input type="checkbox" id="checkbox4" class="checkbox custom-control-input click_tracking"
+                               data-click="Special symbols"
                                name="specialSymbols">
                         <label for="checkbox4" class="custom-control-label">
                             {{__('Special symbols')}} %, *, ), ?, @, #, $, ~

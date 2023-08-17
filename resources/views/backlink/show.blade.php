@@ -13,7 +13,6 @@
             }
         </style>
     @endslot
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <div id="toast-container" class="toast-top-right success-message">
         <div class="toast toast-success" aria-live="polite">
             <div class="toast-message">{{ __('Successfully changed') }}</div>
@@ -79,7 +78,7 @@
                     <td class="d-flex justify-content-around m-auto">
                         <form action="{{ route('check.link', $link->id)}}" method="get">
                             @csrf
-                            <button class="btn btn-default" type="submit">
+                            <button class="btn btn-default click_tracking" data-click="Hands scan" type="submit">
                                 <i aria-hidden="true" class="fa fa-search"></i>
                             </button>
                         </form>

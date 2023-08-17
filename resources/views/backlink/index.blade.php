@@ -25,7 +25,7 @@
                     </thead>
                     <tbody>
                     <tr class="odd">
-                        <td class="col-5">
+                        <td class="col-5 click_tracking" data-click="Show project">
                             <a href="{{ route('show.backlink', $backlink->id)}}">
                                 {{ $backlink->project_name }}
                             </a>
@@ -41,7 +41,7 @@
                                 </span>
                             @endif
                         </td>
-                        <td>
+                        <td class="click_tracking" data-click="Remove Project">
                             <form action="{{ route('delete.backlink', $backlink->id)}}"
                                   class="d-flex justify-content-center"
                                   method="post">
