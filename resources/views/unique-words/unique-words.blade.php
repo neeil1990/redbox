@@ -95,41 +95,45 @@
         </div>
         <div class="d-flex row m-3">
             <div>
-                <div class="custom-control custom-checkbox click_tracking" data-click="Word">
+                <div class="custom-control custom-checkbox">
                     <input type="checkbox"
                            id="unique-word"
                            name="uniqueWord"
-                           class="custom-control-input"
+                           data-click="Word"
+                           class="custom-control-input click_tracking"
                            checked>
                     <label for="unique-word" class="custom-control-label">
                         {{__('Word')}}
                     </label>
                 </div>
-                <div class="custom-control custom-checkbox click_tracking" data-click="Word forms">
+                <div class="custom-control custom-checkbox">
                     <input type="checkbox"
                            id="unique-word-forms"
+                           data-click="Word forms"
                            name="uniqueWordForms"
-                           class="custom-control-input"
+                           class="custom-control-input click_tracking"
                            checked>
                     <label for="unique-word-forms" class="custom-control-label">
                         {{__('Word forms')}}
                     </label>
                 </div>
-                <div class="custom-control custom-checkbox click_tracking" data-click="Number of occurrences">
+                <div class="custom-control custom-checkbox">
                     <input type="checkbox"
+                           data-click="Number of occurrences"
                            id="number-occurrences"
                            name="numberOccurrences"
-                           class="custom-control-input"
+                           class="custom-control-input click_tracking"
                            checked>
                     <label for="number-occurrences" class="custom-control-label">
                         {{__('Number of occurrences')}}
                     </label>
                 </div>
-                <div class="custom-control custom-checkbox click_tracking" data-click="Key phrases">
+                <div class="custom-control custom-checkbox">
                     <input type="checkbox"
                            id="key-phrases"
                            name="keyPhrases"
-                           class="custom-control-input"
+                           class="custom-control-input click_tracking"
+                           data-click="Key phrases"
                            checked>
                     <label for="key-phrases" class="custom-control-label">
                         {{__('Key phrases')}}
