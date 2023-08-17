@@ -11,8 +11,8 @@
         <form>
             <textarea name="text" class="form-control col-12" id="text" rows="10" required></textarea>
             <br>
-            <input class="btn btn-secondary mr-2" type="button" value="{{__('Calculate')}}">
-            <input class="btn btn-flat btn-default" id="reset" type="reset" value="{{__('Clear')}}"
+            <input class="btn btn-secondary mr-2 click_tracking" data-click="Calculate" type="button" value="{{__('Calculate')}}">
+            <input class="btn btn-flat btn-default click_tracking" id="reset" data-click="Clear" type="reset" value="{{__('Clear')}}"
                    onclick="clearCountingResult();">
         </form>
         <div id="progress-bar">
