@@ -30,16 +30,22 @@ class VisitStatistics
             return $next($request);
         }
 
+        Log::info('auth');
+
         try {
             $controllerAction = last(explode('\\', Route::current()->action['controller']));
+            Log::info($controllerAction);
+
             if ($controllerAction === 'PublicController@updateStatistics') {
                 return $next($request);
             }
 
             $targetController = class_basename(Route::current()->controller);
+            Log::info($targetController);
 
             $project = MainProject::where('controller', 'like', '%' . $targetController . '%')
                 ->first();
+            Log::debug('$targetController', [$project]);
 
             if (empty($project)) {
                 return $next($request);
