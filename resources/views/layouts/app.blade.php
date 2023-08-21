@@ -17,7 +17,6 @@
             f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-PS4GF7H');</script>
     <!-- End Google Tag Manager -->
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -121,7 +120,6 @@
 @if(request()->route()->parameter('statistic_project_id') !== null)
     <script>
         const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
-        console.log(tracking_project_id)
 
         $(document).on('click', '.click_tracking', function () {
             $.ajax({

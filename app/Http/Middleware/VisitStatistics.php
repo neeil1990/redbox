@@ -64,6 +64,7 @@ class VisitStatistics
                 } else if ($this->findAction('@', $action, $callAction)) {
                     $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
                     $request->route()->setParameter('statistic_project_id', $project->id);
+                    Log::info($project->id);
 
                     return $next($request);
                 }
