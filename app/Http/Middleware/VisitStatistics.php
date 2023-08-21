@@ -38,8 +38,12 @@ class VisitStatistics
 
             $targetController = class_basename(Route::current()->controller);
 
-            $project = MainProject::where('controller', 'like', '%' . $targetController . '%')
-                ->first();
+            if ($targetController === 'PagesController') {
+                $project = MainProject::where('controller', $controllerAction)->get();
+            } else {
+                $project = MainProject::where('controller', 'like', '%' . $targetController . '%')
+                    ->first();
+            }
 
             if (empty($project)) {
                 return $next($request);
