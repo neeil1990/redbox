@@ -39,9 +39,7 @@ class VisitStatistics
             $targetController = class_basename(Route::current()->controller);
 
             if ($targetController === 'PagesController') {
-                $project = MainProject::where('controller', $controllerAction)->get();
-                Log::info($controllerAction);
-                Log::debug('project', [$project]);
+                $project = MainProject::where('controller', $controllerAction)->first();
             } else {
                 $project = MainProject::where('controller', 'like', '%' . $targetController . '%')
                     ->first();
@@ -81,9 +79,9 @@ class VisitStatistics
 
         } catch (\Throwable $e) {
             Log::debug('visit statistics error', [
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine(),
+                'file' => $e->getFile(),
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
                 'controller' => $targetController ?? null,
                 'project' => $project ?? null,
                 'action' => $action ?? null
