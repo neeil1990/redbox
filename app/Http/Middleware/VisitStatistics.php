@@ -26,6 +26,7 @@ class VisitStatistics
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check()) {
+            Log::info('not auth');
             return $next($request);
         }
 
