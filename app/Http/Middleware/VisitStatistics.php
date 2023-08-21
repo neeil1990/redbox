@@ -26,30 +26,26 @@ class VisitStatistics
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check()) {
-            Log::info('not auth');
             return $next($request);
         }
 
-        Log::info('auth');
-
         try {
             $controllerAction = last(explode('\\', Route::current()->action['controller']));
-            Log::info($controllerAction);
 
             if ($controllerAction === 'PublicController@updateStatistics') {
                 return $next($request);
             }
 
             $targetController = class_basename(Route::current()->controller);
-            Log::info($targetController);
 
             $project = MainProject::where('controller', 'like', '%' . $targetController . '%')
                 ->first();
-            Log::debug('$targetController', [$project]);
 
             if (empty($project)) {
                 return $next($request);
             }
+
+            $request->route()->setParameter('statistic_project_id', $project->id);
 
             $config = explode("\n", $project->controller);
             $callAction = last(explode('@', Route::current()->action['controller']));
@@ -70,8 +66,6 @@ class VisitStatistics
                     return $next($request);
                 } else if ($this->findAction('@', $action, $callAction)) {
                     $this->updateOrCreateVisitStatistic($project, 'refresh_page_counter');
-                    $request->route()->setParameter('statistic_project_id', $project->id);
-                    Log::info($project->id);
 
                     return $next($request);
                 }
@@ -91,7 +85,6 @@ class VisitStatistics
         }
 
         return $next($request);
-
     }
 
     private function updateOrCreateVisitStatistic($project, $incrementField)
