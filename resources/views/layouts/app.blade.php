@@ -177,13 +177,36 @@
 <!-- AdminLTE for demo purposes -->
 <script src="{{ asset('js/demo.js') }}"></script>
 
+@if(request()->route()->parameter('statistic_project_id') !== null)
+    <script>
+        const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
+        console.log(tracking_project_id)
+
+        $(document).on('click', '.click_tracking', function () {
+            $.ajax({
+                type: 'post',
+                url: "{{ route('click.tracking') }}",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    button_text: $(this).attr('data-click'),
+                    url: location.href,
+                    project_id: tracking_project_id
+                },
+                success: function (response) {
+                },
+                error: function () {
+                }
+            })
+        });
+    </script>
+@endif
+
 @yield('js')
 
 <span class="click_tracking another_action"></span>
 
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-
 <script>
     $(document).ready(function () {
         $(".x-drop-down__value").click(function (event) {
@@ -256,30 +279,6 @@
         <div><img src="https://mc.yandex.ru/watch/89500732" style="; left:-9999px;" alt=""/></div>
     </noscript>
     <!-- /Yandex.Metrika counter -->
-@endif
-
-@if(request()->route()->parameter('statistic_project_id') !== null)
-    <script>
-        const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
-        console.log(tracking_project_id)
-
-        $(document).on('click', '.click_tracking', function () {
-            $.ajax({
-                type: 'post',
-                url: "{{ route('click.tracking') }}",
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    button_text: $(this).attr('data-click'),
-                    url: location.href,
-                    project_id: tracking_project_id
-                },
-                success: function (response) {
-                },
-                error: function () {
-                }
-            })
-        });
-    </script>
 @endif
 </body>
 </html>
