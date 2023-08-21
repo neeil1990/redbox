@@ -46,14 +46,13 @@
                         <div class="urlBuilder_tpl">
                             <div class="urlBuilder_tpl_title">{{ __('Sample:') }}</div>
                             <div class="urlBuilder_tpl_items">
-                                <span class="active btn btn-secondary btn-flat"
-                                      data-id="custom">{{ __('Arbitrary') }}</span>
+                                <span class="active btn btn-secondary btn-flat click_tracking" data-id="custom" data-click="Arbitrary">{{ __('Arbitrary') }}</span>
                                 <span data-id="direct"
-                                      class="btn btn-secondary btn-flat">{{ __('Yandex.Direct') }}</span>
+                                      class="btn btn-secondary btn-flat click_tracking" data-click="Yandex.Direct">{{ __('Yandex.Direct') }}</span>
                                 <span data-id="adwords"
-                                      class="btn btn-secondary btn-flat">{{ __('Google AdWords') }}</span>
-                                <span data-id="vk" class="btn btn-secondary btn-flat">{{ __('VK targeting') }}</span>
-                                <span data-id="mailru" class="btn btn-secondary btn-flat">{{ __('myTarget') }}</span>
+                                      class="btn btn-secondary btn-flat click_tracking" data-click="Google AdWords">{{ __('Google AdWords') }}</span>
+                                <span data-id="vk" class="btn btn-secondary btn-flat click_tracking" data-click="VK targeting">{{ __('VK targeting') }}</span>
+                                <span data-id="mailru" class="btn btn-secondary btn-flat click_tracking" data-click="myTarget">{{ __('myTarget') }}</span>
                             </div>
                         </div>
                     </div>
@@ -467,7 +466,7 @@
                     <div class="col-md-6">
 
                         <div class="urlBuilder_el">
-                            <span class="urlBuilder_el_check" id="urlBuilderOpenstat">
+                            <span class="urlBuilder_el_check click_tracking" data-click="add openstat" id="urlBuilderOpenstat">
                                 <i class="fa fa-square-o"></i>
                                 <i class="fa fa-square"></i>
                                 {{ __('Add a label') }} Openstat
@@ -487,7 +486,7 @@
                         </div>
 
                         <div class="urlBuilder_el urlBuilder_el-paramsDirect">
-                            <span class="urlBuilder_el_check" id="urlBuilderParamsDirect">
+                            <span class="urlBuilder_el_check click_tracking" data-click="Add dynamic parameters Yandex.Direct" id="urlBuilderParamsDirect">
                                 <i class="fa fa-square-o"></i>
                                 <i class="fa fa-square"></i>
                                 {{ __('Add dynamic parameters Yandex.Direct') }}
@@ -631,7 +630,7 @@
                         </div>
 
                         <div class="urlBuilder_el urlBuilder_el-paramsAdwords">
-                            <span class="urlBuilder_el_check" id="urlBuilderParamsAdwords">
+                            <span class="urlBuilder_el_check click_tracking" data-click="Add dynamic Google AdWords parameters" id="urlBuilderParamsAdwords">
                                 <i class="fa fa-square-o"></i>
                                 <i class="fa fa-square"></i>
                                 {{ __('Add dynamic Google AdWords parameters') }}
@@ -805,7 +804,7 @@
                             </div>
                         </div>
 
-                        <div class="urlBuilder_el urlBuilder_el-paramsVK">
+                        <div class="urlBuilder_el urlBuilder_el-paramsVK click_tracking" data-click="Add dynamic targeting options to VKontakte">
                             <span class="urlBuilder_el_check" id="urlBuilderParamsVK">
                                 <i class="fa fa-square-o"></i>
                                 <i class="fa fa-square"></i>
@@ -829,7 +828,7 @@
                             </div>
                         </div>
 
-                        <div class="urlBuilder_el urlBuilder_el-paramsMailru">
+                        <div class="urlBuilder_el urlBuilder_el-paramsMailru click_tracking" data-click="Add dynamic parameters to myTarget">
                             <span class="urlBuilder_el_check" id="urlBuilderParamsMailru">
                                 <i class="fa fa-square-o"></i>
                                 <i class="fa fa-square"></i>
