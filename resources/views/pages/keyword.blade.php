@@ -38,10 +38,9 @@
         <br>
         <div class="globalOptions">
             <div class="globalOptionsList">
-                <label class="ui_label __no-select click_tracking" data-click="Conclude in quotation marks">
+                <label class="ui_label __no-select">
                     <span class="ui_checkbox">
-                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input"
-                               value="surroundWithQuotes"/>
+                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input click_tracking" data-click="Conclude in quotation marks" value="surroundWithQuotes"/>
                         <span class="ui_checkbox_fake-input"></span>
                     </span>
                     {{ __('Conclude in') }} &quot; &quot;
@@ -57,9 +56,9 @@
                 </span>
                 <br>
 
-                <label class="ui_label __no-select click_tracking" data-click="Conclude in staples">
+                <label class="ui_label __no-select">
                     <span class="ui_checkbox">
-                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input"
+                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input click_tracking" data-click="Conclude in staples"
                                value="surroundWithBrackets"/>
                         <span class="ui_checkbox_fake-input"></span>
                     </span>
@@ -75,9 +74,9 @@
                 </span>
                 <br>
 
-                <label class="ui_label __no-select click_tracking" data-click="Add combinations without operators">
+                <label class="ui_label __no-select">
                     <span class="ui_checkbox">
-                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input" value="addToResult"/>
+                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input click_tracking" data-click="Add combinations without operators" value="addToResult"/>
                         <span class="ui_checkbox_fake-input"></span>
                     </span>
                     {{ __('Add combinations without operators') }}
@@ -92,9 +91,9 @@
                 </span>
                 <br>
 
-                <label class="ui_label __no-select click_tracking" data-click="Add to stop words">
+                <label class="ui_label __no-select">
                     <span class="ui_checkbox">
-                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input" value="addPlus"/>
+                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input click_tracking" data-click="Add to stop words" value="addPlus"/>
                         <span class="ui_checkbox_fake-input"></span>
                     </span>
                     {{ __('Add "+" to stop words') }}
@@ -109,9 +108,10 @@
                 </span>
                 <br>
 
-                <label class="ui_label __no-select click_tracking" data-click="Split into phrases">
+                <label class="ui_label __no-select">
                     <span class="ui_checkbox">
-                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input"
+                        <input type="checkbox" class="globalCheckboxOption ui_checkbox_input click_tracking"
+                               data-click="Split into phrases"
                                value="getAllPhrasesByLength"/>
                         <span class="ui_checkbox_fake-input"></span>
                     </span>
