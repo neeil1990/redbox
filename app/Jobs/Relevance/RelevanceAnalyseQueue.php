@@ -39,49 +39,40 @@ class RelevanceAnalyseQueue implements ShouldQueue
 
     public function handle()
     {
-        $jobs = Common::analyseRelevanceJobs();
+        $this->relevance = new Relevance($this->request, $this->userId);
 
-        if ($jobs->count_relevance <= 2 || ($jobs->count_relevance <= 3 && $jobs->another == 0)) {
-            $this->relevance = new Relevance($this->request, $this->userId);
+        if ($this->type === 'full') {
 
-            if ($this->type === 'full') {
-
-                $this->relevance->getMainPageHtml();
-                if ($this->request['type'] == 'phrase') {
-                    $this->relevance->analysisByPhrase($this->request, $this->exp);
-                } elseif ($this->request['type'] == 'list') {
-                    $this->relevance->analysisByList($this->request);
-                }
-
-            } else if ($this->type === 'competitors') {
-
-                RelevanceProgress::editProgress(15, $this->request);
-
-                $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
-                    ->where('page_hash', '=', $this->request['pageHash'])
-                    ->first();
-                $this->relevance->setMainPage($params->html_main_page);
-                $this->relevance->setDomains($params->sites);
-                $this->relevance->parseSites();
-
-            } else if ($this->type === 'main') {
-
-                RelevanceProgress::editProgress(15, $this->request);
-
-                $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
-                    ->where('page_hash', '=', $this->request['pageHash'])
-                    ->first();
-                $this->relevance->getMainPageHtml();
-                $this->relevance->setSites($params->sites);
-
+            $this->relevance->getMainPageHtml();
+            if ($this->request['type'] == 'phrase') {
+                $this->relevance->analysisByPhrase($this->request, $this->exp);
+            } elseif ($this->request['type'] == 'list') {
+                $this->relevance->analysisByList($this->request);
             }
 
-            $this->relevance->analysis();
-        } else {
-//            RelevanceAnalyseQueue::dispatch($this->request, $this->exp, $this->userId, $this->type)
-//                ->onQueue($this->job->getQueue())
-//                ->onConnection('database')
-//                ->delay(Carbon::now()->addSeconds(10));
+        } else if ($this->type === 'competitors') {
+
+            RelevanceProgress::editProgress(15, $this->request);
+
+            $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
+                ->where('page_hash', '=', $this->request['pageHash'])
+                ->first();
+            $this->relevance->setMainPage($params->html_main_page);
+            $this->relevance->setDomains($params->sites);
+            $this->relevance->parseSites();
+
+        } else if ($this->type === 'main') {
+
+            RelevanceProgress::editProgress(15, $this->request);
+
+            $params = RelevanceAnalyseResults::where('user_id', '=', $this->userId)
+                ->where('page_hash', '=', $this->request['pageHash'])
+                ->first();
+            $this->relevance->getMainPageHtml();
+            $this->relevance->setSites($params->sites);
+
         }
+
+        $this->relevance->analysis();
     }
 }

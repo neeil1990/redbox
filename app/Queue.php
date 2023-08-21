@@ -5,8 +5,6 @@ namespace App;
 use App\Jobs\Relevance\RelevanceHistoryQueue;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class Queue
 {
@@ -30,7 +28,7 @@ class Queue
                     $historyId,
                     trim($item[1]),
                     trim($item[0])
-                )->onQueue('relevance_normal');
+                )->onQueue('relevance_normal_queue');
             }
         } catch (\Throwable $e) {
 
