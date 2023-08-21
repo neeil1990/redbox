@@ -118,6 +118,30 @@
 {{--<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>--}}
 <!-- Bootstrap -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+@if(request()->route()->parameter('statistic_project_id') !== null)
+    <script>
+        const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
+        console.log(tracking_project_id)
+
+        $(document).on('click', '.click_tracking', function () {
+            $.ajax({
+                type: 'post',
+                url: "{{ route('click.tracking') }}",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    button_text: $(this).attr('data-click'),
+                    url: location.href,
+                    project_id: tracking_project_id
+                },
+                success: function (response) {
+                },
+                error: function () {
+                }
+            })
+        });
+    </script>
+@endif
+
 <!-- app -->
 @unless(request()->path() == 'utm-marks' || request()->path() == 'all-projects')
     <script src="{{ asset('js/app.js') }}"></script>
@@ -176,31 +200,6 @@
 
 <!-- AdminLTE for demo purposes -->
 <script src="{{ asset('js/demo.js') }}"></script>
-
-@if(request()->route()->parameter('statistic_project_id') !== null)
-    <script>
-        const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
-        console.log(tracking_project_id)
-
-        $(document).on('click', '.click_tracking', function () {
-            $.ajax({
-                type: 'post',
-                url: "{{ route('click.tracking') }}",
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    button_text: $(this).attr('data-click'),
-                    url: location.href,
-                    project_id: tracking_project_id
-                },
-                success: function (response) {
-                },
-                error: function () {
-                }
-            })
-        });
-    </script>
-@endif
-
 @yield('js')
 
 <span class="click_tracking another_action"></span>
