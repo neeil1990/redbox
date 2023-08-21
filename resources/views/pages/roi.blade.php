@@ -17,8 +17,8 @@
         <!-- switch -->
         <div class="row centered">
             <div class="btn-group">
-                <button type="button" class="btn btn-info active" data-id="calc">{{ __('ROI calculator') }}</button>
-                <button type="button" class="btn btn-info" data-id="prognoz">{{ __('Traffic forecast') }}</button>
+                <button type="button" class="btn btn-info active click_tracking" data-click="ROI calculator" data-id="calc">{{ __('ROI calculator') }}</button>
+                <button type="button" class="btn btn-info click_tracking" data-click="Traffic forecast" data-id="prognoz">{{ __('Traffic forecast') }}</button>
             </div>
         </div>
 
@@ -63,11 +63,11 @@
                     <div class="row">
                         <br/>
                         <div class="col-lg-6 col-lg-6 col-xs-6">
-                            <a class="btn btn-block btn-secondary" id="go-calc"><i
+                            <a class="btn btn-block btn-secondary click_tracking" data-click="Calculate" id="go-calc"><i
                                     class="fa fa-check success"></i> {{ __('Calculate') }}</a>
                         </div>
                         <div class="col-lg-6 col-xs-6">
-                            <button type="reset" class="btn btn-block btn-secondary disabled" style="cursor: pointer"
+                            <button type="reset" class="btn btn-block btn-secondary disabled click_tracking" data-click="Clear" style="cursor: pointer"
                                     id="go-reset"><i class="fa fa-times reject"></i> {{ __('Clear') }}</button>
                         </div>
                     </div>
