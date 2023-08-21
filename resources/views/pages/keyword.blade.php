@@ -24,18 +24,21 @@
             <p><a>{{ __('Leave phrases containing') }} </a><input class="filter_word" type="text" size="50" style="width: 100%;"/></p>
             <p><a class="generatedCountText">{{ __('Phrases received') }}: <a class="generatedCount"></a></a><br></p>
             <p><textarea title="" cols="50" rows="23" class="result_word_generator" readonly></textarea></p>
-            <button type="button" class="save-result-word-generator btn btn-secondary"><i class="fas fa-save"></i>
+            <button type="button" class="save-result-word-generator btn btn-secondary click_tracking" data-click="Save">
+                <i class="fas fa-save"></i>
                 {{ __('Save') }}
             </button>
-            <button type="button" class="copy-result-word-generator btn btn-secondary"><i class="fas fa-copy"></i> {{ __('Copy') }}
+            <button type="button" class="copy-result-word-generator btn btn-secondary click_tracking" data-click="Copy">
+                <i class="fas fa-copy"></i>
+                {{ __('Copy') }}
             </button>
         </div>
-        <div class="optionsHeader">
+        <div class="optionsHeader click_tracking" data-click="Additional settings">
             <a href="#" class="arrow arrowDown additionalGlobalOptions __dashed">{{ __('Additional settings') }}</a></div>
         <br>
         <div class="globalOptions">
             <div class="globalOptionsList">
-                <label class="ui_label __no-select">
+                <label class="ui_label __no-select click_tracking" data-click="Conclude in quotation marks">
                     <span class="ui_checkbox">
                         <input type="checkbox" class="globalCheckboxOption ui_checkbox_input"
                                value="surroundWithQuotes"/>
@@ -54,7 +57,7 @@
                 </span>
                 <br>
 
-                <label class="ui_label __no-select">
+                <label class="ui_label __no-select click_tracking" data-click="Conclude in staples">
                     <span class="ui_checkbox">
                         <input type="checkbox" class="globalCheckboxOption ui_checkbox_input"
                                value="surroundWithBrackets"/>
@@ -72,7 +75,7 @@
                 </span>
                 <br>
 
-                <label class="ui_label __no-select">
+                <label class="ui_label __no-select click_tracking" data-click="Add combinations without operators">
                     <span class="ui_checkbox">
                         <input type="checkbox" class="globalCheckboxOption ui_checkbox_input" value="addToResult"/>
                         <span class="ui_checkbox_fake-input"></span>
@@ -89,7 +92,7 @@
                 </span>
                 <br>
 
-                <label class="ui_label __no-select">
+                <label class="ui_label __no-select click_tracking" data-click="Add to stop words">
                     <span class="ui_checkbox">
                         <input type="checkbox" class="globalCheckboxOption ui_checkbox_input" value="addPlus"/>
                         <span class="ui_checkbox_fake-input"></span>
@@ -106,7 +109,7 @@
                 </span>
                 <br>
 
-                <label class="ui_label __no-select">
+                <label class="ui_label __no-select click_tracking" data-click="Split into phrases">
                     <span class="ui_checkbox">
                         <input type="checkbox" class="globalCheckboxOption ui_checkbox_input"
                                value="getAllPhrasesByLength"/>
@@ -150,7 +153,7 @@
 
             </div>
         </div>
-        <button type="button" class="get btn btn-secondary">{{ __('Get combinations') }}</button>
+        <button type="button" class="get btn btn-secondary click_tracking" data-click="Get combinations">{{ __('Get combinations') }}</button>
         <small>{{ __('You get combinations') }}:</small>
         <small class="combinationsQuantity"></small>
 
