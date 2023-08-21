@@ -48,7 +48,7 @@
                             <div class="urlBuilder_tpl_items">
                                 <span class="active btn btn-secondary btn-flat click_tracking" data-id="custom" data-click="Arbitrary">{{ __('Arbitrary') }}</span>
                                 <span data-id="direct"
-                                      class="btn btn-secondary btn-flat click_tracking" data-click="Yandex.Direct">{{ __('Yandex.Direct') }}</span>
+                                      class="btn btn-secondary btn-flat click_tracking" data-click="Yandex_Direct">{{ __('Yandex.Direct') }}</span>
                                 <span data-id="adwords"
                                       class="btn btn-secondary btn-flat click_tracking" data-click="Google AdWords">{{ __('Google AdWords') }}</span>
                                 <span data-id="vk" class="btn btn-secondary btn-flat click_tracking" data-click="VK targeting">{{ __('VK targeting') }}</span>
