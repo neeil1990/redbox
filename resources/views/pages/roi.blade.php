@@ -214,6 +214,7 @@
         <script src="{{ asset('plugins/roi/js/calc.js') }}"></script>
         <script>
             const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
+            console.log(tracking_project_id)
 
             $(document).on('click', '.click_tracking', function () {
                 $.ajax({
