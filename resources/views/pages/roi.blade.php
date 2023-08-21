@@ -212,5 +212,25 @@
     @slot('js')
         <!-- Calc -->
         <script src="{{ asset('plugins/roi/js/calc.js') }}"></script>
+        <script>
+            const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
+
+            $(document).on('click', '.click_tracking', function () {
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('click.tracking') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        button_text: $(this).attr('data-click'),
+                        url: location.href,
+                        project_id: tracking_project_id
+                    },
+                    success: function (response) {
+                    },
+                    error: function () {
+                    }
+                })
+            });
+        </script>
     @endslot
 @endcomponent
