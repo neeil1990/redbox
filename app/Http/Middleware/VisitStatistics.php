@@ -40,6 +40,8 @@ class VisitStatistics
 
             if ($targetController === 'PagesController') {
                 $project = MainProject::where('controller', $controllerAction)->get();
+                Log::info($controllerAction);
+                Log::debug('project', [$project]);
             } else {
                 $project = MainProject::where('controller', 'like', '%' . $targetController . '%')
                     ->first();
