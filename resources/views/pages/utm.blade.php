@@ -486,7 +486,7 @@
                         </div>
 
                         <div class="urlBuilder_el urlBuilder_el-paramsDirect">
-                            <span class="urlBuilder_el_check click_tracking" data-click="Add dynamic parameters Yandex.Direct" id="urlBuilderParamsDirect">
+                            <span class="urlBuilder_el_check click_tracking" data-click="Add dynamic parameters YandexDirect" id="urlBuilderParamsDirect">
                                 <i class="fa fa-square-o"></i>
                                 <i class="fa fa-square"></i>
                                 {{ __('Add dynamic parameters Yandex.Direct') }}
