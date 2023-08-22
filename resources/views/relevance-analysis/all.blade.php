@@ -577,25 +577,6 @@
                             });
                         });
 
-                        $('.history-comment').unbind().change(function () {
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/edit-history-comment",
-                                data: {
-                                    id: $(this).attr('data-target'),
-                                    comment: $(this).val()
-                                },
-                                success: function () {
-                                    $('#toast-container').show(300)
-                                    $('#message-info').html("{{ __('Successfully changed') }}")
-                                    setInterval(function () {
-                                        $('#toast-container').hide(300)
-                                    }, 3000)
-                                },
-                            });
-                        });
-
                         $('.project_name').unbind().click(function () {
                             let thisElem = $(this)
                             let thisElementClass = $(this).attr('class')
@@ -756,6 +737,25 @@
                                                 },
                                                 drawCallback: function () {
                                                     getHistoryInfo()
+
+                                                    $('.history-comment').unbind().change(function () {
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            dataType: "json",
+                                                            url: "/edit-history-comment",
+                                                            data: {
+                                                                id: $(this).attr('data-target'),
+                                                                comment: $(this).val()
+                                                            },
+                                                            success: function () {
+                                                                $('#toast-container').show(300)
+                                                                $('#message-info').html("{{ __('Successfully changed') }}")
+                                                                setInterval(function () {
+                                                                    $('#toast-container').hide(300)
+                                                                }, 3000)
+                                                            },
+                                                        });
+                                                    });
                                                 }
                                             });
 
