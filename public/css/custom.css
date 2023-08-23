@@ -50,3 +50,7 @@ a.bg-purple-light:focus, a.bg-purple-light:hover, button.bg-purple-light:focus, 
         width: 360px;
     }
 }
+
+#video-course {
+    height: 375px !important;
+}
