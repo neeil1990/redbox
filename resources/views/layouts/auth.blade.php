@@ -73,6 +73,15 @@
     });
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/89500732" style="; left:-9999px;" alt="" /></div></noscript>
+<script>
+    $('#video-course').click(function (){
+        setTimeout(() => {
+            $(this).trigger('click')
+        }, 500)
+
+        $(this).unbind()
+    })
+</script>
 <!-- /Yandex.Metrika counter -->
 </body>
 </html>
