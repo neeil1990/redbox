@@ -25,7 +25,6 @@
     <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.css') }}">
     <!-- Custom -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
-
     <!-- Top.Mail.Ru counter -->
     <script type="text/javascript">
         var _tmr = window._tmr || (window._tmr = []);
@@ -73,16 +72,6 @@
     });
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/89500732" style="; left:-9999px;" alt="" /></div></noscript>
-<script>
-    $('#video-course').click(function (){
-        setTimeout(() => {
-            $(this).trigger('click')
-            console.log(1)
-        }, 500)
-
-        $(this).unbind()
-    })
-</script>
 <!-- /Yandex.Metrika counter -->
 </body>
 </html>
