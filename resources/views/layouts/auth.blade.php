@@ -77,6 +77,7 @@
     $('#video-course').click(function (){
         setTimeout(() => {
             $(this).trigger('click')
+            console.log(1)
         }, 500)
 
         $(this).unbind()
