@@ -28,7 +28,7 @@ class Queue
                     $historyId,
                     trim($item[1]),
                     trim($item[0])
-                )->onQueue('relevance_normal_queue');
+                )->onQueue('relevance_normal_priority');
             }
         } catch (\Throwable $e) {
 
