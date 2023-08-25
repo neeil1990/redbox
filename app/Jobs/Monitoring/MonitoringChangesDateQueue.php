@@ -7,6 +7,7 @@ use App\MonitoringCompetitor;
 use App\MonitoringKeyword;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,6 +15,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MonitoringChangesDateQueue implements ShouldQueue
 {
@@ -64,6 +66,7 @@ class MonitoringChangesDateQueue implements ShouldQueue
             $records = [];
             foreach ($dates as $date) {
                 foreach ($items as $keywords) {
+                    Log::debug($date, [Carbon::now()->toDateTimeString()]);
                     $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->whereDate('search_indices.created_at', $date)
                         ->where('search_indices.lr', $lr)
@@ -81,7 +84,6 @@ class MonitoringChangesDateQueue implements ShouldQueue
                     foreach ($results as $result) {
                         $records[$date][$result->query][$lr][] = $result;
                     }
-                    sleep(1);
                 }
             }
 
