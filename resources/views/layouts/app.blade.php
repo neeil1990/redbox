@@ -158,7 +158,7 @@
         })
 
         $('.video-course').on('click', function () {
-            player = new YT.Player('video-course', {
+            player = new YT.Player($(this).attr('id'), {
                 videoId: $(this).attr('data-id'),
                 playerVars: {
                     'autoplay': 1,
