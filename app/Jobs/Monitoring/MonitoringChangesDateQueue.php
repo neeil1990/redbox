@@ -23,10 +23,6 @@ class MonitoringChangesDateQueue implements ShouldQueue
 
     protected array $request;
 
-    public function attempts()
-    {
-    }
-
     /**
      * Create a new job instance.
      *
