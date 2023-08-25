@@ -54,7 +54,7 @@ class MonitoringChangesDateQueue implements ShouldQueue
             $lr = MonitoringSearchengine::where('id', '=', $this->request['region'])->pluck('lr')->toArray()[0];
 
             $words = MonitoringKeyword::where('monitoring_project_id', $project['id'])->get(['query'])->toArray();
-            $items = array_chunk(array_column($words, 'query'), 50);
+            $items = array_chunk(array_column($words, 'query'), 10);
 
             $range = explode(' - ', $this->request['dateRange']);
             $period = CarbonPeriod::create($range[0], $range[1]);
