@@ -455,4 +455,8 @@ Route::get('/test', function () {
             dd(1);
         }
     }
+
+    $t = 'select search_indices.url, search_indices.position, search_indices.created_at, search_indices.query from search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index) where date(`search_indices`.`created_at`) = 2023-08-19 and `search_indices`.`lr` = 193 and `search_indices`.`query` in ("диагностика дизельных двигателей", "проверка форсунок дизельного двигателя", "диагностика дизельных форсунок", "диагностика топливной системы дизельного двигателя", "диагностика топливной аппаратуры дизельных двигателей", "диагностика системы питания дизельного двигателя", "диагностика тнвд дизельного двигателя", "сделать диагностику дизельному двигателю", "диагностика дизельных двигателей автомобилей", "компьютерная диагностика дизельного двигателя") and `search_indices`.`position` <= 100 order by `search_indices`.`id` desc limit 1000';
+    $res = DB::select($t);
+    dd($res);
 });
