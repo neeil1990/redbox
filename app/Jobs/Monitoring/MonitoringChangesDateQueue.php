@@ -65,7 +65,9 @@ class MonitoringChangesDateQueue implements ShouldQueue
 
             $records = [];
             foreach ($dates as $date) {
+                Log::info($date);
                 foreach ($items as $keywords) {
+                    Log::debug('keywords', $keywords);
                     $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->whereDate('search_indices.created_at', $date)
                         ->where('search_indices.lr', $lr)
