@@ -436,25 +436,19 @@ Route::get('/test', function () {
         $dates[] = $date->format('Y-m-d');
     }
 
-    foreach ($dates as $date) {
-        foreach ($items as $keywords) {
-            $queryBuilder = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-                ->whereDate('search_indices.created_at', $date)
-                ->where('search_indices.lr', $lr)
-                ->whereIn('search_indices.query', $keywords)
-                ->where('search_indices.position', '<=', 100)
-                ->orderBy('search_indices.id', 'desc')
-                ->limit(count($keywords) * 100)
-                ->select(DB::raw('search_indices.url, search_indices.position, search_indices.created_at, search_indices.query'));
-
-            $bindings = $queryBuilder->getBindings();
-            $nativeSql = str_replace('?', '%s', $queryBuilder->toSql());
-
-            $nativeSqlWithValues = vsprintf($nativeSql, $bindings);
-            echo $nativeSqlWithValues;
-            dd(1);
-        }
-    }
+//    foreach ($dates as $date) {
+//        foreach ($items as $keywords) {
+//            $queryBuilder = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+//                ->whereDate('search_indices.created_at', $date)
+//                ->where('search_indices.lr', $lr)
+//                ->whereIn('search_indices.query', $keywords)
+//                ->where('search_indices.position', '<=', 100)
+//                ->orderBy('search_indices.id', 'desc')
+//                ->limit(count($keywords) * 100)
+//                ->select(DB::raw('search_indices.url, search_indices.position, search_indices.created_at, search_indices.query'))
+//                ->get();
+//        }
+//    }
 
     $t = 'select search_indices.url, search_indices.position, search_indices.created_at, search_indices.query from search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index) where date(`search_indices`.`created_at`) = 2023-08-19 and `search_indices`.`lr` = 193 and `search_indices`.`query` in ("диагностика дизельных двигателей", "проверка форсунок дизельного двигателя", "диагностика дизельных форсунок", "диагностика топливной системы дизельного двигателя", "диагностика топливной аппаратуры дизельных двигателей", "диагностика системы питания дизельного двигателя", "диагностика тнвд дизельного двигателя", "сделать диагностику дизельному двигателю", "диагностика дизельных двигателей автомобилей", "компьютерная диагностика дизельного двигателя") and `search_indices`.`position` <= 100 order by `search_indices`.`id` desc limit 1000';
     $res = DB::select($t);
