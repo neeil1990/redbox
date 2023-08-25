@@ -46,7 +46,7 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PS4GF7H"
                   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-    @yield('content')
+@yield('content')
 
 <!-- jQuery -->
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>

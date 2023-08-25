@@ -140,6 +140,29 @@
     </script>
 @endif
 
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+    $(document).ready(function () {
+        let player;
+
+        $('#video-course').on('click', function () {
+            player = new YT.Player('video-course', {
+                videoId: $(this).attr('data-id'),
+                playerVars: {
+                    'autoplay': 1,
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        })
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+    })
+</script>
+
 <!-- app -->
 @unless(request()->path() == 'utm-marks' || request()->path() == 'all-projects')
     <script src="{{ asset('js/app.js') }}"></script>

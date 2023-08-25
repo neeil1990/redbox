@@ -152,7 +152,9 @@
             </tbody>
         </table>
     </div>
+
     <input type="hidden" name="passwordId" id="passwordId">
+
     @slot('js')
         <script src="{{ asset('plugins/password-generator/js/password-generator.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
@@ -227,26 +229,6 @@
                     });
                 })
             })
-        </script>
-        <script src="https://www.youtube.com/iframe_api"></script>
-        <script>
-            let player;
-
-            $('#video-course').on('click', function (){
-                player = new YT.Player('video-course', {
-                    videoId: $(this).attr('data-id'),
-                    playerVars: {
-                        'autoplay': 1,
-                    },
-                    events: {
-                        'onReady': onPlayerReady
-                    }
-                });
-            })
-
-            function onPlayerReady(event) {
-                event.target.playVideo();
-            }
         </script>
     @endslot
 @endcomponent
