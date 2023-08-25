@@ -11,9 +11,15 @@
 |
 */
 
+use App\MonitoringKeyword;
+use App\MonitoringSearchengine;
 use App\ProjectRelevanceHistory;
 use App\VisitStatistic;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -415,4 +421,38 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
+});
+
+Route::get('/test', function () {
+    $lr = MonitoringSearchengine::where('id', '=', 138)->pluck('lr')->toArray()[0];
+
+    $words = MonitoringKeyword::where('monitoring_project_id', 91)->get(['query'])->toArray();
+    $items = array_chunk(array_column($words, 'query'), 10);
+
+    $range = explode(' - ', '19-08-2023 - 25-08-2023');
+    $period = CarbonPeriod::create($range[0], $range[1]);
+    $dates = [];
+    foreach ($period as $date) {
+        $dates[] = $date->format('Y-m-d');
+    }
+
+    foreach ($dates as $date) {
+        foreach ($items as $keywords) {
+            $queryBuilder = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                ->whereDate('search_indices.created_at', $date)
+                ->where('search_indices.lr', $lr)
+                ->whereIn('search_indices.query', $keywords)
+                ->where('search_indices.position', '<=', 100)
+                ->orderBy('search_indices.id', 'desc')
+                ->limit(count($keywords) * 100)
+                ->select(DB::raw('search_indices.url, search_indices.position, search_indices.created_at, search_indices.query'));
+
+            $bindings = $queryBuilder->getBindings();
+            $nativeSql = str_replace('?', '%s', $queryBuilder->toSql());
+
+            $nativeSqlWithValues = vsprintf($nativeSql, $bindings);
+            echo $nativeSqlWithValues;
+            dd(1);
+        }
+    }
 });

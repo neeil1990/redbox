@@ -66,23 +66,15 @@ class MonitoringChangesDateQueue implements ShouldQueue
             $records = [];
             foreach ($dates as $date) {
                 foreach ($items as $keywords) {
-                    $queryBuilder = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
+                    $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
                         ->whereDate('search_indices.created_at', $date)
                         ->where('search_indices.lr', $lr)
                         ->whereIn('search_indices.query', $keywords)
                         ->where('search_indices.position', '<=', 100)
                         ->orderBy('search_indices.id', 'desc')
                         ->limit(count($keywords) * 100)
-                        ->select(DB::raw('search_indices.url, search_indices.position, search_indices.created_at, search_indices.query'));
-
-                    $bindings = $queryBuilder->getBindings();
-                    $nativeSql = str_replace('?', '%s', $queryBuilder->toSql());
-
-                    $nativeSqlWithValues = vsprintf($nativeSql, $bindings);
-
-                    Log::debug(Carbon::now()->toDateTimeString(), [$nativeSqlWithValues]);
-
-                    $results = $queryBuilder->get();
+                        ->select(DB::raw('search_indices.url, search_indices.position, search_indices.created_at, search_indices.query'))
+                        ->get();
 
                     if (count($results) === 0) {
                         continue;
