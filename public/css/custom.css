@@ -51,7 +51,7 @@ a.bg-purple-light:focus, a.bg-purple-light:hover, button.bg-purple-light:focus, 
     }
 }
 
-#video-course {
+#video-course, .video-course {
     height: 300px !important;
     width: 500px;
 }

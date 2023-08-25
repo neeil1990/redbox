@@ -157,6 +157,18 @@
             });
         })
 
+        $('.video-course').on('click', function () {
+            player = new YT.Player('video-course', {
+                videoId: $(this).attr('data-id'),
+                playerVars: {
+                    'autoplay': 1,
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        })
+
         function onPlayerReady(event) {
             event.target.playVideo();
         }
