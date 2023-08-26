@@ -65,6 +65,7 @@ a.bg-purple-light:focus, a.bg-purple-light:hover, button.bg-purple-light:focus, 
 }
 
 #video-course > img:hover, .video-course > img:hover {
+    cursor: pointer;
     border-radius: 0;
     filter: grayscale(0%);
     transition: .3s;
