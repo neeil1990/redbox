@@ -384,8 +384,7 @@
                     let response
                     $.each(projects, function (key, item) {
                         if (item.project.link === link) {
-                            let id = item.project.id
-                            response = activitiesArray[id]
+                            response = activitiesArray[item.project.id]
                             return false
                         }
                     })

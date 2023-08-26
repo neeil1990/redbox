@@ -838,8 +838,16 @@
                         $.each($('.fixed-lines'), function () {
                             if ($(this).html().toLowerCase().indexOf(filterValue) === -1) {
                                 $(this).parent().addClass('hide-element')
+                                let relations = $(this).parent().children('.dropdown').eq(0).children('.dropdown-menu').find('.dropdown-item.remove-relationships')
+                                if (relations.length > 0) {
+                                    $('.connection .' + relations.attr('data-id')).addClass('hide-element')
+                                }
                             } else {
                                 $(this).parent().removeClass('hide-element')
+                                let relations = $(this).parent().children('.dropdown').eq(0).children('.dropdown-menu').find('.dropdown-item.remove-relationships')
+                                if (relations.length > 0) {
+                                    $('.connection .' + relations.attr('data-id')).removeClass('hide-element')
+                                }
                             }
                         });
                     } else {
@@ -891,6 +899,9 @@
 
                 $('#select-my-project').attr('data-action', 'color')
                 $('#select-my-project').html('{{ __('Select the project domain') }}')
+
+                $('#select-my-competitors').attr('data-action', 'color')
+                $('#select-my-competitors').html('{{ __('Select my competitors') }}')
             }
 
             function enableElements() {
