@@ -59,16 +59,17 @@ a.bg-purple-light:focus, a.bg-purple-light:hover, button.bg-purple-light:focus, 
 }
 
 #video-course > img, .video-course > img {
-    border-radius: 10px;
-    filter: grayscale(45%);
-    transition: .3s;
+    border-radius: 10px !important;
+    filter: grayscale(45%) !important;
+    transition: .3s !important;
 }
 
-#video-course > img:hover, .video-course > img:hover {
-    cursor: pointer;
-    border-radius: 0;
-    filter: grayscale(0%);
-    transition: .3s;
+#video-course > img:hover,
+.video-course > img:hover {
+    cursor: pointer !important;
+    border-radius: 0 !important;
+    filter: grayscale(0%) !important;
+    transition: .3s !important;
 }
 
 #video-course > div, .video-course > div {
