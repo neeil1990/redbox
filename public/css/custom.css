@@ -36,13 +36,15 @@ img.img-flag {
 }
 
 .bg-purple-light {
-    background-color: #a673ef!important;
+    background-color: #a673ef !important;
 }
-.bg-purple-light, .bg-purple-light>a {
-    color: #fff!important;
+
+.bg-purple-light, .bg-purple-light > a {
+    color: #fff !important;
 }
+
 a.bg-purple-light:focus, a.bg-purple-light:hover, button.bg-purple-light:focus, button.bg-purple-light:hover {
-    background-color: #605ca8!important;
+    background-color: #605ca8 !important;
 }
 
 @media (max-width: 768px) {
@@ -54,4 +56,20 @@ a.bg-purple-light:focus, a.bg-purple-light:hover, button.bg-purple-light:focus, 
 #video-course, .video-course {
     height: 300px !important;
     width: 500px;
+}
+
+#video-course > img, .video-course > img {
+    border-radius: 10px;
+    filter: grayscale(45%);
+    transition: .3s;
+}
+
+#video-course > img:hover, .video-course > img:hover {
+    border-radius: 0;
+    filter: grayscale(0%);
+    transition: .3s;
+}
+
+#video-course > div, .video-course > div {
+    position: absolute;
 }
