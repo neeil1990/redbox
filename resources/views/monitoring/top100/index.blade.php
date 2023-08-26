@@ -256,33 +256,54 @@
         <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
         <script src="{{ asset('/plugins/select2/js/select2.min.js') }}"></script>
         <script>
-            const COLORS = [
-                "rgba(151, 186, 229, 1)",
-                "rgba(214, 2, 86, 1)",
-                "rgba(0, 69, 255, 0.6)",
-                "rgba(239, 50, 223, 0.6)",
-                "rgba(6, 136, 165, 0.6)",
-                "rgba(214, 96, 110, 1)",
-                "rgba(246, 223, 78, 1)",
-                "rgba(220, 51, 10, 0.6)",
-                "rgba(1, 253, 215, 1)",
-                "rgba(1, 79, 66, 0.6)",
-                "rgba(204, 118, 32, 0.6)",
-                "rgba(255, 89, 0, 1)",
-                "rgba(73, 28, 1, 0.6)",
-                "rgba(154, 205, 50, 1)",
-                "rgba(121, 25, 6, 1)",
-                "rgb(17, 255, 0)",
-                "rgba(214, 2, 86, 0.6)",
-                "rgba(19,212,224, 1)",
-                "rgba(239, 50, 223, 1)",
-                "rgba(255,89,0,0.6)",
-                "rgba(244, 139, 200, 1)",
-                "rgba(87, 64, 64, 0.6)",
-                "rgba(163, 209, 234, 0.6)",
-                "rgba(232,194,90,0.6)",
-                "rgba(252, 194, 243, 1)",
-            ]
+            let colorArray = getColors()
+
+            function getColors() {
+                return [
+                    "rgba(151, 186, 229, 1)",
+                    "rgba(214, 2, 86, 1)",
+                    "rgba(0, 69, 255, 0.6)",
+                    "rgba(239, 50, 223, 0.6)",
+                    "rgba(6, 136, 165, 0.6)",
+                    "rgba(214, 96, 110, 1)",
+                    "rgba(246, 223, 78, 1)",
+                    "rgba(220, 51, 10, 0.6)",
+                    "rgba(1, 253, 215, 1)",
+                    "rgba(1, 79, 66, 0.6)",
+                    "rgba(204, 118, 32, 0.6)",
+                    "rgba(255, 89, 0, 1)",
+                    "rgba(73, 28, 1, 0.6)",
+                    "rgba(154, 205, 50, 1)",
+                    "rgba(121, 25, 6, 1)",
+                    "rgb(17, 255, 0)",
+                    "rgba(214, 2, 86, 0.6)",
+                    "rgba(19,212,224, 1)",
+                    "rgba(239, 50, 223, 1)",
+                    "rgba(255,89,0,0.6)",
+                    "rgba(244, 139, 200, 1)",
+                    "rgba(87, 64, 64, 0.6)",
+                    "rgba(163, 209, 234, 0.6)",
+                    "rgba(232,194,90,0.6)",
+                    "rgba(252, 194, 243, 1)",
+                    "rgba(255, 0, 0, 1)",
+                    "rgba(0, 255, 0, 1)",
+                    "rgba(0, 0, 255, 1)",
+                    "rgba(255, 255, 0, 1)",
+                    "rgba(0, 255, 255, 1)",
+                    "rgba(255, 0, 255, 1)",
+                    "rgba(255, 128, 0, 1)",
+                    "rgba(128, 0, 255, 1)",
+                    "rgba(0, 128, 255, 1)",
+                    "rgba(255, 204, 204, 1)",
+                    "rgba(204, 255, 204, 1)",
+                    "rgba(200, 200, 200, 1)",
+                    "rgba(100, 100, 100, 1)",
+                    "rgba(93, 65, 87, 1)",
+                    "rgba(177, 122, 61, 1)",
+                    "rgba(42, 157, 143, 1)",
+                ];
+            }
+
             $('#words-select').select2();
             let range = $('#date-range');
             range.daterangepicker({
@@ -383,29 +404,6 @@
                     });
                 })
             });
-
-            $('#competitors-history-positions').unbind().on('click', function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('monitoring.competitors.history.positions') }}",
-                    data: {
-                        'projectId': PROJECT_ID,
-                        'region': $('#searchEngines').val(),
-                        'dateRange': $('#date-range').val(),
-                    },
-                    success: function (response) {
-                        $('#empty-row').remove()
-                        $('#changeDatesTbody').append(
-                            '<tr id="analyse-in-queue-' + response.analyseId + '">' +
-                            '   <td>' + $('#date-range').val() + '</td>' +
-                            '   <td>' + String($('#searchEngines option:selected').text()).trim() + '</td>' +
-                            '   <td class="text-center">' + "{{ __('In queue') }}" + ' <img src="/img/1485.gif" style="width: 20px; height: 20px;"></td>' +
-                            '</tr>')
-                        waitFinishAnalyse(response.analyseId)
-                    },
-                })
-            })
 
             let activeFilter = 'URL'
 
@@ -644,44 +642,6 @@
                 return id;
             }
 
-            function getRandomColor() {
-                let colorArray = [
-                    "rgba(220, 51, 10, 0.6)",
-                    "rgba(148,67,49,0.6)",
-                    "rgba(121, 25, 6, 1)",
-                    "rgb(169,112,99)",
-                    "rgb(148,127,131)",
-                    "rgba(214, 2, 86, 0.6)",
-                    "rgba(214, 2, 86, 1)",
-                    "rgba(204, 118, 32, 0.6)",
-                    "rgba(255,89,0,0.6)",
-                    "rgba(255, 89, 0, 1)",
-                    "rgba(73, 28, 1, 0.6)",
-                    "rgba(246, 223, 78, 1)",
-                    "rgb(243,211,27)",
-                    "rgb(100,84,0)",
-                    "rgba(1, 253, 215, 1)",
-                    "rgba(1, 79, 66, 0.6)",
-                    "rgba(154, 205, 50, 1)",
-                    "rgb(17, 255, 0)",
-                    "rgb(150,252,141)",
-                    "rgb(10,103,3)",
-                    "rgba(151, 186, 229, 1)",
-                    "rgba(0, 69, 255, 0.6)",
-                    "rgba(6, 136, 165, 0.6)",
-                    "rgba(19,212,224, 1)",
-                    "rgba(239, 50, 223, 0.6)",
-                    "rgba(239, 50, 223, 1)",
-                    "rgba(252, 194, 243, 1)",
-                    "rgba(244, 139, 200, 1)",
-                    "rgba(87, 64, 64, 0.6)",
-                    "rgba(163, 209, 234, 0.6)",
-                    "rgba(232,194,90,0.6)",
-                ]
-
-                return colorArray.sort(() => Math.random() - 0.5)[0];
-            }
-
             function errorMessage(message) {
                 $('#toast-container').show(300)
                 $('#toast-message').html(message)
@@ -701,9 +661,10 @@
             }
 
             function setRelationShips() {
-                let colorArray = COLORS
-
                 $('.set-relationships').unbind().on('click', function () {
+                    if (colorArray.length === 0) {
+                        colorArray = getColors()
+                    }
                     let color = colorArray.shift()
                     let targetUrl = $(this).parents().eq(2).children('div').eq(1).attr('data-domain')
                     let id = randomInteger(0, 90000000)
@@ -751,15 +712,17 @@
             }
 
             function setRelationShipsFromLink() {
-                let colorArray = COLORS
-
                 $('.fixed-lines').unbind().on('click', function () {
 
                     let targetElement = $(this)
                     if (targetElement.parent().children('div').eq(2).children('div').eq(0).children('span.dropdown-item.remove-relationships').eq(0).length > 0) {
                         targetElement.parent().children('div').eq(2).children('div').eq(0).children('span.dropdown-item.remove-relationships').eq(0).trigger('click')
                     } else {
+                        if (colorArray.length === 0) {
+                            colorArray = getColors()
+                        }
                         let color = colorArray.shift()
+
                         let targetUrl = $(this).attr('data-domain')
                         let id = randomInteger(0, 90000000)
                         let find = false
@@ -838,21 +801,28 @@
                         $.each($('.fixed-lines'), function () {
                             if ($(this).html().toLowerCase().indexOf(filterValue) === -1) {
                                 $(this).parent().addClass('hide-element')
-                                let relations = $(this).parent().children('.dropdown').eq(0).children('.dropdown-menu').find('.dropdown-item.remove-relationships')
-                                if (relations.length > 0) {
-                                    $('.connection .' + relations.attr('data-id')).addClass('hide-element')
-                                }
                             } else {
                                 $(this).parent().removeClass('hide-element')
-                                let relations = $(this).parent().children('.dropdown').eq(0).children('.dropdown-menu').find('.dropdown-item.remove-relationships')
-                                if (relations.length > 0) {
-                                    $('.connection .' + relations.attr('data-id')).removeClass('hide-element')
-                                }
                             }
                         });
                     } else {
                         $('.hide-element').removeClass('hide-element')
                     }
+
+                    let domains = []
+                    let ids = []
+
+                    $.each($('.dropdown-item.remove-relationships'), function () {
+                        if (!ids.includes($(this).attr('data-id'))) {
+                            ids.push($(this).attr('data-id'))
+                            domains.push($(this).parents().eq(2).children('.fixed-lines').eq(0).attr('data-domain'))
+                            $(this).trigger('click')
+                        }
+                    })
+
+                    $.each(domains, function (key, value) {
+                        $("div").find(`[data-domain='${value}']`).first().trigger('click');
+                    })
                 })
             }
 
