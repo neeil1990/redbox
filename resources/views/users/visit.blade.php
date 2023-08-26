@@ -82,11 +82,12 @@
                                             Учитывается нажатие кнопок для получения дополнительной инфомрации из бд и т.п.
                                         </span></span></span></th>
                                 <th>Всего действий</th>
+                                <th>Дата последнего визита</th>
                             </tr>
                             </thead>
                             <tbody id="history-actions-tbody">
                             <tr>
-                                <td colspan="5" style="height: 40px; text-align: center; vertical-align: inherit">
+                                <td colspan="6" style="height: 40px; text-align: center; vertical-align: inherit">
                                     Используйте фильтр по дате
                                 </td>
                             </tr>
@@ -248,6 +249,7 @@
                                 }
 
                                 let iterator = 0;
+
                                 $.each(labels, function (link, name) {
                                     let targetSum = counters[iterator]['refreshPageCounter'] + counters[iterator]['actionsCounter']
                                     sum.push(targetSum)
@@ -261,6 +263,7 @@
                                         '<td class="border">' + counters[iterator]['refreshPageCounter'] + '</td>' +
                                         '<td class="border">' + counters[iterator]['actionsCounter'] + '</td>' +
                                         '<td class="border">' + targetSum + '</td>' +
+                                        '<td class="border">' + searchLastProjectActivities(link, response.collection, response.lastActions) + '</td>' +
                                         '<tr>'
                                     iterator++;
                                 })
@@ -375,6 +378,19 @@
                     } else {
                         new Chart(graph, chartConfig);
                     }
+                }
+
+                function searchLastProjectActivities(link, projects, activitiesArray) {
+                    let response
+                    $.each(projects, function (key, item) {
+                        if (item.project.link === link) {
+                            let id = item.project.id
+                            response = activitiesArray[id]
+                            return false
+                        }
+                    })
+
+                    return response;
                 }
             </script>
         @endslot

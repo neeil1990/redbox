@@ -23,6 +23,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -323,19 +324,34 @@ class UsersController extends Controller
         $counterActions = $this->getCounterActions(Carbon::now()->subDays(30)->format('d-m-Y'), $now, $user->id);
         $summedCollection = $this->getActions('20-03-2023 - ' . $now, $user->id);
         $info = VisitStatistic::getModulesInfo($summedCollection);
+//        $lastActions = $this->getLastActions(Carbon::now()->subDays(30)->format('d-m-Y'), $now, $user->id);
+//        dd($lastActions);
 
         return view('users.visit', compact('summedCollection', 'info', 'user', 'counterActions'));
+    }
+
+    private function getLastActions($start, $end, $userId)
+    {
+        return VisitStatistic::whereBetween('date', [
+            date('Y-m-d', strtotime($start)),
+            date('Y-m-d', strtotime($end))
+        ])->where('user_id', $userId)
+            ->select('project_id', DB::raw('MAX(date) as last_visit'))
+            ->groupBy('project_id')
+            ->pluck('last_visit', 'project_id');
     }
 
     public function userActionsHistory(Request $request): JsonResponse
     {
         $collection = $this->getActions($request->dateRange, $request->userId);
         $range = explode(' - ', $request->dateRange);
+        $lastActions = $this->getLastActions($range[0], $range[1], $request->userId);
 
         return response()->json([
             'collection' => $collection,
             'info' => VisitStatistic::getModulesInfo($collection, false),
-            'counterActions' => $this->getCounterActions($range[0], $range[1], $request->userId, false)
+            'counterActions' => $this->getCounterActions($range[0], $range[1], $request->userId, false),
+            'lastActions' => $lastActions
         ]);
     }
 
@@ -406,13 +422,13 @@ class UsersController extends Controller
         $actions = [];
         $refresh = [];
         $time = [];
-        $data = [];
+        $date = [];
 
         foreach ($response->toArray() as $key => $item) {
             $actions[] = $item['actionsCounter'];
             $refresh[] = $item['refreshPageCounter'];
             $time[] = $item['time'];
-            $data[] = $key;
+            $date[] = $key;
         }
 
         if ($encode) {
@@ -420,7 +436,7 @@ class UsersController extends Controller
                 'actions' => $actions,
                 'refresh' => $refresh,
                 'time' => $time,
-                'data' => $data
+                'data' => $date
             ]);
         }
 
@@ -428,7 +444,7 @@ class UsersController extends Controller
             'actions' => $actions,
             'refresh' => $refresh,
             'time' => $time,
-            'data' => $data
+            'data' => $date
         ];
 
     }
