@@ -49,8 +49,6 @@ class MonitoringChangesDateQueue implements ShouldQueue
             ]);
 
             $project = MonitoringProject::where('id', $this->record['monitoring_project_id'])->first(['id', 'url']);
-//            $competitors = MonitoringCompetitor::where('monitoring_project_id', $project['id'])->pluck('url')->toArray();
-//            array_unshift($competitors, $project['url']);
             $lr = MonitoringSearchengine::where('id', '=', $this->request['region'])->pluck('lr')->toArray()[0];
 
             $words = MonitoringKeyword::where('monitoring_project_id', $project['id'])->get(['query'])->toArray();
@@ -67,65 +65,12 @@ class MonitoringChangesDateQueue implements ShouldQueue
             $totalJobs = 0;
             foreach ($dates as $date) {
                 foreach ($items as $keywords) {
-                    Log::debug($date, $keywords);
-                    MonitoringHelperQueue::dispatch($date, $lr, $keywords, $hash)->onQueue('change_date_helper');
+                    MonitoringHelperQueue::dispatch($date, $lr, $keywords, $hash)->onQueue('monitoring_helper');
                     $totalJobs++;
-//                    $results = DB::table(DB::raw('search_indices use index(search_indices_query_index, search_indices_lr_index, search_indices_position_index)'))
-//                        ->whereDate('search_indices.created_at', $date)
-//                        ->where('search_indices.lr', $lr)
-//                        ->whereIn('search_indices.query', $keywords)
-//                        ->orderBy('search_indices.id', 'desc')
-//                        ->limit(count($keywords) * 100)
-//                        ->select(DB::raw('search_indices.url, search_indices.position, search_indices.query, search_indices.created_at'))
-//                        ->get();
-//
-//                    if (count($results) === 0) {
-//                        continue;
-//                    }
-//
-//                    foreach ($results as $result) {
-//                        $records[$date][$result->query][$lr][] = $result;
-//                    }
                 }
             }
 
-            MonitoringWaitResultsQueue::dispatch($hash, $totalJobs, $project, $this->record)->onQueue('wait_results');
-
-//            $response = [];
-//            foreach ($records as $date => $queries) {
-//                foreach ($queries as $lrs) {
-//                    foreach ($lrs as $positions) {
-//                        if (count($positions) === 0) {
-//                            continue;
-//                        }
-//                        foreach ($competitors as $competitor) {
-//                            foreach ($positions as $keyPos => $result) {
-//                                $url = Common::domainFilter(parse_url($result->url)['host']);
-//                                if ($competitor === $url) {
-//                                    $response[$date][$competitor]['positions'][] = $result->position;
-//                                    continue 2;
-//                                } else if (array_key_last($positions) === $keyPos) {
-//                                    $response[$date][$competitor]['positions'][] = 101;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            foreach ($response as $date => $result) {
-//                foreach ($result as $domain => $data) {
-//                    $response[$date][$domain]['avg'] = round(array_sum($data['positions']) / count($data['positions']), 2);
-//                    $response[$date][$domain]['top_3'] = Common::percentHitIn(3, $data['positions'], true);
-//                    $response[$date][$domain]['top_10'] = Common::percentHitIn(10, $data['positions'], true);
-//                    $response[$date][$domain]['top_100'] = Common::percentHitIn(100, $data['positions'], true);
-//                }
-//            }
-
-//            $this->record->update([
-//                'result' => json_encode($response, JSON_INVALID_UTF8_IGNORE),
-//                'state' => 'ready',
-//            ]);
+            MonitoringWaitResultsQueue::dispatch($hash, $totalJobs, $project, $this->record)->onQueue('monitoring_wait');
         } catch (\Throwable $e) {
             $this->record->update([
                 'result' => "",

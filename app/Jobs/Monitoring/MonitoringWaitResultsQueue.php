@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class MonitoringWaitResultsQueue implements ShouldQueue
 {
@@ -93,5 +92,13 @@ class MonitoringWaitResultsQueue implements ShouldQueue
             MonitoringWaitResultsQueue::dispatch($this->hash, $this->target)->delay(now()->addSeconds(10));
         }
 
+    }
+
+    public function failed()
+    {
+        $this->record->update([
+            'result' => "",
+            'state' => 'fail',
+        ]);
     }
 }
