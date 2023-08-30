@@ -60,9 +60,7 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="tab-content">
-                <canvas id="bar-chart-grouped" style="width: 100%"></canvas>
-            </div>
+            <canvas id="bar-chart-grouped" style="width: 0"></canvas>
         </div>
     </div>
 
@@ -173,6 +171,10 @@
                             chart.destroy()
                         }
 
+                        $('#bar-chart-grouped').css({
+                            width: '100%',
+                        })
+
                         chart = new Chart(document.getElementById("bar-chart-grouped"), {
                             type: 'bar',
                             data: {
@@ -191,70 +193,6 @@
                     }
                 });
             });
-
-
-
-
-            {{--new Chart(document.getElementById('doughnut-actions-chart'), {--}}
-            {{--    type: 'doughnut',--}}
-            {{--    data: {--}}
-            {{--        labels: {!! $names !!},--}}
-            {{--        datasets: [--}}
-            {{--            {--}}
-            {{--                backgroundColor: {!! $colors !!},--}}
-            {{--                data: {!! $actions !!}--}}
-            {{--            }--}}
-            {{--        ]--}}
-            {{--    },--}}
-            {{--    options: {--}}
-            {{--        title: {--}}
-            {{--            display: false,--}}
-            {{--        },--}}
-            {{--        animation: {--}}
-            {{--            duration: 0--}}
-            {{--        }--}}
-            {{--    }--}}
-            {{--});--}}
-            {{--new Chart(document.getElementById('doughnut-refreshes-chart'), {--}}
-            {{--    type: 'doughnut',--}}
-            {{--    data: {--}}
-            {{--        labels: {!! $names !!},--}}
-            {{--        datasets: [--}}
-            {{--            {--}}
-            {{--                backgroundColor: {!! $colors !!},--}}
-            {{--                data: {!! $refreshes !!}--}}
-            {{--            }--}}
-            {{--        ]--}}
-            {{--    },--}}
-            {{--    options: {--}}
-            {{--        title: {--}}
-            {{--            display: false,--}}
-            {{--        },--}}
-            {{--        animation: {--}}
-            {{--            duration: 0--}}
-            {{--        }--}}
-            {{--    }--}}
-            {{--});--}}
-            {{--new Chart(document.getElementById('doughnut-times-chart'), {--}}
-            {{--    type: 'doughnut',--}}
-            {{--    data: {--}}
-            {{--        labels: {!! $names !!},--}}
-            {{--        datasets: [--}}
-            {{--            {--}}
-            {{--                backgroundColor: {!! $colors !!},--}}
-            {{--                data: {!! $seconds !!}--}}
-            {{--            }--}}
-            {{--        ]--}}
-            {{--    },--}}
-            {{--    options: {--}}
-            {{--        title: {--}}
-            {{--            display: false,--}}
-            {{--        },--}}
-            {{--        animation: {--}}
-            {{--            duration: 0--}}
-            {{--        }--}}
-            {{--    }--}}
-            {{--});--}}
         </script>
         <script>
             $('#table').DataTable({

@@ -142,7 +142,6 @@ class MainProjectsController extends Controller
     public function moduleVisitStatistics()
     {
         $projects = MainProject::with('statistics')->get()->toArray();
-//        $statistics = $this->getLineBarStat($projects, 'actions_counter');
 
         foreach ($projects as $key => $project) {
             $sumActions = 0;
@@ -165,8 +164,6 @@ class MainProjectsController extends Controller
 
         return view('main-projects.statistics-modules', [
             'projects' => $projects,
-//            'datasets' => $statistics['datasets'],
-//            'dates' => $statistics['dates']
         ]);
     }
 
@@ -362,7 +359,7 @@ class MainProjectsController extends Controller
                 }
             }
             $datasets[] = [
-                'label' => $project['description'],
+                'label' => $project['title'],
                 'backgroundColor' => $project['color'],
                 'data' => $data
             ];
