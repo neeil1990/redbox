@@ -1,6 +1,7 @@
 @component('component.card', ['title' => __('General statistics modules')])
     @slot('css')
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
     @endslot
 
     <table id="table" class="table table-striped border">
@@ -37,104 +38,223 @@
     </table>
     <div class="card mt-5">
         <div class="card-header d-flex p-0">
-            <h3 class="card-title p-3">Графики</h3>
-            <ul class="nav nav-pills ml-auto p-2">
-                <li class="nav-item">
-                    <a class="nav-link" href="#tab_1" data-toggle="tab">Счётчик действий</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#tab_2" data-toggle="tab">Счётчик обновлений страниц</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#tab_3" data-toggle="tab">Счётчик времени проведённого в модулях (сек)</a>
-                </li>
-            </ul>
+            <div class="pt-3 pl-3">
+                <div class="form-group">
+                    <div class="btn-group">
+                        <div class="input-group mr-1">
+                            <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="far fa-calendar-alt"></i>
+                            </span>
+                            </div>
+                            <input type="text" id="date-range" class="form-control float-right">
+                        </div>
+                        <select id="action" class="custom-select">
+                            <option value="actions_counter">Действия</option>
+                            <option value="refresh_page_counter">Обновления страниц</option>
+                            <option value="seconds">Время проведённое в модулях</option>
+                        </select>
+                        <button class="btn btn-secondary" id="get-statistics">Статистика</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <div class="tab-content">
-                <div class="tab-pane" id="tab_1">
-                    <div class="w-50 ml-auto mr-auto">
-                        <canvas id="doughnut-actions-chart"></canvas>
-                    </div>
-                </div>
-                <div class="tab-pane" id="tab_2">
-                    <div class="w-50 ml-auto mr-auto">
-                        <canvas id="doughnut-refreshes-chart"></canvas>
-                    </div>
-                </div>
-                <div class="tab-pane" id="tab_3">
-                    <div class="w-50 ml-auto mr-auto">
-                        <canvas id="doughnut-times-chart"></canvas>
-                    </div>
-                </div>
+                <canvas id="bar-chart-grouped" style="width: 100%"></canvas>
             </div>
         </div>
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
+        <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
+        <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
+
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/chart.js/3.9.1/chart.js') }}"></script>
         <script>
-            new Chart(document.getElementById('doughnut-actions-chart'), {
-                type: 'doughnut',
-                data: {
-                    labels: {!! $names !!},
-                    datasets: [
-                        {
-                            backgroundColor: {!! $colors !!},
-                            data: {!! $actions !!}
-                        }
-                    ]
+            let chart = undefined
+            let range = $('#date-range');
+            range.daterangepicker({
+                opens: 'left',
+                startDate: moment().subtract(7, 'days'),
+                endDate: moment(),
+                ranges: {
+                    'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
+                    'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
+                    'Последние 60 дней': [moment().subtract(59, 'days'), moment()],
                 },
-                options: {
-                    title: {
-                        display: false,
-                    },
-                    animation: {
-                        duration: 0
-                    }
+                alwaysShowCalendars: true,
+                showCustomRangeLabel: false,
+                locale: {
+                    format: 'DD-MM-YYYY',
+                    daysOfWeek: [
+                        "Вс",
+                        "Пн",
+                        "Вт",
+                        "Ср",
+                        "Чт",
+                        "Пт",
+                        "Сб"
+                    ],
+                    monthNames: [
+                        "Январь",
+                        "Февраль",
+                        "Март",
+                        "Апрель",
+                        "Май",
+                        "Июнь",
+                        "Июль",
+                        "Август",
+                        "Сентябрь",
+                        "Октябрь",
+                        "Ноябрь",
+                        "Декабрь"
+                    ],
+                    firstDay: 1,
                 }
             });
-            new Chart(document.getElementById('doughnut-refreshes-chart'), {
-                type: 'doughnut',
-                data: {
-                    labels: {!! $names !!},
-                    datasets: [
-                        {
-                            backgroundColor: {!! $colors !!},
-                            data: {!! $refreshes !!}
+
+            range.on('updateCalendar.daterangepicker', function (ev, picker) {
+
+                let container = picker.container;
+
+                let leftCalendarEl = container.find('.drp-calendar.left tbody tr');
+                let rightCalendarEl = container.find('.drp-calendar.right tbody tr');
+
+                let leftCalendarData = picker.leftCalendar.calendar;
+                let rightCalendarData = picker.rightCalendar.calendar;
+
+                let showDates = [];
+
+                for (let rows = 0; rows < leftCalendarData.length; rows++) {
+
+                    let leftCalendarRowEl = $(leftCalendarEl[rows]);
+                    $.each(leftCalendarData[rows], function (i, item) {
+
+                        let leftCalendarDaysEl = $(leftCalendarRowEl.find('td').get(i));
+                        if (!leftCalendarDaysEl.hasClass('off')) {
+
+                            showDates.push({
+                                date: item.format('YYYY-MM-DD'),
+                                el: leftCalendarDaysEl,
+                            });
                         }
-                    ]
-                },
-                options: {
-                    title: {
-                        display: false,
-                    },
-                    animation: {
-                        duration: 0
-                    }
+                    });
+
+                    let rightCalendarRowEl = $(rightCalendarEl[rows]);
+                    $.each(rightCalendarData[rows], function (i, item) {
+
+                        let rightCalendarDaysEl = $(rightCalendarRowEl.find('td').get(i));
+                        if (!rightCalendarDaysEl.hasClass('off')) {
+
+                            showDates.push({
+                                date: item.format('YYYY-MM-DD'),
+                                el: rightCalendarDaysEl,
+                            });
+                        }
+                    });
                 }
             });
-            new Chart(document.getElementById('doughnut-times-chart'), {
-                type: 'doughnut',
-                data: {
-                    labels: {!! $names !!},
-                    datasets: [
-                        {
-                            backgroundColor: {!! $colors !!},
-                            data: {!! $seconds !!}
-                        }
-                    ]
-                },
-                options: {
-                    title: {
-                        display: false,
+
+            $('#get-statistics').on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('get.statistics.modules') }}",
+                    dataType: 'json',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        dateRange: $('#date-range').val(),
+                        action: $('#action').val()
                     },
-                    animation: {
-                        duration: 0
+                    success: function (response) {
+                        if (chart !== undefined) {
+                            chart.destroy()
+                        }
+
+                        chart = new Chart(document.getElementById("bar-chart-grouped"), {
+                            type: 'bar',
+                            data: {
+                                labels: response.dates,
+                                datasets: response.datasets
+                            },
+                            options: {
+                                title: {
+                                    display: true,
+                                    text: 'Population growth (millions)'
+                                }
+                            }
+                        });
+                    },
+                    error: function (response) {
                     }
-                }
+                });
             });
+
+
+
+
+            {{--new Chart(document.getElementById('doughnut-actions-chart'), {--}}
+            {{--    type: 'doughnut',--}}
+            {{--    data: {--}}
+            {{--        labels: {!! $names !!},--}}
+            {{--        datasets: [--}}
+            {{--            {--}}
+            {{--                backgroundColor: {!! $colors !!},--}}
+            {{--                data: {!! $actions !!}--}}
+            {{--            }--}}
+            {{--        ]--}}
+            {{--    },--}}
+            {{--    options: {--}}
+            {{--        title: {--}}
+            {{--            display: false,--}}
+            {{--        },--}}
+            {{--        animation: {--}}
+            {{--            duration: 0--}}
+            {{--        }--}}
+            {{--    }--}}
+            {{--});--}}
+            {{--new Chart(document.getElementById('doughnut-refreshes-chart'), {--}}
+            {{--    type: 'doughnut',--}}
+            {{--    data: {--}}
+            {{--        labels: {!! $names !!},--}}
+            {{--        datasets: [--}}
+            {{--            {--}}
+            {{--                backgroundColor: {!! $colors !!},--}}
+            {{--                data: {!! $refreshes !!}--}}
+            {{--            }--}}
+            {{--        ]--}}
+            {{--    },--}}
+            {{--    options: {--}}
+            {{--        title: {--}}
+            {{--            display: false,--}}
+            {{--        },--}}
+            {{--        animation: {--}}
+            {{--            duration: 0--}}
+            {{--        }--}}
+            {{--    }--}}
+            {{--});--}}
+            {{--new Chart(document.getElementById('doughnut-times-chart'), {--}}
+            {{--    type: 'doughnut',--}}
+            {{--    data: {--}}
+            {{--        labels: {!! $names !!},--}}
+            {{--        datasets: [--}}
+            {{--            {--}}
+            {{--                backgroundColor: {!! $colors !!},--}}
+            {{--                data: {!! $seconds !!}--}}
+            {{--            }--}}
+            {{--        ]--}}
+            {{--    },--}}
+            {{--    options: {--}}
+            {{--        title: {--}}
+            {{--            display: false,--}}
+            {{--        },--}}
+            {{--        animation: {--}}
+            {{--            duration: 0--}}
+            {{--        }--}}
+            {{--    }--}}
+            {{--});--}}
         </script>
         <script>
             $('#table').DataTable({

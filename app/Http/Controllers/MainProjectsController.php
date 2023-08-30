@@ -10,9 +10,7 @@ use App\VisitStatistic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
@@ -144,11 +142,7 @@ class MainProjectsController extends Controller
     public function moduleVisitStatistics()
     {
         $projects = MainProject::with('statistics')->get()->toArray();
-        $names = [];
-        $colors = [];
-        $refreshes = [];
-        $actions = [];
-        $seconds = [];
+//        $statistics = $this->getLineBarStat($projects, 'actions_counter');
 
         foreach ($projects as $key => $project) {
             $sumActions = 0;
@@ -167,22 +161,13 @@ class MainProjectsController extends Controller
                 'seconds' => $countSeconds,
             ];
 
-            $names[] = __($project['title']);
-            $colors[] = $project['color'];
-            $actions[] = $sumActions;
-            $refreshes[] = $sumRefresh;
-            $seconds[] = $countSeconds;
         }
 
-        $colors = json_encode($colors);
-        $names = json_encode($names);
-        $actions = json_encode($actions);
-        $refreshes = json_encode($refreshes);
-        $seconds = json_encode($seconds);
-
-        return view('main-projects.statistics-modules',
-            compact('projects', 'colors', 'names', 'actions', 'refreshes', 'seconds')
-        );
+        return view('main-projects.statistics-modules', [
+            'projects' => $projects,
+//            'datasets' => $statistics['datasets'],
+//            'dates' => $statistics['dates']
+        ]);
     }
 
     public function actions($id, Request $request)
@@ -324,5 +309,68 @@ class MainProjectsController extends Controller
                 ->get('date')
                 ->toArray()
         ]);
+    }
+
+    public function statisticsModules(Request $request): array
+    {
+        return $this->getLineBarStat($request->action, explode(' - ', $request->dateRange));
+    }
+
+    private function getLineBarStat(string $index, array $dateRange): array
+    {
+        $projects = MainProject::with('statistics')
+            ->whereHas('statistics', function ($query) use ($dateRange) {
+                $query->whereBetween('date', [
+                    date('Y-m-d', strtotime($dateRange[0])),
+                    date('Y-m-d', strtotime($dateRange[1]))
+                ]);
+            })->get();
+
+        $dates = [];
+
+        $startDate = Carbon::parse($dateRange[0]);
+        $endDate = Carbon::parse($dateRange[1]);
+
+        foreach ($projects as $key => $project) {
+            $newStat = [];
+            foreach ($project['statistics'] as $statistic) {
+                $checkDate = Carbon::parse($statistic['date']);
+                if ($checkDate->isBefore($startDate) || $checkDate->isAfter($endDate)) {
+                    continue;
+                }
+
+                $newStat[$statistic['date']] = $statistic;
+                if (in_array($statistic['date'], $dates)) {
+                    continue;
+                } else {
+                    $dates[] = $statistic['date'];
+                }
+            }
+
+            $projects[$key]['newStat'] = $newStat;
+        }
+
+        $datasets = [];
+        foreach ($projects as $project) {
+            $stat = array_keys($project['newStat']);
+            $data = [];
+            foreach ($dates as $date) {
+                if (in_array($date, $stat)) {
+                    $data[] = $project['newStat'][$date][$index];
+                } else {
+                    $data[] = 0;
+                }
+            }
+            $datasets[] = [
+                'label' => $project['description'],
+                'backgroundColor' => $project['color'],
+                'data' => $data
+            ];
+        }
+
+        return [
+            'dates' => $dates,
+            'datasets' => $datasets
+        ];
     }
 }

@@ -181,6 +181,8 @@ class Relevance
             $this->prepareClouds();
             $this->saveHistory($historyId);
 
+            UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
+
             RemoveRelevanceProgress::dispatch($this->scanHash)
                 ->onQueue('default')
                 ->delay(now()->addSeconds(100));
@@ -538,9 +540,6 @@ class Relevance
 
                 if (count($wordWorms) >= 3500) {
                     break;
-                }
-
-                if (count($wordWorms) % 100 == 0) {
                 }
             }
         }
@@ -1131,8 +1130,6 @@ class Relevance
                 $this->saveHistoryResult($id);
             }
         }
-
-        UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
     }
 
     public function saveHistoryResult($id)
