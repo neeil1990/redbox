@@ -267,11 +267,8 @@ class BacklinkController extends Controller
         $this->analyseLink($site);
 
         if (isset($this->error)) {
-            flash()->overlay($this->error, ' ')->error();
             $this->saveResult($site, true);
-            //add tg message
         } else {
-//            flash()->overlay($this->result['result'], ' ')->success();
             $this->saveResult($site, false);
         }
 
@@ -389,7 +386,7 @@ class BacklinkController extends Controller
         return preg_replace('//i', '', $html);
     }
 
-    public function saveResult($target, $broken, $sendNotification = false)
+    public function saveResult($target, $broken)
     {
         if (isset($this->error)) {
             $target->status = $this->error;
@@ -411,11 +408,6 @@ class BacklinkController extends Controller
                 $this->decrement($target->project_tracking_id);
             }
         }
-
-        if ($sendNotification) {
-            $target->mail_sent = $sendNotification;
-        }
-
         $target->broken = $broken;
         $target->save();
     }
