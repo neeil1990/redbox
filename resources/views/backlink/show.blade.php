@@ -72,7 +72,7 @@
                         @endisset</td>
                     <td class="fixed-height">
                         @foreach(explode('.', $link->status) as $phrase)
-                            @if(strpos($phrase, 'dont') === false)
+                            @if(strpos($phrase, 'not') === false)
                                 <div class="text-info">
                                     {{ __(trim($phrase)) }}
                                 </div>

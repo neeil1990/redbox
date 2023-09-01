@@ -16,7 +16,7 @@ class BacklinkController extends Controller
 {
     protected $result;
 
-    protected $error;
+    protected $error = null;
 
     protected $node = false;
 
@@ -391,7 +391,11 @@ class BacklinkController extends Controller
 
     public function saveResult($target, $broken, $sendNotification = false)
     {
-        $target->status = preg_replace('/\s+/u', ' ', "$this->result $this->noIndex $this->noFollow");
+        if (isset($this->error)) {
+            $target->status = $this->error;
+        } else {
+            $target->status = preg_replace('/\s+/u', ' ', "$this->result $this->noIndex $this->noFollow");
+        }
 
         $target->last_check = date("Y-m-d H:i:s");
         if ($target->broken == null) {
