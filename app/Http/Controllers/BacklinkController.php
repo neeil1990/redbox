@@ -336,7 +336,7 @@ class BacklinkController extends Controller
             if ($issetNofollow) {
                 $this->noFollow = 'Link have attribute nofollow.';
             } else {
-                $this->noFollow = 'Link dont have attribute nofollow.';
+                $this->noFollow = 'Link not have attribute nofollow.';
             }
         }
     }
@@ -352,7 +352,7 @@ class BacklinkController extends Controller
         }
 
         if ($this->noIndex === null) {
-            $this->noIndex = 'Link dont placed in noindex.';
+            $this->noIndex = 'Link not placed in noindex.';
         }
     }
 
