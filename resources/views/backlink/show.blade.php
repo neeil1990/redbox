@@ -67,13 +67,21 @@
                     <td>
                         {!! Form::select('noindex', ['1' => __('Yes'), '0' => __('No')], $link->noindex, ['class' => 'form-control backlink']) !!}
                     </td>
-                    <td class="">@isset($link->last_check){{ $link->last_check }}@endisset</td>
+                    <td class="">@isset($link->last_check)
+                            {{ $link->last_check }}
+                        @endisset</td>
                     <td class="fixed-height">
-                        @if((boolean)$link->broken)
-                            <span class="text-danger">@foreach(explode(',', $link->status) as $phrase){{ __(trim($phrase)) }}<br>@endforeach</span>
-                        @else
-                            <span class="text-info">@foreach(explode(',', $link->status) as $phrase){{ __(trim($phrase)) }}<br>@endforeach</span>
-                        @endif
+                        @foreach(explode('.', $link->status) as $phrase)
+                            @if(strpos($phrase, 'dont') === false)
+                                <div class="text-info">
+                                    {{ __(trim($phrase)) }}
+                                </div>
+                            @else
+                                <div class="text-danger">
+                                    {{ __(trim($phrase)) }}
+                                </div>
+                            @endif
+                        @endforeach
                     </td>
                     <td class="d-flex justify-content-around m-auto">
                         <form action="{{ route('check.link', $link->id)}}" method="get">
@@ -114,7 +122,7 @@
 
                 projectEl.blur(function () {
 
-                    if(!$(this).val().length){
+                    if (!$(this).val().length) {
                         $('.toast-top-right.error-message').show();
                         setTimeout(() => {
                             $('.toast-top-right.error-message').hide(300)
@@ -169,7 +177,7 @@
                     placeholder: {
                         id: 'null',
                     },
-                    sorter: function(el){
+                    sorter: function (el) {
                         return el.sort((a, b) => {
                             a = a.text.toLowerCase();
                             b = b.text.toLowerCase();
@@ -191,13 +199,12 @@
                 });
             });
 
-            function updateProject(url, data = {})
-            {
+            function updateProject(url, data = {}) {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: url,
-                    data: $.extend(data, { _token : $('meta[name="csrf-token"]').attr('content')}),
+                    data: $.extend(data, {_token: $('meta[name="csrf-token"]').attr('content')}),
                     success: function () {
                         $('.toast-top-right.success-message').show(300);
                         setTimeout(() => {

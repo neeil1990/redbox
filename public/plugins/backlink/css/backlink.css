@@ -8,16 +8,6 @@ td.d-flex {
     border-bottom: none;
 }
 
-.table-d:hover {
-    width: 600px;
-    transition: .8s;
-}
-
-.table-d {
-    width: 200px;
-    transition: .8s;
-}
-
 .fixed-height {
     height: 150px;
 }

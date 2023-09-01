@@ -9,21 +9,23 @@
             }
         </style>
     @endslot
+
     <a href="{{ route('add.backlink.view') }}" class="btn btn-secondary mt-3 mb-3 mr-2">
         {{ __('Add link tracking') }}
     </a>
-    @foreach($backlinks as $backlink)
-        <div class="row">
-            <div class="col-sm-12">
-                <table class="table table-bordered table-hover dataTable dtr-inline">
-                    <thead>
-                    <tr role="row">
-                        <th>{{ __('Project name') }}</th>
-                        <th>{{ __('Broken links/Total links') }}</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-bordered table-hover dataTable dtr-inline">
+                <thead>
+                <tr role="row">
+                    <th>{{ __('Project name') }}</th>
+                    <th>{{ __('Broken links/Total links') }}</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($backlinks as $backlink)
                     <tr class="odd">
                         <td class="col-5 click_tracking" data-click="Show project">
                             <a href="{{ route('show.backlink', $backlink->id)}}">
@@ -52,12 +54,9 @@
                             </form>
                         </td>
                     </tr>
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                    </tfoot>
-                </table>
-            </div>
+                @endforeach
+                </tbody>
+            </table>
         </div>
-    @endforeach
+    </div>
 @endcomponent

@@ -162,7 +162,6 @@ class HtmlDocument
         return $this;
     }
 
-
     public function save($filepath = '')
     {
         $ret = $this->root->innertext();
@@ -199,8 +198,8 @@ class HtmlDocument
         $this->original_size = $this->size;
         $this->pos = 0;
         $this->cursor = 1;
-        $this->noise = array();
-        $this->nodes = array();
+        $this->noise = [];
+        $this->nodes = [];
         $this->lowercase = $lowercase;
         $this->default_br_text = $defaultBRText;
         $this->default_span_text = $defaultSpanText;

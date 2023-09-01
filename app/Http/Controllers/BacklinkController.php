@@ -2,38 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\LinkTracking;
 use App\ProjectTracking;
 use App\User;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 
 class BacklinkController extends Controller
 {
-    /**
-     * @var array $result
-     */
-    public $result;
+    protected $result;
 
-    /**
-     * BacklinkController constructor.
-     */
+    protected $error;
+
+    protected $node = false;
+
+    protected $noIndex = null;
+
+    protected $noFollow = null;
+
     public function __construct()
     {
         $this->middleware(['permission:Backlink']);
-
-        $this->result = [];
     }
 
-    /**
-     * @return array|Application|Factory|View|mixed
-     */
     public function index()
     {
         $backlinks = ProjectTracking::where('user_id', '=', Auth::id())->get();
@@ -44,9 +39,6 @@ class BacklinkController extends Controller
         return view('backlink.index', compact('backlinks'));
     }
 
-    /**
-     * @return array|Application|Factory|View|mixed
-     */
     public function createView()
     {
         /** @var User $user */
@@ -70,19 +62,11 @@ class BacklinkController extends Controller
         return view('backlink.create', compact('monitoring'));
     }
 
-    /**
-     * @param $id
-     * @return array|Application|Factory|View|mixed
-     */
     public function addLinkView($id)
     {
         return view('backlink.add-backlink', compact('id'));
     }
 
-    /**
-     * @param $id
-     * @return RedirectResponse
-     */
     public function remove($id): RedirectResponse
     {
         ProjectTracking::destroy($id);
@@ -91,10 +75,6 @@ class BacklinkController extends Controller
         return Redirect::route('backlink');
     }
 
-    /**
-     * @param $id
-     * @return array|Application|Factory|View|mixed
-     */
     public function show($id)
     {
         $project = ProjectTracking::findOrFail($id);
@@ -103,16 +83,13 @@ class BacklinkController extends Controller
         return view('backlink.show', compact('project', 'monitoring'));
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function storeLink(Request $request): RedirectResponse
     {
         if (isset($request->countRows)) {
             $this->simplifiedCreate($request);
         } else {
             $phrases = $this->getParams($request->params);
+
             if ($this->isParserError($phrases)) {
                 flash()->overlay(__('Invalid format'), ' ')->error();
                 return Redirect::back();
@@ -124,10 +101,6 @@ class BacklinkController extends Controller
         return Redirect::route('backlink');
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function editLink(Request $request): JsonResponse
     {
         if (strlen($request->option) > 0) {
@@ -139,10 +112,6 @@ class BacklinkController extends Controller
         return response()->json([], 400);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function editBacklink(Request $request): JsonResponse
     {
         ProjectTracking::where('id', $request->id)->update([
@@ -166,10 +135,6 @@ class BacklinkController extends Controller
         return Redirect::route('show.backlink', $link->project_tracking_id);
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function store(Request $request): RedirectResponse
     {
         if (isset($request->countRows)) {
@@ -219,10 +184,6 @@ class BacklinkController extends Controller
         return false;
     }
 
-    /**
-     * @param $request
-     * @param $phrases
-     */
     public function expressCreate($request, $phrases)
     {
         if (empty($request->id)) {
@@ -248,17 +209,12 @@ class BacklinkController extends Controller
                 'anchor' => $params[2],
                 'nofollow' => $params[3],
                 'noindex' => $params[4],
-                'yandex' => $params[5],
-                'google' => $params[6],
             ]);
 
             $tracking->save();
         }
     }
 
-    /**
-     * @param $request
-     */
     public function simplifiedCreate($request)
     {
         $request = $request->all();
@@ -283,32 +239,22 @@ class BacklinkController extends Controller
                 'anchor' => $request['anchor_' . $i],
                 'nofollow' => $request['nofollow_' . $i],
                 'noindex' => $request['noindex_' . $i],
-                'yandex' => $request['yandex_' . $i],
-                'google' => $request['google_' . $i],
             ]);
 
             $tracking->save();
         }
     }
 
-    /**
-     * @param $params
-     * @return false|string[]
-     */
     public function getParams($params)
     {
         return explode("\r\n", $params);
     }
 
-    /**
-     * @param $phrases
-     * @return bool
-     */
     public function isParserError($phrases): bool
     {
         foreach ($phrases as $phrase) {
             $linkParams = explode("::", $phrase);
-            if (count($linkParams) !== 7) {
+            if (count($linkParams) !== 5) {
                 return true;
             }
         }
@@ -317,53 +263,114 @@ class BacklinkController extends Controller
 
     public function checkLink($id): RedirectResponse
     {
-        $target = LinkTracking::findOrFail($id);
-        $this->analyseLink(
-            $target->site_donor,
-            $target->link,
-            $target->anchor,
-            $target->nofollow,
-            $target->noindex
-        );
-        if (isset($this->result['error'])) {
-            flash()->overlay(__($this->result['error']), ' ')->error();
-            $this->saveResult($target, true);
+        $site = LinkTracking::findOrFail($id);
+        $this->analyseLink($site);
+
+        if (isset($this->error)) {
+            flash()->overlay($this->error, ' ')->error();
+            $this->saveResult($site, true);
+            //add tg message
         } else {
-            $this->saveResult($target, false, false);
+//            flash()->overlay($this->result['result'], ' ')->success();
+            $this->saveResult($site, false);
         }
 
-        return Redirect::route('show.backlink', $target->project_tracking_id);
+        return Redirect::route('show.backlink', $site->project_tracking_id);
     }
 
-    /**
-     * @param $page_url
-     * @param $link_url
-     * @param $anchor
-     * @param false $nofollow
-     * @param false $noindex
-     */
-    public function analyseLink($page_url, $link_url, $anchor, $nofollow = false, $noindex = false)
+    public function analyseLink($project)
     {
-        $html = $this->curlInit($page_url);
-        if ($html == false) {
-            $this->result['error'] = 'the donor site does not exist';
+        $html = $this->curlInit($project->site_donor);
+
+        if (!$html) {
+            $this->error = 'the donor site does not exist';
         } else {
-            if ($noindex) {
-                $this->searchNoindex($html, $link_url, $anchor);
+            $this->searchLink($html, $project);
+        }
+    }
+
+    private function searchLink($html, $project)
+    {
+        $document = new HtmlDocument();
+        $document->load(mb_strtolower($html));
+
+        $this->searchNoIndex($document, $project);
+
+        if ($this->node === false) {
+            $elem = $document->find('a[href="' . $project->link . '"]');
+
+            if ($elem !== []) {
+                foreach ($elem as $node) {
+                    foreach ($node->_ as $text) {
+                        if ($text === mb_strtolower($project->anchor)) {
+                            $this->result = 'Link found, anchor matches.';
+                            $this->node = $node;
+                            break 2;
+                        }
+                    }
+
+                    foreach ($node->children as $child) {
+                        foreach ($child->_ as $text) {
+                            if ($text === mb_strtolower($project->anchor)) {
+                                $this->node = $child;
+                                $this->result = 'Link found, anchor matches.';
+                                break 3;
+                            }
+                        }
+                    }
+                }
+            } else {
+                $this->error = 'Link not found.';
             }
-            if (!isset($this->result['error'])) {
-                $link = $this->searchLinksOnPage($html, $link_url, $anchor);
-                if ($nofollow && isset($link)) {
-                    $this->searchNofollow($link[0]);
+        }
+
+        $issetNofollow = false;
+        if ($project->nofollow && $this->node !== false) {
+            foreach ($this->node->attr as $attribute => $value) {
+                if ($attribute === 'rel' && $value === 'nofollow') {
+                    $issetNofollow = true;
+                    break;
                 }
             }
+
+            if ($issetNofollow) {
+                $this->noFollow = 'Link have attribute nofollow.';
+            } else {
+                $this->noFollow = 'Link dont have attribute nofollow.';
+            }
         }
     }
 
-    /**
-     * @param $page_url
-     * @return bool|string
-     */
+    private function searchNoIndex($document, $project)
+    {
+        $elem = $document->find('noindex');
+
+        if ($elem !== []) {
+            foreach ($elem as $node) {
+                $this->searchNoIndexLink($node->children[0], $project);
+            }
+        }
+
+        if ($this->noIndex === null) {
+            $this->noIndex = 'Link dont placed in noindex.';
+        }
+    }
+
+    private function searchNoIndexLink($node, $project)
+    {
+        if ($node->tag === 'a') {
+            foreach ($node->_ as $text) {
+                if ($text === mb_strtolower($project->anchor)) {
+                    $this->noIndex = $project->noindex ? 'Link found, anchor matches, link placed in noindex.' : 'Link found, anchor matches.';
+                    $this->node = $node;
+                    return;
+                }
+            }
+        } else {
+            $this->searchNoIndexLink($node->children[0], $project);
+        }
+    }
+
     public function curlInit($page_url)
     {
         $curl = curl_init();
@@ -382,76 +389,9 @@ class BacklinkController extends Controller
         return preg_replace('//i', '', $html);
     }
 
-    /**
-     * @param $html
-     * @param $link_url
-     * @param $anchor
-     * @return null|array
-     */
-    public function searchLinksOnPage($html, $link_url, $anchor): ?array
+    public function saveResult($target, $broken, $sendNotification = false)
     {
-        if (preg_match_all('(<a *href=["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))', $html, $matches, PREG_SET_ORDER)) {
-            $this->result['link'] = __('link found, anchor matches');
-            return array_unique($matches, SORT_REGULAR);
-        }
-        $this->result['error'] = 'link not found or anchor does not match';
-        return null;
-    }
-
-    /**
-     * @param $match
-     * @param $anchor
-     */
-    public function searchAnchor($match, $anchor)
-    {
-        if (strpos($match, $anchor) === 'false') {
-            $this->result['error'] = 'anchor does not match';
-        }
-        $this->result['anchor'] = 'anchor matches';
-    }
-
-    /**
-     * @param $link
-     */
-    public function searchNofollow($link)
-    {
-        if (preg_match('/rel*=*[\'"]?nofollow[\'"]?/i ', $link[0])) {
-            $this->result['error'] = 'the nofollow property is present in the rel attribute';
-        } else {
-            $this->result['nofollow'] = 'nofollow is missing';
-        }
-    }
-
-    /**
-     * @param $html
-     * @param $link_url
-     * @param $anchor
-     */
-    public function searchNoindex($html, $link_url, $anchor)
-    {
-        if (preg_match_all('(<!--noindex-->(<a *href=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))<!--/noindex-->)',
-            $html,
-            $matches,
-            PREG_SET_ORDER)) {
-            $this->result['error'] = 'the link is placed in noindex';
-        } elseif (preg_match_all('(<noindex>(<a *href=*["\']?(' . addslashes($link_url) . ')([\'"]+[^<>]*>' . addslashes($anchor) . '</a>))</noindex>)',
-            $html,
-            $matches,
-            PREG_SET_ORDER)) {
-            $this->result['error'] = 'the link is placed in noindex';
-        } else {
-            $this->result['noindex'] = 'the link is not placed in noindex';
-        }
-    }
-
-    /**
-     * @param $target
-     * @param $broken
-     * @param $sendMail
-     */
-    public function saveResult($target, $broken, $sendMail = null)
-    {
-        $target->status = implode(', ', $this->result);
+        $target->status = preg_replace('/\s+/u', ' ', "$this->result $this->noIndex $this->noFollow");
 
         $target->last_check = date("Y-m-d H:i:s");
         if ($target->broken == null) {
@@ -467,27 +407,21 @@ class BacklinkController extends Controller
                 $this->decrement($target->project_tracking_id);
             }
         }
-        if (isset($sendMail)) {
-            $target->mail_sent = $sendMail;
+
+        if ($sendNotification) {
+            $target->mail_sent = $sendNotification;
         }
+
         $target->broken = $broken;
         $target->save();
     }
 
-    /**
-     * @param $project_tracking_id
-     * @return void
-     */
     public function increment($project_tracking_id)
     {
         $article = ProjectTracking::find($project_tracking_id);
         $article->increment('total_broken_link');
     }
 
-    /**
-     * @param $project_tracking_id
-     * @return void
-     */
     public function decrement($project_tracking_id)
     {
         $article = ProjectTracking::find($project_tracking_id);
@@ -507,5 +441,4 @@ class BacklinkController extends Controller
 
         return $options;
     }
-
 }

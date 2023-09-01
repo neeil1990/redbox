@@ -184,7 +184,6 @@
     "Select a group to move phrases quickly": "Выделить группу для быстрого перемещения фраз",
     "We apologize for the inconvenience.": "Приносим извенения за предоставленные неудобства.",
     "In order for the changes to be applied, you need to reload the page": "Для того чтобы изменения были применены, вам необходимо перезагрузить страницу",
-
     "######################## Auth page ###############################": "",
     "Login page": "Страница авторизации на сервисе RedBox",
     "Verify page": "Страница верификации на сервисе RedBox",
@@ -195,14 +194,12 @@
     "Reset page": "Восстановление пароля на сервисе RedBox",
     "Log in to the system": "Вход в систему",
     "Back to the login page": "Назад к странице входа",
-
     "I give my consent to the processing": "Я даю свое согласие на обработку",
     "personal data": "персональных данных",
     "and agree to the terms": "и соглашаюсь с условиями",
     "privacy policy": "политики конфиденциальности",
     "rule agree link one": "/rules/ru/personal.pdf",
     "rule agree link two": "/rules/ru/user_yes.pdf",
-
     "######################## Meta tags ###############################": "",
     "Replenish the balance!": "Пополните баланс!",
     "Subscribe has already activated!": "Подписка уже активирована!",
@@ -1011,6 +1008,12 @@
     "Insert to your site before closed body": "Вставьте на ваш сайт перед закрывающим тегом body",
     "Promo code applied!": "Промо код принят",
     "###################################### Backlink ###########################": "",
+    "Link found, anchor matches": "Ссылка найдена, анкор совпадает",
+    "Link placed in noindex": "Ссылка помещена в noindex",
+    "Link dont placed in noindex": "Ссылка не помещена в noindex",
+    "Link have attribute nofollow": "Ссылка имеет атрибут nofollow",
+    "Link dont have attribute nofollow": "Ссылка не имеет атрибут nofollow",
+    "Link found, anchor matches, link placed in noindex": "Ссылка найдена, анкор совпадает, ссылка помещена в noindex",
     "The page of the site where the link will be searched": "Страница сайта, на которой будет происходит поиск ссылки",
     "Link parameters": "Параметры ссылок",
     "The construction is unclear": "Непонятна конструкция",
@@ -1435,7 +1438,6 @@
     "Return the standard layout": "Вернуть стандартную расстановку",
     "Setting the order of menu items": "Настройка порядка пунктов меню",
     "This setting also affects whether the group will be expanded in the menu or not": "Эта настройка так же влияет на то, будет ли развёрнута группа в меню или нет",
-
     "######################## CLUSTER ########################": "",
     "A module for grouping key queries and relevant pages for these groups.": "Модуль для группировки ключевых запросов и релевантных страниц для этих групп.",
     "A page can weigh a lot": "Страница может много весить",

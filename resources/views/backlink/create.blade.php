@@ -35,14 +35,14 @@
             <i class="fa fa-question-circle"></i>
                 <span class="ui_tooltip __right __l">
                     <span class="ui_tooltip_content" style="width: 600px">
-                        <p>donor.ru/1::akceptor.ru/2::текст ссылки::1::1::1::1</p>
-                        donor.ru/1 - {{ __('The page of the site where the link will be searched') }}
-                        akceptor.ru/2 - {{ __('The link that the script will search for') }}<br>
+                        <p>
+                            donor.ru/url/::akceptor.ru/another/url/::anchor::1::1
+                        </p>
+                        donor.ru/url/ - {{ __('The page of the site where the link will be searched') }}
+                        akceptor.ru/another/url/ - {{ __('The link that the script will search for') }}<br>
                         текст ссылки - {{ __('Anchor') }}<br>
                         {{ __('Check that the rel attribute with the nofollow property is not present in the link - (0 - no/1 - yes)') }}<br>
                         {{ __('Check that the link is missing in the noindex tag - (0 - no/1 - yes)') }}<br>
-                        {{ __('Checking that the link is indexed by Yandex - (0 - no/1 - yes)') }}<br>
-                        {{ __('Checking that the link is indexed by Google - (0 - no/1 - yes)') }}<br><br>
                         {{ __('Separate the lines using Shift + Enter') }}
                     </span>
                 </span>
@@ -78,8 +78,6 @@
                 <th style="vertical-align: middle; text-align: center;">{{ __('Anchor') }}</th>
                 <th style="vertical-align: middle; text-align: center;">{{ __('Check that the rel attribute with the nofollow property is not present in the link') }}</th>
                 <th style="vertical-align: middle; text-align: center;">{{ __('Check that the link is missing in the noindex tag') }}</th>
-                <th style="vertical-align: middle; text-align: center;">{{ __('Checking that the link is indexed by Yandex') }}</th>
-                <th style="vertical-align: middle; text-align: center;">{{ __('Checking that the link is indexed by Google') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -98,12 +96,6 @@
                 </td>
                 <td>
                     {!! Form::select('noindex_1', ['1' => __('Yes'), '0' => __('No')], null, ['class' => 'custom-select rounded-0']) !!}
-                </td>
-                <td>
-                    {!! Form::select('yandex_1', ['1' => __('Yes'), '0' => __('No')], null, ['class' => 'custom-select rounded-0']) !!}
-                </td>
-                <td>
-                    {!! Form::select('google_1', ['1' => __('Yes'), '0' => __('No')], null, ['class' => 'custom-select rounded-0']) !!}
                 </td>
             </tr>
             </tbody>
@@ -144,8 +136,6 @@
                     '<td><input type="text" name="anchor_' + countRows + '" class="form form-control" required></td>' +
                     '<td><select class="custom-select rounded-0" name="nofollow_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
                     '<td><select class="custom-select rounded-0" name="noindex_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
-                    '<td><select class="custom-select rounded-0" name="yandex_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
-                    '<td><select class="custom-select rounded-0" name="google_' + countRows + '" id=""><option value="1">{{ __("Yes") }}</option><option value="0">{{ __("No") }}</option></select></td>' +
                     '</tr>'
                 );
             });
