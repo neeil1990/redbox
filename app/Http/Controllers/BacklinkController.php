@@ -283,7 +283,7 @@ class BacklinkController extends Controller
         $html = $this->curlInit($project->site_donor);
 
         if (!$html) {
-            $this->error = 'the donor site does not exist';
+            $this->error = 'The donor site does not exist';
         } else {
             $this->searchLink($html, $project);
         }

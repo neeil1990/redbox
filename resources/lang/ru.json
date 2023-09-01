@@ -1059,7 +1059,7 @@
     "Loading links with a list": "Загрузка ссылок списком",
     "This service allows you to track the status of links you are interested in on third-party sites.": "Этот сервис позволяет отслеживать состояние интересующих вас ссылок на сторонних сайтах.",
     "Invalid format": "Недопустимый формат",
-    "the donor site does not exist": "сайт донор не существует",
+    "The donor site does not exist": "Сайт донор не существует",
     "the link is placed in noindex": "ссылка помещена в noindex",
     "the link is not placed in noindex": "ссылка не помещена в noindex",
     "the nofollow property is present in the rel attribute": "в атрибуте rel присутствует свойство nofollow ",

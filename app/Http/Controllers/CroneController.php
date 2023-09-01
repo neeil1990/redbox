@@ -118,7 +118,7 @@ class CroneController extends Controller
     {
         $html = $this->curlInit($page_url);
         if ($html == false) {
-            $this->result['error'] = __('the donor site does not exist');
+            $this->result['error'] = __('The donor site does not exist');
         } else {
             if ($noindex) {
                 $this->searchNoindex($html, $link_url, $anchor);

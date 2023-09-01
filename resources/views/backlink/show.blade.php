@@ -74,11 +74,11 @@
                         @foreach(explode('.', $link->status) as $phrase)
                             @if(strpos($phrase, 'not') === false)
                                 <div class="text-info">
-                                    {{ ucfirst(__(trim($phrase))) }}
+                                    {{ __(trim($phrase)) }}
                                 </div>
                             @else
                                 <div class="text-danger">
-                                    {{ ucfirst(__(trim($phrase))) }}
+                                    {{ __(trim($phrase)) }}
                                 </div>
                             @endif
                         @endforeach
