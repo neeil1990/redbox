@@ -32,6 +32,7 @@ class BacklinkController extends Controller
     public function index()
     {
         $backlinks = ProjectTracking::where('user_id', '=', Auth::id())->get();
+
         if (count($backlinks) === 0) {
             return $this->createView();
         }
@@ -78,6 +79,11 @@ class BacklinkController extends Controller
     public function show($id)
     {
         $project = ProjectTracking::findOrFail($id);
+
+        if ($project->user_id !== Auth::id() && !User::isUserAdmin()) {
+            return abort(403);
+        }
+
         $monitoring = $this->getMonitoringOptions();
 
         return view('backlink.show', compact('project', 'monitoring'));
