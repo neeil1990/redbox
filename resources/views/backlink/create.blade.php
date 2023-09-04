@@ -15,10 +15,10 @@
         </style>
     @endslot
     {!! Form::open(['action' =>'BacklinkController@store', 'method' => 'POST', 'class' => 'express-form'])!!}
-    <div class='col-md-6 mt-3'>
+    <div class='col-md-6'>
         <div class='form-group required'>
             {!! Form::label(__('Project name')) !!}
-            {!! Form::text('project_name', null, ['class' => 'form form-control','required','placeholder' => __('Project name')]) !!}
+            {!! Form::text('project_name', null, ['class' => 'form form-control', 'required', 'placeholder' => __('Project name')]) !!}
         </div>
         <div class='form-group'>
             @include('backlink._monitoring_options', ['options' => $monitoring, 'value' => null, 'class' => ['form-control']])
@@ -41,7 +41,7 @@
                         donor.ru/url/ - {{ __('The page of the site where the link will be searched') }}
                         akceptor.ru/another/url/ - {{ __('The link that the script will search for') }}<br>
                         текст ссылки - {{ __('Anchor') }}<br>
-                        {{ __('Check that the rel attribute with the nofollow property is not present in the link - (0 - no/1 - yes)') }}<br>
+                        {{ __('Check that the rel attribute with the nofollow property is not present in the link  - (0 - no/1 - yes)') }}<br>
                         {{ __('Check that the link is missing in the noindex tag - (0 - no/1 - yes)') }}<br>
                         {{ __('Separate the lines using Shift + Enter') }}
                     </span>
@@ -56,13 +56,14 @@
     </div>
     {!! Form::close() !!}
     <div style="display: none" class="simplified-form">
-        <p>{{ __('You can') }} <a href="#" class="text-info express">{{ __('use the accelerated format') }}</a></p>
+        <p>{{ __('You can') }} <a href="#" class="express">{{ __('use the accelerated format') }}</a></p>
         {!! Form::open(['action' =>'BacklinkController@store', 'method' => 'POST'])!!}
         <div class='form-group required w-50'>
             {!! Form::label(__('Project name')) !!}
             {!! Form::text('project_name', null, [
             'class' => 'form form-control',
-            'required'
+             'placeholder' => __('Project name'),
+            'required',
             ]) !!}
         </div>
         <div class='form-group w-50'>
@@ -111,20 +112,41 @@
         </div>
         {!! Form::close() !!}
     </div>
+
     @slot('js')
-        <!-- Select2 -->
         <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
 
         <script>
-            var countRows = 1
+            let countRows = 1
+            let expressInput = $('#app > div > div > div.card-body > form > div > div:nth-child(1) > input')
+            let expressSelect = $('#app > div > div > div.card-body > form > div > div:nth-child(2) > select')
+            let simplifiedInput = $('#app > div > div > div.card-body > div > form > div.form-group.required.w-50 > input')
+            let simplifiedSelect = $('#app > div > div > div.card-body > div > form > div:nth-child(3) > select')
+
             $('.text-info').click(function () {
+                simplifiedInput.val(expressInput.val())
                 $('.express-form').hide(300)
                 $('.simplified-form').show(300)
             });
+
             $('.express').click(function () {
+                expressInput.val(simplifiedInput.val())
                 $('.express-form').show(300)
                 $('.simplified-form').hide(300)
             });
+
+            // Добавляем обработчик события change для expressSelect
+            expressSelect.on('select2:select', function (e) {
+                let selectedValue = e.params.data.id; // Получаем выбранное значение
+                simplifiedSelect.val(selectedValue).trigger('change'); // Устанавливаем и активируем событие change для второго select-элемента
+            });
+
+            // Добавляем обработчик события change для simplifiedSelect
+            simplifiedSelect.on('select2:select', function (e) {
+                let selectedValue = e.params.data.id; // Получаем выбранное значение
+                expressSelect.val(selectedValue).trigger('change'); // Устанавливаем и активируем событие change для первого select-элемента
+            });
+
             $('#addRow').click(function () {
                 $('#removeRow').show(100)
                 countRows++
@@ -152,7 +174,7 @@
             $('.monitoring-options').select2({
                 theme: 'bootstrap4',
                 selectOnClose: true,
-                sorter: function(el){
+                sorter: function (el) {
                     return el.sort((a, b) => {
                         a = a.text.toLowerCase();
                         b = b.text.toLowerCase();
