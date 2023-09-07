@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -21,22 +22,15 @@ class UniqueWordsController extends Controller
         $this->middleware(['permission:Unique words']);
     }
 
-    /**
-     * @return array|false|Application|Factory|View|mixed
-     */
     public function index()
     {
         return view('unique-words.unique-words');
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function countingUniqueWords(Request $request): JsonResponse
     {
-        $listWords = self::stringToCollectionWords($request->phrases);
-        $listWordsWithKeys = self::addKeysInCollect($listWords);
+        $listWords = $this->stringToCollectionWords($request->phrases);
+        $listWordsWithKeys = $this->addKeysInCollect($listWords);
 
         return response()->json([
             'list' => $listWordsWithKeys[0],
@@ -44,10 +38,6 @@ class UniqueWordsController extends Controller
         ]);
     }
 
-    /**
-     * @param $listWords
-     * @return array
-     */
     public static function addKeysInCollect($listWords): array
     {
         $listWordsWithKeys = [];
@@ -60,17 +50,13 @@ class UniqueWordsController extends Controller
         return [$listWordsWithKeys, $i];
     }
 
-    /**
-     * @param $string
-     * @return Collection
-     */
-    public static function stringToCollectionWords($string): Collection
+    public function stringToCollectionWords($string): Collection
     {
         $string = mb_strtolower($string);
-        $string = self::removeExtraSymbols($string);
-        $phrases = self::getPhrases($string);
-        $words = self::getWords($string);
-        $t = self::searchWordsInPhrases($words, $phrases);
+        $string = $this->removeExtraSymbols($string);
+        $phrases = $this->getPhrases($string);
+        $words = $this->getWords($string);
+        $t = $this->searchWordsInPhrases($words, $phrases);
         $words = collect($t)->map(function ($arr) {
             return array_combine(['word', 'wordForms', 'numberOccurrences', 'keyPhrases'], $arr);
         });
@@ -78,22 +64,15 @@ class UniqueWordsController extends Controller
         return $words->sortByDesc('numberOccurrences');
     }
 
-    /**
-     * @param $string
-     * @return string
-     */
     public static function removeExtraSymbols($string): string
     {
         $string = mb_eregi_replace('[^\w\s\n]', ' ', $string);
         $string = mb_eregi_replace('[ ]+', ' ', $string);
+        $string = preg_replace('/[0-9]+/', '', $string);
 
         return trim($string);
     }
 
-    /**
-     * @param $string
-     * @return false|string[]
-     */
     public static function getPhrases($string): array
     {
         $string = str_replace(["\r", "\n", "\r\n", "\n*"], PHP_EOL, $string);
@@ -101,31 +80,23 @@ class UniqueWordsController extends Controller
         return explode(PHP_EOL, $string);
     }
 
-    /**
-     * @param $string
-     * @return array
-     */
     public static function getWords($string): array
     {
-        $words = str_replace([" ", "\n", "\r\n", "\n*"], ' ', $string);
+        $words = str_replace([" ", "\n", "\r\n", "\n*", "\t"], ' ', $string);
         $words = explode(' ', $words);
 
         return array_diff($words, array(""));
     }
 
-    /**
-     * @param $words
-     * @param $phrases
-     * @return array
-     */
-    public static function searchWordsInPhrases($words, $phrases): array
+    public function searchWordsInPhrases($words, $phrases): array
     {
         $countValues = array_count_values($words);
         $t = [];
         foreach ($words as $word) {
+            Log::debug($word, [substr_count($word, '	')]);
             foreach ($countValues as $key => $value) {
                 if ($word == $key) {
-                    $matches = self::searchMatches($phrases, $word);
+                    $matches = $this->searchMatches($phrases, $word);
                     $t[] = [$word, $word, $value, $matches];
                 }
             }
@@ -134,11 +105,6 @@ class UniqueWordsController extends Controller
         return array_unique($t, SORT_REGULAR);
     }
 
-    /**
-     * @param $phrases
-     * @param $word
-     * @return array
-     */
     public static function searchMatches($phrases, $word): array
     {
         $result = [];
@@ -151,10 +117,6 @@ class UniqueWordsController extends Controller
         return $result;
     }
 
-    /**
-     * @param $text
-     * @return JsonResponse
-     */
     public static function uploadFIle($text): JsonResponse
     {
         $fileName = md5(Carbon::now());
@@ -165,23 +127,15 @@ class UniqueWordsController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function createFile(Request $request): JsonResponse
     {
         if ($request->text) {
-            return self::uploadFIle($request->text);
+            return $this->uploadFIle($request->text);
         }
 
-        return self::uploadFIle($request->keyPhrases);
+        return $this->uploadFIle($request->keyPhrases);
     }
 
-    /**
-     * @param Request $request
-     * @return BinaryFileResponse
-     */
     public function downloadFile(Request $request): BinaryFileResponse
     {
         return response()->download(storage_path('app/public/files/' . $request->fileName . '.csv'));

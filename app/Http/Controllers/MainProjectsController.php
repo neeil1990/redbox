@@ -361,6 +361,7 @@ class MainProjectsController extends Controller
             $datasets[] = [
                 'label' => __($project['title']),
                 'backgroundColor' => $project['color'],
+                'borderColor' => $project['color'],
                 'data' => $data
             ];
         }

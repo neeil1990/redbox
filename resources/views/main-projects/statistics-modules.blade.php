@@ -176,15 +176,20 @@
                         })
 
                         chart = new Chart(document.getElementById("bar-chart-grouped"), {
-                            type: 'bar',
+                            type: 'line',
                             data: {
                                 labels: response.dates,
                                 datasets: response.datasets
                             },
                             options: {
-                                title: {
-                                    display: true,
-                                    text: 'Population growth (millions)'
+                                scales: {
+                                    y: {
+                                        type: 'linear', // Указываем тип шкалы как линейную
+                                        position: 'bottom', // Местоположение оси X
+                                        ticks: {
+                                            stepSize: 100 // Устанавливаем шаг равный 1
+                                        }
+                                    }
                                 }
                             }
                         });
