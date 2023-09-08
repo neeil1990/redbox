@@ -11,6 +11,9 @@
 |
 */
 
+use App\CheckLists;
+use App\ChecklistTasks;
+use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\Common;
 use App\MonitoringCompetitor;
 use App\MonitoringHelper;
@@ -20,9 +23,11 @@ use App\ProjectRelevanceHistory;
 use App\VisitStatistic;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('info', function () {
     phpinfo();
@@ -425,4 +430,23 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/partners/r/{short_link}', 'PartnersController@redirect')->name('partners.redirect');
 
     Route::post('/click-tracking', 'HomeController@clickTracking')->name('click.tracking');
+
+    Route::get('/checklist', 'CheckListController@index')->name('checklist');
+    Route::post('/store-checklist', 'CheckListController@store')->name('store.checklist');
+    Route::get('/get-checklist', 'CheckListController@getChecklists')->name('get.checklists');
+    Route::get('/move-checklist-to-archive/{project}', 'CheckListController@inArchive')->name('in.archive');
+    Route::get('/restore-checklist/{project}', 'CheckListController@restore')->name('restore.checklist');
+    Route::get('/get-checklist-archive', 'CheckListController@archive')->name('checklist.archive');
+
+    Route::get('/remove-checklist/{project}', 'CheckListController@destroy')->name('destroy');
+    Route::post('/create-label', 'CheckListController@createLabel')->name('create.label');
+    Route::get('/remove-label/{label}', 'CheckListController@removeLabel')->name('remove.label');
+    Route::post('/edit-label/', 'CheckListController@editLabel')->name('edit.label');
+
+    Route::post('/add-checklists-labels-relations', 'CheckListController@createRelation')->name('create.checklist.relation');
+    Route::post('/remove-checklist-relation/', 'CheckListController@removeRelation')->name('remove.checklist.relation');
+});
+
+Route::get('/get-me-yor-pancake', function (){
+   return '<button><a href="https://youtu.be/BLPC5mkHK9M">Покормить колю</a></button>';
 });
