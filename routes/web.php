@@ -446,7 +446,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/add-checklists-labels-relations', 'CheckListController@createRelation')->name('create.checklist.relation');
     Route::post('/remove-checklist-relation/', 'CheckListController@removeRelation')->name('remove.checklist.relation');
 });
-
-Route::get('/get-me-yor-pancake', function (){
-   return '<button><a href="https://youtu.be/BLPC5mkHK9M">Покормить колю</a></button>';
-});
