@@ -1006,7 +1006,9 @@
             })
 
             $('#save-new-checklist').on('click', function () {
-                $(this).attr('disabled', true)
+                let $button = $(this)
+                $button.attr('disabled', true)
+
                 let tree = parseTree($('#tasks'))
                 $('#loader').show(300)
 
@@ -1019,6 +1021,8 @@
                         tasks: tree
                     },
                     success: function (message) {
+                        $button.attr('disabled', false)
+
                         successMessage(message)
 
                         $('#createNewProject > div > div > div.modal-footer.d-flex.justify-content-between > div:nth-child(2) > button.btn.btn-default').trigger('click')
@@ -1029,11 +1033,12 @@
                         loadChecklists()
                     },
                     error: function (response) {
+                        $button.attr('disabled', false)
+                        $('#loader').hide(300)
                         errorMessage(response.responseJSON.errors)
                     }
                 })
 
-                $(this).attr('disabled', false)
             })
 
             $(document).on('click', '.get-tasks', function () {
