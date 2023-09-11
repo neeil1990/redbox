@@ -1006,6 +1006,7 @@
             })
 
             $('#save-new-checklist').on('click', function () {
+                $(this).attr('disabled', true)
                 let tree = parseTree($('#tasks'))
                 $('#loader').show(300)
 
@@ -1031,6 +1032,8 @@
                         errorMessage(response.responseJSON.errors)
                     }
                 })
+
+                $(this).attr('disabled', false)
             })
 
             $(document).on('click', '.get-tasks', function () {

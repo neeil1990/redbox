@@ -177,6 +177,12 @@ class CheckListController extends Controller
 
     public function createRelation(Request $request)
     {
+        if (empty($request->checklistId) || empty($request->labelId)) {
+            return response()->json([
+                'errors' => ['unique' => 'Вы должны выбрать чеклист и метку']
+            ], 422);
+        }
+
         $link = CheckListProjectLabels::where('checklist_project_id', $request->checklistId)
             ->where('checklist_label_id', $request->labelId)
             ->first();
