@@ -433,10 +433,13 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/checklist', 'CheckListController@index')->name('checklist');
     Route::post('/store-checklist', 'CheckListController@store')->name('store.checklist');
+    Route::post('/add-new-tasks', 'CheckListController@update')->name('update.checklist');
     Route::get('/get-checklist', 'CheckListController@getChecklists')->name('get.checklists');
     Route::get('/move-checklist-to-archive/{project}', 'CheckListController@inArchive')->name('in.archive');
     Route::get('/restore-checklist/{project}', 'CheckListController@restore')->name('restore.checklist');
     Route::get('/get-checklist-archive', 'CheckListController@archive')->name('checklist.archive');
+    Route::post('/checklist-tasks/', 'CheckListController@getTasks')->name('checklist.tasks');
+    Route::post('/edit-checklist-task/', 'CheckListController@editTask')->name('edit.checklist.task');
 
     Route::get('/remove-checklist/{project}', 'CheckListController@destroy')->name('destroy');
     Route::post('/create-label', 'CheckListController@createLabel')->name('create.label');
@@ -445,4 +448,6 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/add-checklists-labels-relations', 'CheckListController@createRelation')->name('create.checklist.relation');
     Route::post('/remove-checklist-relation/', 'CheckListController@removeRelation')->name('remove.checklist.relation');
+
+    Route::post('/remove-checklist-task/', 'CheckListController@removeTask')->name('remove.checklist.task');
 });

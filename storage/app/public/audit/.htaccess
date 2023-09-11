@@ -1,4 +1,0 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine on
-    RewriteRule ([[:alnum:]]+).png$ img.php?em=$1 [L]
-</IfModule>
