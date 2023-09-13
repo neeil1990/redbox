@@ -434,7 +434,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/checklist', 'CheckListController@index')->name('checklist');
     Route::post('/store-checklist', 'CheckListController@store')->name('store.checklist');
     Route::post('/add-new-tasks', 'CheckListController@update')->name('update.checklist');
-    Route::get('/get-checklist', 'CheckListController@getChecklists')->name('get.checklists');
+    Route::post('/get-checklist', 'CheckListController@getChecklists')->name('get.checklists');
     Route::get('/move-checklist-to-archive/{project}', 'CheckListController@inArchive')->name('in.archive');
     Route::get('/restore-checklist/{project}', 'CheckListController@restore')->name('restore.checklist');
     Route::get('/get-checklist-archive', 'CheckListController@archive')->name('checklist.archive');

@@ -38,7 +38,7 @@ class CheckListController extends Controller
 
         if (CheckLists::where('user_id', Auth::id())->where('url', $fullUrl)->count() > 0) {
             return response()->json([
-                'errors' => ['URL' => "У вас уже есть проект с таким URL"]
+                'errors' => ['URL' => 'У вас уже есть проект с таким URL']
             ], 422);
         }
 
@@ -60,16 +60,32 @@ class CheckListController extends Controller
         return 'Успешно';
     }
 
-    public function getChecklists(): array
+    public function getChecklists(Request $request): JsonResponse
     {
-        $lists = CheckLists::where('user_id', Auth::id())
+        $sql = CheckLists::where('user_id', Auth::id())
+            ->where('archive', 0);
+
+        if (isset($request->url)) {
+            $sql->where('url', 'like', "%$request->url%");
+        }
+
+        Log::info($request->input('skip', 0));
+        $lists = $sql->skip($request->input('skip', 0))
+            ->take($request->countOnPage)
             ->with('tasks:project_id,status')
             ->with('labels')
-            ->where('archive', 0)
             ->get(['icon', 'url', 'id'])
             ->toArray();
 
-        return $this->confirmArray($lists);
+        $paginate = (int)ceil($sql->count() / $request->countOnPage);
+
+//        $lastId = $lists[count($lists) - 1]['id'];
+
+        return response()->json([
+            'lists' => $this->confirmArray($lists),
+//            'lastId' => $lastId,
+            'paginate' => $paginate
+        ]);
     }
 
     public function inArchive(CheckLists $project)

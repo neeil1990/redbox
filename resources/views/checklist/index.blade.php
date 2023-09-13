@@ -45,9 +45,7 @@
         </style>
     @endslot
 
-    <div id="block-from-notifications">
-
-    </div>
+    <div id="block-from-notifications"></div>
 
     <div class="col-12">
         <div class="card card-primary card-outline card-tabs">
@@ -94,17 +92,8 @@
                                     <label for="name">URL проекта</label>
                                     <input type="text" id="name" name="name" class="form form-control">
                                 </div>
-                                <div class="form-group col-2">
-                                    <label for="state">Готовность проекта</label>
-                                    <select name="state" id="state" class="custom custom-select">
-                                        <option value="all">Любой</option>
-                                        <option value="ready">Все задачи готовы</option>
-                                        <option value="work">Все задачи в работе</option>
-                                        <option value="over">Все задачи просрочены</option>
-                                    </select>
-                                </div>
 
-                                <div class="col-6 d-flex justify-content-end align-items-center"
+                                <div class="col-8 d-flex justify-content-end align-items-center"
                                      style="margin-top: 10px;">
                                     <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
                                             data-target="#modalLabel">
@@ -120,6 +109,8 @@
                         </div>
 
                         <div id="lists" class="row d-flex"></div>
+
+                        <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-profile" role="tabpanel"
                          aria-labelledby="archived-checklists"></div>
@@ -394,8 +385,14 @@
             let labelID;
             let checkListID;
             let removedLI;
+            let rotateButton
+            let removedChecklist
+            let removedButton
+            let counter = 1;
+            let subTaskCounter = 1;
+            let lastDownloadedChecklistID
+            let lastLoadedId = 0
 
-            <!-- Labels -->
             $('#create-label').on('click', function () {
                 let name = $('#label-name').val()
 
@@ -439,16 +436,31 @@
             })
 
             $('#create-new-relations').on('click', function () {
+                let checklistID = $('#checklist-select').val()
+                let labelID = $('#labels').val()
+
                 $.ajax({
                     type: 'post',
                     url: "{{ route('create.checklist.relation') }}",
                     data: {
-                        checklistId: $('#checklist-select').val(),
-                        labelId: $('#labels').val()
+                        checklistId: checklistID,
+                        labelId: labelID
                     },
                     success: function (message) {
                         successMessage(message)
-                        loadChecklists()
+                        let labelsBlock = $('.get-tasks[data-id="' + checklistID + '"]').parent().find('div:nth-of-type(1) > .fc-color-picker')
+                        let color = $('.label-color-input[data-target="' + labelID + '"]').val()
+                        let text = $('.label-name-input[data-target="' + labelID + '"]').val()
+
+                        labelsBlock.append(
+                            '<li class="checklist-label" data-target="' + checklistID + '" data-id="' + labelID + '" data-toggle="tooltip"' +
+                            '    data-placement="top" title="' + text + '">' +
+                            '         <span class="fas fa-square"' +
+                            '               style="color: ' + color + ' !important;"' +
+                            '               data-toggle="modal"' +
+                            '               data-target="#removeRelationModal"></span>' +
+                            '</li>'
+                        )
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -485,8 +497,8 @@
                         success: function (message) {
                             successMessage(message)
                             $('#option-tag-' + $element.attr('data-target')).remove()
+                            $('.checklist-label[data-id="' + $element.attr('data-target') + '"]').remove()
                             $element.parents().eq(1).remove()
-                            loadChecklists()
                         },
                         error: function (response) {
                             errorMessage(response.responseJSON.errors)
@@ -556,13 +568,6 @@
                 })
             })
 
-            let rotateButton
-            let removedChecklist
-            let removedButton
-            let counter = 1;
-            let subTaskCounter = 1;
-            let lastDownloadedChecklistID
-
             $('#add-new-checklist').on('click', function () {
                 if ($('#tasks').children('li').length === 0) {
                     $('#add-task').trigger('click')
@@ -570,7 +575,8 @@
             })
 
             $(function () {
-                loadChecklists()
+                $('#count').val(localStorage.getItem('SEO_CHECKLIST_COUNT'))
+                loadChecklists(0, true)
             })
 
             $(document).on('click', '.remove-task', function () {
@@ -913,7 +919,6 @@
             })
 
             $('#move-to-archive').on('click', function () {
-
                 $.ajax({
                     url: '/move-checklist-to-archive/' + removedButton.attr('data-id'),
                     type: 'get',
@@ -1235,7 +1240,28 @@
                 }, 5000)
             }
 
-            function loadChecklists() {
+            $(document).on('change', '#count', function () {
+                localStorage.setItem('SEO_CHECKLIST_COUNT', $(this).val())
+                loadChecklists(0, true)
+            })
+
+            let searchTimeout
+            $(document).on('input', '#name', function () {
+                clearTimeout(searchTimeout)
+
+                searchTimeout = setTimeout(() => {
+                    loadChecklists()
+                }, 600)
+            })
+
+            $(document).on('click', '.page-link', function () {
+                $('.page-item.active').removeClass('active')
+                $(this).parent().addClass('active')
+
+                loadChecklists($(this).attr('data-id'), false)
+            })
+
+            function loadChecklists(page = 0, renderPaginate = false) {
                 $('#lists').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5"' +
                     '     style="width: 100%;">' +
@@ -1244,97 +1270,127 @@
                 )
 
                 $.ajax({
-                    type: 'get',
+                    type: 'post',
                     url: "{{ route('get.checklists') }}",
-                    success: function (lists) {
-                        let cards = ''
-                        let options = ''
-                        $.each(lists, function (k, v) {
-                            let totalTasks = v.ready + v.work + v.expired
-                            let labels =
-                                '<div class="col-8">' +
-                                '    <ul class="fc-color-picker">'
-
-                            $.each(v.labels, function (index, label) {
-                                labels +=
-                                    '<li class="checklist-label" data-target="' + v.id + '" data-id="' + label.id + '" ' +
-                                    '    data-toggle="tooltip" data-placement="top" ' +
-                                    '    title="' + label.name + '">' +
-                                    '    <span class="fas fa-square" style="color: ' + label.color + ' !important;" data-toggle="modal" data-target="#removeRelationModal"></span>' +
-                                    '</li>'
-                            })
-
-                            labels += '</ul></div>'
-
-                            options += '<option value="' + v.id + '">' + v.url + '</option>'
-
-                            cards +=
-                                '<div class="col-4"><div class="card">' +
-                                '    <div class="card-header">' +
-                                '        <div class="card-title d-flex justify-content-between w-100">' +
-                                '            <div class="d-flex align-items-baseline">' +
-                                '                <img src="/storage/' + v.icon + '" alt="' + v.icon + '" class="icon mr-2"> ' +
-                                '                <a href="' + v.url + '" target="_blank"' +
-                                '                    data-toggle="tooltip" data-placement="top" class="edited-site-' + v.id + '"' +
-                                '                    title="' + v.url + '">' + new URL(v.url)['origin'] + '</a>' +
-                                '            </div>' +
-                                '            <div>' +
-                                '                <button class="btn btn-default select-id" data-toggle="modal" data-target="#projectModal"  data-id="' + v.id + '">' +
-                                '                    <i class="fa fa-trash" data-toggle="tooltip" data-placement="top"' +
-                                '                       title="{{ __('Archive it') }}"></i>' +
-                                '                </button>' +
-                                '            </div>' +
-                                '        </div>' +
-                                '    </div>' +
-                                '    <div class="card-body updated-font-size">' +
-                                '        <div class="d-flex">' +
-                                '            <div class="d-flex flex-column col-8">' +
-                                '                <div class="d-flex row">' +
-                                '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
-                                '                </div>' +
-                                '                <div class="d-flex row">' +
-                                '                    <span class="width">В работе:</span> <span>' + v.work + '</span>' +
-                                '                </div>' +
-                                '                <div class="d-flex row">' +
-                                '                    <span class="width">Готово:</span> <span>' + v.ready + '</span>' +
-                                '                </div>' +
-                                '                <div class="d-flex row">' +
-                                '                    <span class="width">Просрочены:</span> <span>' + v.expired + '</span>' +
-                                '                </div>' +
-                                '            </div>' +
-                                '            <div class="d-flex col-4 flex-column align-items-end">' +
-                                '                <div>' +
-                                '                    <i class="fa-solid fa-star" data-toggle="tooltip" data-placement="top"' +
-                                '                       title="Анализ релевантности"></i>' +
-                                '                </div>' +
-                                '                <div style="margin-right: 1px">' +
-                                '                    <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="top"' +
-                                '                       title="Мониторинг позиций"></i>' +
-                                '                </div>' +
-                                '                <div style="margin-right: 3px">' +
-                                '                    <i class="fas fa-heading" data-toggle="tooltip" data-placement="top"' +
-                                '                       title="Мониторинг метатегов"></i>' +
-                                '                </div>' +
-                                '            </div>' +
-                                '        </div>' +
-                                '        <div class="row mt-3">'
-                                + labels +
-                                '            <div class="col-4 d-flex align-items-end justify-content-end get-tasks" data-id="' + v.id + '" data-toggle="modal" data-target="#checklistTaskModal">' +
-                                '                <button class="btn btn-flat btn-secondary">Просмотр задач</button>' +
-                                '            </div>' +
-                                '        </div>' +
-                                '    </div>' +
-                                '</div></div>'
-                        })
-
-                        $('#lists').html(cards)
-                        $('#checklist-select').html(options)
-                        refreshTooltips()
+                    data: {
+                        countOnPage: $('#count').val(),
+                        url: $('#name').val(),
+                        lastID: lastLoadedId,
+                        skip: page * $('#count').val()
+                    },
+                    success: function (response) {
+                        renderChecklists(response.lists)
+                        if (renderPaginate) {
+                            renderPagination(response)
+                        }
                     },
                     error: function (response) {
 
                     }
                 })
+            }
+
+            function renderPagination(response) {
+                let pagination = ''
+                for (let i = 0; i < response.paginate; i++) {
+                    let html = i + 1
+
+                    if (i === 0) {
+                        pagination += '<li class="page-item active"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                    } else {
+                        pagination += '<li class="page-item"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                    }
+                }
+                $('#pagination').html(pagination)
+
+                lastLoadedId = response.lastId
+            }
+
+            function renderChecklists(lists) {
+
+                let cards = ''
+                let options = ''
+                $.each(lists, function (k, v) {
+                    let totalTasks = v.ready + v.work + v.expired
+                    let labels =
+                        '<div class="col-8">' +
+                        '    <ul class="fc-color-picker">'
+
+                    $.each(v.labels, function (index, label) {
+                        labels +=
+                            '<li class="checklist-label" data-target="' + v.id + '" data-id="' + label.id + '" ' +
+                            '    data-toggle="tooltip" data-placement="top" ' +
+                            '    title="' + label.name + '">' +
+                            '    <span class="fas fa-square" style="color: ' + label.color + ' !important;" data-toggle="modal" data-target="#removeRelationModal"></span>' +
+                            '</li>'
+                    })
+
+                    labels += '</ul></div>'
+
+                    options += '<option value="' + v.id + '">' + v.url + '</option>'
+
+                    cards +=
+                        '<div class="col-4"><div class="card">' +
+                        '    <div class="card-header">' +
+                        '        <div class="card-title d-flex justify-content-between w-100">' +
+                        '            <div class="d-flex align-items-baseline">' +
+                        '                <img src="/storage/' + v.icon + '" alt="' + v.icon + '" class="icon mr-2"> ' +
+                        '                <a href="' + v.url + '" target="_blank"' +
+                        '                    data-toggle="tooltip" data-placement="top" class="edited-site-' + v.id + '"' +
+                        '                    title="' + v.url + '">' + new URL(v.url)['origin'] + '</a>' +
+                        '            </div>' +
+                        '            <div>' +
+                        '                <button class="btn btn-default select-id" data-toggle="modal" data-target="#projectModal"  data-id="' + v.id + '">' +
+                        '                    <i class="fa fa-trash" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="{{ __('Archive it') }}"></i>' +
+                        '                </button>' +
+                        '            </div>' +
+                        '        </div>' +
+                        '    </div>' +
+                        '    <div class="card-body updated-font-size">' +
+                        '        <div class="d-flex">' +
+                        '            <div class="d-flex flex-column col-8">' +
+                        '                <div class="d-flex row">' +
+                        '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
+                        '                </div>' +
+                        '                <div class="d-flex row">' +
+                        '                    <span class="width">В работе:</span> <span>' + v.work + '</span>' +
+                        '                </div>' +
+                        '                <div class="d-flex row">' +
+                        '                    <span class="width">Готово:</span> <span>' + v.ready + '</span>' +
+                        '                </div>' +
+                        '                <div class="d-flex row">' +
+                        '                    <span class="width">Просрочены:</span> <span>' + v.expired + '</span>' +
+                        '                </div>' +
+                        '            </div>' +
+                        '            <div class="d-flex col-4 flex-column align-items-end">' +
+                        '                <div>' +
+                        '                    <i class="fa-solid fa-star" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Анализ релевантности"></i>' +
+                        '                </div>' +
+                        '                <div style="margin-right: 1px">' +
+                        '                    <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Мониторинг позиций"></i>' +
+                        '                </div>' +
+                        '                <div style="margin-right: 3px">' +
+                        '                    <i class="fas fa-heading" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Мониторинг метатегов"></i>' +
+                        '                </div>' +
+                        '            </div>' +
+                        '        </div>' +
+                        '        <div class="row mt-3">'
+                        + labels +
+                        '            <div class="col-4 d-flex align-items-end justify-content-end get-tasks" data-id="' + v.id + '" data-toggle="modal" data-target="#checklistTaskModal">' +
+                        '                <button class="btn btn-flat btn-secondary">Просмотр задач</button>' +
+                        '            </div>' +
+                        '        </div>' +
+                        '    </div>' +
+                        '</div></div>'
+                })
+
+                $('#lists').html(cards)
+                $('#checklist-select').html(options)
+                refreshTooltips()
             }
 
             function getTasks(targetID) {
