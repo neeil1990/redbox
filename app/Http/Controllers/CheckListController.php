@@ -55,19 +55,26 @@ class CheckListController extends Controller
             ], 422);
         }
 
-        $client = new Client();
+        DB::beginTransaction();
 
-        $response = $client->get($fullUrl);
-        if ($response->getStatusCode() === 200) {
-            $icon = $this->findIcon($response->getBody()->getContents());
+        try {
+            $client = new Client();
+            $response = $client->get($fullUrl);
+            if ($response->getStatusCode() === 200) {
+                $icon = $this->findIcon($response->getBody()->getContents());
 
-            $project = CheckLists::create([
-                'user_id' => Auth::id(),
-                'icon' => $this->saveIcon($icon, $fullUrl),
-                'url' => $fullUrl,
-            ]);
+                $project = CheckLists::create([
+                    'user_id' => Auth::id(),
+                    'icon' => $this->saveIcon($icon, $fullUrl),
+                    'url' => $fullUrl,
+                ]);
 
-            $this->createSubTasks($request->input('tasks'), $project->id);
+                $this->createSubTasks($request->input('tasks'), $project->id);
+            }
+
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollback();
         }
 
         return 'Успешно';
@@ -82,7 +89,7 @@ class CheckListController extends Controller
             $sql->where('url', 'like', "%$request->url%");
         }
 
-        $lists = $sql->skip($request->input('skip', 0))
+        $lists = $sql->offset($request->input('skip', 0))
             ->take($request->countOnPage)
             ->with('tasks:project_id,status')
             ->with('labels')
