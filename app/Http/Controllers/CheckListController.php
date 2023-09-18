@@ -89,8 +89,8 @@ class CheckListController extends Controller
             $sql->where('url', 'like', "%$request->url%");
         }
 
-        $lists = $sql->offset($request->input('skip', 0))
-            ->take($request->countOnPage)
+        $lists = $sql->skip($request->input('skip', 0))
+            ->take($request->input('countOnPage'), 3)
             ->with('tasks:project_id,status')
             ->with('labels')
             ->get(['icon', 'url', 'id'])
