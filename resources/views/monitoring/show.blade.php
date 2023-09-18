@@ -86,6 +86,7 @@
         </div>
     </div>
 
+    @if($project->pivot->admin)
     <div class="row">
         <div class="col-12 mb-3">
             <a href="{{ route('groups.index', $project->id) }}" class="btn btn-default">Управление группами проекта</a>
@@ -93,6 +94,7 @@
             <a href="{{ route('prices.index', $project->id) }}" id="" class="btn btn-default">Цена запросов</a>
         </div>
     </div>
+    @endif
 
     <div class="row">
         <div class="col-12 card-table">
@@ -100,8 +102,7 @@
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
             </div>
             <div class="card dTable">
-                <table class="table table-hover table-responsive table-bordered text-center"
-                       id="monitoringTable"></table>
+                <table class="table table-hover table-responsive table-bordered text-center" id="monitoringTable"></table>
             </div>
             <!-- /.card -->
         </div>
@@ -140,6 +141,7 @@
         <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>
 
         <script>
+            const PROJECT_ADMIN = '{{ $project->pivot->admin }}';
             const PROJECT_ID = '{{ $project->id }}';
             const REGION_ID = '{{ request('region', null) }}';
             const DATES = '{{ request('dates', null) }}';
@@ -220,6 +222,9 @@
 
                             let container = $('.mailbox-controls');
                             let content = response.data;
+
+                            if(PROJECT_ADMIN == '0')
+                                return false;
 
                             container.html(content);
 

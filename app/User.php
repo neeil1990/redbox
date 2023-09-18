@@ -211,12 +211,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function monitoringProjects()
     {
-        return $this->hasMany(MonitoringProject::class);
+        return $this->belongsToMany(MonitoringProject::class)->withPivot('admin', 'approved');
     }
 
     public function monitoringProjectsWithDataTable()
     {
-        return $this->hasMany(MonitoringProject::class)
+        return $this->monitoringProjects()->wherePivot('approved', 1)->with('users')
             ->leftJoin(DB::raw('monitoring_data_table_columns_projects as m_dt'), 'monitoring_projects.id', '=', 'm_dt.monitoring_project_id')
             ->select('monitoring_projects.*',
                 'm_dt.words',

@@ -69,7 +69,7 @@ class MonitoringKeywordsController extends Controller
     private function init()
     {
         $id = $this->getProjectID();
-        $this->project = $this->user->monitoringProjects()->where('id', $id)->first();
+        $this->project = $this->user->monitoringProjects()->find($id);
         $this->regions = $this->project->searchengines()->with('location')->orderBy('id', 'asc')->get();
         $this->queries = $this->project->keywords();
     }
@@ -634,7 +634,7 @@ class MonitoringKeywordsController extends Controller
         $user = $this->user;
 
         $keyword = MonitoringKeyword::findOrFail($id);
-        if($keyword->project->user->id === $user->id){
+        if($keyword->project->users->find($user->id)){
             return view('monitoring.keywords.edit', compact('keyword'));
         }
         else
@@ -660,7 +660,7 @@ class MonitoringKeywordsController extends Controller
         $user = $this->user;
 
         $keyword = MonitoringKeyword::findOrFail($id);
-        if($keyword->project->user->id === $user->id){
+        if($keyword->project->users->find($user->id)){
 
             $keyword->update($request->all());
             return $keyword;
@@ -692,7 +692,7 @@ class MonitoringKeywordsController extends Controller
         $user = $this->user;
 
         $keyword = MonitoringKeyword::findOrFail($id);
-        if($keyword->project->user->id === $user->id)
+        if($keyword->project->users->find($user['id']))
             $keyword->delete();
 
         return $keyword;

@@ -15,6 +15,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
 
         <style>
+            .add-user {
+                display: none;
+            }
             .toast {
                 opacity: 1 !important;
             }
@@ -49,7 +52,21 @@
                 right: 0em;
             }
         </style>
+
+        @hasanyrole('Super Admin|admin')
+        <style>
+            .add-user {
+                display: inline-block;
+            }
+        </style>
+        @endhasanyrole
     @endslot
+
+    @if($foreignProject->count())
+    <div class="row">
+        @include('monitoring.partials._approve')
+    </div>
+    @endif
 
     <div class="row mb-1">
         @include('monitoring.partials._buttons')
@@ -74,6 +91,7 @@
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <!-- Bootstrap 4 -->
         <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('plugins/bootstrap-modal-form-templates/bootstrap-modal-form-templates.js') }}"></script>
         <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -274,8 +292,35 @@
                         class: 'project-actions text-right',
                     },
                     {
-                        width: '145px',
+                        width: '185px',
                         data: function (row) {
+
+                            if(!row.pivot.admin){
+                                let users = row.users;
+                                let badges = $('<ul />', { class : "list-unstyled" });
+
+                                $.each(users, (i, el) => {
+                                    let badge = $('<small />', {
+                                        class : "badge badge-info"
+                                    }).text(el.name + " " + el.last_name);
+
+                                    if(el.pivot.admin){
+                                        badge.removeClass('badge-info');
+                                        badge.addClass('badge-danger');
+                                        badge.prepend("Admin: ");
+                                    }
+
+                                    badges.append($('<li />').html(badge))
+                                });
+
+                                return badges[0].outerHTML;
+                            }
+
+                            let addUser = $('<a />', {class: 'btn btn-sm btn-info add-user'}).append($('<i />', {class: 'fas fa-user-plus'})).append(' ' + row.users.length);
+
+                            addUser.attr({
+                                "data-id": row.id,
+                            });
 
                             let create = $('<a />', {class: 'btn btn-sm btn-success tooltip-on'}).append($('<i />', {class: 'fas fa-plus'}));
 
@@ -300,7 +345,7 @@
 
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
-                            return create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
+                            return addUser[0].outerHTML + " " + create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
                         },
                         class: 'project-actions text-right',
                     },
@@ -609,6 +654,66 @@
 
                 return sup.prop('outerHTML');
             }
+
+            $('.approve-project').click(function(){
+                let self = $(this);
+                let id = self.closest('tr').data('id');
+
+                axios.post('{{ route('approve.project') }}', {
+                    approve: 1,
+                    id: id
+                }).then(function (response) {
+                    window.location.reload();
+                });
+            });
+
+            $('.cancel-project').click(function(){
+                let self = $(this);
+                let id = self.closest('tr').data('id');
+
+                axios.post('{{ route('approve.project') }}', {
+                    approve: 0,
+                    id: id
+                }).then(function (response) {
+                    toastr.success('{{ __('Request has been canceled') }}');
+                    self.closest('tr').remove();
+                });
+            });
+
+            $('#projects').on('click', '.add-user', function () {
+                let self = $(this);
+                let id = self.data('id');
+
+                $('.modal').modal('show').BootstrapModalFormTemplates({
+                    title: '{{ __('Add user to project') }}',
+                    fields: [
+                        {
+                            type: 'text',
+                            name: "email",
+                            label: '{{ __('Email user') }}',
+                            params: [{
+                                val: "",
+                                placeholder: 'test@mail.ru',
+                            }]
+                        }
+                    ],
+                    onAgree: function (m) {
+                        const formData = new FormData(m.find('form').get(0));
+                        let email = formData.getAll('email')[0];
+
+                        axios.post('{{ route('approve.attach') }}', {
+                            id: id,
+                            email: email,
+                        }).then(function (response) {
+                            toastr.success('{{ __('Request has been sent') }}');
+                            table.draw(false);
+                            m.modal('hide');
+                        }).catch(function (error) {
+                            toastr.error('{{ __('Wrong request') }}');
+                        });
+                    }
+                });
+            });
         </script>
     @endslot
 

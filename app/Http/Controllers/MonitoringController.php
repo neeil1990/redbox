@@ -56,10 +56,40 @@ class MonitoringController extends Controller
      */
     public function index()
     {
+        /** @var User $user */
+        $user = $this->user;
+        $foreignProject = $user->monitoringProjects()->wherePivot('approved', 0)->get();
+
         $lengthMenu = $this->getPaginationMenu();
         $length = (new MonitoringSettings())->getValue('pagination_project');
 
-        return view('monitoring.index', compact('lengthMenu', 'length'));
+        return view('monitoring.index', compact('lengthMenu', 'length', 'foreignProject'));
+    }
+
+    public function attachUser(Request $request)
+    {
+        /** @var User $user */
+        $currentUser = $this->user;
+
+        $user = User::where('email', $request->input('email'))->firstOrFail();
+        if($user == $currentUser)
+            return abort('403');
+
+        return $user->monitoringProjects()->syncWithoutDetaching([$request->input('id') => ['approved' => 0]]);
+    }
+
+    public function approveOrDetachUser(Request $request)
+    {
+        $id = $request->input('id');
+        $approve = $request->input('approve');
+
+        /** @var User $user */
+        $user = $this->user;
+
+        if($approve)
+            return $user->monitoringProjects()->updateExistingPivot($id, ["approved" => 1]);
+
+        return $user->monitoringProjects()->detach($id);
     }
 
     public function parsePositionsInProject(Request $request)
@@ -86,7 +116,7 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
-        $project = $user->monitoringProjects()->where('id', $request->input('projectId'))->first();
+        $project = $user->monitoringProjects()->find($request->input('projectId'));
         $keywords = $project->keywords()->whereIn('id', $request->input('keys'))->get();
         $engine = $project->searchengines()->find($request->input('region'));
 
@@ -105,14 +135,13 @@ class MonitoringController extends Controller
         /** @var User $user */
         $user = $this->user;
 
-        $dataTable = MonitoringDataTableColumnsProject::whereIn('monitoring_project_id', $user->monitoringProjects()->get('id')->pluck('id'));
+        $dataTable = MonitoringDataTableColumnsProject::whereIn('monitoring_project_id', $user->monitoringProjects()->get()->pluck('id'));
         if (!$dataTable->count())
             $this->updateDataTableProjects();
 
         $model = $user->monitoringProjectsWithDataTable();
 
-        $search = $request->input('search');
-        if ($search = $search['value'])
+        if ($search = $request->input('search.value'))
             $model = $model->where('name', 'like', $search . '%');
 
         if ($order = Arr::first($request->input('order'))) {
@@ -301,8 +330,7 @@ class MonitoringController extends Controller
         $user = $this->user;
 
         /** @var MonitoringProject $project */
-        $project = $user->monitoringProjects()->where('id', $id)->first();
-
+        $project = $user->monitoringProjects()->find($id);
         $navigations = $this->navigations($project);
 
         $length = $this->getLength($project->id);
@@ -379,7 +407,7 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
-        $project = $user->monitoringProjects()->where('id', $request->input('projectId'))->first();
+        $project = $user->monitoringProjects()->find($request->input('projectId'));
         $region = $project->searchengines();
 
         if ($request->input('regionId'))
@@ -413,13 +441,23 @@ class MonitoringController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return Response
+     * @return void
+     * @throws \Exception
      */
     public function destroy($id)
     {
         /** @var User $user */
         $user = $this->user;
-        $user->monitoringProjects()->find($id)->delete();
+        $project = $user->monitoringProjects()->find($id);
+        // If current user admin project
+        if($project->pivot->admin){
+            foreach($project->users as $u)
+                $u->monitoringProjects()->detach($project['id']);
+
+            $project->delete();
+        }else{
+            $user->monitoringProjects()->detach($project['id']);
+        }
     }
 
     public function monitoringCompetitors(MonitoringProject $project)
