@@ -29,6 +29,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+Route::get('test-create', function () {
+
+});
+
 Route::get('info', function () {
     phpinfo();
 });
@@ -39,6 +43,28 @@ Route::get('jobs', function () {
     $job = App\Jobs::find(7373087);
 
     dd(unserialize($job->payload['data']['command'])->handle());
+});
+
+Route::get('monitoring_projects-to-monitoring_project_user-copy', function () {
+    $projects = App\MonitoringProject::all();
+    foreach($projects as $p)
+    {
+        try {
+            \DB::table('monitoring_project_user')->insert([
+                'user_id' => $p['user_id'],
+                'monitoring_project_id' => $p['id'],
+                'admin' => 1,
+                'approved' => 1,
+                'created_at' => \Carbon\Carbon::now(),
+                'updated_at' => \Carbon\Carbon::now(),
+            ]);
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+            echo 'User ID: ',  $p['user_id'], "\n";
+        }
+    }
+
+    dump("done");
 });
 
 Auth::routes(['verify' => true]);
@@ -308,6 +334,10 @@ Route::middleware(['verified'])->group(function () {
     // Monitoring query price
     Route::get('monitoring/{id}/prices', 'MonitoringKeywordPricesController@index')->name('prices.index');
     Route::post('monitoring/{id}/prices', 'MonitoringKeywordPricesController@action')->name('prices.action');
+
+    // Monitoring project approve or detach projects
+    Route::post('monitoring/project/approve', 'MonitoringController@approveOrDetachUser')->name('approve.project');
+    Route::post('monitoring/project/attach', 'MonitoringController@attachUser')->name('approve.attach');
 
     // Monitoring query groups
     Route::post('monitoring/groups', 'MonitoringGroupsController@store');
