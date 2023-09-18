@@ -166,6 +166,8 @@
 
                 let columns = [];
                 $.each(response.data.columns, function (i, item) {
+                    if(PROJECT_ADMIN == '0' && (i == 'checkbox' || i == 'btn'))
+                        return;
 
                     columns.push({
                         'title': item,
