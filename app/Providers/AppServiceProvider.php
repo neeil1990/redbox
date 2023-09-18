@@ -28,7 +28,12 @@ class AppServiceProvider extends ServiceProvider
     {
         Validator::extend('website', function ($attribute, $value) {
             if (isset($value)) {
+                if (!preg_match("~^(?:f|ht)tps?://~i", $value)) {
+                    $value = "https://" . $value;
+                }
+
                 $link = parse_url($value);
+
                 if (isset($link['host'])) {
                     return true;
                 } else {
@@ -37,7 +42,6 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 return true;
             }
-
         }, __('Invalid link.'));
 
         Validator::extend('not_website', function ($attribute, $value) {
