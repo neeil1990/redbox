@@ -170,8 +170,6 @@
                 ],
                 columnDefs: [
                     {orderable: true, "width": "150px", targets: 'name'},
-                    {orderable: true, targets: 3},
-                    {orderable: false, targets: [0, 1, 4, 12, 13]},
                 ],
                 columns: [
                     {
@@ -214,7 +212,27 @@
                         },
                     },
                     {
-                        title: '{{ __('Search engine') }}',
+                        orderable: false,
+                        title: '{{ __('Users') }}',
+                        name: 'users',
+                        data: function (row) {
+                            let ul = $('<ul />', { class : 'list-inline'});
+
+                            $.each(row.users, function(i, item){
+                                let li = $('<li />', {class : 'list-inline-item position-relative tooltip-on', title : item.name + ' ' + item.last_name}).append($('<img />', { class : 'table-avatar', src : '/storage/' + item.image }));
+
+                                if(item.pivot.admin)
+                                    li.append($('<span />', {class : 'badge badge-danger navbar-badge'}).css('top', 0).text('Admin'));
+
+                                ul.append(li);
+                            });
+
+                            return ul[0].outerHTML;
+                        },
+                    },
+                    {
+                        orderable: false,
+                        title: '{{ __('System') }}',
                         name: 'engines',
                         data: 'engines',
                     },
@@ -224,12 +242,12 @@
                         data: 'words',
                     },
                     {
-                        title: '{{ __('Middle position') }}',
+                        title: '{{ __('Mid-position') }}',
                         name: 'middle',
                         data: 'middle',
                     },
                     {
-                        title: '% {{ __('TOP') }} 3',
+                        title: '3 %',
                         name: 'top3',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top3);
@@ -238,7 +256,7 @@
                         },
                     },
                     {
-                        title: '% {{ __('TOP') }} 5',
+                        title: '5 %',
                         name: 'top5',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top5);
@@ -247,7 +265,7 @@
                         },
                     },
                     {
-                        title: '% {{ __('TOP') }} 10',
+                        title: '10 %',
                         name: 'top10',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top10);
@@ -256,7 +274,7 @@
                         },
                     },
                     {
-                        title: '% {{ __('TOP') }} 30',
+                        title: '30 %',
                         name: 'top30',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top30);
@@ -265,7 +283,7 @@
                         },
                     },
                     {
-                        title: '% {{ __('TOP') }} 100',
+                        title: '100 %',
                         name: 'top100',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top100);
@@ -274,53 +292,28 @@
                         },
                     },
                     {
-                        width: '120px',
-                        title: '{{ __('Reports') }}',
+                        orderable: false,
+                        width: '225px',
                         data: function (row) {
 
-                            let edit = $('<a />', {
-                                class: 'btn btn-info btn-sm click_tracking',
+                            if(row.pivot.admin == false)
+                                return "";
+
+                            let addUser = $('<a />', {class: 'btn btn-sm btn-info add-user tooltip-on', title: '{{ __('Add user') }}'}).append($('<i />', {class: 'fas fa-user-plus'}));
+
+                            addUser.attr({
+                                "data-id": row.id,
+                            });
+
+                            let exports = $('<a />', {
+                                class: 'btn btn-secondary btn-sm click_tracking tooltip-on',
                                 "data-click": 'Export project',
                                 "data-toggle": 'modal',
                                 "data-target": '.modal',
                                 "data-type": 'export-edit',
                                 "data-id": row.id,
-                            }).text('{{ __('Export') }}');
-
-                            return edit[0].outerHTML;
-                        },
-                        class: 'project-actions text-right',
-                    },
-                    {
-                        width: '185px',
-                        data: function (row) {
-
-                            if(!row.pivot.admin){
-                                let users = row.users;
-                                let badges = $('<ul />', { class : "list-unstyled" });
-
-                                $.each(users, (i, el) => {
-                                    let badge = $('<small />', {
-                                        class : "badge badge-info"
-                                    }).text(el.name + " " + el.last_name);
-
-                                    if(el.pivot.admin){
-                                        badge.removeClass('badge-info');
-                                        badge.addClass('badge-danger');
-                                        badge.prepend("Admin: ");
-                                    }
-
-                                    badges.append($('<li />').html(badge))
-                                });
-
-                                return badges[0].outerHTML;
-                            }
-
-                            let addUser = $('<a />', {class: 'btn btn-sm btn-info add-user'}).append($('<i />', {class: 'fas fa-user-plus'})).append(' ' + row.users.length);
-
-                            addUser.attr({
-                                "data-id": row.id,
-                            });
+                                title: '{{ __('Project export') }}'
+                            }).html('<i class="fas fa-file-export"></i>');
 
                             let create = $('<a />', {class: 'btn btn-sm btn-success tooltip-on'}).append($('<i />', {class: 'fas fa-plus'}));
 
@@ -329,27 +322,39 @@
                                 "data-target": '.modal',
                                 "data-type": 'create_keywords',
                                 "data-id": row.id,
+                                title: '{{ __('Add keyword') }}'
                             });
 
                             let edit = $('<a />', {
                                 class: 'btn btn-sm btn-success',
                                 href: `/monitoring/create#id=${row.id}`,
-                            }).append($('<i />', {class: 'fas fa-edit'}));
+                            }).append($('<i />', {class: 'fas fa-edit tooltip-on', title: '{{ __('Edit project') }}'}));
 
                             let folder = $('<a />', {
-                                class: 'btn btn-sm btn-info',
+                                class: 'btn btn-sm btn-info tooltip-on',
                                 href: '/monitoring/' + row.id + '/groups',
+                                title: '{{ __('Project groups') }}',
                             }).append($('<i />', {class: 'fa fa-folder-open'}));
 
-                            let trash = $('<a />', {class: 'btn btn-sm btn-danger'}).append($('<i />', {class: 'fas fa-trash'}));
+                            let trash = $('<a />', {class: 'btn btn-sm btn-danger tooltip-on', title: '{{ __('Delete project') }}',}).append($('<i />', {class: 'fas fa-trash'}));
 
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
-                            return addUser[0].outerHTML + " " + create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
+                            return addUser[0].outerHTML + " " + exports[0].outerHTML + " " + create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
                         },
                         class: 'project-actions text-right',
                     },
                 ],
+                headerCallback: function(thead, data, start, end, display) {
+                    let api = this.api();
+                    let columns = api.columns( ['top3:name', 'top5:name', 'top10:name', 'top30:name', 'top100:name'] ).header();
+
+                    $.each(columns, function(i, col){
+                        let column = $(col);
+                        column.addClass('text-nowrap');
+                        column.append(' <i class="far fa-question-circle tooltip-on" title="{{ __('Percentage of keys in the top') }}"></i>');
+                    });
+                },
                 initComplete: function () {
                     let api = this.api();
                     let json = api.ajax.json();
@@ -453,6 +458,11 @@
                                 $(`.column-visible[data-column="${col.column}"]`).addClass('hover');
                             }
                         });
+                    });
+
+                    this.find('.tooltip-on').tooltip({
+                        animation: false,
+                        trigger: 'hover',
                     });
                 },
                 drawCallback: function () {
