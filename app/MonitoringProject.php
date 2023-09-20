@@ -15,6 +15,11 @@ class MonitoringProject extends Model
         return $this->belongsToMany(User::class)->withPivot('admin', 'approved');
     }
 
+    public function admin()
+    {
+        return $this->belongsToMany(User::class)->withPivot('admin', 'approved')->wherePivot('admin', 1);
+    }
+
     public function keywords()
     {
         return $this->hasMany(MonitoringKeyword::class);
