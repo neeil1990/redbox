@@ -125,12 +125,12 @@
                 if (clicks) {
                     //Uncheck all checkboxes
                     $('.table tbody tr.main').removeClass(HIGHLIGHT_TR_CLASS);
-                    $('.table tbody tr.main').find('.form-check-input').prop('checked', false);
+                    $('.table tbody tr.main').find('.icheck-primary input[type="checkbox"]').prop('checked', false);
                     $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square');
                 } else {
                     //Check all checkboxes
                     $('.table tbody tr.main').addClass(HIGHLIGHT_TR_CLASS);
-                    $('.table tbody tr.main').find('.form-check-input').prop('checked', true);
+                    $('.table tbody tr.main').find('.icheck-primary input[type="checkbox"]').prop('checked', true);
                     $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square');
                 }
                 $(this).data('clicks', !clicks)
@@ -177,12 +177,10 @@
                         data: function (row, type, val, meta) {
 
                             let form = $('<div />', {
-                                class: 'form-check'
+                                class: 'icheck-primary'
                             });
 
-                            let input = $('<input />', {
-                                class: 'form-check-input'
-                            });
+                            let input = $('<input />');
 
                             input.attr({
                                 type: 'checkbox',
@@ -352,7 +350,7 @@
                     $.each(columns, function(i, col){
                         let column = $(col);
                         column.addClass('text-nowrap');
-                        column.append(' <i class="far fa-question-circle tooltip-on" title="{{ __('Percentage of keys in the top') }}"></i>');
+                        column.html(column.text() + ' <i class="far fa-question-circle tooltip-on" title="{{ __('Percentage of keys in the top') }}"></i>');
                     });
                 },
                 initComplete: function () {
@@ -364,9 +362,9 @@
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
 
                         if ($(this).hasClass(HIGHLIGHT_TR_CLASS)) {
-                            $(this).find('.form-check-input').prop('checked', true);
+                            $(this).find('.icheck-primary input[type="checkbox"]').prop('checked', true);
                         } else {
-                            $(this).find('.form-check-input').prop('checked', false);
+                            $(this).find('.icheck-primary input[type="checkbox"]').prop('checked', false);
                         }
                     });
 
