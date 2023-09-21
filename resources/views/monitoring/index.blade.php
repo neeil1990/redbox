@@ -15,6 +15,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
 
         <style>
+            .add-user {
+                display: none;
+            }
             .toast {
                 opacity: 1 !important;
             }
@@ -49,7 +52,21 @@
                 right: 0em;
             }
         </style>
+
+        @hasanyrole('Super Admin|admin')
+        <style>
+            .add-user {
+                display: inline-block;
+            }
+        </style>
+        @endhasanyrole
     @endslot
+
+    @if($foreignProject->count())
+    <div class="row">
+        @include('monitoring.partials._approve')
+    </div>
+    @endif
 
     <div class="row mb-1">
         @include('monitoring.partials._buttons')
@@ -74,6 +91,7 @@
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <!-- Bootstrap 4 -->
         <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('plugins/bootstrap-modal-form-templates/bootstrap-modal-form-templates.js') }}"></script>
         <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -107,12 +125,12 @@
                 if (clicks) {
                     //Uncheck all checkboxes
                     $('.table tbody tr.main').removeClass(HIGHLIGHT_TR_CLASS);
-                    $('.table tbody tr.main').find('.form-check-input').prop('checked', false);
+                    $('.table tbody tr.main').find('.icheck-primary input[type="checkbox"]').prop('checked', false);
                     $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square');
                 } else {
                     //Check all checkboxes
                     $('.table tbody tr.main').addClass(HIGHLIGHT_TR_CLASS);
-                    $('.table tbody tr.main').find('.form-check-input').prop('checked', true);
+                    $('.table tbody tr.main').find('.icheck-primary input[type="checkbox"]').prop('checked', true);
                     $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square');
                 }
                 $(this).data('clicks', !clicks)
@@ -152,8 +170,6 @@
                 ],
                 columnDefs: [
                     {orderable: true, "width": "150px", targets: 'name'},
-                    {orderable: true, targets: 3},
-                    {orderable: false, targets: [0, 1, 4, 12, 13]},
                 ],
                 columns: [
                     {
@@ -161,12 +177,10 @@
                         data: function (row, type, val, meta) {
 
                             let form = $('<div />', {
-                                class: 'form-check'
+                                class: 'icheck-primary'
                             });
 
-                            let input = $('<input />', {
-                                class: 'form-check-input'
-                            });
+                            let input = $('<input />');
 
                             input.attr({
                                 type: 'checkbox',
@@ -196,7 +210,27 @@
                         },
                     },
                     {
-                        title: '{{ __('Search engine') }}',
+                        orderable: false,
+                        title: '{{ __('Users') }}',
+                        name: 'users',
+                        data: function (row) {
+                            let ul = $('<ul />', { class : 'list-inline'});
+
+                            $.each(row.users, function(i, item){
+                                let li = $('<li />', {class : 'list-inline-item position-relative tooltip-on', title : item.name + ' ' + item.last_name}).append($('<img />', { class : 'table-avatar', src : '/storage/' + item.image }));
+
+                                if(item.pivot.admin)
+                                    li.append($('<span />', {class : 'badge badge-danger navbar-badge'}).css('top', 0).text('Admin'));
+
+                                ul.append(li);
+                            });
+
+                            return ul[0].outerHTML;
+                        },
+                    },
+                    {
+                        orderable: false,
+                        title: '{{ __('System') }}',
                         name: 'engines',
                         data: 'engines',
                     },
@@ -206,12 +240,12 @@
                         data: 'words',
                     },
                     {
-                        title: '{{ __('Middle position') }}',
+                        title: '{{ __('Mid-position') }}',
                         name: 'middle',
                         data: 'middle',
                     },
                     {
-                        title: '% {{ __('TOP') }} 3',
+                        title: '3 %',
                         name: 'top3',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top3);
@@ -220,7 +254,7 @@
                         },
                     },
                     {
-                        title: '% {{ __('TOP') }} 5',
+                        title: '5 %',
                         name: 'top5',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top5);
@@ -229,7 +263,7 @@
                         },
                     },
                     {
-                        title: '% {{ __('TOP') }} 10',
+                        title: '10 %',
                         name: 'top10',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top10);
@@ -238,7 +272,7 @@
                         },
                     },
                     {
-                        title: '% {{ __('TOP') }} 30',
+                        title: '30 %',
                         name: 'top30',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top30);
@@ -247,7 +281,7 @@
                         },
                     },
                     {
-                        title: '% {{ __('TOP') }} 100',
+                        title: '100 %',
                         name: 'top100',
                         data: function (row) {
                             let sup = subColorTag(row.diff_top100);
@@ -256,26 +290,28 @@
                         },
                     },
                     {
-                        width: '120px',
-                        title: '{{ __('Reports') }}',
+                        orderable: false,
+                        width: '225px',
                         data: function (row) {
 
-                            let edit = $('<a />', {
-                                class: 'btn btn-info btn-sm click_tracking',
+                            if(row.pivot.admin == false)
+                                return "";
+
+                            let addUser = $('<a />', {class: 'btn btn-sm btn-info add-user tooltip-on', title: '{{ __('Add user') }}'}).append($('<i />', {class: 'fas fa-user-plus'}));
+
+                            addUser.attr({
+                                "data-id": row.id,
+                            });
+
+                            let exports = $('<a />', {
+                                class: 'btn btn-secondary btn-sm click_tracking tooltip-on',
                                 "data-click": 'Export project',
                                 "data-toggle": 'modal',
                                 "data-target": '.modal',
                                 "data-type": 'export-edit',
                                 "data-id": row.id,
-                            }).text('{{ __('Export') }}');
-
-                            return edit[0].outerHTML;
-                        },
-                        class: 'project-actions text-right',
-                    },
-                    {
-                        width: '145px',
-                        data: function (row) {
+                                title: '{{ __('Project export') }}'
+                            }).html('<i class="fas fa-file-export"></i>');
 
                             let create = $('<a />', {class: 'btn btn-sm btn-success tooltip-on'}).append($('<i />', {class: 'fas fa-plus'}));
 
@@ -284,27 +320,39 @@
                                 "data-target": '.modal',
                                 "data-type": 'create_keywords',
                                 "data-id": row.id,
+                                title: '{{ __('Add keyword') }}'
                             });
 
                             let edit = $('<a />', {
                                 class: 'btn btn-sm btn-success',
                                 href: `/monitoring/create#id=${row.id}`,
-                            }).append($('<i />', {class: 'fas fa-edit'}));
+                            }).append($('<i />', {class: 'fas fa-edit tooltip-on', title: '{{ __('Edit project') }}'}));
 
                             let folder = $('<a />', {
-                                class: 'btn btn-sm btn-info',
+                                class: 'btn btn-sm btn-info tooltip-on',
                                 href: '/monitoring/' + row.id + '/groups',
+                                title: '{{ __('Project groups') }}',
                             }).append($('<i />', {class: 'fa fa-folder-open'}));
 
-                            let trash = $('<a />', {class: 'btn btn-sm btn-danger'}).append($('<i />', {class: 'fas fa-trash'}));
+                            let trash = $('<a />', {class: 'btn btn-sm btn-danger tooltip-on', title: '{{ __('Delete project') }}',}).append($('<i />', {class: 'fas fa-trash'}));
 
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
-                            return create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
+                            return addUser[0].outerHTML + " " + exports[0].outerHTML + " " + create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
                         },
                         class: 'project-actions text-right',
                     },
                 ],
+                headerCallback: function(thead, data, start, end, display) {
+                    let api = this.api();
+                    let columns = api.columns( ['top3:name', 'top5:name', 'top10:name', 'top30:name', 'top100:name'] ).header();
+
+                    $.each(columns, function(i, col){
+                        let column = $(col);
+                        column.addClass('text-nowrap');
+                        column.html(column.text() + ' <i class="far fa-question-circle tooltip-on" title="{{ __('Percentage of keys in the top') }}"></i>');
+                    });
+                },
                 initComplete: function () {
                     let api = this.api();
                     let json = api.ajax.json();
@@ -314,9 +362,9 @@
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
 
                         if ($(this).hasClass(HIGHLIGHT_TR_CLASS)) {
-                            $(this).find('.form-check-input').prop('checked', true);
+                            $(this).find('.icheck-primary input[type="checkbox"]').prop('checked', true);
                         } else {
-                            $(this).find('.form-check-input').prop('checked', false);
+                            $(this).find('.icheck-primary input[type="checkbox"]').prop('checked', false);
                         }
                     });
 
@@ -408,6 +456,11 @@
                                 $(`.column-visible[data-column="${col.column}"]`).addClass('hover');
                             }
                         });
+                    });
+
+                    this.find('.tooltip-on').tooltip({
+                        animation: false,
+                        trigger: 'hover',
                     });
                 },
                 drawCallback: function () {
@@ -609,6 +662,66 @@
 
                 return sup.prop('outerHTML');
             }
+
+            $('.approve-project').click(function(){
+                let self = $(this);
+                let id = self.closest('tr').data('id');
+
+                axios.post('{{ route('approve.project') }}', {
+                    approve: 1,
+                    id: id
+                }).then(function (response) {
+                    window.location.reload();
+                });
+            });
+
+            $('.cancel-project').click(function(){
+                let self = $(this);
+                let id = self.closest('tr').data('id');
+
+                axios.post('{{ route('approve.project') }}', {
+                    approve: 0,
+                    id: id
+                }).then(function (response) {
+                    toastr.success('{{ __('Request has been canceled') }}');
+                    self.closest('tr').remove();
+                });
+            });
+
+            $('#projects').on('click', '.add-user', function () {
+                let self = $(this);
+                let id = self.data('id');
+
+                $('.modal').modal('show').BootstrapModalFormTemplates({
+                    title: '{{ __('Add user to project') }}',
+                    fields: [
+                        {
+                            type: 'text',
+                            name: "email",
+                            label: '{{ __('Email user') }}',
+                            params: [{
+                                val: "",
+                                placeholder: 'test@mail.ru',
+                            }]
+                        }
+                    ],
+                    onAgree: function (m) {
+                        const formData = new FormData(m.find('form').get(0));
+                        let email = formData.getAll('email')[0];
+
+                        axios.post('{{ route('approve.attach') }}', {
+                            id: id,
+                            email: email,
+                        }).then(function (response) {
+                            toastr.success('{{ __('Request has been sent') }}');
+                            table.draw(false);
+                            m.modal('hide');
+                        }).catch(function (error) {
+                            toastr.error('{{ __('Wrong request') }}');
+                        });
+                    }
+                });
+            });
         </script>
     @endslot
 

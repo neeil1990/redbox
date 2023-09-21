@@ -309,6 +309,10 @@ Route::middleware(['verified'])->group(function () {
     Route::get('monitoring/{id}/prices', 'MonitoringKeywordPricesController@index')->name('prices.index');
     Route::post('monitoring/{id}/prices', 'MonitoringKeywordPricesController@action')->name('prices.action');
 
+    // Monitoring project approve or detach projects
+    Route::post('monitoring/project/approve', 'MonitoringController@approveOrDetachUser')->name('approve.project');
+    Route::post('monitoring/project/attach', 'MonitoringController@attachUser')->name('approve.attach');
+
     // Monitoring query groups
     Route::post('monitoring/groups', 'MonitoringGroupsController@store');
     Route::get('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');

@@ -10,9 +10,14 @@ class MonitoringProject extends Model
 {
     protected $fillable = ['name', 'url', 'status'];
 
-    public function user()
+    public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class)->withPivot('admin', 'approved');
+    }
+
+    public function admin()
+    {
+        return $this->belongsToMany(User::class)->withPivot('admin', 'approved')->wherePivot('admin', 1);
     }
 
     public function keywords()
