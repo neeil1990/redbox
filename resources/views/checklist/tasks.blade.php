@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  __('Tasks') ])
+@component('component.card', ['title' =>  __('Tasks') . " $host"])
     @slot('css')
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
@@ -113,12 +113,52 @@
 
     <div id="block-from-notifications"></div>
 
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                Филтьры
+            </h3>
+        </div>
+        <div class="card-body row">
+            <div class="form-group col-2">
+                <label for="count">Количество записей</label>
+                <select name="count" id="count" class="custom custom-select">
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                </select>
+            </div>
+            <div class="form-group col-2">
+                <label for="name">Название</label>
+                <input type="text" id="name" name="name" class="form form-control">
+            </div>
+            <div class="form-group col-2">
+                <label for="sort">Сортировка</label>
+                <select name="sort" id="sort" class="custom custom-select">
+                    <option value="all" selected>Любые</option>
+                    <option value="new">Сначала новые</option>
+                    <option value="old">Сначала старые</option>
+                    <option value="ready">Завершённые</option>
+                    <option value="work">В работе</option>
+                    <option value="expired">Просроченные</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
     <ol id="tasks">
         <div class="d-flex justify-content-center align-items-center w-100 mt-5"
              style="width: 100%;">
             <img src="/img/1485.gif" style="width: 80px; height: 80px;">
         </div>
     </ol>
+
+    <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
 
     <div class="d-flex justify-content-end">
         <button class="btn btn-secondary" id="add-new-task">Добавить новую задачу</button>
@@ -301,35 +341,13 @@
             $('#app > div > div > div.card-header').append($('#project-info'))
             $('#app > div > div > div.card-header > .card-title').remove()
 
+            $(function () {
+                if (localStorage.getItem('REDBOX_SEO_TASKS_COUNT') !== null) {
+                    $('#count').val(localStorage.getItem('REDBOX_SEO_TASKS_COUNT'))
+                }
 
-            getTasks()
-
-            $('.description').summernote({
-                callbacks: {
-                    onChange: function (contents, $editable) {
-                        editedID = $editable.parents().eq(2).find('textarea:first-child').attr('data-id')
-                        clearTimeout(editedTimeout)
-                        editedTimeout = setTimeout(() => {
-                            $.ajax({
-                                type: 'post',
-                                url: "{{ route('edit.checklist.task') }}",
-                                data: {
-                                    id: editedID,
-                                    type: 'description',
-                                    value: contents,
-                                },
-                                success: function (response) {
-                                    successMessage('Успешно')
-                                },
-                                error: function (response) {
-                                    errorMessage(response.responseJSON.errors)
-                                }
-                            })
-                        }, 1000)
-                    }
-                },
-                minHeight: 350,
-            });
+                getTasks(0, true)
+            })
 
             let editedID
             let editedTimeout
@@ -418,6 +436,34 @@
             function refreshTooltips() {
                 $('[data-toggle="tooltip"]').tooltip('dispose');
                 $('[data-toggle="tooltip"]').tooltip()
+
+                $('.description').summernote({
+                    callbacks: {
+                        onChange: function (contents, $editable) {
+                            editedID = $editable.parents().eq(2).find('textarea:first-child').attr('data-id')
+                            clearTimeout(editedTimeout)
+                            editedTimeout = setTimeout(() => {
+                                $.ajax({
+                                    type: 'post',
+                                    url: "{{ route('edit.checklist.task') }}",
+                                    data: {
+                                        id: editedID,
+                                        type: 'description',
+                                        value: contents,
+                                    },
+                                    success: function (response) {
+                                        successMessage('Успешно')
+                                    },
+                                    error: function (response) {
+                                        errorMessage(response.responseJSON.errors)
+                                    }
+                                })
+                            }, 1000)
+                        }
+                    },
+                    minHeight: 350,
+                });
+
             }
 
             function errorMessage(errors) {
@@ -599,7 +645,7 @@
                 return object
             }
 
-            function getTasks() {
+            function getTasks(page = 0, renderPaginate = false) {
                 $('#tasks').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5"' +
                     '     style="width: 100%;">' +
@@ -611,7 +657,11 @@
                     type: 'post',
                     url: "{{ route('checklist.tasks') }}",
                     data: {
-                        id: checklist[0].id
+                        id: checklist[0].id,
+                        sort: $('#sort').val(),
+                        count: $('#count').val(),
+                        search: $('#name').val(),
+                        skip: page * $('#count').val(),
                     },
                     success: function (response) {
                         let checklist = response.checklist[0]
@@ -635,34 +685,11 @@
                             });
 
                             refreshTooltips()
-                            $('.description').summernote({
-                                callbacks: {
-                                    onChange: function (contents, $editable) {
-                                        editedID = $editable.parents().eq(2).find('textarea:first-child').attr('data-id')
-                                        clearTimeout(editedTimeout)
-                                        editedTimeout = setTimeout(() => {
-                                            $.ajax({
-                                                type: 'post',
-                                                url: "{{ route('edit.checklist.task') }}",
-                                                data: {
-                                                    id: editedID,
-                                                    type: 'description',
-                                                    value: contents,
-                                                },
-                                                success: function (response) {
-                                                    successMessage('Успешно')
-                                                },
-                                                error: function (response) {
-                                                    errorMessage(response.responseJSON.errors)
-                                                }
-                                            })
-                                        }, 1000)
-                                    }
-                                },
-                                minHeight: 350,
-                            });
                         }
 
+                        if (renderPaginate) {
+                            renderPagination(response)
+                        }
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -719,6 +746,47 @@
                     }
                 })
             }
+
+            function renderPagination(response) {
+                let pagination = ''
+                for (let i = 0; i < response.paginate; i++) {
+                    let html = i + 1
+
+                    if (i === 0) {
+                        pagination += '<li class="page-item active"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                    } else {
+                        pagination += '<li class="page-item"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                    }
+                }
+                $('#pagination').html(pagination)
+            }
+
+
+            $(document).on('click', '.page-link', function () {
+                $('.page-item.active').removeClass('active')
+                $(this).parent().addClass('active')
+
+                getTasks($(this).attr('data-id'), false)
+            })
+
+            $(document).on('change', '#count', function () {
+                localStorage.setItem('REDBOX_SEO_TASKS_COUNT', $(this).val())
+                getTasks(0, true)
+            })
+
+            let nameTimeout
+
+            $(document).on('input', '#name', function () {
+                clearTimeout(nameTimeout)
+
+                nameTimeout = setTimeout(() => {
+                    getTasks(0, true)
+                }, 1000)
+            })
+
+            $(document).on('change', '#sort', function () {
+                getTasks(0, true)
+            })
         </script>
     @endslot
 @endcomponent

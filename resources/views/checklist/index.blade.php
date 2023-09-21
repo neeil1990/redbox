@@ -26,20 +26,6 @@
                 display: none;
             }
 
-            .modal-dialog.modal-lg ol {
-                list-style: none;
-                counter-reset: li;
-            }
-
-            .modal-dialog.modal-lg li:before {
-                counter-increment: li;
-                content: counters(li, ".") ". ";
-            }
-
-            .modal-dialog.modal-lg .accordion ol {
-                padding-left: 0;
-            }
-
             .icon {
                 width: 32px;
                 height: 32px;
@@ -109,7 +95,6 @@
                 <div class="tab-content" id="custom-tabs-three-tabContent">
                     <div class="tab-pane fade active show" id="custom-tabs-three-home" role="tabpanel"
                          aria-labelledby="custom-tabs-three-home-tab">
-
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">
@@ -185,41 +170,41 @@
 
     <div class="modal fade" id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectLabel"
          aria-hidden="true">
-        <div class="modal-dialog" style="min-width: 1000px">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="url">Url</label>
-                        <input type="text" name="url" id="url" class="form form-control" placeholder="https://example.com или example.com">
+        <div class="modal-dialog" style="min-width: 1100px;">
+            <div class="modal-content d-flex">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="tasks">Задачи</label>
-                        <div>
-                            <div class="accordion" id="accordionExample">
-                                <ol id="tasks">
-                                </ol>
+                    <div class="modal-body d-flex">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="url">Url</label>
+                                <input type="text" name="url" id="url" class="form form-control"
+                                       placeholder="https://example.com или example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="tasks">Задачи</label>
+                                <div class="accordion" id="accordionExample">
+                                    <ol id="tasks"></ol>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <div>
-                        <button class="btn btn-default" id="add-new-task">Добавить задачу</button>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <div>
+                            <button class="btn btn-default" id="add-new-task">Добавить задачу</button>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                            <button type="button" class="btn btn-success" id="save-new-checklist">
+                                {{ __('Save') }}
+                            </button>
+                            <img id="loader" src="/img/1485.gif" style="width: 30px; height: 30px; display: none">
+                        </div>
                     </div>
-                    <div>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
-                        <button type="button" class="btn btn-success" id="save-new-checklist">
-                            {{ __('Save') }}
-                        </button>
-                        <img id="loader" src="/img/1485.gif" style="width: 30px; height: 30px; display: none">
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -395,7 +380,6 @@
             let counter = 1;
             let subTaskCounter = 1;
             let lastDownloadedChecklistID
-            let lastLoadedId = 0
 
             $('#create-label').on('click', function () {
                 let name = $('#label-name').val()
@@ -575,13 +559,21 @@
             })
 
             $('#add-new-checklist').on('click', function () {
+                $('#createNewProject').addClass('d-flex')
+
                 if ($('#tasks').children('li').length === 0) {
                     $('#add-new-task').trigger('click')
                 }
             })
 
+            $("#createNewProject").on("hidden.bs.modal", function () {
+                $('#createNewProject').removeClass('d-flex')
+            })
+
             $(function () {
-                $('#count').val(localStorage.getItem('SEO_CHECKLIST_COUNT'))
+                if(localStorage.getItem('SEO_CHECKLIST_COUNT') !== null){
+                    $('#count').val(localStorage.getItem('SEO_CHECKLIST_COUNT'))
+                }
                 loadChecklists(0, true)
             })
 
@@ -1073,7 +1065,6 @@
                     data: {
                         countOnPage: $('#count').val(),
                         url: $('#name').val(),
-                        lastID: lastLoadedId,
                         skip: page * $('#count').val()
                     },
                     success: function (response) {
@@ -1100,8 +1091,6 @@
                     }
                 }
                 $('#pagination').html(pagination)
-
-                lastLoadedId = response.lastId
             }
 
             function renderChecklists(lists) {
@@ -1338,7 +1327,6 @@
 
                 $parent.remove()
             })
-
         </script>
     @endslot
 @endcomponent

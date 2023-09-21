@@ -453,38 +453,3 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/remove-checklist-task/', 'CheckListController@removeTask')->name('remove.checklist.task');
     Route::post('/add-new-tasks/', 'CheckListController@addNewTasks')->name('add.new.tasks.in.checklist');
 });
-
-Route::get('/test', function () {
-    $client = new Client();
-    $fullUrl = 'https://almamed.su/category/veterinariya/';
-
-    $response = $client->get($fullUrl);
-    $html = $response->getBody()->getContents();
-
-    $document = new HtmlDocument();
-    $document->load(mb_strtolower($html));
-
-    $icon = $document->find('link[rel="shortcut icon"]');
-
-    if ($icon === []) {
-        $icon = $document->find('link[rel="icon"]');
-    }
-
-    if ($icon === []) {
-        $icon = $document->find('link[rel="apple-touch-icon"]');
-    }
-
-    $md5 = md5(microtime(true));
-
-    if (isset($icon[0]->attr['href'])) {
-        if(filter_var($icon[0]->attr['href'], FILTER_VALIDATE_URL)){
-            $faviconData = file_get_contents($icon[0]->attr['href']);
-        } else if(filter_var("https://" . parse_url($fullUrl)['host'] . $icon[0]->attr['href'], FILTER_VALIDATE_URL)){
-            $faviconData = file_get_contents("https://" . parse_url($fullUrl)['host'] . $icon[0]->attr['href']);
-        } else {
-
-        }
-        $path = "/checklist/ $md5.jpg";
-        Storage::put($path, $faviconData);
-    }
-});

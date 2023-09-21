@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -29,9 +28,10 @@ class CheckListController extends Controller
 
     public function tasks(CheckLists $checklist)
     {
+        $host = parse_url($checklist->url)['host'];
         $checklist = $this->confirmArray([$checklist]);
 
-        return view('checklist.tasks', compact('checklist'));
+        return view('checklist.tasks', compact('checklist', 'host'));
     }
 
     public function store(Request $request)
@@ -244,12 +244,38 @@ class CheckListController extends Controller
 
     public function getTasks(Request $request): array
     {
-        $checklist = CheckLists::where('id', $request->id)->where('user_id', Auth::id())->with('tasks')->first();
-        $tasks = $this->buildTaskHierarchy($checklist['tasks']->toArray(), null);
+        $sql = ChecklistTasks::where('project_id', $request->id)->where('subtask', false);
+
+        if (isset($request->search)) {
+            $sql->where('name', 'like', "%$request->search%");
+        }
+
+        if ($request->sort === 'new') {
+            $sql->orderBy('id');
+        } elseif ($request->sort === 'old') {
+            $sql->orderByDesc('id');
+        } elseif ($request->sort === 'ready') {
+            $sql->where('status', 'ready');
+        } elseif ($request->sort === 'work') {
+            $sql->where('status', 'work');
+        } elseif ($request->sort === 'expired') {
+            $sql->where('status', 'expired');
+        }
+
+        $tasks = $sql->skip($request->input('skip', 0))
+            ->take($request->input('count'), 3)
+            ->get();
+
+        $tasks = $this->buildTaskHierarchy($tasks->toArray());
+
+        $paginate = (int)ceil($sql->count() / $request->count);
 
         return [
-            'checklist' => $this->confirmArray([$checklist]),
-            'tasks' => $tasks
+            'checklist' => $this->confirmArray([
+                CheckLists::where('id', $request->id)->where('user_id', Auth::id())->with('tasks')->first()
+            ]),
+            'tasks' => $tasks,
+            'paginate' => $paginate
         ];
     }
 
