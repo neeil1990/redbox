@@ -9,6 +9,8 @@ use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
 use App\Jobs\Monitoring\MonitoringChangesDateQueue;
 use App\Jobs\Monitoring\MonitoringCompetitorsQueue;
+use App\Mail\MonitoringApproveProjectMail;
+use App\Mail\MonitoringShareProjectMail;
 use App\MonitoringChangesDate;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
@@ -30,6 +32,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class MonitoringController extends Controller
 {
@@ -75,7 +78,11 @@ class MonitoringController extends Controller
         if($user == $currentUser)
             return abort('403');
 
-        return $user->monitoringProjects()->syncWithoutDetaching([$request->input('id') => ['approved' => 0]]);
+        $result = $user->monitoringProjects()->syncWithoutDetaching([$request->input('id') => ['approved' => 0]]);
+        if(count($result['attached']) > 0)
+            Mail::to($user)->send(new MonitoringShareProjectMail());
+
+        return $result;
     }
 
     public function approveOrDetachUser(Request $request)
@@ -86,8 +93,14 @@ class MonitoringController extends Controller
         /** @var User $user */
         $user = $this->user;
 
-        if($approve)
+        if($approve){
+            $project = $user->monitoringProjects()->find($id);
+            $userAdmin = $project->admin->first();
+
+            Mail::to($userAdmin)->send(new MonitoringApproveProjectMail($user, $project));
+
             return $user->monitoringProjects()->updateExistingPivot($id, ["approved" => 1]);
+        }
 
         return $user->monitoringProjects()->detach($id);
     }
