@@ -3,6 +3,14 @@
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
+            .stub-style {
+                width: 85px;
+                height: 20px;
+                font-size: 1rem;
+                letter-spacing: 1px;
+                float: left
+            }
+
             i {
                 transition: 0.3s;
                 cursor: pointer;
@@ -31,7 +39,7 @@
                 height: 32px;
             }
 
-            #tasks li {
+            #tasks li, .stubs > .example {
                 font-family: "Trebuchet MS", "Lucida Sans";
                 padding: 7px 20px;
                 border-radius: 5px;
@@ -58,7 +66,7 @@
                 border-color: #1ccfc9 !important;
             }
 
-            #tasks li.default {
+            #tasks li.default, .stubs > .default {
                 border-color: #5a6268 !important;
             }
 
@@ -170,41 +178,230 @@
 
     <div class="modal fade" id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectLabel"
          aria-hidden="true">
-        <div class="modal-dialog" style="min-width: 1100px;">
-            <div class="modal-content d-flex">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body d-flex">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="url">Url</label>
-                                <input type="text" name="url" id="url" class="form form-control"
-                                       placeholder="https://example.com или example.com">
+        <div class="modal-dialog d-flex" style="min-width: 85vw;">
+            <div class="modal-content col-9 mr-2">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="url">Url</label>
+                            <input type="text" name="url" id="url" class="form form-control"
+                                   placeholder="https://example.com или example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="tasks">Задачи</label>
+                            <div id="accordionExample">
+                                <ol id="tasks"></ol>
                             </div>
-                            <div class="form-group">
-                                <label for="tasks">Задачи</label>
-                                <div class="accordion" id="accordionExample">
-                                    <ol id="tasks"></ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <div>
+                        <button class="btn btn-secondary" id="add-new-task">Добавить задачу</button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="button" class="btn btn-success" id="save-new-checklist">
+                            {{ __('Save') }}
+                        </button>
+                        <img id="loader" src="/img/1485.gif" style="width: 30px; height: 30px; display: none">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-content col-3">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createNewProjectLabel">Шаблоны</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="accordion stubs card card-body">
+                        <div class="default example">
+                            <div>
+                                <div class="stub-style">
+                                    Название
+                                </div>
+                                <div style="float: right" class="d-flex">
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default mr-1"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="default example">
+                            <div>
+                                <div class="stub-style">
+                                    Название
+                                </div>
+                                <div style="float: right" class="d-flex">
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default mr-1"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="default example">
+                            <div>
+                                <div class="stub-style">
+                                    Название
+                                </div>
+                                <div style="float: right" class="d-flex">
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default mr-1"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ribbon-wrapper ribbon-lg">
+                            <div class="ribbon bg-primary">
+                                Выбрано
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion stubs card card-body">
+                        <div class="default example">
+                            <div>
+                                <div class="stub-style">
+                                    Название
+                                </div>
+                                <div style="float: right" class="d-flex">
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default mr-1"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="default example">
+                            <div>
+                                <div class="stub-style">
+                                    Название
+                                </div>
+                                <div style="float: right" class="d-flex">
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default mr-1"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="default example">
+                            <div>
+                                <div class="stub-style">
+                                    Название
+                                </div>
+                                <div style="float: right" class="d-flex">
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default mr-1"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                </div>
+                            </div>
+                        </div>                        <div class="default example">
+                            <div>
+                                <div class="stub-style">
+                                    Название
+                                </div>
+                                <div style="float: right" class="d-flex">
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default mr-1"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="default example">
+                            <div>
+                                <div class="stub-style">
+                                    Название
+                                </div>
+                                <div style="float: right" class="d-flex">
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default mr-1"
+                                         style="width: 35px; height: 20px; border-radius: 4px">
+                                    </div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
+                                    <div class="btn btn-sm btn-default"
+                                         style="width: 25px; height: 20px;"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer d-flex justify-content-between">
-                        <div>
-                            <button class="btn btn-default" id="add-new-task">Добавить задачу</button>
-                        </div>
-                        <div>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
-                            <button type="button" class="btn btn-success" id="save-new-checklist">
-                                {{ __('Save') }}
-                            </button>
-                            <img id="loader" src="/img/1485.gif" style="width: 30px; height: 30px; display: none">
-                        </div>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="set-stub">Применить шаблон</button>
+                </div>
             </div>
         </div>
     </div>
@@ -571,7 +768,7 @@
             })
 
             $(function () {
-                if(localStorage.getItem('SEO_CHECKLIST_COUNT') !== null){
+                if (localStorage.getItem('SEO_CHECKLIST_COUNT') !== null) {
                     $('#count').val(localStorage.getItem('SEO_CHECKLIST_COUNT'))
                 }
                 loadChecklists(0, true)
@@ -643,8 +840,7 @@
                     '                <button class="btn btn-sm btn-default" data-toggle="collapse"' +
                     '                        data-target="#collapse' + counter + '-' + subTaskCounter + '"' +
                     '                        aria-expanded="true" aria-controls="collapse' + counter + '-' + subTaskCounter + '">' +
-                    '                    <i class="fa fa-eye" data-toggle="tooltip" data-placement="top"' +
-                    '                       title="Скрыть - Показать"></i>' +
+                    '                    <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Скрыть - Показать"></i>' +
                     '                </button>' +
                     '                <button class="btn btn-sm btn-default remove-task"' +
                     '                        data-toggle="tooltip"' +
@@ -868,93 +1064,6 @@
                 })
             })
 
-            function generateNestedLists(task) {
-                let work = '<option value="in_work">В работе</option>'
-                let ready = '<option value="ready">Готово</option>'
-                let expired = '<option value="expired">Просрочен</option>'
-
-                if (task.status === 'in_work') {
-                    work = '<option value="in_work" selected>В работе</option>'
-                } else if (task.status === 'ready') {
-                    ready = '<option value="ready" selected>Готово</option>'
-                } else {
-                    expired = '<option value="expired" selected>Просрочен</option>'
-                }
-
-                let $listItem =
-                    '<li data-id="' + task.id + '">' +
-                    '    <div class="card">' +
-                    '    <div class="card-header d-flex flex-row justify-content-between"' +
-                    '         id="heading' + task.id + '">' +
-                    '        <div class="d-flex" style="width: 90%">' +
-                    '            <div class="form-group col-4">' +
-                    '                <label>Название задачи</label>' +
-                    '                <input data-id="name-' + task.id + '" type="text" data-target="' + task.id + '" class="form form-control edit-checklist" data-type="name"' +
-                    '                       value="' + task.name + '" placeholder="Название задачи">' +
-                    '            </div>' +
-                    '            <div class="form-group col-4">' +
-                    '                <label>Статус</label>' +
-                    '                <select data-id="status-' + task.id + '" data-target="' + task.id + '" class="custom custom-select edit-checklist" data-type="status">' +
-                    work +
-                    ready +
-                    expired +
-                    '               </select>' +
-                    '            </div>' +
-                    '            <div class="form-group col-4">' +
-                    '                <label>Дедлайн</label>' +
-                    '                <input data-id="deadline-' + task.id + '" ' +
-                    '                       type="datetime-local" class="form form-control edit-checklist"' +
-                    '                       data-type="deadline"' +
-                    '                       data-target="' + task.id + '"' +
-                    '                       value="' + task.deadline + '">' +
-                    '            </div>' +
-                    '        </div>' +
-                    '        <div style="display: flex; justify-content: center; align-items: center; margin-top: 13px;">' +
-                    '            <button class="btn btn-sm btn-default mr-1" data-toggle="collapse"' +
-                    '                    data-target="#collapse' + task.id + '"' +
-                    '                    aria-expanded="true" aria-controls="collapse' + task.id + '">' +
-                    '                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top"' +
-                    '                   title="Скрыть - Показать"></i>' +
-                    '            </button>' +
-                    '            <button class="btn btn-sm btn-default remove-real-task"' +
-                    '                    data-id="' + task.id + '"' +
-                    '                    data-toggle="tooltip"' +
-                    '                    data-placement="top" title="Удалить">' +
-                    '                <i class="fa fa-trash"></i>' +
-                    '            </button>' +
-                    '        </div>' +
-                    '    </div>' +
-                    '    <span class="text">' + task.name + '</span>' +
-                    '    <small class="badge badge-info"><i class="far fa-clock"></i>' + task.deadline + '</small>' +
-                    '    <div class="tools">' +
-                    '        <i class="fas fa-edit"></i>' +
-                    '        <i class="fas fa-trash-o"></i>' +
-                    '    </div>'
-
-                let $subList = '<ul id="subtasks-' + task.id + '" class="todo-list">';
-                if (task.subtasks && task.subtasks.length > 0) {
-                    task.subtasks.forEach(function (subtask) {
-                        $subList += generateNestedLists(subtask, $subList);
-                    });
-                }
-                $subList += '</ul>';
-
-                // $listItem +=
-                //     $subList +
-                //     '        <div class="card-footer">' +
-                //     '            <button class="btn btn-default add-subtask" data-id="' + task.id + '">' +
-                //     '                Добавить подзадачу' +
-                //     '            </button>' +
-                //     '        </div>' +
-                //     '    </div>' +
-                //     '</div>' +
-                //     '</li>'
-
-                $listItem += $subList + '</li>'
-
-                return $listItem
-            }
-
             function parseTree($object) {
                 let $dataId = $object.attr('data-id')
                 let object = []
@@ -965,6 +1074,7 @@
                     status: $('select[data-target="' + $dataId + '"][data-type="status"]').val(),
                     description: $('.pre-description[data-id="' + $dataId + '"]').val(),
                     deadline: $('input[data-type="deadline"][data-target="' + $dataId + '"]').val(),
+                    start: $('input[data-type="start"][data-target="' + $dataId + '"]').val(),
                 }
 
                 if ($('#subtasks-' + $dataId).children('li').length > 0) {
@@ -1220,6 +1330,8 @@
                     },
                     minHeight: 350,
                 })
+
+                refreshTooltips()
             })
 
             $(document).on('click', '.add-new-pre-subtask', function () {
@@ -1227,6 +1339,8 @@
                 let randomID = getRandomInt(999999)
 
                 $('#subtasks-' + ID).append(stub(randomID))
+
+                refreshTooltips()
 
                 $('.description').summernote({
                     callbacks: {
@@ -1258,19 +1372,20 @@
 
             function stub(id) {
                 return '<li data-id="' + id + '" class="default">' +
-                    '    <input type="text" class="form form-control hide-border d-inline" data-type="name" placeholder="Без названия" data-target="' + id + '" style="width: 350px">' +
+                    '    <input type="text" class="form form-control hide-border d-inline" data-type="name" placeholder="Без названия" data-target="' + id + '" style="width: 250px">' +
                     '    <div class="tools d-flex" style="float: right">' +
-                    '       <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '">' +
-                    '                <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
-                    '                    <option value="in_work" selected>В работе</option>' +
-                    '                    <option value="ready">Готово</option>' +
-                    '                    <option value="expired">Просрочено</option>' +
-                    '                </select>' +
-                    ' <div class="btn-group pl-2">' +
-                    '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
-                    '           <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
-                    '           <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
-                    '       </div>' +
+                    '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                    '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
+                    '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
+                    '            <option value="in_work" selected>В работе</option>' +
+                    '            <option value="ready">Готово</option>' +
+                    '            <option value="expired">Просрочено</option>' +
+                    '        </select>' +
+                    '        <div class="btn-group pl-2">' +
+                    '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
+                    '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
+                    '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
+                    '        </div>' +
                     '    </div>' +
                     '</li>' +
                     '<div class="collapse" id="collapse-description-' + id + '">' +
@@ -1327,6 +1442,76 @@
 
                 $parent.remove()
             })
+
+            $(document).on('click', '.accordion', function () {
+                $('.ribbon-wrapper.ribbon-lg').remove()
+
+                $(this).append(
+                    '<div class="ribbon-wrapper ribbon-lg">' +
+                    '    <div class="ribbon bg-primary">' +
+                    '        Выбрано' +
+                    '    </div>' +
+                    '</div>'
+                )
+            })
+
+
+            $(document).on('click', '#set-stub', function () {
+
+                let $tasks = $('.ribbon-wrapper.ribbon-lg').parents().eq(0).children('div.example')
+
+                let html = generateNestedLists($tasks)
+
+                $('#tasks').html(html)
+            })
+
+            function generateNestedLists(tasks) {
+                let html = ''
+
+                for (let index = 0; index < tasks.length; index++) {
+                    let ID = getRandomInt(9999999)
+                    let work = '<option value="in_work">В работе</option>'
+                    let ready = '<option value="ready">Готово</option>'
+                    let expired = '<option value="expired">Просрочено</option>'
+
+                    let $listItem =
+                        '<li data-id="' + ID + '">' +
+                        '    <input type="text" class="form form-control hide-border d-inline edit-checklist" data-type="name" data-target="' + ID + '" style="width: 350px">' +
+                        '    <div class="tools d-flex" style="float: right">' +
+                        '       <input class="form form-control hide-border edit-checklist" data-type="start" type="datetime-local" data-target="' + ID + '">' +
+                        '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + ID + '">' +
+                        '                <select data-id="status-' + ID + '" data-target="' + ID + '" class="custom custom-select edit-checklist" data-type="status">' +
+                        work +
+                        ready +
+                        expired +
+                        '               </select>' +
+                        '       <div class="btn-group pl-2">' +
+                        '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + ID + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + ID + '"><i class="fa fa-eye"></i></button>' +
+                        '           <button class="btn btn-sm btn-default add-new-subtask" data-id="' + ID + '"><i class="fa fa-plus"></i></button>' +
+                        '           <button class="btn btn-sm btn-default remove-real-task" data-id="' + ID + '"><i class="fa fa-trash"></i></button>' +
+                        '       </div>' +
+                        '    </div>' +
+                        '</li>' +
+                        '<div class="collapse" id="collapse-description-' + ID + '">' +
+                        '    <div class="card card-body"><textarea class="description" data-id="' + ID + '"></textarea></div>' +
+                        '</div>'
+
+
+                    let $subList = '<ol id="subtasks-' + ID + '" class="mt-3">';
+
+                    for (let i = 0; i < tasks.length; i++) {
+                        if ($(tasks[index + i]).hasClass('children')) {
+                            $subList += generateNestedLists([{}]);
+                        } else {
+                            break;
+                        }
+                    }
+                    $listItem += $subList + '</ol>'
+                    html += $listItem
+                }
+
+                return html
+            }
         </script>
     @endslot
 @endcomponent

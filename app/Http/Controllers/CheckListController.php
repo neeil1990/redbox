@@ -37,8 +37,7 @@ class CheckListController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'url' => 'required|
-            ',
+            'url' => 'required',
         ], [
             'url.required' => __('A link to the landing page is required.'),
         ]);
@@ -372,7 +371,8 @@ class CheckListController extends Controller
                 'name' => $task['name'] ?? 'Без названия',
                 'status' => $date->isPast() ? 'expired' : $task['status'],
                 'description' => $task['description'] ?? '',
-                'deadline' => $date->toDateTimeString(),
+                'deadline' => isset($task['deadline']) ? Carbon::parse($task['deadline'])->toDateTimeString() : Carbon::now()->toDateTimeString(),
+                'date_start' => isset($task['start']) ? Carbon::parse($task['start'])->toDateTimeString() : Carbon::now()->toDateTimeString(),
             ];
 
             if (isset($taskId)) {

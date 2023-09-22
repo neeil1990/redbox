@@ -403,7 +403,10 @@
                     '<li data-id="' + task.id + '" class="' + task.status + '">' +
                     '    <input type="text" class="form form-control hide-border d-inline edit-checklist" data-type="name" data-target="' + task.id + '" style="width: 350px" value="' + task.name + '">' +
                     '    <div class="tools d-flex" style="float: right">' +
-                    '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + task.deadline + '">' +
+                    '       <input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + task.date_start + '" ' +
+                    '       data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                    '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + task.deadline + '" ' +
+                    '       data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
                     '                <select data-id="status-' + task.id + '" data-target="' + task.id + '" class="custom custom-select edit-checklist" data-type="status">' +
                     work +
                     ready +
