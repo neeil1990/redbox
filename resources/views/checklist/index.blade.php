@@ -221,183 +221,64 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="accordion stubs card card-body">
-                        <div class="default example">
-                            <div>
+                <div class="modal-body" id="stubs-place">
+                    <ol class="accordion stubs card card-body">
+                        <li class="default example">
+                            <div style="height: 20px;">
                                 <div class="stub-style">
                                     Название
                                 </div>
                                 <div style="float: right" class="d-flex">
                                     <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default mr-1"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
+                                         style="width: 35px; height: 20px; border-radius: 4px"></div>
+                                    <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="default example">
-                            <div>
+                        </li>
+                        <ol class="accordion stubs">
+                            <li class="default example">
+                                <div style="height: 20px;">
+                                    <div class="stub-style">
+                                        Название
+                                    </div>
+                                    <div style="float: right" class="d-flex">
+                                        <div class="btn btn-sm btn-default"
+                                             style="width: 35px; height: 20px; border-radius: 4px"></div>
+                                        <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ol>
+                        <li class="default example">
+                            <div style="height: 20px;">
                                 <div class="stub-style">
                                     Название
                                 </div>
                                 <div style="float: right" class="d-flex">
                                     <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default mr-1"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
+                                         style="width: 35px; height: 20px; border-radius: 4px"></div>
+                                    <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="default example">
-                            <div>
+                        </li>
+                        <li class="default example">
+                            <div style="height: 20px;">
                                 <div class="stub-style">
                                     Название
                                 </div>
                                 <div style="float: right" class="d-flex">
                                     <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default mr-1"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
+                                         style="width: 35px; height: 20px; border-radius: 4px"></div>
+                                    <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>
                                 </div>
                             </div>
-                        </div>
+                        </li>
                         <div class="ribbon-wrapper ribbon-lg">
                             <div class="ribbon bg-primary">
                                 Выбрано
                             </div>
                         </div>
-                    </div>
-                    <div class="accordion stubs card card-body">
-                        <div class="default example">
-                            <div>
-                                <div class="stub-style">
-                                    Название
-                                </div>
-                                <div style="float: right" class="d-flex">
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default mr-1"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="default example">
-                            <div>
-                                <div class="stub-style">
-                                    Название
-                                </div>
-                                <div style="float: right" class="d-flex">
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default mr-1"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="default example">
-                            <div>
-                                <div class="stub-style">
-                                    Название
-                                </div>
-                                <div style="float: right" class="d-flex">
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default mr-1"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                </div>
-                            </div>
-                        </div>                        <div class="default example">
-                            <div>
-                                <div class="stub-style">
-                                    Название
-                                </div>
-                                <div style="float: right" class="d-flex">
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default mr-1"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="default example">
-                            <div>
-                                <div class="stub-style">
-                                    Название
-                                </div>
-                                <div style="float: right" class="d-flex">
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default mr-1"
-                                         style="width: 35px; height: 20px; border-radius: 4px">
-                                    </div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 25px; height: 20px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </ol>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" id="set-stub">Применить шаблон</button>
@@ -1421,6 +1302,8 @@
                         $('#createNewProject > div > div > div.modal-footer.d-flex.justify-content-between > div:nth-child(2) > button.btn.btn-default').trigger('click')
                         $('#url').val('')
                         $('#tasks').html('')
+
+                        loadChecklists($('#pagination > li.active > .page-link').attr('data-id'))
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -1457,60 +1340,112 @@
 
 
             $(document).on('click', '#set-stub', function () {
+                let ID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
+                $('#tasks').html(generateTasks(basicTasks[ID]))
 
-                let $tasks = $('.ribbon-wrapper.ribbon-lg').parents().eq(0).children('div.example')
-
-                let html = generateNestedLists($tasks)
-
-                $('#tasks').html(html)
+                refreshTooltips()
             })
 
-            function generateNestedLists(tasks) {
+            function generateTasks(tasks) {
                 let html = ''
-
-                for (let index = 0; index < tasks.length; index++) {
+                $.each(tasks, function (index, task) {
                     let ID = getRandomInt(9999999)
-                    let work = '<option value="in_work">В работе</option>'
-                    let ready = '<option value="ready">Готово</option>'
-                    let expired = '<option value="expired">Просрочено</option>'
 
-                    let $listItem =
-                        '<li data-id="' + ID + '">' +
-                        '    <input type="text" class="form form-control hide-border d-inline edit-checklist" data-type="name" data-target="' + ID + '" style="width: 350px">' +
+                    let $listItem = '<li data-id="' + ID + '" class="default">' +
+                        '    <input type="text" class="form form-control hide-border d-inline" data-type="name" placeholder="Без названия" data-target="' + ID + '" style="width: 250px">' +
                         '    <div class="tools d-flex" style="float: right">' +
-                        '       <input class="form form-control hide-border edit-checklist" data-type="start" type="datetime-local" data-target="' + ID + '">' +
-                        '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + ID + '">' +
-                        '                <select data-id="status-' + ID + '" data-target="' + ID + '" class="custom custom-select edit-checklist" data-type="status">' +
-                        work +
-                        ready +
-                        expired +
-                        '               </select>' +
-                        '       <div class="btn-group pl-2">' +
-                        '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + ID + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + ID + '"><i class="fa fa-eye"></i></button>' +
-                        '           <button class="btn btn-sm btn-default add-new-subtask" data-id="' + ID + '"><i class="fa fa-plus"></i></button>' +
-                        '           <button class="btn btn-sm btn-default remove-real-task" data-id="' + ID + '"><i class="fa fa-trash"></i></button>' +
-                        '       </div>' +
+                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
+                        '        <select data-id="status-' + ID + '" data-target="' + ID + '" class="custom custom-select" data-type="status">' +
+                        '            <option value="in_work" selected>В работе</option>' +
+                        '            <option value="ready">Готово</option>' +
+                        '            <option value="expired">Просрочено</option>' +
+                        '        </select>' +
+                        '        <div class="btn-group pl-2">' +
+                        '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + ID + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + ID + '"><i class="fa fa-eye"></i></button>' +
+                        '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + ID + '"><i class="fa fa-plus"></i></button>' +
+                        '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
+                        '        </div>' +
                         '    </div>' +
                         '</li>' +
                         '<div class="collapse" id="collapse-description-' + ID + '">' +
-                        '    <div class="card card-body"><textarea class="description" data-id="' + ID + '"></textarea></div>' +
+                        '    <div class="card card-body"><textarea class="pre-description" data-id="' + ID + '"></textarea></div>' +
                         '</div>'
-
 
                     let $subList = '<ol id="subtasks-' + ID + '" class="mt-3">';
 
-                    for (let i = 0; i < tasks.length; i++) {
-                        if ($(tasks[index + i]).hasClass('children')) {
-                            $subList += generateNestedLists([{}]);
-                        } else {
-                            break;
-                        }
+                    if (task.subtasks) {
+                        $subList += generateTasks(task.subtasks);
                     }
                     $listItem += $subList + '</ol>'
                     html += $listItem
-                }
+                })
 
                 return html
+            }
+
+            let basicTasks = [
+                [
+                    {"id": 290},
+                    {"id": 291},
+                    {"id": 292}
+                ],
+                [
+                    {"id": 290, "subtasks": [{"id": 295}, {"id": 296}]},
+                    {"id": 291},
+                    {"id": 292}
+                ]
+            ]
+
+            renderStubs()
+
+            function renderStubs() {
+                let html = ''
+
+                $.each(basicTasks, function (index, tasks) {
+                    html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
+                    html += generateNestedLists(tasks, index === 0)
+                    html += '</ol>'
+                });
+
+                $('#stubs-place').html(html)
+            }
+
+            function generateNestedLists(tasks, ribbion = false) {
+                let $listItem = ''
+                $.each(tasks, function (k, task) {
+                    $listItem +=
+                        ' <li class="default example">' +
+                        '     <div style="height: 20px;">' +
+                        '         <div class="stub-style">' +
+                        '             Название' +
+                        '         </div>' +
+                        '         <div style="float: right" class="d-flex">' +
+                        '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
+                        '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
+                        '         </div>' +
+                        '     </div>' +
+                        ' </li>'
+
+                    let $subList = '<ol class="accordion stubs">';
+                    if (task.subtasks && task.subtasks.length > 0) {
+                        task.subtasks.forEach(function (subtask) {
+                            $subList += generateNestedLists(subtask);
+                        });
+                    }
+                    $subList += '</ol>';
+                    $listItem += $subList
+                });
+
+                if (ribbion) {
+                    $listItem += '<div class="ribbon-wrapper ribbon-lg">' +
+                        '    <div class="ribbon bg-primary">' +
+                        '        Выбрано' +
+                        '    </div>' +
+                        '</div>'
+                }
+
+                return $listItem
             }
         </script>
     @endslot

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -54,8 +55,6 @@ class CheckListController extends Controller
             ], 422);
         }
 
-        DB::beginTransaction();
-
         try {
             $client = new Client();
             $response = $client->get($fullUrl);
@@ -68,11 +67,17 @@ class CheckListController extends Controller
                     'url' => $fullUrl,
                 ]);
 
+                Log::debug('tasks', [$request->input('tasks')]);
                 $this->createSubTasks($request->input('tasks'), $project->id);
             }
 
             DB::commit();
         } catch (Throwable $e) {
+            Log::debug('error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             DB::rollback();
         }
 
@@ -263,9 +268,14 @@ class CheckListController extends Controller
 
         $tasks = $sql->skip($request->input('skip', 0))
             ->take($request->input('count'), 3)
-            ->get();
+            ->get()
+            ->toArray();
 
-        $tasks = $this->buildTaskHierarchy($tasks->toArray());
+        foreach ($tasks as $task) {
+            $tasks = array_merge($tasks, ChecklistTasks::where('task_id', $task['id'])->get()->toArray());
+        }
+
+        $tasks = $this->buildTaskHierarchy($tasks);
 
         $paginate = (int)ceil($sql->count() / $request->count);
 
@@ -362,6 +372,7 @@ class CheckListController extends Controller
 
     private function createSubTasks($tasks, $projectId, $taskId = null)
     {
+        Log::debug('tasks', [$tasks]);
         foreach ($tasks as $task) {
             $task = $task[0] ?? $task;
             $date = Carbon::parse($task['deadline']);

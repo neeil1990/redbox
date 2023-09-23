@@ -121,7 +121,7 @@
         </div>
         <div class="card-body row">
             <div class="form-group col-2">
-                <label for="count">Количество записей</label>
+                <label for="count">Количество задач</label>
                 <select name="count" id="count" class="custom custom-select">
                     <option value="3">3</option>
                     <option value="5">5</option>
