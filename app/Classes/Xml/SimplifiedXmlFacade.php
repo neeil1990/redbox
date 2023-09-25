@@ -36,7 +36,6 @@ class SimplifiedXmlFacade extends XmlFacade
     public function getXMLResponse(string $searchEngine = 'yandex')
     {
         $this->attempt += 1;
-
         if ($this->attempt >= 7) {
             return 'Превышен лимит попыток';
         }
@@ -45,15 +44,7 @@ class SimplifiedXmlFacade extends XmlFacade
             $result = $this->sendRequest($searchEngine);
 
             if (isset($result['response']['results']['grouping']['group'])) {
-                $this->setAttempt();
-
                 return $this->parseResult($result['response']['results']['grouping']['group']);
-
-            } else if (
-                isset($result['response']['error']) &&
-                $result['response']['error'] === 'Для заданного поискового запроса отсутствуют результаты поиска.'
-            ) {
-                return ['Отсутствуют результаты поиска'];
             }
 
         } catch (Throwable $e) {
@@ -77,11 +68,7 @@ class SimplifiedXmlFacade extends XmlFacade
             $this->url = $this->prepareGoogleRequest();
         }
 
-        try {
-            $response = file_get_contents($this->url);
-        } catch (Throwable $exception) {
-            return $this->sendRequest($searchEngine);
-        }
+        $response = file_get_contents($this->url);
         $xml = $this->load($response);
 
         return json_decode(json_encode($xml), true);
