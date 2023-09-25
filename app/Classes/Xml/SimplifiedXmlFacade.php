@@ -61,9 +61,9 @@ class SimplifiedXmlFacade extends XmlFacade
                 $e->getMessage(),
                 $e->getLine(),
                 $e->getFile(),
-                $this->query,
-                $this->path
             ]);
+
+            $this->getXMLResponse($searchEngine);
         }
 
         return $this->getXMLResponse($searchEngine);
