@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\CheckListProjectLabels;
 use App\CheckLists;
 use App\CheckListsLabels;
+use App\ChecklistStubs;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\User;
@@ -67,8 +68,14 @@ class CheckListController extends Controller
                     'url' => $fullUrl,
                 ]);
 
-                Log::debug('tasks', [$request->input('tasks')]);
                 $this->createSubTasks($request->input('tasks'), $project->id);
+
+                if ($request->input('newStub', false)) {
+                    ChecklistStubs::create([
+                        'user_id' => Auth::id(),
+                        'tree' => json_encode($request->input('tasks'))
+                    ]);
+                }
             }
 
             DB::commit();
@@ -370,9 +377,29 @@ class CheckListController extends Controller
         return 'Успешно';
     }
 
+    public function getStubs()
+    {
+        return ChecklistStubs::where('user_id', Auth::id())
+            ->orWhere('classic', 1)
+            ->get();
+    }
+
+    public function getClassicStubs()
+    {
+        return ChecklistStubs::Where('classic', 1)->get();
+    }
+
+    public function removeStub(ChecklistStubs $stub): string
+    {
+        if ($stub->user_id === Auth::id() || User::isUserAdmin()) {
+            $stub->delete();
+        }
+
+        return 'Успешно';
+    }
+
     private function createSubTasks($tasks, $projectId, $taskId = null)
     {
-        Log::debug('tasks', [$tasks]);
         foreach ($tasks as $task) {
             $task = $task[0] ?? $task;
             $date = Carbon::parse($task['deadline']);

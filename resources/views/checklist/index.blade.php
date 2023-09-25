@@ -78,6 +78,10 @@
             #tasks {
                 padding-left: 0;
             }
+
+            .accordion.stubs.card.card-body {
+                cursor: pointer;
+            }
         </style>
     @endslot
 
@@ -97,6 +101,13 @@
                            href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile"
                            aria-selected="false">Архив</a>
                     </li>
+                    @if(\App\User::isUserAdmin())
+                        <li class="nav-item">
+                            <a class="nav-link" id="classic-stubs" data-toggle="pill"
+                               href="#classic-tabs-stub" role="tab" aria-controls="classic-tabs-stub"
+                               aria-selected="false">Базовые шаблоны</a>
+                        </li>
+                    @endif
                 </ul>
             </div>
             <div class="card-body">
@@ -149,6 +160,13 @@
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-profile" role="tabpanel"
                          aria-labelledby="archived-checklists"></div>
+                    @if(\App\User::isUserAdmin())
+                        <div class="tab-pane fade" id="classic-tabs-stub" role="tabpanel"
+                             aria-labelledby="classic-stubs">
+                            <button class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Добавить новый шаблон</button>
+                            <div id="classic-stubs-place" class="d-flex row"></div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -194,6 +212,13 @@
                                    placeholder="https://example.com или example.com">
                         </div>
                         <div class="form-group">
+                            <label for="save-stub">Сохранить как новый шаблон</label>
+                            <select name="save-new-stub" id="save-new-stub" class="custom-select">
+                                <option value="0" selected>Нет</option>
+                                <option value="1">Да</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="tasks">Задачи</label>
                             <div id="accordionExample">
                                 <ol id="tasks"></ol>
@@ -221,64 +246,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="stubs-place">
-                    <ol class="accordion stubs card card-body">
-                        <li class="default example">
-                            <div style="height: 20px;">
-                                <div class="stub-style">
-                                    Название
-                                </div>
-                                <div style="float: right" class="d-flex">
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px"></div>
-                                    <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>
-                                </div>
-                            </div>
-                        </li>
-                        <ol class="accordion stubs">
-                            <li class="default example">
-                                <div style="height: 20px;">
-                                    <div class="stub-style">
-                                        Название
-                                    </div>
-                                    <div style="float: right" class="d-flex">
-                                        <div class="btn btn-sm btn-default"
-                                             style="width: 35px; height: 20px; border-radius: 4px"></div>
-                                        <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ol>
-                        <li class="default example">
-                            <div style="height: 20px;">
-                                <div class="stub-style">
-                                    Название
-                                </div>
-                                <div style="float: right" class="d-flex">
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px"></div>
-                                    <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="default example">
-                            <div style="height: 20px;">
-                                <div class="stub-style">
-                                    Название
-                                </div>
-                                <div style="float: right" class="d-flex">
-                                    <div class="btn btn-sm btn-default"
-                                         style="width: 35px; height: 20px; border-radius: 4px"></div>
-                                    <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>
-                                </div>
-                            </div>
-                        </li>
-                        <div class="ribbon-wrapper ribbon-lg">
-                            <div class="ribbon bg-primary">
-                                Выбрано
-                            </div>
-                        </div>
-                    </ol>
+                <div class="modal-body" id="stubs-place" style="overflow: auto;">
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" id="set-stub">Применить шаблон</button>
@@ -442,6 +410,28 @@
         </div>
     </div>
 
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Добавить новый шаблон</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="classic-stabs-place"></div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary">{{ __('Добавить нового родителя') }}</button>
+                    <div>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="button" class="btn btn-success">{{ __('Save') }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @slot('js')
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
@@ -935,11 +925,15 @@
                     url: '/remove-checklist/' + removedButton.attr('data-id'),
                     success: function (message) {
                         successMessage(message)
+                        let $targetElement = removedButton.parents().eq(4)
 
-                        removedButton.parents().eq(4).hide(300)
-                        setTimeout(() => {
-                            removedButton.parents().eq(4).remove()
-                        }, 301)
+                        $targetElement.animate({
+                            width: 0,
+                            opacity: 0
+                        }, 1000, function () {
+                            $(this).remove();
+                        });
+
                         $('#removeModal > div > div > div.modal-footer > button.btn.btn-default').trigger('click')
                     }
                 })
@@ -1292,6 +1286,7 @@
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         url: $('#url').val(),
                         tasks: tasks,
+                        newStub: $('#save-new-stub').val()
                     },
                     success: function (message) {
                         loadChecklists()
@@ -1303,7 +1298,7 @@
                         $('#url').val('')
                         $('#tasks').html('')
 
-                        loadChecklists($('#pagination > li.active > .page-link').attr('data-id'))
+                        loadChecklists()
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -1326,30 +1321,36 @@
                 $parent.remove()
             })
 
-            $(document).on('click', '.accordion', function () {
-                $('.ribbon-wrapper.ribbon-lg').remove()
+            $(document).on('click', '.accordion.stubs.card.card-body', function (e) {
+                if (!$(e.target).hasClass('remove-stub')) {
+                    $('.ribbon-wrapper.ribbon-lg').remove();
 
-                $(this).append(
-                    '<div class="ribbon-wrapper ribbon-lg">' +
-                    '    <div class="ribbon bg-primary">' +
-                    '        Выбрано' +
-                    '    </div>' +
-                    '</div>'
-                )
-            })
-
+                    $(this).append(
+                        '<div class="ribbon-wrapper ribbon-lg">' +
+                        '    <div class="ribbon bg-primary">' +
+                        '        Выбрано' +
+                        '    </div>' +
+                        '</div>'
+                    );
+                }
+            });
 
             $(document).on('click', '#set-stub', function () {
-                let ID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
-                $('#tasks').html(generateTasks(basicTasks[ID]))
+                let basicID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
 
-                refreshTooltips()
+                if (basicID === undefined) {
+                    errorMessage(['Шаблон не выбран'])
+                } else {
+                    $('#tasks').html(generateTasks(JSON.parse(basicTasks[basicID].tree)))
+                    refreshTooltips()
+                }
             })
 
             function generateTasks(tasks) {
                 let html = ''
                 $.each(tasks, function (index, task) {
                     let ID = getRandomInt(9999999)
+                    task = task[0] ?? task
 
                     let $listItem = '<li data-id="' + ID + '" class="default">' +
                         '    <input type="text" class="form form-control hide-border d-inline" data-type="name" placeholder="Без названия" data-target="' + ID + '" style="width: 250px">' +
@@ -1374,6 +1375,7 @@
 
                     let $subList = '<ol id="subtasks-' + ID + '" class="mt-3">';
 
+                    console.log(task)
                     if (task.subtasks) {
                         $subList += generateTasks(task.subtasks);
                     }
@@ -1384,36 +1386,85 @@
                 return html
             }
 
-            let basicTasks = [
-                [
-                    {"id": 290},
-                    {"id": 291},
-                    {"id": 292}
-                ],
-                [
-                    {"id": 290, "subtasks": [{"id": 295}, {"id": 296}]},
-                    {"id": 291},
-                    {"id": 292}
-                ]
-            ]
+            let basicTasks
+            $.ajax({
+                type: 'get',
+                url: "{{ route('checklist.stubs') }}",
+                data: {
+                    labelID: labelID,
+                    checkListID: checkListID
+                },
+                success: function (response) {
+                    basicTasks = response
+                    renderStubs(response)
+                },
+                error: function (response) {
+                    errorMessage(response.responseJSON.errors)
+                }
+            })
 
-            renderStubs()
-
-            function renderStubs() {
+            function renderStubs(basicTasks) {
                 let html = ''
 
                 $.each(basicTasks, function (index, tasks) {
+                    let button = ''
+                    if (!tasks.classic) {
+                        button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
+                    }
+
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
-                    html += generateNestedLists(tasks, index === 0)
+                    html += generateNestedLists(JSON.parse(tasks.tree), index === 0)
+                    html += button
                     html += '</ol>'
                 });
 
                 $('#stubs-place').html(html)
             }
 
+            $(document).on('click', '.remove-stub', function () {
+                let ID = $(this).attr('data-id')
+                let $parent = $(this).parent()
+
+                if (confirm('Вы действительно хотите удалить ваш шаблон?')) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/remove-checklist-stub/' + ID,
+                        success: function (message) {
+                            successMessage(message)
+                            $parent.remove()
+                        },
+                        error: function (response) {
+                            errorMessage(response.responseJSON.errors)
+                        }
+                    })
+                }
+            })
+
+            $(document).on('click', '#classic-stubs', function () {
+                $('#custom-tabs-three-profile').html('')
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('checklist.classic.stubs') }}",
+                    success: function (tasks) {
+                        let html = ''
+                        $.each(tasks, function (index, tasks) {
+                            let button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
+                            html += '<ol class="stubs card card-body col-3 mr-3 mt-4" data-id="' + index + '">'
+                            html += generateNestedLists(JSON.parse(tasks.tree))
+                            html += button
+                            html += '</ol>'
+                        });
+
+
+                        $('#classic-stubs-place').html(html)
+                    }
+                })
+            })
+
             function generateNestedLists(tasks, ribbion = false) {
                 let $listItem = ''
                 $.each(tasks, function (k, task) {
+                    task = task[0] ?? task
                     $listItem +=
                         ' <li class="default example">' +
                         '     <div style="height: 20px;">' +

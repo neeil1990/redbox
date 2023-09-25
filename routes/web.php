@@ -457,4 +457,8 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/remove-checklist-task/', 'CheckListController@removeTask')->name('remove.checklist.task');
     Route::post('/add-new-tasks/', 'CheckListController@addNewTasks')->name('add.new.tasks.in.checklist');
+
+    Route::get('/get-checklists-stubs', 'CheckListController@getStubs')->name('checklist.stubs');
+    Route::get('/remove-checklist-stub/{stub}', 'CheckListController@removeStub')->name('checklist.remove.stub');
+    Route::get('/get-checklists-classic-stubs', 'CheckListController@getClassicStubs')->name('checklist.classic.stubs');
 });
