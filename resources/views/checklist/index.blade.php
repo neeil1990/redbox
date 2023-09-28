@@ -138,9 +138,20 @@
                                     <label for="name">URL проекта</label>
                                     <input type="text" id="name" name="name" class="form form-control">
                                 </div>
-
-                                <div class="col-8 d-flex justify-content-end align-items-center"
+                                <div class="d-flex col-8 justify-content-end align-items-center"
                                      style="margin-top: 10px;">
+                                    <button class="btn btn-secondary relevance-star mr-1" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                        <i class="fa-solid fa-star" data-toggle="tooltip" data-placement="top" title="Анализ релевантности"></i>
+                                    </button>
+                                    <button class="btn btn-secondary position-star mr-1" data-toggle="modal" data-target="#exampleModal">
+                                        <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="top" title="Мониторинг позиций"></i>
+                                    </button>
+                                    <button class="btn btn-secondary metatag-star mr-1" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                        <i class="fas fa-heading" data-toggle="tooltip" data-placement="top" title="Мониторинг метатегов"></i>
+                                    </button>
+
                                     <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
                                             data-target="#modalLabel">
                                         Управление метками
@@ -154,6 +165,29 @@
                             </div>
                         </div>
 
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Добавление проектов</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body" id="place-from-projects"></div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" id="add-multiply-projects">
+                                            Добавить
+                                        </button>
+                                        <button type="button" class="btn btn-default" id="close-multiply-projects" data-dismiss="modal">
+                                            Закрыть
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div id="lists" class="row d-flex"></div>
 
                         <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
@@ -163,7 +197,6 @@
                     @if(\App\User::isUserAdmin())
                         <div class="tab-pane fade" id="classic-tabs-stub" role="tabpanel"
                              aria-labelledby="classic-stubs">
-                            <button class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Добавить новый шаблон</button>
                             <div id="classic-stubs-place" class="d-flex row"></div>
                         </div>
                     @endif
@@ -206,13 +239,27 @@
                 </div>
                 <div class="modal-body d-flex">
                     <div class="col-12">
-                        <div class="form-group">
-                            <label for="url">Url</label>
+                        @if(\App\User::isUserAdmin())
+                            <div class="form-group card">
+                                <div class="card-body">
+                                    <label for="save-basic-stub">Сохранить как базовы шаблон</label>
+                                    <span class="text-muted">(Эта настройка видна только админам)</span>
+                                    <select name="save-basic-stub" id="save-basic-stub" class="custom-select">
+                                        <option value="0" selected>Нет</option>
+                                        <option value="1">Да</option>
+                                        <option value="basic">Сохранить только новый базовый шаблон</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="form-group block-from-hide">
+                            <label for="url">Ссылка</label>
                             <input type="text" name="url" id="url" class="form form-control"
                                    placeholder="https://example.com или example.com">
                         </div>
-                        <div class="form-group">
-                            <label for="save-stub">Сохранить как новый шаблон</label>
+                        <div class="form-group block-from-hide">
+                            <label for="save-stub">Сохранить как новый личный шаблон</label>
                             <select name="save-new-stub" id="save-new-stub" class="custom-select">
                                 <option value="0" selected>Нет</option>
                                 <option value="1">Да</option>
@@ -332,8 +379,8 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <div class="mt-3">
-                                    <button type="button" class="btn btn-secondary" id="create-new-relations">
+                                <div class="mt-3 d-flex justify-content-end">
+                                    <button type="button" class="btn btn-secondary mr-1" id="create-new-relations">
                                         Сохранить
                                     </button>
                                     <button type="button" data-dismiss="modal" class="btn btn-default">
@@ -376,9 +423,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button id="create-label" class="btn btn-secondary">
-                                    Создать метку
-                                </button>
+                                <button id="create-label" class="btn btn-secondary">Создать метку</button>
                                 <button type="button" data-dismiss="modal" class="btn btn-default">Закрыть</button>
                             </div>
                         </div>
@@ -410,28 +455,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Добавить новый шаблон</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div id="classic-stabs-place"></div>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-secondary">{{ __('Добавить нового родителя') }}</button>
-                    <div>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
-                        <button type="button" class="btn btn-success">{{ __('Save') }}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     @slot('js')
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
@@ -627,6 +650,22 @@
             })
 
             $('#add-new-checklist').on('click', function () {
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('checklist.stubs') }}",
+                    data: {
+                        labelID: labelID,
+                        checkListID: checkListID
+                    },
+                    success: function (response) {
+                        basicTasks = response
+                        renderStubs(response)
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
+
                 $('#createNewProject').addClass('d-flex')
 
                 if ($('#tasks').children('li').length === 0) {
@@ -1136,18 +1175,6 @@
                         '                </div>' +
                         '            </div>' +
                         '            <div class="d-flex col-4 flex-column align-items-end">' +
-                        '                <div>' +
-                        '                    <i class="fa-solid fa-star" data-toggle="tooltip" data-placement="top"' +
-                        '                       title="Анализ релевантности"></i>' +
-                        '                </div>' +
-                        '                <div style="margin-right: 1px">' +
-                        '                    <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="top"' +
-                        '                       title="Мониторинг позиций"></i>' +
-                        '                </div>' +
-                        '                <div style="margin-right: 3px">' +
-                        '                    <i class="fas fa-heading" data-toggle="tooltip" data-placement="top"' +
-                        '                       title="Мониторинг метатегов"></i>' +
-                        '                </div>' +
                         '            </div>' +
                         '        </div>' +
                         '        <div class="row mt-3">'
@@ -1269,6 +1296,14 @@
                     '<ol id="subtasks-' + id + '" class="mt-3" ></ol>'
             }
 
+            $('#save-basic-stub').on('click', function () {
+                if ($(this).val() === 'basic') {
+                    $('.block-from-hide').hide(300)
+                } else {
+                    $('.block-from-hide').show(300)
+                }
+            })
+
             $(document).on('click', '#save-new-checklist', function () {
                 $(this).attr('disabled', true)
                 $('#loader').show(300)
@@ -1286,7 +1321,8 @@
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         url: $('#url').val(),
                         tasks: tasks,
-                        newStub: $('#save-new-stub').val()
+                        newStub: $('#save-new-stub').val(),
+                        saveBasicStub: $('#save-basic-stub').val()
                     },
                     success: function (message) {
                         loadChecklists()
@@ -1375,7 +1411,6 @@
 
                     let $subList = '<ol id="subtasks-' + ID + '" class="mt-3">';
 
-                    console.log(task)
                     if (task.subtasks) {
                         $subList += generateTasks(task.subtasks);
                     }
@@ -1387,31 +1422,20 @@
             }
 
             let basicTasks
-            $.ajax({
-                type: 'get',
-                url: "{{ route('checklist.stubs') }}",
-                data: {
-                    labelID: labelID,
-                    checkListID: checkListID
-                },
-                success: function (response) {
-                    basicTasks = response
-                    renderStubs(response)
-                },
-                error: function (response) {
-                    errorMessage(response.responseJSON.errors)
-                }
-            })
 
             function renderStubs(basicTasks) {
                 let html = ''
 
                 $.each(basicTasks, function (index, tasks) {
                     let button = ''
+                    let classic = ''
                     if (!tasks.classic) {
                         button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
+                    } else {
+                        classic = '<span class="text-muted">Базовый шаблон</span>'
                     }
 
+                    html += classic
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
                     html += generateNestedLists(JSON.parse(tasks.tree), index === 0)
                     html += button
@@ -1449,7 +1473,7 @@
                         let html = ''
                         $.each(tasks, function (index, tasks) {
                             let button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
-                            html += '<ol class="stubs card card-body col-3 mr-3 mt-4" data-id="' + index + '">'
+                            html += '<ol class="stubs card card-body col-3 mt-4" data-id="' + index + '">'
                             html += generateNestedLists(JSON.parse(tasks.tree))
                             html += button
                             html += '</ol>'
@@ -1457,6 +1481,88 @@
 
 
                         $('#classic-stubs-place').html(html)
+                    }
+                })
+            })
+
+            $(document).on('click', '.relevance-star', function () {
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('checklist.relevance.projects') }}",
+                    success: function (projects) {
+                        let html = ''
+
+                        $.each(projects, function (k, v) {
+                            html +=
+                                '<div class="new-project-variable" data-target="' + v + '">'
+                                + v +
+                                '    <button class="btn btn-sm btn-default remove-variable"><i class="fa fa-trash"></i></button>' +
+                                '</div>'
+                        })
+
+                        if (html === '') {
+                            $('#place-from-projects').html('Нечего добавлять')
+                        } else {
+                            $('#place-from-projects').html('<p>Проекты которые ещё не были добавлены:</p>' + html)
+                        }
+                    }
+                })
+            })
+
+            $(document).on('click', '.position-star', function (){
+                $('#place-from-projects').html('Наши проекты мониторинга позиций не привязаны к пользователям и невозможно выявить какие проекты пользователь ещё не добавлял')
+            })
+
+            $(document).on('click', '.metatag-star', function () {
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('checklist.metatags.projects') }}",
+                    success: function (projects) {
+                        let html = ''
+
+                        $.each(projects, function (k, v) {
+                            html +=
+                                '<div class="new-project-variable" data-target="' + v + '">'
+                                + v +
+                                '    <button class="btn btn-sm btn-default remove-variable"><i class="fa fa-trash"></i></button>' +
+                                '</div>'
+                        })
+
+                        if (html === '') {
+                            $('#place-from-projects').html('Нечего добавлять')
+                        } else {
+                            $('#place-from-projects').html('<p>Проекты которые ещё не были добавлены:</p>' + html)
+                        }
+                    }
+                })
+            })
+
+
+            $(document).on('click', '.remove-variable', function () {
+                $(this).parent().remove()
+            })
+
+            $(document).on('click', '#add-multiply-projects', function () {
+                let urls = []
+
+                $.each($('.new-project-variable'), function () {
+                    urls.push($(this).attr('data-target'))
+                })
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('checklist.multiply.create') }}",
+                    data: {
+                        urls: urls
+                    },
+                    success: function (message) {
+                        successMessage(message)
+                        loadChecklists($('.page-item.active > .page-link').attr('data-id'))
+
+                        $('#close-multiply-projects').trigger('click')
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
                     }
                 })
             })

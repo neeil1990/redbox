@@ -8,6 +8,8 @@ use App\CheckListsLabels;
 use App\ChecklistStubs;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
+use App\MetaTag;
+use App\ProjectRelevanceHistory;
 use App\User;
 use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
@@ -38,6 +40,15 @@ class CheckListController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->input('saveBasicStub', false) === 'basic' && User::isUserAdmin()) {
+            ChecklistStubs::create([
+                'user_id' => Auth::id(),
+                'tree' => json_encode($request->input('tasks')),
+                'classic' => 1,
+            ]);
+            return 'Успешно';
+        }
+
         $request->validate([
             'url' => 'required',
         ], [
@@ -74,6 +85,14 @@ class CheckListController extends Controller
                     ChecklistStubs::create([
                         'user_id' => Auth::id(),
                         'tree' => json_encode($request->input('tasks'))
+                    ]);
+                }
+
+                if ($request->input('saveBasicStub', false) && User::isUserAdmin()) {
+                    ChecklistStubs::create([
+                        'user_id' => Auth::id(),
+                        'tree' => json_encode($request->input('tasks')),
+                        'classic' => 1,
                     ]);
                 }
             }
@@ -381,6 +400,7 @@ class CheckListController extends Controller
     {
         return ChecklistStubs::where('user_id', Auth::id())
             ->orWhere('classic', 1)
+            ->orderByDesc('classic')
             ->get();
     }
 
@@ -396,6 +416,56 @@ class CheckListController extends Controller
         }
 
         return 'Успешно';
+    }
+
+    public function relevanceProjects()
+    {
+        $projects = ProjectRelevanceHistory::where('user_id', Auth::id())->get()->pluck('name');
+
+        foreach ($projects as $key => $project) {
+            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+                unset($projects[$key]);
+            }
+        }
+
+        return $projects;
+    }
+
+    public function multiplyCreate(Request $request): string
+    {
+        foreach ($request->urls as $url) {
+            if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+                $fullUrl = "https://" . $url;
+            } else {
+                $fullUrl = $url;
+            }
+
+            $client = new Client();
+            $response = $client->get($fullUrl);
+            if ($response->getStatusCode() === 200) {
+                $icon = $this->findIcon($response->getBody()->getContents());
+                CheckLists::create([
+                    'user_id' => Auth::id(),
+                    'icon' => $this->saveIcon($icon, $fullUrl),
+                    'url' => $fullUrl,
+                ]);
+            }
+        }
+
+        return 'Новые проекты успешно добавлены';
+    }
+
+    public function metaTagsProjects()
+    {
+        $projects = MetaTag::where('user_id', Auth::id())->get()->pluck('name');
+
+        foreach ($projects as $key => $project) {
+            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+                unset($projects[$key]);
+            }
+        }
+
+        return $projects;
     }
 
     private function createSubTasks($tasks, $projectId, $taskId = null)
@@ -449,7 +519,7 @@ class CheckListController extends Controller
         $md5 = md5(microtime(true));
         $path = "/checklist/$md5.jpg";
 
-        if ($icon[0]->attr['href']) {
+        if (count($icon) > 0 && $icon[0]->attr['href']) {
             if (filter_var($icon[0]->attr['href'], FILTER_VALIDATE_URL)) {
                 $faviconData = file_get_contents($icon[0]->attr['href']);
             } else if (filter_var("https://" . parse_url($fullUrl)['host'] . $icon[0]->attr['href'], FILTER_VALIDATE_URL)) {

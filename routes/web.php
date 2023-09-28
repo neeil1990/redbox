@@ -461,4 +461,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/get-checklists-stubs', 'CheckListController@getStubs')->name('checklist.stubs');
     Route::get('/remove-checklist-stub/{stub}', 'CheckListController@removeStub')->name('checklist.remove.stub');
     Route::get('/get-checklists-classic-stubs', 'CheckListController@getClassicStubs')->name('checklist.classic.stubs');
+
+    Route::get('/checklist/get-analyze-relevance-projects', 'CheckListController@relevanceProjects')->name('checklist.relevance.projects');
+    Route::get('/checklist/get-metatags-projects', 'CheckListController@metaTagsProjects')->name('checklist.metatags.projects');
+    Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 });
