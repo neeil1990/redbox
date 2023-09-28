@@ -1160,7 +1160,7 @@
                         '    </div>' +
                         '    <div class="card-body updated-font-size">' +
                         '        <div class="d-flex">' +
-                        '            <div class="d-flex flex-column col-8">' +
+                        '            <div class="d-flex flex-column col-6">' +
                         '                <div class="d-flex row">' +
                         '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
                         '                </div>' +
@@ -1174,14 +1174,12 @@
                         '                    <span class="width">Просрочены:</span> <span>' + v.expired + '</span>' +
                         '                </div>' +
                         '            </div>' +
-                        '            <div class="d-flex col-4 flex-column align-items-end">' +
+                        '            <div class="d-flex col-6 flex-column align-items-end">' +
+                        '                    <a class="btn btn-flat btn-secondary" href="/checklist-tasks/' + v.id + '" target="_blank">Просмотр задач</a>' +
                         '            </div>' +
                         '        </div>' +
                         '        <div class="row mt-3">'
                         + labels +
-                        '            <div class="col-4 d-flex align-items-end justify-content-end" data-id="' + v.id + '">' +
-                        '                <a class="btn btn-flat btn-secondary" href="/checklist-tasks/' + v.id + '" target="_blank">Просмотр задач</a>' +
-                        '            </div>' +
                         '        </div>' +
                         '    </div>' +
                         '</div></div>'
