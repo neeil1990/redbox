@@ -87,11 +87,13 @@
     @endslot
 
     <div id="project-info" class="d-flex justify-content-between w-75">
-        <div>
-            <span class="checklist-icon"></span>
-        </div>
-        <div>
-            <span class="checklist-name"></span>
+        <div class="d-flex row align-items-center">
+            <div>
+                <span class="checklist-icon"></span>
+            </div>
+            <div>
+                <span class="checklist-name"></span>
+            </div>
         </div>
         <div>
             Количество задач:
@@ -670,7 +672,7 @@
                         let checklist = response.checklist[0]
 
                         $(".checklist-icon").html('<img src="/storage/' + checklist.icon + '" alt="' + checklist.icon + '" class="icon mr-2">')
-                        $(".checklist-name").html('<a href="' + checklist.url + '" target="_blank">' + checklist.url + '</a>')
+                        $(".checklist-name").html('<a href="' + checklist.url + '" target="_blank" data-toggle="tooltip" data-placement="top" title="' + checklist.url + '">' + new URL(checklist.url)['host'] + '</a>')
                         $(".checklist-counter").html(checklist.work + checklist.ready + checklist.expired)
                         $(".checklist-work").html(checklist.work)
                         $(".checklist-expired").html(checklist.expired)
