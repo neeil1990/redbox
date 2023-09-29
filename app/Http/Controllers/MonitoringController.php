@@ -105,6 +105,17 @@ class MonitoringController extends Controller
         return $user->monitoringProjects()->detach($id);
     }
 
+    public function detachUser(Request $request)
+    {
+        $projectId = $request->input('project_id');
+        $userId = $request->input('user_id');
+
+        $user = User::findOrFail($userId);
+        $project = $user->monitoringProjects()->findOrFail($projectId);
+
+        return $user->monitoringProjects()->detach($project['id']);
+    }
+
     public function parsePositionsInProject(Request $request)
     {
         /** @var User $user */
