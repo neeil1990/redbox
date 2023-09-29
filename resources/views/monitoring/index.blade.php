@@ -226,6 +226,8 @@
                                         li.append($('<span />', {class : 'badge badge-secondary navbar-badge detach-user'}).css({
                                             cursor: 'pointer',
                                             top: 0,
+                                            right: 0,
+                                            "font-size": 'x-small',
                                         }).attr("data-id", item.id).html('<i class="fas fa-times"></i>'));
                                     }
                                 }
