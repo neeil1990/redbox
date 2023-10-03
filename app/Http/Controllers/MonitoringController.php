@@ -105,6 +105,17 @@ class MonitoringController extends Controller
         return $user->monitoringProjects()->detach($id);
     }
 
+    public function detachUser(Request $request)
+    {
+        $projectId = $request->input('project_id');
+        $userId = $request->input('user_id');
+
+        $user = User::findOrFail($userId);
+        $project = $user->monitoringProjects()->findOrFail($projectId);
+
+        return $user->monitoringProjects()->detach($project['id']);
+    }
+
     public function parsePositionsInProject(Request $request)
     {
         /** @var User $user */
@@ -242,15 +253,12 @@ class MonitoringController extends Controller
             if ($section)
                 $positions->whereIn('monitoring_keyword_id', $section->keywords->pluck('id'));
 
-            $positions = $positions->get();
-
-            if ($positions->isNotEmpty()) {
-                foreach ($this->subtractionMonths as $month) {
-                    if ($grouped = $this->groupPositionsByMonth($positions, $month)) {
-                        $engine->data->push($this->calculateTopPercent($grouped, $engine));
-                    }
+            foreach ($this->subtractionMonths as $month) {
+                if ($grouped = $this->groupPositionsByMonth($positions, $month)) {
+                    $engine->data->push($this->calculateTopPercent($grouped, $engine));
                 }
             }
+
             $groups->push($engine);
         }
 
@@ -300,24 +308,17 @@ class MonitoringController extends Controller
         return $positions;
     }
 
-    public function groupPositionsByMonth(Collection $positions, int $subMonth = null)
+    public function groupPositionsByMonth($positions, int $subMonth = null)
     {
-        $format = 'Y-m';
+        $positions = clone $positions;
 
-        $grouped = $positions->groupBy(function ($item) use ($format) {
-            return $item->created_at->format($format);
-        })->sortByDesc(function ($i, $k) {
-            return Carbon::parse($k)->timestamp;
-        });
+        $date = explode('-', Carbon::now()->subMonths($subMonth)->format('Y-m'));
+        $collection = $positions->whereYear('created_at', $date[0])->whereMonth('created_at', $date[1])->get();
 
-        if ($subMonth === null)
-            return $grouped;
+        if($collection->isEmpty())
+            return null;
 
-        $carbon = Carbon::now()->subMonths($subMonth)->format($format);
-        if ($grouped->has($carbon))
-            return $grouped[$carbon];
-
-        return null;
+        return $collection;
     }
 
     /**

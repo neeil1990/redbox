@@ -221,6 +221,16 @@
 
                                 if(item.pivot.admin)
                                     li.append($('<span />', {class : 'badge badge-danger navbar-badge'}).css('top', 0).text('Admin'));
+                                else{
+                                    if(row.pivot.admin){
+                                        li.append($('<span />', {class : 'badge badge-secondary navbar-badge detach-user'}).css({
+                                            cursor: 'pointer',
+                                            top: 0,
+                                            right: 0,
+                                            "font-size": 'x-small',
+                                        }).attr("data-id", item.id).html('<i class="fas fa-times"></i>'));
+                                    }
+                                }
 
                                 ul.append(li);
                             });
@@ -722,6 +732,24 @@
                     }
                 });
             });
+
+            $('#projects').on('click', '.detach-user', function(){
+                let ProjectId = $(this).closest('tr').find('input[type="checkbox"]').val();
+                let UserId = $(this).data('id');
+
+                if (window.confirm("{{ __('Detach user from project?') }}")) {
+
+                    axios.post('{{ route('user.detach') }}', {
+                        project_id: ProjectId,
+                        user_id: UserId,
+                    }).then(function (response) {
+                        toastr.success('{{ __('User detached') }}');
+                        table.draw(false);
+                    }).catch(function (error) {
+                        toastr.error('{{ __('Wrong request') }}');
+                    });
+                }
+            })
         </script>
     @endslot
 

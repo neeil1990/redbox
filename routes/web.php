@@ -314,6 +314,7 @@ Route::middleware(['verified'])->group(function () {
     // Monitoring project approve or detach projects
     Route::post('monitoring/project/approve', 'MonitoringController@approveOrDetachUser')->name('approve.project');
     Route::post('monitoring/project/attach', 'MonitoringController@attachUser')->name('approve.attach');
+    Route::post('monitoring/project/detach', 'MonitoringController@detachUser')->name('user.detach');
 
     // Monitoring query groups
     Route::post('monitoring/groups', 'MonitoringGroupsController@store');
