@@ -81,7 +81,7 @@ class MonitoringAdminController extends Controller
                     $jobData = unserialize($item->payload['data']['command']);
                     $keyword = $jobData->getModel();
 
-                    return ($keyword->project->url == $request->input('project') && $keyword->project->user->id == $request->input('user'));
+                    return ($keyword->project->url == $request->input('project') && $keyword->project->admin->first()->id == $request->input('user'));
                 });
             } else {
 
@@ -94,7 +94,7 @@ class MonitoringAdminController extends Controller
                         $keyword = $jobData->getModel();
 
                         if (array_key_exists('user', $params->toArray()))
-                            return ($keyword->project->user->id == $params['user']);
+                            return ($keyword->project->admin->first()->id == $params['user']);
 
                         if (array_key_exists('project', $params->toArray()))
                             return ($keyword->project->url == $params['project']);
@@ -123,8 +123,8 @@ class MonitoringAdminController extends Controller
 
             $dataTable->push([
                 'id' => $item->id,
-                'user' => $item->keyword->project->user->fullName,
-                'email' => $item->keyword->project->user->email,
+                'user' => $item->keyword->project->admin->first()->fullName,
+                'email' => $item->keyword->project->admin->first()->email,
                 'site' => $item->keyword->project->url,
                 'group' => $item->keyword->group->name,
                 'params' => $item->keyword->params,
