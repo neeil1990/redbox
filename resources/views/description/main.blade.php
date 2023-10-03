@@ -3,7 +3,7 @@
         <div class="card-header">
             <div class="user-block">
                 <img class="img-circle img-bordered-sm"
-                     src="https://lk.redbox.su/storage/{{ $description->user->image }}" alt="avatar">
+                     src="{{ $description->user->image }}" alt="avatar">
                 <span class="username">
                     <a href="#">{{ $description->user->name }} {{ $description->user->last_name }}</a></span>
                 <span class="description">{{ __('Publicly') }} - {{ $description->updated_at->diffForHumans() }}</span>

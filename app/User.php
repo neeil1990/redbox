@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Url\Url as SpatieUrl;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -73,6 +74,15 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var int
      */
     protected $delete = 30;
+
+    public function getImageAttribute($value)
+    {
+        $public = Storage::disk('public');
+        if(!Storage::exists($value))
+            return $public->url('avatar/user-icon.png');
+
+        return $public->url($value);
+    }
 
     /**
      * Send the email verification notification.

@@ -218,7 +218,7 @@
                             let ul = $('<ul />', { class : 'list-inline'});
 
                             $.each(row.users, function(i, item){
-                                let li = $('<li />', {class : 'list-inline-item position-relative tooltip-on', title : item.name + ' ' + item.last_name}).append($('<img />', { class : 'table-avatar', src : '/storage/' + item.image }));
+                                let li = $('<li />', {class : 'list-inline-item position-relative tooltip-on', title : item.name + ' ' + item.last_name}).append($('<img />', { class : 'table-avatar', src : item.image }));
 
                                 if(item.pivot.admin)
                                     li.append($('<span />', {class : 'badge badge-danger navbar-badge'}).css('top', 0).text('Admin'));
