@@ -141,6 +141,8 @@
                 trigger: 'hover',
             });
 
+            window.loading();
+
             let table = $('#projects').DataTable({
                 dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
                 fixedHeader: true,
@@ -157,9 +159,8 @@
                         "next": "»",
                         "previous": "«"
                     },
-                    processing: '<img src="/img/1485.gif" style="width: 50px; height: 50px;">',
                 },
-                processing: true,
+                processing: false,
                 serverSide: true,
                 ajax: {
                     url: '/monitoring/projects/get',
@@ -366,7 +367,6 @@
                 initComplete: function () {
                     let api = this.api();
                     let json = api.ajax.json();
-                    let loading = $('#projects_processing');
 
                     this.find('tbody').on('click', 'tr.main', function () {
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
@@ -393,12 +393,12 @@
                         } else {
                             // Open this row
                             let data = row.data();
+                            window.loading();
 
-                            loading.css('display', 'block');
                             axios.get(`/monitoring/${data.id}/child-rows/get`).then(function (response) {
-                                loading.css('display', 'none');
-
                                 let content = $(response.data);
+
+                                window.pleaseWait.finish();
 
                                 $.each(content.find('.top'), function (i, el) {
 
@@ -443,10 +443,9 @@
 
                     updateCacheButton.click(function () {
                         $(this).hide();
-                        loading.css('display', 'block');
+                        window.loading();
                         axios.get('/monitoring/project/update-data-table')
                             .then(function () {
-                                loading.css('display', 'none');
                                 table.draw(false);
                                 $('.data-time-cache').text(moment().format("DD.MM.YYYY H:mm"));
                             });
@@ -471,6 +470,22 @@
                     this.find('.tooltip-on').tooltip({
                         animation: false,
                         trigger: 'hover',
+                    });
+
+                    this.on( 'processing.dt', function ( e, settings, processing ) {
+                        let card = $(this).closest('#projects_wrapper');
+                        let filter = card.find('.card-header .dataTables_filter .form-control');
+
+                        if(filter.val().length > 0)
+                            return;
+
+                        if(processing) {
+                            if(window.pleaseWait === undefined || window.pleaseWait.finishing)
+                                window.loading();
+                        } else{
+                            if(window.pleaseWait)
+                                window.pleaseWait.finish();
+                        }
                     });
                 },
                 drawCallback: function () {
