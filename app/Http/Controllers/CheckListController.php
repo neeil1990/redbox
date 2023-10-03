@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\ChecklistNotification;
 use App\CheckListProjectLabels;
 use App\CheckLists;
 use App\CheckListsLabels;
 use App\ChecklistStubs;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
+use App\DomainMonitoring;
 use App\MetaTag;
 use App\ProjectRelevanceHistory;
 use App\User;
@@ -367,6 +369,10 @@ class CheckListController extends Controller
             }
 
             ChecklistTasks::where('id', $request->id)->update($updates);
+            ChecklistNotification::where('checklist_task_id', $request->id)
+                ->update([
+                    'deadline' => $request->value
+                ]);
 
             return response()->json([
                 'newStatus' => $updates['status'] ?? 'undefined'
@@ -431,6 +437,45 @@ class CheckListController extends Controller
         return $projects;
     }
 
+    public function metaTagsProjects()
+    {
+        $projects = MetaTag::where('user_id', Auth::id())->get()->pluck('name');
+
+        foreach ($projects as $key => $project) {
+            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+                unset($projects[$key]);
+            }
+        }
+
+        return $projects;
+    }
+
+    public function monitoringProjects()
+    {
+        $projects = Auth::user()->monitoringProjects->pluck('name');
+
+        foreach ($projects as $key => $project) {
+            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+                unset($projects[$key]);
+            }
+        }
+
+        return $projects;
+    }
+
+    public function monitoringSites()
+    {
+        $projects = DomainMonitoring::where('user_id', Auth::id())->get()->pluck('project_name');
+
+        foreach ($projects as $key => $project) {
+            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+                unset($projects[$key]);
+            }
+        }
+
+        return $projects;
+    }
+
     public function multiplyCreate(Request $request): string
     {
         foreach ($request->urls as $url) {
@@ -455,17 +500,22 @@ class CheckListController extends Controller
         return 'Новые проекты успешно добавлены';
     }
 
-    public function metaTagsProjects()
+    public function getNotifications()
     {
-        $projects = MetaTag::where('user_id', Auth::id())->get()->pluck('name');
+        return ChecklistNotification::where('status', '!=', 'wait')
+            ->where('user_id', Auth::id())
+            ->orderBy('status')
+            ->with('task.project')
+            ->get();
+    }
 
-        foreach ($projects as $key => $project) {
-            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
-                unset($projects[$key]);
-            }
-        }
+    public function readNotificaiton(ChecklistNotification $notification)
+    {
+        $notification->update([
+            'status' => 'read'
+        ]);
 
-        return $projects;
+        return response()->json([]);
     }
 
     private function createSubTasks($tasks, $projectId, $taskId = null)
@@ -473,13 +523,14 @@ class CheckListController extends Controller
         foreach ($tasks as $task) {
             $task = $task[0] ?? $task;
             $date = Carbon::parse($task['deadline']);
+            $deadline = isset($task['deadline']) ? Carbon::parse($task['deadline'])->toDateTimeString() : Carbon::now()->toDateTimeString();
 
             $object = [
                 'project_id' => $projectId,
                 'name' => $task['name'] ?? 'Без названия',
                 'status' => $date->isPast() ? 'expired' : $task['status'],
                 'description' => $task['description'] ?? '',
-                'deadline' => isset($task['deadline']) ? Carbon::parse($task['deadline'])->toDateTimeString() : Carbon::now()->toDateTimeString(),
+                'deadline' => $deadline,
                 'date_start' => isset($task['start']) ? Carbon::parse($task['start'])->toDateTimeString() : Carbon::now()->toDateTimeString(),
             ];
 
@@ -489,6 +540,12 @@ class CheckListController extends Controller
             }
 
             $newRecord = ChecklistTasks::create($object);
+
+            ChecklistNotification::create([
+                'checklist_task_id' => $newRecord->id,
+                'user_id' => Auth::id(),
+                'deadline' => $deadline
+            ]);
 
             if (isset($task['subtasks'])) {
                 $this->createSubTasks($task['subtasks'], $projectId, $newRecord->id);

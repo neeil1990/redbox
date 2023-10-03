@@ -11,6 +11,7 @@
 |
 */
 
+use App\ChecklistNotification;
 use App\CheckLists;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
@@ -462,7 +463,12 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/remove-checklist-stub/{stub}', 'CheckListController@removeStub')->name('checklist.remove.stub');
     Route::get('/get-checklists-classic-stubs', 'CheckListController@getClassicStubs')->name('checklist.classic.stubs');
 
-    Route::get('/checklist/get-analyze-relevance-projects', 'CheckListController@relevanceProjects')->name('checklist.relevance.projects');
+    Route::get('/checklist/get-analyse-relevance-projects', 'CheckListController@relevanceProjects')->name('checklist.relevance.projects');
     Route::get('/checklist/get-metatags-projects', 'CheckListController@metaTagsProjects')->name('checklist.metatags.projects');
+    Route::get('/checklist/get-monitoring-projects', 'CheckListController@monitoringProjects')->name('checklist.monitoring.projects');
+    Route::get('/checklist/get-domain-monitoring-projects', 'CheckListController@monitoringSites')->name('checklist.domain.monitoring.projects');
+    Route::get('/checklist/notifications', 'CheckListController@getNotifications')->name('checklist.notifications');
+    Route::get('/checklist/read-notification/{notification}', 'CheckListController@readNotificaiton')->name('checklist.read.notification');
+
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 });
