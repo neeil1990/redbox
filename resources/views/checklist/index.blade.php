@@ -3,6 +3,10 @@
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
+            .callout a:hover {
+                color: #007bff !important;
+            }
+
             .stub-style {
                 width: 85px;
                 height: 20px;
@@ -108,6 +112,12 @@
                                aria-selected="false">Базовые шаблоны</a>
                         </li>
                     @endif
+                    <li class="nav-item">
+                        <a class="nav-link" id="notification" data-toggle="pill"
+                           href="#notification-tab" role="tab" aria-controls="notification-tab"
+                           aria-selected="false">Уведомления <span style="display: none" id="notification-counter"
+                                                                   class="badge badge-danger">0</span></a>
+                    </li>
                 </ul>
             </div>
             <div class="card-body">
@@ -142,14 +152,23 @@
                                      style="margin-top: 10px;">
                                     <button class="btn btn-secondary relevance-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
-                                        <i class="fa-solid fa-star" data-toggle="tooltip" data-placement="top" title="Анализ релевантности"></i>
+                                        <i class="fa-solid fa-star" data-toggle="tooltip" data-placement="top"
+                                           title="Анализ релевантности"></i>
                                     </button>
-                                    <button class="btn btn-secondary position-star mr-1" data-toggle="modal" data-target="#exampleModal">
-                                        <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="top" title="Мониторинг позиций"></i>
+                                    <button class="btn btn-secondary position-star mr-1" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                        <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="top"
+                                           title="Мониторинг позиций"></i>
                                     </button>
                                     <button class="btn btn-secondary metatag-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
-                                        <i class="fas fa-heading" data-toggle="tooltip" data-placement="top" title="Мониторинг метатегов"></i>
+                                        <i class="fas fa-heading" data-toggle="tooltip" data-placement="top"
+                                           title="Мониторинг метатегов"></i>
+                                    </button>
+                                    <button class="btn btn-secondary domain-monitoring-star mr-1" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                        <i class="fas fa-edit" data-toggle="tooltip" data-placement="top"
+                                           title="Мониторинг доменов"></i>
                                     </button>
 
                                     <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
@@ -180,7 +199,8 @@
                                         <button type="button" class="btn btn-secondary" id="add-multiply-projects">
                                             Добавить
                                         </button>
-                                        <button type="button" class="btn btn-default" id="close-multiply-projects" data-dismiss="modal">
+                                        <button type="button" class="btn btn-default" id="close-multiply-projects"
+                                                data-dismiss="modal">
                                             Закрыть
                                         </button>
                                     </div>
@@ -200,6 +220,9 @@
                             <div id="classic-stubs-place" class="d-flex row"></div>
                         </div>
                     @endif
+                    <div class="tab-pane fade" id="notification-tab" role="tabpanel"
+                         aria-labelledby="notification">
+                    </div>
                 </div>
             </div>
         </div>
@@ -242,7 +265,7 @@
                         @if(\App\User::isUserAdmin())
                             <div class="form-group card">
                                 <div class="card-body">
-                                    <label for="save-basic-stub">Сохранить как базовы шаблон</label>
+                                    <label for="save-basic-stub">Сохранить как базовый шаблон</label>
                                     <span class="text-muted">(Эта настройка видна только админам)</span>
                                     <select name="save-basic-stub" id="save-basic-stub" class="custom-select">
                                         <option value="0" selected>Нет</option>
@@ -892,7 +915,7 @@
                             removedButton.parents().eq(4).remove()
                         }, 301)
 
-                        loadChecklists()
+                        loadChecklists($('.page-item.active > .page-link').attr('data-id'))
                     },
                     errors: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -1484,57 +1507,45 @@
             })
 
             $(document).on('click', '.relevance-star', function () {
-                $.ajax({
-                    type: 'get',
-                    url: "{{ route('checklist.relevance.projects') }}",
-                    success: function (projects) {
-                        let html = ''
-
-                        $.each(projects, function (k, v) {
-                            html +=
-                                '<div class="new-project-variable" data-target="' + v + '">'
-                                + v +
-                                '    <button class="btn btn-sm btn-default remove-variable"><i class="fa fa-trash"></i></button>' +
-                                '</div>'
-                        })
-
-                        if (html === '') {
-                            $('#place-from-projects').html('Нечего добавлять')
-                        } else {
-                            $('#place-from-projects').html('<p>Проекты которые ещё не были добавлены:</p>' + html)
-                        }
-                    }
-                })
+                getNewProjects("{{ route('checklist.relevance.projects') }}")
             })
 
-            $(document).on('click', '.position-star', function (){
-                $('#place-from-projects').html('Наши проекты мониторинга позиций не привязаны к пользователям и невозможно выявить какие проекты пользователь ещё не добавлял')
+            $(document).on('click', '.position-star', function () {
+                getNewProjects("{{ route('checklist.monitoring.projects') }}")
             })
 
             $(document).on('click', '.metatag-star', function () {
+                getNewProjects("{{ route('checklist.metatags.projects') }}")
+            })
+
+            $(document).on('click', '.domain-monitoring-star', function () {
+                getNewProjects("{{ route('checklist.domain.monitoring.projects') }}")
+            })
+
+            function getNewProjects($route) {
                 $.ajax({
                     type: 'get',
-                    url: "{{ route('checklist.metatags.projects') }}",
+                    url: $route,
                     success: function (projects) {
+                        console.log(projects)
                         let html = ''
 
                         $.each(projects, function (k, v) {
                             html +=
                                 '<div class="new-project-variable" data-target="' + v + '">'
                                 + v +
-                                '    <button class="btn btn-sm btn-default remove-variable"><i class="fa fa-trash"></i></button>' +
+                                '<button class="btn btn-sm btn-default remove-variable ml-2"> <i class="fa fa-trash"></i> </button>' +
                                 '</div>'
                         })
 
                         if (html === '') {
-                            $('#place-from-projects').html('Нечего добавлять')
+                            $('#place-from-projects').html('В модуле нет проектов, которые ещё не добавлены в чеклист')
                         } else {
                             $('#place-from-projects').html('<p>Проекты которые ещё не были добавлены:</p>' + html)
                         }
                     }
                 })
-            })
-
+            }
 
             $(document).on('click', '.remove-variable', function () {
                 $(this).parent().remove()
@@ -1601,6 +1612,89 @@
                 }
 
                 return $listItem
+            }
+
+            $(document).on('click', '.read-notification', function () {
+                let button = $(this)
+                let ID = $(this).attr('data-id')
+                let badge = $('.badge.badge-success[data-id="' + $(this).attr('data-id') + '"]')
+
+                $.ajax({
+                    type: 'get',
+                    url: '/checklist/read-notification/' + ID,
+                    success: function () {
+                        badge.removeClass('badge-success')
+                        badge.addClass('badge-info')
+                        badge.html('Прочитано')
+
+                        button.remove()
+
+                        let counter = Number($('#notification-counter').html()) - 1
+                        if (counter == 0) {
+                            $('#notification-counter').hide(300)
+                        }
+
+                        $('#notification-counter').html(counter)
+                    }
+                })
+            })
+
+            getNotifications()
+            $(document).ready(function () {
+                setInterval(() => {
+                    getNotifications()
+                }, 30000)
+            })
+
+            function getNotifications() {
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('checklist.notifications') }}",
+                    success: function (notifications) {
+                        let counter = 0
+                        let html = ''
+                        $.each(notifications, function (key, notification) {
+                            if (notification.status === 'notification') {
+                                counter++
+
+                                html +=
+                                    '<div class="callout callout-info">' +
+                                    '    <div class="d-flex">' +
+                                    '        <h5 class="col-10">У вас есть просроченая задача "' + notification.task.name + '" в проекте ' +
+                                    '           <a href="' + notification.task.project.url + '" target="_blank">' + notification.task.project.url + '</a>' +
+                                    '           <span class="badge badge-success" data-id="' + notification.id + '">Новое</span>' +
+                                    '        </h5>' +
+                                    '        <button class="btn btn-default col-2 read-notification" data-id="' + notification.id + '">Пометить прочитанным</button>' +
+                                    '     </div>' +
+                                    '    <a href="/checklist-tasks/' + notification.task.project.id + '" target="_blank">Перейти к проекту</a>' +
+                                    '</div>'
+                            } else {
+                                html +=
+                                    '<div class="callout callout-info">' +
+                                    '    <h5>У вас есть просроченая задача "' + notification.task.name + '" в проекте ' +
+                                    '<a href="' + notification.task.project.url + '" target="_blank">' + notification.task.project.url + '</a>' +
+                                    '    <span class="badge badge-info">Прочитано</span>' +
+                                    '</h5>' +
+                                    '<a href="/checklist-tasks/' + notification.task.project.id + '" target="_blank">Перейти к проекту</a>' +
+                                    '</div>'
+                            }
+                        })
+
+                        if (counter > 0) {
+                            $('#notification-counter').show(300)
+                            $('#notification-counter').html(counter)
+                        } else {
+                            $('#notification-counter').hide(300)
+                            $('#notification-counter').html(counter)
+                        }
+
+                        $('#notification-tab').html(html)
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
+
             }
         </script>
     @endslot
