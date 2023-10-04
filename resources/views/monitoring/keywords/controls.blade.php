@@ -4,7 +4,7 @@
     <i class="far fa-square"></i>
 </button>
 
-<div class="btn-group">
+<div class="btn-group queries-controls">
     <button type="button" class="btn btn-default btn-sm tooltip-on" data-toggle="modal" data-target=".modal" data-type="create_keywords" title="Добавить запрос">
         <i class="fas fa-plus"></i>
     </button>
@@ -19,7 +19,7 @@
 </div>
 <!-- /.btn-group -->
 
-<div class="btn-group">
+<div class="btn-group positions-controls">
     <button type="button" class="btn btn-default btn-sm parse-positions-keys tooltip-on" title="Добавить в очередь выбранные">
         <i class="fas fa-layer-group"></i>
     </button>
@@ -29,7 +29,7 @@
     </button>
 </div>
 
-<div class="btn-group">
+<div class="btn-group columns-hidden">
     @foreach ([
             ['name' => 'query', 'text' => __('Query'), 'default' => 'on'],
             ['name' => 'url', 'text' => __('URL'), 'default' => 'on'],

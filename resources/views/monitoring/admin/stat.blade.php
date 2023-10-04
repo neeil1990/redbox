@@ -126,6 +126,7 @@
                 serverSide: true,
                 ajax: {
                     url: '/monitoring/stat',
+                    type: 'POST',
                 },
                 order: [
                     [1, 'asc'],

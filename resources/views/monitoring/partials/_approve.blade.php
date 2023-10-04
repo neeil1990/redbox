@@ -8,14 +8,18 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Название</th>
+                    <th>Пользователь</th>
                     <th>Email</th>
+                    <th>Название</th>
+                    <th>Сайт</th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($foreignProject as $p)
                     <tr data-id="{{$p['id']}}">
+                        <td>{{ $p->admin->first()->fullName }}</td>
+                        <td>{{ $p->admin->first()->email }}</td>
                         <td>{{ $p['name'] }}</td>
                         <td>{{ $p['url'] }}</td>
                         <td class="text-right py-0 align-middle">

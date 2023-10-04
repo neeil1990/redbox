@@ -52,6 +52,9 @@
                 z-index: 1;
                 background-color: white;
             }
+            .query-string {
+                white-space: nowrap;
+            }
         </style>
     @endslot
 
@@ -225,10 +228,13 @@
                             let container = $('.mailbox-controls');
                             let content = response.data;
 
-                            if(PROJECT_ADMIN == '0')
-                                return false;
-
                             container.html(content);
+
+                            if(PROJECT_ADMIN == '0'){
+                                container.find('.checkbox-toggle').remove();
+                                container.find('.queries-controls').remove();
+                                container.find('.positions-controls').remove();
+                            }
 
                             let checkbox = container.find('.checkbox-toggle');
 

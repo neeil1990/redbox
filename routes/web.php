@@ -284,7 +284,7 @@ Route::middleware(['verified'])->group(function () {
     ]);
 
     Route::post('/monitoring/stat/delete-queues', 'MonitoringAdminController@deleteQueues')->name('monitoring.stat.deleteQueues');
-    Route::get('/monitoring/stat', 'MonitoringAdminController@statPage')->name('monitoring.stat');
+    Route::match(['get', 'post'], '/monitoring/stat', 'MonitoringAdminController@statPage')->name('monitoring.stat');
     Route::get('/monitoring/admin', 'MonitoringAdminController@adminPage')->name('monitoring.admin');
     Route::post('/monitoring/admin/settings/update', 'MonitoringSettingsController@updateOrCreate')->name('monitoring.admin.settings.update');
     Route::get('/monitoring/admin/settings/delete/{name}', 'MonitoringSettingsController@destroy')->name('monitoring.admin.settings.delete');
