@@ -73,16 +73,19 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $currentUser = $this->user;
+        $emails = explode(",", str_replace(" ", "", $request->input('email')));
+        $users = User::whereIn('email', $emails)->get()->whereNotIn('id', [$currentUser['id']]);
 
-        $user = User::where('email', $request->input('email'))->firstOrFail();
-        if($user == $currentUser)
+        if($users->isEmpty())
             return abort('403');
 
-        $result = $user->monitoringProjects()->syncWithoutDetaching([$request->input('id') => ['approved' => 0]]);
-        if(count($result['attached']) > 0)
-            Mail::to($user)->send(new MonitoringShareProjectMail());
+        foreach ($users as $user){
+            $result = $user->monitoringProjects()->syncWithoutDetaching([$request->input('id') => ['approved' => 0]]);
+            if(count($result['attached']) > 0)
+                Mail::to($user)->send(new MonitoringShareProjectMail());
+        }
 
-        return $result;
+        return $users->count();
     }
 
     public function approveOrDetachUser(Request $request)

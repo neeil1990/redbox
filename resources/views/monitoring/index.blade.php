@@ -305,8 +305,10 @@
                         width: '225px',
                         data: function (row) {
 
-                            if(row.pivot.admin == false)
-                                return "";
+                            if(row.pivot.admin == false){
+                                let view = $('<a />', {class: 'btn btn-primary btn-sm', href: '/monitoring/' + row.id}).append($('<i />', {class: 'fas fa-folder'})).append(' {{ __('View') }}');
+                                return view[0].outerHTML;
+                            }
 
                             let addUser = $('<a />', {class: 'btn btn-sm btn-info add-user tooltip-on', title: '{{ __('Add user') }}'}).append($('<i />', {class: 'fas fa-user-plus'}));
 
@@ -723,10 +725,10 @@
                         {
                             type: 'text',
                             name: "email",
-                            label: '{{ __('Email user') }}',
+                            label: '{{ __('Email user') }} (Если вы хотите добавить сразу несколько пользователей перечислите email через запятую)',
                             params: [{
                                 val: "",
-                                placeholder: 'test@mail.ru',
+                                placeholder: 'test@mail.ru, test2@mail.ru, test3@mail.ru',
                             }]
                         }
                     ],
