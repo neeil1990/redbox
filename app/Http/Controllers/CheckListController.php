@@ -324,7 +324,8 @@ class CheckListController extends Controller
             $childIds = [];
             $this->findChildIds($request->id, $childIds);
 
-            DB::table('checklist_tasks')->whereIn('id', $childIds)->delete();
+            ChecklistNotification::whereIn('checklist_task_id', $childIds)->delete();
+            ChecklistTasks::whereIn('id', $childIds)->delete();
         } else {
             ChecklistTasks::where('subtask', 1)
                 ->where('task_id', $request->id)
@@ -369,10 +370,25 @@ class CheckListController extends Controller
             }
 
             ChecklistTasks::where('id', $request->id)->update($updates);
-            ChecklistNotification::where('checklist_task_id', $request->id)
-                ->update([
+
+            $notification = ChecklistNotification::where('checklist_task_id', $request->id)->first();
+
+            if (isset($notification)) {
+                $notification->update([
                     'deadline' => $request->value
                 ]);
+            } else {
+                ChecklistNotification::create([
+                    'checklist_task_id' => $request->id,
+                    'user_id' => Auth::id(),
+                    'deadline' => $request->value
+                ]);
+            }
+
+            ChecklistNotification::updateOrCreate(
+                ['checklist_task_id' => $request->id],
+                ['deadline' => $request->value],
+            );
 
             return response()->json([
                 'newStatus' => $updates['status'] ?? 'undefined'
@@ -509,7 +525,7 @@ class CheckListController extends Controller
             ->get();
     }
 
-    public function readNotificaiton(ChecklistNotification $notification)
+    public function readNotification(ChecklistNotification $notification): JsonResponse
     {
         $notification->update([
             'status' => 'read'

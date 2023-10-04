@@ -153,22 +153,22 @@
                                     <button class="btn btn-secondary relevance-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
                                         <i class="fa-solid fa-star" data-toggle="tooltip" data-placement="top"
-                                           title="Анализ релевантности"></i>
+                                           title="Добавить проекты из анализа релевантности"></i>
                                     </button>
                                     <button class="btn btn-secondary position-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
                                         <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="top"
-                                           title="Мониторинг позиций"></i>
+                                           title="Добавить проекты из мониторинга позиций"></i>
                                     </button>
                                     <button class="btn btn-secondary metatag-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
                                         <i class="fas fa-heading" data-toggle="tooltip" data-placement="top"
-                                           title="Мониторинг метатегов"></i>
+                                           title="Добавить проекты из мониторинга метатегов"></i>
                                     </button>
                                     <button class="btn btn-secondary domain-monitoring-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
                                         <i class="fas fa-edit" data-toggle="tooltip" data-placement="top"
-                                           title="Мониторинг доменов"></i>
+                                           title="Добавить проекты из мониторинга доменов"></i>
                                     </button>
 
                                     <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
@@ -220,8 +220,7 @@
                             <div id="classic-stubs-place" class="d-flex row"></div>
                         </div>
                     @endif
-                    <div class="tab-pane fade" id="notification-tab" role="tabpanel"
-                         aria-labelledby="notification">
+                    <div class="tab-pane fade" id="notification-tab" role="tabpanel" aria-labelledby="notification">
                     </div>
                 </div>
             </div>
@@ -1183,7 +1182,7 @@
                         '    </div>' +
                         '    <div class="card-body updated-font-size">' +
                         '        <div class="d-flex">' +
-                        '            <div class="d-flex flex-column col-6">' +
+                        '            <div class="d-flex flex-column col-8">' +
                         '                <div class="d-flex row">' +
                         '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
                         '                </div>' +
@@ -1195,6 +1194,24 @@
                         '                </div>' +
                         '                <div class="d-flex row">' +
                         '                    <span class="width">Просрочены:</span> <span>' + v.expired + '</span>' +
+                        '                </div>' +
+                        '            </div>' +
+                        '            <div class="d-flex col-4 flex-column align-items-end">' +
+                        '                <div>' +
+                        '                    <a target="_blank" href="{{ route('relevance.history') }}" class="fa-solid fa-star text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Анализ релевантности"></a>' +
+                        '                </div>' +
+                        '                <div style="margin-right: 1px">' +
+                        '                    <a target="_blank" href="/monitoring" class="fas fa-chart-line text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Мониторинг позиций"></a>' +
+                        '                </div>' +
+                        '                <div style="margin-right: 3px">' +
+                        '                    <a target="_blank" href="/meta-tags" class="fas fa-heading text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Мониторинг метатегов"></a>' +
+                        '                </div>' +
+                        '                <div>' +
+                        '                    <a target="_blank" href="/site-monitoring" class="fas fa-edit text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Мониторинг доменов"></a>' +
                         '                </div>' +
                         '            </div>' +
                         '            <div class="d-flex col-6 flex-column align-items-end">' +
@@ -1639,6 +1656,21 @@
                 })
             })
 
+            $(document).on('click', '.delete-notification', function () {
+                let $parent = $(this).parents().eq(2)
+                let ID = $(this).attr('data-id')
+
+                if (confirm('Вы действительно хотите удалить уведомление?')) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/checklist/delete-notification/' + ID,
+                        success: function () {
+                            $parent.remove()
+                        }
+                    })
+                }
+            })
+
             getNotifications()
             $(document).ready(function () {
                 setInterval(() => {
@@ -1660,22 +1692,30 @@
                                 html +=
                                     '<div class="callout callout-info">' +
                                     '    <div class="d-flex">' +
-                                    '        <h5 class="col-10">У вас есть просроченая задача "' + notification.task.name + '" в проекте ' +
+                                    '        <h5 class="col-9">У вас есть просроченая задача "' + notification.task.name + '" в проекте ' +
                                     '           <a href="' + notification.task.project.url + '" target="_blank">' + notification.task.project.url + '</a>' +
                                     '           <span class="badge badge-success" data-id="' + notification.id + '">Новое</span>' +
                                     '        </h5>' +
-                                    '        <button class="btn btn-default col-2 read-notification" data-id="' + notification.id + '">Пометить прочитанным</button>' +
+                                    '        <div class="col-3 d-flex justify-content-end">' +
+                                    '            <button class="btn btn-sm btn-flat btn-default read-notification mr-2" data-id="' + notification.id + '">Пометить прочитанным</button>' +
+                                    '            <button class="btn btn-sm btn-flat btn-default delete-notification" data-id="' + notification.id + '">Удалить</button>' +
+                                    '        </div>' +
                                     '     </div>' +
                                     '    <a href="/checklist-tasks/' + notification.task.project.id + '" target="_blank">Перейти к проекту</a>' +
                                     '</div>'
                             } else {
                                 html +=
                                     '<div class="callout callout-info">' +
-                                    '    <h5>У вас есть просроченая задача "' + notification.task.name + '" в проекте ' +
-                                    '<a href="' + notification.task.project.url + '" target="_blank">' + notification.task.project.url + '</a>' +
-                                    '    <span class="badge badge-info">Прочитано</span>' +
-                                    '</h5>' +
-                                    '<a href="/checklist-tasks/' + notification.task.project.id + '" target="_blank">Перейти к проекту</a>' +
+                                    '    <div class="d-flex">' +
+                                    '         <h5 class="col-9">У вас есть просроченая задача "' + notification.task.name + '" в проекте ' +
+                                    '              <a href="' + notification.task.project.url + '" target="_blank">' + notification.task.project.url + '</a>' +
+                                    '              <span class="badge badge-info">Прочитано</span>' +
+                                    '         </h5>' +
+                                    '         <div class="col-3 d-flex justify-content-end">' +
+                                    '             <button class="btn btn-sm btn-flat btn-default delete-notification" data-id="' + notification.id + '">Удалить</button>' +
+                                    '         </div>' +
+                                    '    </div>' +
+                                    '    <a href="/checklist-tasks/' + notification.task.project.id + '" target="_blank">Перейти к проекту</a>' +
                                     '</div>'
                             }
                         })

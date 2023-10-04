@@ -469,7 +469,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/checklist/get-monitoring-projects', 'CheckListController@monitoringProjects')->name('checklist.monitoring.projects');
     Route::get('/checklist/get-domain-monitoring-projects', 'CheckListController@monitoringSites')->name('checklist.domain.monitoring.projects');
     Route::get('/checklist/notifications', 'CheckListController@getNotifications')->name('checklist.notifications');
-    Route::get('/checklist/read-notification/{notification}', 'CheckListController@readNotificaiton')->name('checklist.read.notification');
+    Route::get('/checklist/read-notification/{notification}', 'CheckListController@readNotification')->name('checklist.read.notification');
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 });
