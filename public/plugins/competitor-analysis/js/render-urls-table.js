@@ -28,6 +28,9 @@ function renderUrlsTable(urls, pageLength) {
             "order": [[2, "desc"]],
             "pageLength": pageLength,
             "searching": true,
+            drawCallback: function () {
+                $('#urls-table').wrap('<div style="width: 100%; overflow: auto"></div>')
+            }
         })
     })
 

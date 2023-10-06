@@ -215,19 +215,23 @@
             <div id="sites-block" class="mt-5" style="display:none;">
                 <h2>{{ __('Top sites based on your keywords') }}</h2>
                 <div class="site-block-buttons">
-                    <button class="btn btn-secondary colored-button mt-1 click_tracking" data-click="Highlight identical urls" id="coloredEloquentUrls">
+                    <button class="btn btn-secondary colored-button mt-1 click_tracking"
+                            data-click="Highlight identical urls" id="coloredEloquentUrls">
                         {{ __('Highlight identical urls') }}
                     </button>
 
-                    <button class="btn btn-default colored-button mt-1 click_tracking" data-click="Highlight the same domains" id="coloredEloquentDomains">
+                    <button class="btn btn-default colored-button mt-1 click_tracking"
+                            data-click="Highlight the same domains" id="coloredEloquentDomains">
                         {{ __('Highlight the same domains') }}
                     </button>
 
-                    <button class="btn btn-default colored-button mt-1 click_tracking" data-click="Highlight all main pages" id="coloredMainPages">
+                    <button class="btn btn-default colored-button mt-1 click_tracking"
+                            data-click="Highlight all main pages" id="coloredMainPages">
                         {{ __('Highlight all main pages') }}
                     </button>
 
-                    <button type="button" class="btn btn-default click_tracking" data-click="Highlight your" data-toggle="modal"
+                    <button type="button" class="btn btn-default click_tracking" data-click="Highlight your"
+                            data-toggle="modal"
                             data-target="#coloredEloquentMyTextModal">
                         {{ __('Highlight your') }}
                     </button>
@@ -264,7 +268,8 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-default click_tracking" data-click="Highlight site aggregators" data-toggle="modal"
+                    <button type="button" class="btn btn-default click_tracking" data-click="Highlight site aggregators"
+                            data-toggle="modal"
                             data-target="#coloredAgrigators">
                         {{ __('Highlight site aggregators') }}
                     </button>
@@ -452,7 +457,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer d-flex justify-content-end click_tracking" data-click="Get recommendations">
+                        <div class="card-footer d-flex justify-content-end click_tracking"
+                             data-click="Get recommendations">
                             <button class="btn btn-secondary" id="getRecommendations" data-dismiss="modal">
                                 {{ __('Get recommendations') }}
                             </button>
@@ -476,18 +482,21 @@
 
     @slot('js')
         <script src="{{ asset('plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.js') }}"></script>
-        <script src="{{ asset('plugins/competitors/js/render-top-sites-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitors/js/render-nesting-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitors/js/render-site-positions-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitors/js/render-tags-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitors/js/render-urls-table.js') }}"></script>
-        <script src="{{ asset('plugins/competitors/js/refresh-all.js') }}"></script>
-        <script src="{{ asset('plugins/competitors/js/duallbox-block.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-top-sites-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-nesting-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-site-positions-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-tags-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/render-urls-table.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/refresh-all.js') }}"></script>
+        <script src="{{ asset('plugins/competitor-analysis/js/duallbox-block.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/jszip/jszip.js') }}"></script>
+        <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+        <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.js') }}"></script>
         <script src="{{ asset('plugins/common/js/common.js') }}"></script>
         <script>
             window.session = String(new Date()).shuffle();
@@ -572,31 +581,21 @@
                                 'SelectPhrases': "{{ __('Select phrases') }}",
                             }
 
-                            try {
-                                $('#render-bar').show(300)
-                                clearInterval(interval)
-                                setProgressBarStyles(100)
-                                setTimeout(() => {
-                                    $("#progress-bar").hide(300)
-                                    $('.btn.btn-secondary.pull-left').prop('disabled', false);
-                                }, 1000)
+                            $('#render-bar').show(300)
+                            clearInterval(interval)
+                            setProgressBarStyles(100)
+                            setTimeout(() => {
+                                $("#progress-bar").hide(300)
+                                $('.btn.btn-secondary.pull-left').prop('disabled', false);
+                            }, 1000)
 
-                                await renderTopSites(response.result.analysedSites, localization)
-                                await renderTopSitesV2(response.result.analysedSites, localization)
-                                await renderNestingTable(response.result.pagesCounter)
-                                await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
-                                await renderTagsTable(response.result.totalMetaTags)
-                                await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
-                                await duallboxBlockRender(response.result.totalMetaTags, count, localization)
-                            } catch (e) {
-                                refreshAll()
-                                $('.toast-top-right.broken-script-message').show(300)
-                                $('.toast-message').html('System error')
-                                setTimeout(() => {
-                                    $('.toast-top-right.broken-script-message').hide(300)
-                                }, 5000)
-                            }
-
+                            await renderTopSites(response.result.analysedSites, localization)
+                            await renderTopSitesV2(response.result.analysedSites, localization)
+                            await renderNestingTable(response.result.pagesCounter)
+                            await renderSitePositionsTable(response.result.domainsPosition, {{ $config->positions_length }})
+                            await renderTagsTable(response.result.totalMetaTags)
+                            await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
+                            await duallboxBlockRender(response.result.totalMetaTags, count, localization)
                         } else {
                             setProgressBarStyles(response.percent)
                         }
