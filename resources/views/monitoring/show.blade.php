@@ -45,15 +45,11 @@
                 top: 50px;
                 right: 30px;
             }
-
             .dataTables_scrollHead {
                 position: sticky !important;
                 top: 0px;
                 z-index: 1;
                 background-color: white;
-            }
-            .query-string {
-                white-space: nowrap;
             }
         </style>
     @endslot
@@ -172,10 +168,16 @@
                     if(PROJECT_ADMIN == '0' && (i == 'checkbox' || i == 'btn'))
                         return;
 
+                    let width = null;
+
+                    if(i == 'query')
+                        width = '300px';
+
                     columns.push({
                         'title': item,
                         'name': i,
                         'data': i,
+                        'width': width,
                     });
                 });
 
@@ -216,10 +218,10 @@
                     columnDefs: [
                         {orderable: true, className: 'reorder', targets: 2},
                         {orderable: false, targets: '_all'},
-                        {"width": "350px", "targets": 2},
                     ],
                     initComplete: function () {
                         let api = this.api();
+
                         let url = new URL(window.location.href);
                         let params = new URLSearchParams(url.search);
 
