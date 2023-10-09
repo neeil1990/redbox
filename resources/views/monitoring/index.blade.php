@@ -721,6 +721,7 @@
 
                 $('.modal').modal('show').BootstrapModalFormTemplates({
                     title: '{{ __('Add user to project') }}',
+                    btnText: '{{ __('Invite') }}',
                     fields: [
                         {
                             type: 'text',
