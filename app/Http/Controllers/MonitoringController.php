@@ -81,9 +81,11 @@ class MonitoringController extends Controller
 
         foreach ($users as $user){
             $id = $request->input('id');
-            $result = $user->monitoringProjects()->syncWithoutDetaching([$id => ['approved' => 0]]);
-            if(count($result['attached']) > 0)
-                Mail::to($user)->send(new MonitoringShareProjectMail(MonitoringProject::find($id)));
+            if($user->monitoringProjects()->find($id) === null){
+                $result = $user->monitoringProjects()->syncWithoutDetaching([$id => ['approved' => 0]]);
+                if(count($result['attached']) > 0)
+                    Mail::to($user)->send(new MonitoringShareProjectMail(MonitoringProject::find($id)));
+            }
         }
 
         return $users->count();
