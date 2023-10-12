@@ -776,10 +776,10 @@ class Relevance
         foreach ($sites as $key => $item) {
             $domain = parse_url($item);
             $domain = str_replace('www.', "", mb_strtolower($domain['host']));
+            Log::info($domain);
+            Log::info(str_contains($domain, '.pdf'));
 
             if (str_contains($domain, '.pdf')) {
-                Log::info('remove', [$domain]);
-                unset($sites[$key]);
                 continue;
             }
 
