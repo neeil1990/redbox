@@ -774,14 +774,15 @@ class Relevance
         $iterator = 0;
 
         foreach ($sites as $key => $item) {
-            $domain = parse_url($item);
-            $domain = str_replace('www.', "", mb_strtolower($domain['host']));
-            Log::info($domain);
-            Log::info(str_contains($domain, '.pdf'));
+            Log::info($item);
+            Log::info(str_contains($item, '.pdf'));
 
-            if (str_contains($domain, '.pdf')) {
+            if (str_contains($item, '.pdf')) {
                 continue;
             }
+            $domain = parse_url($item);
+            $domain = str_replace('www.', "", mb_strtolower($domain['host']));
+
 
             if ($iterator < $request['count']) {
                 $this->domains[$key] = [
