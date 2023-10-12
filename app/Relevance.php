@@ -778,6 +778,8 @@ class Relevance
             $domain = str_replace('www.', "", mb_strtolower($domain['host']));
 
             if (str_contains($domain, '.pdf')) {
+                Log::info('remove', [$domain]);
+                unset($sites[$key]);
                 continue;
             }
 
