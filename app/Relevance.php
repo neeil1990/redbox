@@ -166,19 +166,33 @@ class Relevance
     {
         try {
             $this->removeNoIndex();
+            Log::debug($this->scanHash, ['removeNoIndex']);
             $this->getHiddenData();
+            Log::debug($this->scanHash, ['getHiddenData']);
             $this->separateLinksFromText();
+            Log::debug($this->scanHash, ['separateLinksFromText']);
             $this->removePartsOfSpeech();
+            Log::debug($this->scanHash, ['removePartsOfSpeech']);
             $this->removeListWords();
+            Log::debug($this->scanHash, ['removeListWords']);
             $this->getTextFromCompetitors();
+            Log::debug($this->scanHash, ['getTextFromCompetitors']);
             $this->separateAllText();
+            Log::debug($this->scanHash, ['separateAllText']);
             $this->preparePhrasesTable();
+            Log::debug($this->scanHash, ['preparePhrasesTable']);
             $this->searchWordForms();
+            Log::debug($this->scanHash, ['searchWordForms']);
             $this->processingOfGeneralInformation();
+            Log::debug($this->scanHash, ['processingOfGeneralInformation']);
             $this->prepareUnigramTable();
+            Log::debug($this->scanHash, ['prepareUnigramTable']);
             $this->analyseRecommendations();
+            Log::debug($this->scanHash, ['analyseRecommendations']);
             $this->prepareAnalysedSitesTable();
+            Log::debug($this->scanHash, ['prepareAnalysedSitesTable']);
             $this->prepareClouds();
+            Log::debug($this->scanHash, ['prepareClouds']);
             $this->saveHistory($historyId);
 
             UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
