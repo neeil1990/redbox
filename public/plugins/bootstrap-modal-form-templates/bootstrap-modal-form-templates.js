@@ -15,6 +15,7 @@
 
         let settings = $.extend({
             title: "Modal",
+            btnText: "Принять",
             fields: [
                 {
                     type: 'text',
@@ -133,7 +134,7 @@
             let save = $('<button />', {
                 type: 'button',
                 class: 'btn btn-success',
-            }).text('Принять');
+            }).text(settings.btnText);
 
             save.click(() => settings.onAgree(modal));
 

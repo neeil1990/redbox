@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\MonitoringProject;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -11,14 +12,16 @@ class MonitoringShareProjectMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private $project;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(MonitoringProject $project)
     {
-        //
+        $this->project = $project;
     }
 
     /**
@@ -28,6 +31,8 @@ class MonitoringShareProjectMail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.monitoring.share');
+        $project = $this->project;
+        return $this->subject(__('You have been given access to the project') . " " . $project['name'])
+            ->markdown('emails.monitoring.share', compact('project'));
     }
 }

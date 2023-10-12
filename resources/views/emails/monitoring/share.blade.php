@@ -1,10 +1,10 @@
 @component('mail::message')
-# Новый проект
+# {{ __('New project') }}
 
-Вам дали доступ к проекту, для подтверждения перейдите по ссылке 
+{{ __('You have been given access to the project') }} {{ $project['name'] }}, {{ __('To confirm, follow the link') }} 
 
 @component('mail::button', ['url' => config('app.url') . '/monitoring'])
-Подтвердить
+{{ __('Confirm in your account') }}
 @endcomponent
 
 @endcomponent

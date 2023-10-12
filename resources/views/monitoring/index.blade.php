@@ -51,6 +51,9 @@
             table.dataTable > thead .sorting:after, table.dataTable > thead .sorting_asc:after, table.dataTable > thead .sorting_desc:after, table.dataTable > thead .sorting_asc_disabled:after, table.dataTable > thead .sorting_desc_disabled:after {
                 right: 0em;
             }
+            .dropdown-item {
+                cursor: pointer;
+            }
         </style>
 
         @hasanyrole('Super Admin|admin')
@@ -90,7 +93,6 @@
         <!-- Toastr -->
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <!-- Bootstrap 4 -->
-        <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('plugins/bootstrap-modal-form-templates/bootstrap-modal-form-templates.js') }}"></script>
         <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
@@ -302,7 +304,6 @@
                     },
                     {
                         orderable: false,
-                        width: '225px',
                         data: function (row) {
 
                             if(row.pivot.admin == false){
@@ -310,48 +311,54 @@
                                 return view[0].outerHTML;
                             }
 
-                            let addUser = $('<a />', {class: 'btn btn-sm btn-info add-user tooltip-on', title: '{{ __('Add user') }}'}).append($('<i />', {class: 'fas fa-user-plus'}));
+                            let group = $('<div />', { class: "btn-group"});
 
-                            addUser.attr({
-                                "data-id": row.id,
-                            });
+                            let dropdown = $('<button />', {
+                                type: 'button',
+                                "data-toggle": 'dropdown',
+                                "data-offset": '-145',
+                                class: 'btn btn-info dropdown-toggle',
+                            }).append($('<i />', { class: 'fas fa-bars'}));
+
+                            let menu = $('<div />', {class: 'dropdown-menu'});
+
+                            let addUser = $('<a />', {class: 'dropdown-item add-user', "data-id": row.id}).html('{{ __('Add user') }}');
 
                             let exports = $('<a />', {
-                                class: 'btn btn-secondary btn-sm click_tracking tooltip-on',
+                                class: 'dropdown-item click_tracking',
                                 "data-click": 'Export project',
                                 "data-toggle": 'modal',
                                 "data-target": '.modal',
                                 "data-type": 'export-edit',
                                 "data-id": row.id,
-                                title: '{{ __('Project export') }}'
-                            }).html('<i class="fas fa-file-export"></i>');
+                            }).html('{{ __('Project export') }}');
 
-                            let create = $('<a />', {class: 'btn btn-sm btn-success tooltip-on'}).append($('<i />', {class: 'fas fa-plus'}));
-
-                            create.attr({
+                            let create = $('<a />', {
+                                class: 'dropdown-item',
                                 "data-toggle": 'modal',
                                 "data-target": '.modal',
                                 "data-type": 'create_keywords',
                                 "data-id": row.id,
-                                title: '{{ __('Add keyword') }}'
-                            });
+                            }).text('{{ __('Add keyword') }}');
 
                             let edit = $('<a />', {
-                                class: 'btn btn-sm btn-success',
+                                class: 'dropdown-item',
                                 href: `/monitoring/create#id=${row.id}`,
-                            }).append($('<i />', {class: 'fas fa-edit tooltip-on', title: '{{ __('Edit project') }}'}));
+                            }).html('{{ __('Edit project') }}');
 
                             let folder = $('<a />', {
-                                class: 'btn btn-sm btn-info tooltip-on',
+                                class: 'dropdown-item',
                                 href: '/monitoring/' + row.id + '/groups',
-                                title: '{{ __('Project groups') }}',
-                            }).append($('<i />', {class: 'fa fa-folder-open'}));
+                                title: '',
+                            }).html('{{ __('Project groups') }}');
 
-                            let trash = $('<a />', {class: 'btn btn-sm btn-danger tooltip-on', title: '{{ __('Delete project') }}',}).append($('<i />', {class: 'fas fa-trash'}));
-
+                            let trash = $('<a />', {class: 'dropdown-item bg-danger'}).html('{{ __('Delete project') }}');
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
-                            return addUser[0].outerHTML + " " + exports[0].outerHTML + " " + create[0].outerHTML + " " + edit[0].outerHTML + " " + folder[0].outerHTML + " " + trash[0].outerHTML;
+                            group.append([dropdown, menu]);
+                            menu.append([addUser, exports, create, edit, folder, $('<div />', {class: 'dropdown-divider'}), trash]);
+
+                            return group[0].outerHTML;
                         },
                         class: 'project-actions text-right',
                     },
@@ -721,6 +728,7 @@
 
                 $('.modal').modal('show').BootstrapModalFormTemplates({
                     title: '{{ __('Add user to project') }}',
+                    btnText: '{{ __('Invite') }}',
                     fields: [
                         {
                             type: 'text',
