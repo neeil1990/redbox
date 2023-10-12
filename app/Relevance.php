@@ -218,11 +218,13 @@ class Relevance
      */
     public function removeNoIndex()
     {
+        Log::info(1123);
         RelevanceProgress::editProgress(20, $this->request);
 
         if (isset($this->request['noIndex']) && $this->request['noIndex'] == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
+                Log::info($key);
                 $this->sites[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
             }
         }
