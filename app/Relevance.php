@@ -777,6 +777,10 @@ class Relevance
             $domain = parse_url($item);
             $domain = str_replace('www.', "", mb_strtolower($domain['host']));
 
+            if (str_contains($domain, '.pdf')) {
+                continue;
+            }
+
             if ($iterator < $request['count']) {
                 $this->domains[$key] = [
                     'item' => $item,
