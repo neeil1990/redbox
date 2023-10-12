@@ -35,6 +35,7 @@ class SimplifiedXmlFacade extends XmlFacade
 
     public function getXMLResponse(string $searchEngine = 'yandex')
     {
+        Log::debug('xml attempt');
         $this->attempt += 1;
         if ($this->attempt >= 7) {
             return 'Превышен лимит попыток';
