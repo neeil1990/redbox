@@ -10,6 +10,8 @@ class MonitoringDataTableColumnsProject extends Model
         'monitoring_project_id',
         'words',
         'middle',
+        'mastered',
+        'mastered_percent',
         'top3',
         'diff_top3',
         'top5',

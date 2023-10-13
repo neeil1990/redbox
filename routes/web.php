@@ -350,7 +350,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/project/set/column/settings', 'MonitoringController@setColumnSettingsForProject');
     Route::post('/monitoring/project/get/column/settings', 'MonitoringController@getColumnSettingsForProject');
 
-    Route::get('/monitoring/project/update-data-table', 'MonitoringController@updateDataTableProjects');
+    Route::get('/monitoring/project/update-data-table/{id}', 'MonitoringController@updateDataTableProjects');
     Route::post('/monitoring/parse/positions/project', 'MonitoringController@parsePositionsInProject');
     Route::post('/monitoring/parse/positions/project/keys', 'MonitoringController@parsePositionsInProjectKeys');
 

@@ -241,6 +241,8 @@ class User extends Authenticatable implements MustVerifyEmail
                 'm_dt.diff_top30',
                 'm_dt.top100',
                 'm_dt.diff_top100',
+                'm_dt.mastered',
+                'm_dt.mastered_percent',
                 'm_dt.updated_at'
             );
     }

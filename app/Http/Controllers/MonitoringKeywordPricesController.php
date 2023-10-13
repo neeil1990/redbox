@@ -92,8 +92,8 @@ class MonitoringKeywordPricesController extends Controller
             $data['top50'] = '';
             $data['top100'] = '';
 
-            if($keyword->prices){
-                foreach($keyword->prices->toArray() as $key => $price) {
+            if($keyword->price){
+                foreach($keyword->price->toArray() as $key => $price) {
                     if (isset($data[$key]))
                         $data[$key] = $price;
                 }
@@ -110,7 +110,7 @@ class MonitoringKeywordPricesController extends Controller
         $request = $this->request;
         $region = $request->input('region', $this->regions->first()['id']);
 
-        $model = $this->project->keywords()->with(['prices' => function($query) use ($region){
+        $model = $this->project->keywords()->with(['price' => function($query) use ($region){
             $query->where('monitoring_searchengine_id', $region);
         }]);
 

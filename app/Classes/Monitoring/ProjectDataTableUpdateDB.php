@@ -3,11 +3,15 @@
 namespace App\Classes\Monitoring;
 
 use App\MonitoringDataTableColumnsProject;
-use \Illuminate\Support\Collection;
+use App\MonitoringProject;
 
 class ProjectDataTableUpdateDB
 {
     protected $model;
+    protected $keywords;
+    protected $positions;
+    protected $budget = null;
+
     protected $percents = [
         'top3' => 3,
         'top5' => 5,
@@ -16,43 +20,51 @@ class ProjectDataTableUpdateDB
         'top100' => 100,
     ];
 
-    public function __construct(Collection $project)
+    public function __construct(MonitoringProject $project)
     {
         $this->model = $project;
+        $this->keywords = $project->keywords;
+        $this->positions = $this->getPreviousAndLastPosition();
+        $this->budget = $project['budget'];
     }
 
     public function save()
     {
-        foreach ($this->model as $model) {
+        if(empty($this->model))
+            return null;
 
-           $keywords = $model->keywords()->get();
+       $arResult = $this->percent();
 
-           if($keywords->isEmpty())
-               continue;
+       $arResult['mastered'] = $this->mastered();
 
-           $arResult = $this->calculateTop($keywords, $model);
+       $arResult['mastered_percent'] = ($this->budget) ? round(($arResult['mastered'] / $this->budget) * 100, 2) : null;
 
-           $arResult['words'] = $model->keywords->count();
+       $arResult['words'] = $this->keywords->count();
 
-           if(count($arResult) > 0)
-                MonitoringDataTableColumnsProject::updateOrCreate(
-                    ['monitoring_project_id' => $model->id],
-                    $arResult
-                );
-        }
+       if(count($arResult) > 0)
+            MonitoringDataTableColumnsProject::updateOrCreate(
+                ['monitoring_project_id' => $this->model['id']],
+                $arResult
+            );
     }
 
-    private function calculateTop(Collection $keywords, &$model)
+    private function mastered()
+    {
+        $latest = $this->positions->first();
+        $mastered = new MasteredPositions($latest);
+        return $mastered->total();
+    }
+
+    private function percent()
     {
         $arResult = [];
-        $positions = $this->getLastPositionsByKeywords($keywords, $model);
 
-        $positionsForLastDay = $positions->first();
-        $positionsForPenultimateDay = $positions->last();
+        $latest = $this->positions->first();
+        $previous = $this->positions->last();
 
         foreach ($this->percents as $name => $percent){
-            $last = Helper::calculateTopPercentByPositions($positionsForLastDay, $percent);
-            $prev = Helper::calculateTopPercentByPositions($positionsForPenultimateDay, $percent);
+            $last = Helper::calculateTopPercentByPositions($latest->pluck('position'), $percent);
+            $prev = Helper::calculateTopPercentByPositions($previous->pluck('position'), $percent);
 
             $arResult[$name] = $last;
 
@@ -60,60 +72,31 @@ class ProjectDataTableUpdateDB
             $arResult[$diff] = Helper::differentTopPercent($last, $prev);
         }
 
-        $arResult['middle'] = ($positionsForLastDay->isNotEmpty()) ? round($positionsForLastDay->sum() / $positionsForLastDay->count()) : 0;
+        $arResult['middle'] = ($latest->isNotEmpty()) ? round($latest->sum() / $latest->count()) : 0;
 
         return $arResult;
     }
 
-    private function getLastPositionsByKeywords(Collection $keywords, $model)
+    private function getPreviousAndLastPosition()
     {
-        $first = collect([]);
-        $last = collect([]);
+        $latest = collect([]);
+        $previous = collect([]);
 
-        if($keywords->isEmpty())
-            return collect([]);
+        foreach($this->keywords as $key){
+            $dateOfLastPosition = $key->positions()->select('created_at')->orderBy('created_at', 'desc')->first();
+            if(empty($dateOfLastPosition))
+                continue;
 
-        $regions = $model->searchengines()->get();
+            $latestCollect = $key->positions()->whereDate('created_at', $dateOfLastPosition['created_at']->toDateString())->orderBy('created_at', 'desc')->get()->unique('monitoring_searchengine_id');
+            $previousCollect = $key->positions()->whereDate('created_at', $dateOfLastPosition['created_at']->subDay()->toDateString())->orderBy('created_at', 'desc')->get()->unique('monitoring_searchengine_id');
 
-        foreach($keywords as $keyword){
+            if($latestCollect->isNotEmpty())
+                $latest = $latest->merge($latestCollect);
 
-            $lastPositions = $this->getLastPositionOfRegionsByKeyword($regions, $keyword);
-
-            $first = $first->merge($lastPositions['first']);
-            $last = $last->merge($lastPositions['last']);
+            if($previousCollect->isNotEmpty())
+                $previous = $previous->merge($previousCollect);
         }
 
-        return collect([$first, $last]);
-    }
-
-    private function getLastPositionOfRegionsByKeyword($regions, $keyword)
-    {
-        $positions = collect([
-            'first' => collect([]),
-            'last' => collect([]),
-        ]);
-
-        foreach ($regions as $region){
-            $collection = $this->getLastPositionsOfRegionByKeyword($region, $keyword);
-            if($collection->isNotEmpty()){
-                $positions['first']->push($collection->first()->position);
-
-                if($collection->count() > 1)
-                    $positions['last']->push($collection->last()->position);
-            }
-        }
-
-        return $positions;
-    }
-
-    public function getLastPositionsOfRegionByKeyword($region, $keyword)
-    {
-        $positions = $region->positions()
-            ->whereNotNull('position')
-            ->where('monitoring_keyword_id', $keyword->id)
-            ->orderBy('created_at', 'desc')
-            ->take(2)->get();
-
-        return $positions;
+        return collect([$latest, $previous]);
     }
 }

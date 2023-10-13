@@ -303,6 +303,23 @@
                         },
                     },
                     {
+                        title: '{{ __('Budget') }}',
+                        name: 'budget',
+                        data: 'budget',
+                        visible: false,
+                    },
+                    {
+                        title: '{{ __('Mastered') }}',
+                        name: 'mastered',
+                        data: function (row) {
+                            let sup = $('<sup />').css('color', 'green');
+                            if(row.mastered_percent)
+                                sup.text(row.mastered_percent + '%');
+
+                            return row.mastered + sup[0].outerHTML;
+                        },
+                    },
+                    {
                         orderable: false,
                         data: function (row) {
 
@@ -355,8 +372,13 @@
                             let trash = $('<a />', {class: 'dropdown-item bg-danger'}).html('{{ __('Delete project') }}');
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
+                            let update = $('<a />', {
+                                class: 'dropdown-item update-project',
+                                "data-id": row.id,
+                            }).html('{{ __('Update data') }}');
+
                             group.append([dropdown, menu]);
-                            menu.append([addUser, exports, create, edit, folder, $('<div />', {class: 'dropdown-divider'}), trash]);
+                            menu.append([update, addUser, exports, create, edit, folder, $('<div />', {class: 'dropdown-divider'}), trash]);
 
                             return group[0].outerHTML;
                         },
@@ -453,7 +475,7 @@
                     updateCacheButton.click(function () {
                         $(this).hide();
                         window.loading();
-                        axios.get('/monitoring/project/update-data-table')
+                        axios.get('/monitoring/project/update-data-table/0')
                             .then(function () {
                                 table.draw(false);
                                 $('.data-time-cache').text(moment().format("DD.MM.YYYY H:mm"));
@@ -774,7 +796,15 @@
                         toastr.error('{{ __('Wrong request') }}');
                     });
                 }
-            })
+            });
+
+            $('#projects').on('click', '.update-project', function(){
+                window.loading();
+                let id = $(this).data('id');
+                axios.get( '/monitoring/project/update-data-table/' + id ).then(function () {
+                    table.draw(false);
+                });
+            });
         </script>
     @endslot
 

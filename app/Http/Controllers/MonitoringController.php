@@ -232,12 +232,20 @@ class MonitoringController extends Controller
         return $projects;
     }
 
-    public function updateDataTableProjects()
+    public function updateDataTableProjects($id = 0)
     {
         /** @var User $user */
         $user = $this->user;
-        $projects = $user->monitoringProjects()->get();
-        (new ProjectDataTableUpdateDB($projects))->save();
+
+        if(empty($id)){
+            $projects = $user->monitoringProjects()->get();
+            foreach($projects as $project)
+                (new ProjectDataTableUpdateDB($project))->save();
+        }else{
+            /** @var MonitoringProject $project */
+            $project = $user->monitoringProjects()->find($id);
+            (new ProjectDataTableUpdateDB($project))->save();
+        }
 
         return response(200);
     }
