@@ -306,7 +306,6 @@
                         title: '{{ __('Budget') }}',
                         name: 'budget',
                         data: 'budget',
-                        visible: false,
                     },
                     {
                         title: '{{ __('Mastered') }}',
@@ -650,7 +649,6 @@
 
                                         input.val(null);
                                     }).catch(function (error) {
-
                                         toastr.error('Something is going wrong');
                                     });
                                 }

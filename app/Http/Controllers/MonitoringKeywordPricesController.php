@@ -40,7 +40,9 @@ class MonitoringKeywordPricesController extends Controller
         if($request->ajax())
             return $this->getDataTable();
 
-        return view('monitoring.price.index');
+        $project = $this->project;
+
+        return view('monitoring.price.index', compact('project'));
     }
 
     public function action(Request $request)
@@ -141,5 +143,13 @@ class MonitoringKeywordPricesController extends Controller
         $collection->put('recordsTotal', $records);
 
         return $collection;
+    }
+
+    public function storeBudget(Request $request)
+    {
+        if($this->user->monitoringProjects()->find($request['id'])->update(['budget' => $request['budget']]))
+            return "success";
+
+        return "fail";
     }
 }

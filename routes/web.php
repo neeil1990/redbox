@@ -310,6 +310,7 @@ Route::middleware(['verified'])->group(function () {
     // Monitoring query price
     Route::get('monitoring/{id}/prices', 'MonitoringKeywordPricesController@index')->name('prices.index');
     Route::post('monitoring/{id}/prices', 'MonitoringKeywordPricesController@action')->name('prices.action');
+    Route::post('monitoring/{id}/prices/budget', 'MonitoringKeywordPricesController@storeBudget')->name('prices.budget');
 
     // Monitoring project approve or detach projects
     Route::post('monitoring/project/approve', 'MonitoringController@approveOrDetachUser')->name('approve.project');

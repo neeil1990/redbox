@@ -27,7 +27,7 @@
             ['name' => 'top10', 'text' => __('TOP') . '10'],
             ['name' => 'top30', 'text' => __('TOP') . '30'],
             ['name' => 'top100', 'text' => __('TOP') . '100'],
-            //['name' => 'budget', 'text' => __('Budget')],
+            ['name' => 'budget', 'text' => __('Budget')],
             ['name' => 'mastered', 'text' => __('Mastered')],
         ] as $col)
             <a href="javascript:void(0)" class="btn btn-default btn-sm column-visible click_tracking" data-click="{{ $col['text'] }}" data-toggle="tooltip" data-column="{{ $col['name'] }}" title="Скрыть/Показать столбец">{{ $col['text'] }}</a>
