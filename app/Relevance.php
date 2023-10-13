@@ -204,11 +204,13 @@ class Relevance
      */
     public function removeNoIndex()
     {
+        Log::info(1123);
         RelevanceProgress::editProgress(20, $this->request);
 
         if (isset($this->request['noIndex']) && $this->request['noIndex'] == 'false') {
             $this->mainPage['html'] = TextAnalyzer::removeNoindexText($this->mainPage['html']);
             foreach ($this->sites as $key => $page) {
+                Log::info($key);
                 $this->sites[$key]['html'] = TextAnalyzer::removeNoindexText($page['html']);
             }
         }
@@ -758,8 +760,12 @@ class Relevance
         $iterator = 0;
 
         foreach ($sites as $key => $item) {
+            if (str_contains($item, '.pdf')) {
+                continue;
+            }
             $domain = parse_url($item);
             $domain = str_replace('www.', "", mb_strtolower($domain['host']));
+
 
             if ($iterator < $request['count']) {
                 $this->domains[$key] = [
