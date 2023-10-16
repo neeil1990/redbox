@@ -332,13 +332,13 @@
                             let dropdown = $('<button />', {
                                 type: 'button',
                                 "data-toggle": 'dropdown',
-                                "data-offset": '-145',
+                                "data-offset": '-170',
                                 class: 'btn btn-info dropdown-toggle',
                             }).append($('<i />', { class: 'fas fa-bars'}));
 
                             let menu = $('<div />', {class: 'dropdown-menu'});
 
-                            let addUser = $('<a />', {class: 'dropdown-item add-user', "data-id": row.id}).html('{{ __('Add user') }}');
+                            let addUser = $('<a />', {class: 'dropdown-item add-user', "data-id": row.id}).html('{{ __('Add user') }}').prepend($('<i/>').addClass('far fa-user mr-2'));
 
                             let exports = $('<a />', {
                                 class: 'dropdown-item click_tracking',
@@ -347,7 +347,7 @@
                                 "data-target": '.modal',
                                 "data-type": 'export-edit',
                                 "data-id": row.id,
-                            }).html('{{ __('Project export') }}');
+                            }).html('{{ __('Project export') }}').prepend($('<i/>').addClass('fas fa-file-download mr-2'));
 
                             let create = $('<a />', {
                                 class: 'dropdown-item',
@@ -355,26 +355,26 @@
                                 "data-target": '.modal',
                                 "data-type": 'create_keywords',
                                 "data-id": row.id,
-                            }).text('{{ __('Add keyword') }}');
+                            }).text('{{ __('Add keyword') }}').prepend($('<i/>').addClass('far fa-plus-square mr-2'));
 
                             let edit = $('<a />', {
                                 class: 'dropdown-item',
                                 href: `/monitoring/create#id=${row.id}`,
-                            }).html('{{ __('Edit project') }}');
+                            }).html('{{ __('Edit project') }}').prepend($('<i/>').addClass('fas fa-edit mr-2'));
 
                             let folder = $('<a />', {
                                 class: 'dropdown-item',
                                 href: '/monitoring/' + row.id + '/groups',
                                 title: '',
-                            }).html('{{ __('Project groups') }}');
+                            }).html('{{ __('Project groups') }}').prepend($('<i/>').addClass('far fa-folder mr-2'));
 
-                            let trash = $('<a />', {class: 'dropdown-item bg-danger'}).html('{{ __('Delete project') }}');
+                            let trash = $('<a />', {class: 'dropdown-item bg-danger'}).html('{{ __('Delete project') }}').prepend($('<i/>').addClass('fas fa-trash-alt mr-2'));
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
                             let update = $('<a />', {
                                 class: 'dropdown-item update-project',
                                 "data-id": row.id,
-                            }).html('{{ __('Update data') }}');
+                            }).html('{{ __('Update data') }}').prepend($('<i/>').addClass('fas fa-sync-alt mr-2'));
 
                             group.append([dropdown, menu]);
                             menu.append([update, addUser, exports, create, edit, folder, $('<div />', {class: 'dropdown-divider'}), trash]);

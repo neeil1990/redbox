@@ -35,9 +35,9 @@ class ProjectDataTableUpdateDB
 
        $arResult = $this->percent();
 
-       $arResult['mastered'] = $this->mastered();
-
-       $arResult['mastered_percent'] = ($this->budget) ? round(($arResult['mastered'] / $this->budget) * 100, 2) : null;
+       $mastered = $this->mastered();
+       $arResult['mastered'] = $mastered->total();
+       $arResult['mastered_percent'] = $mastered->percentOf($this->budget);
 
        $arResult['words'] = $this->keywords->count();
 
@@ -51,8 +51,7 @@ class ProjectDataTableUpdateDB
     private function mastered()
     {
         $latest = $this->positions->first();
-        $mastered = new MasteredPositions($latest);
-        return $mastered->total();
+        return new MasteredPositions($latest);
     }
 
     private function percent()
