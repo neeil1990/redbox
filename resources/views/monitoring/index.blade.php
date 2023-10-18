@@ -336,7 +336,7 @@
                                 let small = $('<small />').css('color', 'green');
                                 small.text(Math.floor(tops.total / (row.budget / 30) * 100) + '%');
 
-                                return small[0].outerHTML +"<br />"+ row.mastered + " "+ hint[0].outerHTML;
+                                return row.mastered + " "+ hint[0].outerHTML + "<br />" + small[0].outerHTML;
                             }
 
                             return row.mastered;
@@ -417,6 +417,9 @@
                         column.addClass('text-nowrap');
                         column.html(column.text() + ' <i class="far fa-question-circle tooltip-on" title="{{ __('Percentage of keys in the top') }}"></i>');
                     });
+
+                    let mastered = api.column( 'mastered:name' ).header();
+                    $(mastered).addClass('text-nowrap').html('{{__('Mastered')}}  <i class="far fa-question-circle tooltip-on" title="В этом столбце показывается освоенный бюджет за один календарный день на момент снятия последней позиции. Ниже показывается процент освоенности в расчете на 30 каледнарных дней."></i>');
                 },
                 initComplete: function () {
                     let api = this.api();
