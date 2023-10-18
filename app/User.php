@@ -243,6 +243,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 'm_dt.diff_top100',
                 'm_dt.mastered',
                 'm_dt.mastered_percent',
+                'm_dt.mastered_info',
                 'm_dt.updated_at'
             );
     }

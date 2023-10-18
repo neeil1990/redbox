@@ -31,12 +31,13 @@ class MasteredPositions
     {
         $top1 = $this->top1();
         $top3 = $this->top3();
+        $top5 = $this->top5();
         $top10 = $this->top10();
         $top20 = $this->top20();
         $top50 = $this->top50();
         $top100 = $this->top100();
 
-        return array_sum([$top1['total'], $top3['total'], $top10['total'], $top20['total'], $top50['total'], $top100['total']]);
+        return array_sum([$top1['total'], $top3['total'], $top5['total'], $top10['total'], $top20['total'], $top50['total'], $top100['total']]);
     }
 
     public function top1()

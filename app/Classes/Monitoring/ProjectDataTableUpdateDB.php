@@ -36,8 +36,19 @@ class ProjectDataTableUpdateDB
        $arResult = $this->percent();
 
        $mastered = $this->mastered();
+
        $arResult['mastered'] = $mastered->total();
        $arResult['mastered_percent'] = $mastered->percentOf($this->budget);
+       $arResult['mastered_info'] = collect([
+           'top1' => $mastered->top1(),
+           'top3' => $mastered->top3(),
+           'top5' => $mastered->top5(),
+           'top10' => $mastered->top10(),
+           'top20' => $mastered->top20(),
+           'top50' => $mastered->top50(),
+           'top100' => $mastered->top100(),
+           'total' => $mastered->total(),
+       ]);
 
        $arResult['words'] = $this->keywords->count();
 

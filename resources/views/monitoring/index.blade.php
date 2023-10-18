@@ -305,17 +305,37 @@
                     {
                         title: '{{ __('Budget') }}',
                         name: 'budget',
-                        data: 'budget',
-                    },
-                    {
-                        title: '{{ __('Mastered') }}',
-                        name: 'mastered',
                         data: function (row) {
                             let sup = $('<sup />').css('color', 'green');
                             if(row.mastered_percent)
                                 sup.text(row.mastered_percent + '%');
 
-                            return row.mastered + sup[0].outerHTML;
+                            return row.budget + sup[0].outerHTML;
+                        },
+                    },
+                    {
+                        title: '{{ __('Mastered') }}',
+                        name: 'mastered',
+                        data: function (row) {
+                            let hint = $('<i />', {class: "far fa-question-circle tooltip-on"});
+                            let tops = JSON.parse(row.mastered_info);
+                            let ul = $('<ul />').addClass('list-unstyled text-left');
+
+                            $.each(tops, function(k, v){
+                                if(v.count){
+                                    let li = $('<li />').html(k + ": " + v.count +" = "+ v.total);
+                                    ul.append(li);
+                                }else {
+                                    ul.append($('<li />').html("{{ __('total') }}: <b>" +tops.total+ "</b>"));
+                                }
+                            });
+
+                            if(tops){
+                                hint.attr('title', ul[0].outerHTML);
+                                return row.mastered +" "+ hint[0].outerHTML;
+                            }
+
+                            return row.mastered;
                         },
                     },
                     {
@@ -500,6 +520,7 @@
                     this.find('.tooltip-on').tooltip({
                         animation: false,
                         trigger: 'hover',
+                        html: true,
                     });
 
                     this.on( 'processing.dt', function ( e, settings, processing ) {
