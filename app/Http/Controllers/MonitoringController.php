@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Monitoring\Helper;
+use App\Classes\Monitoring\MasteredPositions;
 use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
@@ -232,12 +233,20 @@ class MonitoringController extends Controller
         return $projects;
     }
 
-    public function updateDataTableProjects()
+    public function updateDataTableProjects($id = 0)
     {
         /** @var User $user */
         $user = $this->user;
-        $projects = $user->monitoringProjects()->get();
-        (new ProjectDataTableUpdateDB($projects))->save();
+
+        if(empty($id)){
+            $projects = $user->monitoringProjects()->get();
+            foreach($projects as $project)
+                (new ProjectDataTableUpdateDB($project))->save();
+        }else{
+            /** @var MonitoringProject $project */
+            $project = $user->monitoringProjects()->find($id);
+            (new ProjectDataTableUpdateDB($project))->save();
+        }
 
         return response(200);
     }
@@ -294,6 +303,10 @@ class MonitoringController extends Controller
         }
         $engine->middle_position = round($pos->pluck('first')->sum('position') / $pos->pluck('first')->count(), 2);
         $engine->latest_created = $pos->pluck('first')->last()->created_at;
+
+        $mastered = new MasteredPositions($pos->pluck('first'));
+        $engine->mastered = $mastered->total();
+        $engine->mastered_percent = $mastered->percentOf($engine->project['budget']);
 
         return $engine;
     }

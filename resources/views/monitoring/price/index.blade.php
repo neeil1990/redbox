@@ -38,8 +38,21 @@
     @endslot
 
     <div class="row">
-        <div class="col-12 mb-3">
-            <a href="{{ route('monitoring.show', request('id')) }}" class="btn btn-default">Вернутся в проект</a>
+        <div class="col-2 mb-3">
+            <a href="{{ route('monitoring.show', request('id')) }}" class="btn btn-block btn-default">Вернутся в проект</a>
+        </div>
+        <div class="col-4">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      {{ __('Budget') }}
+                    </span>
+                </div>
+                <input type="number" min="0" step="0.01" placeholder="{{ __('Projects budget') }}" value="{{ $project['budget'] }}" class="form-control">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-success budget">{{ __('Save') }}</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -256,6 +269,16 @@
                 },
             });
 
+            $('.budget').click(function(){
+                let budget = $(this).closest('.input-group').find('input').val();
+                axios.post('prices/budget', {
+                    budget: budget,
+                }).then(function (response) {
+                    toastr.success('{{ __('Saved') }}');
+                }).catch(function (error) {
+                    toastr.error('Something is going wrong');
+                });
+            });
         </script>
     @endslot
 

@@ -28,6 +28,7 @@
                             <th>ТОП-20</th>
                             <th>ТОП-50</th>
                             <th>ТОП-100</th>
+                            <th>{{{ __('Mastered') }}}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,6 +43,12 @@
                             <td class="top">{{$data->top_20}}</td>
                             <td class="top">{{$data->top_50}}</td>
                             <td class="top">{{$data->top_100}}</td>
+                            <td class="top">
+                                {{$data->mastered}}
+                                @if($data->mastered_percent)
+                                    <sup style="color: green;">{{$data->mastered_percent}}%</sup>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>

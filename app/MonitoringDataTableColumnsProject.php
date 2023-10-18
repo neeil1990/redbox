@@ -10,6 +10,9 @@ class MonitoringDataTableColumnsProject extends Model
         'monitoring_project_id',
         'words',
         'middle',
+        'mastered',
+        'mastered_percent',
+        'mastered_info',
         'top3',
         'diff_top3',
         'top5',
@@ -20,6 +23,10 @@ class MonitoringDataTableColumnsProject extends Model
         'diff_top30',
         'top100',
         'diff_top100'
+    ];
+
+    protected $casts = [
+        'mastered_info' => 'collection',
     ];
 
 }

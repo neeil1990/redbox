@@ -303,6 +303,46 @@
                         },
                     },
                     {
+                        title: '{{ __('Budget') }}',
+                        name: 'budget',
+                        data: function (row) {
+                            let sup = $('<sup />').css('color', 'green');
+                            if(row.mastered_percent)
+                                sup.text(row.mastered_percent + '%');
+
+                            return row.budget + sup[0].outerHTML;
+                        },
+                    },
+                    {
+                        title: '{{ __('Mastered') }}',
+                        name: 'mastered',
+                        data: function (row) {
+                            let hint = $('<i />', {class: "far fa-question-circle tooltip-on"});
+                            let tops = JSON.parse(row.mastered_info);
+                            let ul = $('<ul />').addClass('list-unstyled text-left');
+
+                            $.each(tops, function(k, v){
+                                if(v.count){
+                                    let li = $('<li />').html(k + ": " + v.count +" = "+ v.total);
+                                    ul.append(li);
+                                }else {
+                                    ul.append($('<li />').html("{{ __('total') }}: <b>" +tops.total+ "</b>"));
+                                }
+                            });
+
+                            if(tops && tops.total){
+                                hint.attr('title', ul[0].outerHTML);
+
+                                let small = $('<small />').css('color', 'green');
+                                small.text(Math.floor(tops.total / (row.budget / 30) * 100) + '%');
+
+                                return row.mastered + " "+ hint[0].outerHTML + "<br />" + small[0].outerHTML;
+                            }
+
+                            return row.mastered;
+                        },
+                    },
+                    {
                         orderable: false,
                         data: function (row) {
 
@@ -316,13 +356,13 @@
                             let dropdown = $('<button />', {
                                 type: 'button',
                                 "data-toggle": 'dropdown',
-                                "data-offset": '-145',
+                                "data-offset": '-170',
                                 class: 'btn btn-info dropdown-toggle',
                             }).append($('<i />', { class: 'fas fa-bars'}));
 
                             let menu = $('<div />', {class: 'dropdown-menu'});
 
-                            let addUser = $('<a />', {class: 'dropdown-item add-user', "data-id": row.id}).html('{{ __('Add user') }}');
+                            let addUser = $('<a />', {class: 'dropdown-item add-user', "data-id": row.id}).html('{{ __('Add user') }}').prepend($('<i/>').addClass('far fa-user mr-2'));
 
                             let exports = $('<a />', {
                                 class: 'dropdown-item click_tracking',
@@ -331,7 +371,7 @@
                                 "data-target": '.modal',
                                 "data-type": 'export-edit',
                                 "data-id": row.id,
-                            }).html('{{ __('Project export') }}');
+                            }).html('{{ __('Project export') }}').prepend($('<i/>').addClass('fas fa-file-download mr-2'));
 
                             let create = $('<a />', {
                                 class: 'dropdown-item',
@@ -339,24 +379,29 @@
                                 "data-target": '.modal',
                                 "data-type": 'create_keywords',
                                 "data-id": row.id,
-                            }).text('{{ __('Add keyword') }}');
+                            }).text('{{ __('Add keyword') }}').prepend($('<i/>').addClass('far fa-plus-square mr-2'));
 
                             let edit = $('<a />', {
                                 class: 'dropdown-item',
                                 href: `/monitoring/create#id=${row.id}`,
-                            }).html('{{ __('Edit project') }}');
+                            }).html('{{ __('Edit project') }}').prepend($('<i/>').addClass('fas fa-edit mr-2'));
 
                             let folder = $('<a />', {
                                 class: 'dropdown-item',
                                 href: '/monitoring/' + row.id + '/groups',
                                 title: '',
-                            }).html('{{ __('Project groups') }}');
+                            }).html('{{ __('Project groups') }}').prepend($('<i/>').addClass('far fa-folder mr-2'));
 
-                            let trash = $('<a />', {class: 'dropdown-item bg-danger'}).html('{{ __('Delete project') }}');
+                            let trash = $('<a />', {class: 'dropdown-item bg-danger'}).html('{{ __('Delete project') }}').prepend($('<i/>').addClass('fas fa-trash-alt mr-2'));
                             trash.attr('onclick', `onClickDeleteProject(${row.id})`);
 
+                            let update = $('<a />', {
+                                class: 'dropdown-item update-project',
+                                "data-id": row.id,
+                            }).html('{{ __('Update data') }}').prepend($('<i/>').addClass('fas fa-sync-alt mr-2'));
+
                             group.append([dropdown, menu]);
-                            menu.append([addUser, exports, create, edit, folder, $('<div />', {class: 'dropdown-divider'}), trash]);
+                            menu.append([update, addUser, exports, create, edit, folder, $('<div />', {class: 'dropdown-divider'}), trash]);
 
                             return group[0].outerHTML;
                         },
@@ -372,6 +417,9 @@
                         column.addClass('text-nowrap');
                         column.html(column.text() + ' <i class="far fa-question-circle tooltip-on" title="{{ __('Percentage of keys in the top') }}"></i>');
                     });
+
+                    let mastered = api.column( 'mastered:name' ).header();
+                    $(mastered).addClass('text-nowrap').html('{{__('Mastered')}}  <i class="far fa-question-circle tooltip-on" title="В этом столбце показывается освоенный бюджет за один календарный день на момент снятия последней позиции. Ниже показывается процент освоенности в расчете на 30 каледнарных дней."></i>');
                 },
                 initComplete: function () {
                     let api = this.api();
@@ -453,7 +501,7 @@
                     updateCacheButton.click(function () {
                         $(this).hide();
                         window.loading();
-                        axios.get('/monitoring/project/update-data-table')
+                        axios.get('/monitoring/project/update-data-table/0')
                             .then(function () {
                                 table.draw(false);
                                 $('.data-time-cache').text(moment().format("DD.MM.YYYY H:mm"));
@@ -479,6 +527,7 @@
                     this.find('.tooltip-on').tooltip({
                         animation: false,
                         trigger: 'hover',
+                        html: true,
                     });
 
                     this.on( 'processing.dt', function ( e, settings, processing ) {
@@ -628,7 +677,6 @@
 
                                         input.val(null);
                                     }).catch(function (error) {
-
                                         toastr.error('Something is going wrong');
                                     });
                                 }
@@ -774,7 +822,15 @@
                         toastr.error('{{ __('Wrong request') }}');
                     });
                 }
-            })
+            });
+
+            $('#projects').on('click', '.update-project', function(){
+                window.loading();
+                let id = $(this).data('id');
+                axios.get( '/monitoring/project/update-data-table/' + id ).then(function () {
+                    table.draw(false);
+                });
+            });
         </script>
     @endslot
 
