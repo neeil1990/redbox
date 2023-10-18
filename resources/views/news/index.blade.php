@@ -22,7 +22,7 @@
                             <div class="post" id="news-{{ $item->id }}">
                                 <div class="user-block">
                                     <img class="img-circle img-bordered-sm"
-                                         src="https://lk.redbox.su/storage/{{ $item->user->image }}" alt="avatar">
+                                         src="{{ $item->user->image }}" alt="avatar">
                                     <span class="username">
                                         <span>{{ $item->user->name }}</span>
                                             @if($item->user_id === \Illuminate\Support\Facades\Auth::id() || $admin)
@@ -87,7 +87,7 @@
                                                 </span>
                                                 </div>
                                                 <img class="direct-chat-img"
-                                                     src="https://lk.redbox.su/storage/{{ $comment->user->image}}"
+                                                     src="{{ $comment->user->image}}"
                                                      alt="avatar">
                                                 <div class="direct-chat-text">
                                                     <span>{{ $comment->comment }}</span>
@@ -241,7 +241,7 @@
                             "<span data-toggle='modal' data-target='" + response.commentId + "' class='remove-comment btn-tool' onclick='removeComment(this)'> " +
                             "<i class='fas fa-times'></i> " +
                             "</span></span></div> " +
-                            "<img src='https://lk.redbox.su/storage/" + response.avatar + "' alt='avatar' class='direct-chat-img'>" +
+                            "<img src='" + response.avatar + "' alt='avatar' class='direct-chat-img'>" +
                             "<div class='direct-chat-text'> " +
                             "<span>" + response.comment + "</span> " +
                             "<textarea rows='5' data-target='" + response.commentId + "' class='form form-control' style='display: none;'>" + response.comment + "</textarea>" +
