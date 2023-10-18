@@ -330,9 +330,13 @@
                                 }
                             });
 
-                            if(tops){
+                            if(tops && tops.total){
                                 hint.attr('title', ul[0].outerHTML);
-                                return row.mastered +" "+ hint[0].outerHTML;
+
+                                let small = $('<small />').css('color', 'green');
+                                small.text(Math.round(tops.total / (row.budget / 30) * 100) + '%');
+
+                                return small[0].outerHTML +"<br />"+ row.mastered + " "+ hint[0].outerHTML;
                             }
 
                             return row.mastered;
