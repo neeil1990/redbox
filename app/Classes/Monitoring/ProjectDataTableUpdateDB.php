@@ -69,12 +69,12 @@ class ProjectDataTableUpdateDB
     {
         $arResult = [];
 
-        $latest = $this->positions->first();
-        $previous = $this->positions->last();
+        $latest = $this->positions->first()->pluck('position');
+        $previous = $this->positions->last()->pluck('position');
 
         foreach ($this->percents as $name => $percent){
-            $last = Helper::calculateTopPercentByPositions($latest->pluck('position'), $percent);
-            $prev = Helper::calculateTopPercentByPositions($previous->pluck('position'), $percent);
+            $last = Helper::calculateTopPercentByPositions($latest, $percent);
+            $prev = Helper::calculateTopPercentByPositions($previous, $percent);
 
             $arResult[$name] = $last;
 

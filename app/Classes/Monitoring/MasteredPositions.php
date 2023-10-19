@@ -19,6 +19,14 @@ class MasteredPositions
         $this->modelPrice = new MonitoringKeywordPrice();
     }
 
+    public function percentOfDay($budget)
+    {
+        if(empty($budget))
+            return null;
+
+        return floor($this->total() / ($budget / 30) * 100);
+    }
+
     public function percentOf($budget)
     {
         if(empty($budget))

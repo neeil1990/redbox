@@ -180,7 +180,7 @@ class MonitoringController extends Controller
             $model->orderBy($columns[$order['column']]['name'], $order['dir']);
         }
 
-        $projects = $this->loadSearchEnginesToProjects($model->paginate($request->input('length', 1), ['*'], 'page', $page));
+        $projects = $this->extendFields($model->paginate($request->input('length', 1), ['*'], 'page', $page));
 
         $lastUpdated = $dataTable->orderBy('updated_at', 'desc')->first();
 
@@ -216,7 +216,7 @@ class MonitoringController extends Controller
         return $collection;
     }
 
-    protected function loadSearchEnginesToProjects($projects)
+    protected function extendFields($projects)
     {
         $projects->transform(function ($item) {
             $item->load(['searchengines' => function ($query) {
@@ -226,6 +226,8 @@ class MonitoringController extends Controller
             $item->engines = $item->searchengines->pluck('engine')->map(function ($item) {
                 return '<span class="badge badge-light"><i class="fab fa-' . $item . ' fa-sm"></i></span>';
             })->implode(' ');
+
+            $item->mastered = number_format($item->mastered, 2, ',', ' ');
 
             return $item;
         });
@@ -307,6 +309,7 @@ class MonitoringController extends Controller
         $mastered = new MasteredPositions($pos->pluck('first'));
         $engine->mastered = $mastered->total();
         $engine->mastered_percent = $mastered->percentOf($engine->project['budget']);
+        $engine->mastered_percent_day = $mastered->percentOfDay($engine->project['budget']);
 
         return $engine;
     }

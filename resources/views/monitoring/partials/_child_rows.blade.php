@@ -44,10 +44,12 @@
                             <td class="top">{{$data->top_50}}</td>
                             <td class="top">{{$data->top_100}}</td>
                             <td class="top">
-                                {{$data->mastered}}
+                                {{number_format($data->mastered, 2, ',', ' ')}}
                                 @if($data->mastered_percent)
                                     <sup style="color: green;">{{$data->mastered_percent}}%</sup>
                                 @endif
+                                <br />
+                                <small style="color: green">{{$data->mastered_percent_day}}%</small>
                             </td>
                         </tr>
                     @empty
