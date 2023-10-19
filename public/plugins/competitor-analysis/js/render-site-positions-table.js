@@ -18,19 +18,7 @@ function renderSitePositionsTable(domainsPosition, pageLength) {
             '  <td>' + domain + '</td>' +
             '  <td data-order="' + info['topPercent'] + '">' + info['topPercent'] + '% <span class="text-muted"> ' + info['text'] + '</span> ' + hideBlock + '</td>' +
             '  <td>' + info['avg'] + '</td>' +
-            '<tr>'
+            '</tr>'
         )
-    })
-
-    $(document).ready(function () {
-        // todo почему-то генерируются пустые строки
-        $('tr:empty').remove();
-
-        $('#positions').dataTable({
-            "order": [[1, "desc"]],
-            "pageLength": pageLength,
-        })
-
-        $('.positions').show()
     })
 }
