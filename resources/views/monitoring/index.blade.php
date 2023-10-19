@@ -800,7 +800,7 @@
                             table.draw(false);
                             m.modal('hide');
                         }).catch(function (error) {
-                            toastr.error('{{ __('Wrong request') }}');
+                            toastr.error('{{ __('Wrong mail') }}');
                         });
                     }
                 });
@@ -816,7 +816,7 @@
                         project_id: ProjectId,
                         user_id: UserId,
                     }).then(function (response) {
-                        toastr.success('{{ __('User detached') }}');
+                        toastr.success('{{ __('User deleted') }}');
                         table.draw(false);
                     }).catch(function (error) {
                         toastr.error('{{ __('Wrong request') }}');
