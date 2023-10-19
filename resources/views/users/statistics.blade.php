@@ -1,6 +1,13 @@
 @component('component.card', ['title' =>  __('General statistics users') ])
     @slot('css')
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+        <link rel="stylesheet"
+              href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
+
+        <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
         <style>
             .dt-buttons {
                 float: left;
@@ -9,10 +16,14 @@
             #statistics > thead > tr.filters > th:nth-child(8) > input {
                 display: none;
             }
+
+            #statistics_length {
+                float: left;
+            }
         </style>
     @endslot
 
-    <table class="table table-striped border" id="statistics">
+    <table id="statistics" class="table table-striped border">
         <thead>
         <tr>
             <th>id</th>
@@ -100,9 +111,9 @@
 
             $(document).ready(function () {
                 $('#statistics').DataTable({
+                    lengthMenu: [10, 25, 50, 100],
                     orderCellsTop: true,
                     fixedHeader: true,
-                    lengthMenu: [10, 25, 50, 100],
                     pageLength: 50,
                     dom: 'lBfrtip',
                     buttons: [

@@ -1,10 +1,31 @@
 @component('component.card', ['title' => __('General statistics modules')])
     @slot('css')
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+        <link rel="stylesheet"
+              href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/common.css') }}"/>
+
         <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
+        <style>
+            .dt-buttons {
+                float: left;
+            }
+
+            #statistics > thead > tr.filters > th:nth-child(8) > input,
+            #statistics_info,
+            #statistics_paginate {
+                display: none;
+            }
+
+            #statistics_length {
+                float: left;
+            }
+        </style>
     @endslot
 
-    <table id="table" class="table table-striped border">
+    <table id="statistics" class="table table-striped border">
         <thead>
         <tr>
             <th>Модуль</th>
@@ -65,6 +86,15 @@
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.js') }}"></script>
+
         <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
         <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
         <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
@@ -200,11 +230,28 @@
             });
         </script>
         <script>
-            $('#table').DataTable({
-                order: [[5, 'desc']],
-                lengthMenu: [10, 25, 50, 100],
-                pageLength: 25,
-                dom: 'lBfrtip',
+            $('#statistics').DataTable({
+                lengthMenu: [100],
+                buttons: [
+                    {
+                        extend: 'copy',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                ],
                 language: {
                     lengthMenu: "_MENU_",
                     search: "_INPUT_",
@@ -216,6 +263,11 @@
                         "previous": "«"
                     },
                 },
+                drawCallback: function () {
+                    $('#statistics_length > label > select').addClass('custom-select custom-select-sm form-control form-control-sm')
+                    $('#statistics_filter > label > input[type=search]').addClass('form-control form-control-sm')
+
+                }
             })
         </script>
     @endslot
