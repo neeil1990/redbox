@@ -39,8 +39,8 @@
             }
 
             .icon {
-                width: 32px;
-                height: 32px;
+                width: 20px;
+                height: 20px;
             }
 
             #tasks li, .stubs > .example {
@@ -131,24 +131,7 @@
                                 </h3>
                             </div>
                             <div class="card-body row">
-                                <div class="form-group col-2">
-                                    <label for="count">Количество проектов</label>
-                                    <select name="count" id="count" class="custom custom-select">
-                                        <option value="3">3</option>
-                                        <option value="5">5</option>
-                                        <option value="10">10</option>
-                                        <option value="20">20</option>
-                                        <option value="30">30</option>
-                                        <option value="40">40</option>
-                                        <option value="50">50</option>
-                                        <option value="60">60</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-2">
-                                    <label for="name">URL проекта</label>
-                                    <input type="text" id="name" name="name" class="form form-control">
-                                </div>
-                                <div class="d-flex col-8 justify-content-end align-items-center"
+                                <div class="d-flex col-6 align-items-center"
                                      style="margin-top: 10px;">
                                     <button class="btn btn-secondary relevance-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
@@ -180,6 +163,27 @@
                                             data-target="#createNewProject"
                                             id="add-new-checklist">Добавить новый проект
                                     </button>
+                                </div>
+                                <div class="form-group col-2">
+                                    <label for="count">Количество проектов</label>
+                                    <select name="count" id="count" class="custom custom-select">
+                                        <option value="3">3</option>
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="30">30</option>
+                                        <option value="40">40</option>
+                                        <option value="50">50</option>
+                                        <option value="60">60</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-2">
+                                    <label for="name">URL проекта</label>
+                                    <input type="text" id="name" name="name" class="form form-control">
+                                </div>
+                                <div class="form-group col-2">
+                                    <label for="tags">Фильтр по тегам</label>
+                                    <input type="text" id="tags" name="tags" class="form form-control">
                                 </div>
                             </div>
                         </div>
@@ -840,7 +844,7 @@
                                     '    <div class="card-header">' +
                                     '        <div class="card-title d-flex justify-content-between w-100">' +
                                     '            <div class="d-flex align-items-baseline">' +
-                                    '                <img src="/storage/' + v.icon + '" alt="' + v.icon + '" class="icon mr-2"> ' +
+                                    '                <img src="/storage/' + v.icon + '" alt="fav icon" class="icon mr-2"> ' +
                                     '                <a href="' + v.url + '" target="_blank"' +
                                     '                    data-toggle="tooltip" data-placement="top"' +
                                     '                    title="' + v.url + '">' + new URL(v.url)['origin'] + '</a>' +
@@ -1089,6 +1093,14 @@
                 }, 600)
             })
 
+            $(document).on('input', '#tags', function () {
+                clearTimeout(searchTimeout)
+
+                searchTimeout = setTimeout(() => {
+                    loadChecklists()
+                }, 600)
+            })
+
             $(document).on('click', '.page-link', function () {
                 $('.page-item.active').removeClass('active')
                 $(this).parent().addClass('active')
@@ -1111,6 +1123,7 @@
                     data: {
                         countOnPage: $('#count').val(),
                         url: $('#name').val(),
+                        label_name: $('#tags').val(),
                         skip: page * $('#count').val()
                     },
                     success: function (response) {
@@ -1166,8 +1179,8 @@
                         '<div class="col-4"><div class="card">' +
                         '    <div class="card-header">' +
                         '        <div class="card-title d-flex justify-content-between w-100">' +
-                        '            <div class="d-flex align-items-baseline">' +
-                        '                <img src="/storage/' + v.icon + '" alt="' + v.icon + '" class="icon mr-2"> ' +
+                        '            <div class="d-flex align-items-center">' +
+                        '                <img src="/storage/' + v.icon + '" alt="fav icon" class="icon mr-2"> ' +
                         '                <a href="' + v.url + '" target="_blank"' +
                         '                    data-toggle="tooltip" data-placement="top" class="edited-site-' + v.id + '"' +
                         '                    title="' + v.url + '">' + new URL(v.url)['origin'] + '</a>' +
@@ -1214,15 +1227,18 @@
                         '                       title="Мониторинг доменов"></a>' +
                         '                </div>' +
                         '            </div>' +
-                        '            <div class="d-flex col-6 flex-column align-items-end">' +
-                        '                    <a class="btn btn-flat btn-secondary" href="/checklist-tasks/' + v.id + '" target="_blank">Просмотр задач</a>' +
+                        '        </div>' +
+                        '        <div class="d-flex mt-3 justify-content-between">' +
+                        '            <div class="row col-7">'
+                        + labels +
+                        '            </div>' +
+                        '            <div class="d-flex col-5 flex-column align-items-end">' +
+                        '                <a class="btn btn-flat btn-secondary" href="/checklist-tasks/' + v.id + '" target="_blank">Просмотр задач</a>' +
                         '            </div>' +
                         '        </div>' +
-                        '        <div class="row mt-3">'
-                        + labels +
-                        '        </div>' +
                         '    </div>' +
-                        '</div></div>'
+                        '</div>' +
+                        '</div>'
                 })
 
                 $('#lists').html(cards)
@@ -1544,35 +1560,46 @@
                     type: 'get',
                     url: $route,
                     success: function (projects) {
-                        console.log(projects)
                         let html = ''
 
                         $.each(projects, function (k, v) {
                             html +=
-                                '<div class="new-project-variable" data-target="' + v + '">'
-                                + v +
-                                '<button class="btn btn-sm btn-default remove-variable ml-2"> <i class="fa fa-trash"></i> </button>' +
-                                '</div>'
+                                '<div><input type="checkbox" class="custom custom-checkbox mr-2 project-checkbox new-project-variable" data-target="' + v + '"><span>' + v + '</span>'
                         })
 
                         if (html === '') {
                             $('#place-from-projects').html('В модуле нет проектов, которые ещё не добавлены в чеклист')
                         } else {
-                            $('#place-from-projects').html('<p>Проекты которые ещё не были добавлены:</p>' + html)
+                            $('#place-from-projects').html('<p>Проекты которые ещё не были добавлены:</p>' + html + '<br><br><button class="btn btn-sm btn-default" data-action="mark" id="mark-all">Выделить всё</button>')
                         }
                     }
                 })
             }
+
+            $(document).on('click', '#mark-all', function () {
+                if ($(this).attr('data-action') === 'mark') {
+                    $('.project-checkbox').prop('checked', true)
+                    $(this).attr('data-action', 'clear')
+                    $(this).html('Снять выделение')
+                } else {
+                    $('.project-checkbox').prop('checked', false)
+                    $(this).attr('data-action', 'mark')
+                    $(this).html('Выделить всё')
+                }
+            })
 
             $(document).on('click', '.remove-variable', function () {
                 $(this).parent().remove()
             })
 
             $(document).on('click', '#add-multiply-projects', function () {
+                $('#add-multiply-projects').attr('disabled', true)
                 let urls = []
 
                 $.each($('.new-project-variable'), function () {
-                    urls.push($(this).attr('data-target'))
+                    if ($(this).is(':checked')) {
+                        urls.push($(this).attr('data-target'))
+                    }
                 })
 
                 $.ajax({
@@ -1582,12 +1609,14 @@
                         urls: urls
                     },
                     success: function (message) {
+                        $('#add-multiply-projects').attr('disabled', false)
                         successMessage(message)
                         loadChecklists($('.page-item.active > .page-link').attr('data-id'))
 
                         $('#close-multiply-projects').trigger('click')
                     },
                     error: function (response) {
+                        $('#add-multiply-projects').attr('disabled', false)
                         errorMessage(response.responseJSON.errors)
                     }
                 })

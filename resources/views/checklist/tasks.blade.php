@@ -1,4 +1,4 @@
-@component('component.card', ['title' =>  __('Tasks') . " $host"])
+@component('component.card', ['title' =>  "SEO чеклист: проект $host"])
     @slot('css')
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>

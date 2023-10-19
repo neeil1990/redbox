@@ -13,6 +13,7 @@ class CheckListsLabels extends Model
 
     public function checklists(): BelongsToMany
     {
-        return $this->belongsToMany(CheckLists::class);
+        return $this->belongsToMany(CheckLists::class, 'checklist_project_checklist_label', 'checklist_label_id', 'checklist_project_id');
+
     }
 }

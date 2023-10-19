@@ -6,7 +6,7 @@
                 float: left;
             }
 
-            #statistics > thead > tr.filters > th:nth-child(8) {
+            #statistics > thead > tr.filters > th:nth-child(8) > input {
                 display: none;
             }
         </style>
@@ -87,9 +87,14 @@
 
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.excel.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.js') }}"></script>
         <script>
             $('#statistics thead tr').clone(true).addClass('filters').appendTo('#statistics thead');
 

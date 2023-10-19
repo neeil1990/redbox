@@ -114,8 +114,28 @@ class CheckListController extends Controller
 
     public function getChecklists(Request $request): JsonResponse
     {
-        $sql = CheckLists::where('user_id', Auth::id())
+        $userId = Auth::id();
+        $sql = CheckLists::where('user_id', $userId)
             ->where('archive', 0);
+
+        $labelName = $request->input('label_name');
+
+        if ($labelName) {
+            $labels = CheckListsLabels::where('user_id', $userId)
+                ->where('name', 'like', "%$labelName%")
+                ->get();
+
+            $projectIds = [];
+
+            foreach ($labels as $label) {
+                $projects = $label->checklists;
+                foreach ($projects as $project) {
+                    $projectIds[] = $project->id;
+                }
+            }
+
+            $sql = $sql->whereIn('id', $projectIds);
+        }
 
         if (isset($request->url)) {
             $sql->where('url', 'like', "%$request->url%");
@@ -578,10 +598,6 @@ class CheckListController extends Controller
 
         if ($elem === []) {
             $elem = $document->find('link[rel="icon"]');
-        }
-
-        if ($elem === []) {
-            $elem = $document->find('link[rel="apple-touch-icon"]');
         }
 
         return $elem;

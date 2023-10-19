@@ -11,25 +11,7 @@
 |
 */
 
-use App\ChecklistNotification;
-use App\CheckLists;
-use App\ChecklistTasks;
-use App\Classes\SimpleHtmlDom\HtmlDocument;
-use App\Common;
-use App\MonitoringCompetitor;
-use App\MonitoringHelper;
-use App\MonitoringKeyword;
-use App\MonitoringSearchengine;
-use App\ProjectRelevanceHistory;
-use App\VisitStatistic;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Mail;
 
 Route::get('info', function () {
     phpinfo();

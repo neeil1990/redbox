@@ -98,8 +98,7 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <canvas id="another-linear-chart"
-                                style="position: relative; width: 50%; min-height: 350px;max-height: 350px;"></canvas>
+                        <canvas id="another-linear-chart" style="position: relative; width: 50%; min-height: 350px;max-height: 350px;"></canvas>
                     </div>
                 </div>
             </div>
