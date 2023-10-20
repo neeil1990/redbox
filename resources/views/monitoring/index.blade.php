@@ -317,26 +317,13 @@
                         title: '{{ __('Mastered') }}',
                         name: 'mastered',
                         data: function (row) {
-                            let hint = $('<i />', {class: "far fa-question-circle tooltip-on"});
                             let tops = JSON.parse(row.mastered_info);
-                            let ul = $('<ul />').addClass('list-unstyled text-left');
-
-                            $.each(tops, function(k, v){
-                                if(v.count){
-                                    let li = $('<li />').html(k + ": " + v.count +" = "+ v.total);
-                                    ul.append(li);
-                                }else {
-                                    ul.append($('<li />').html("{{ __('total') }}: <b>" +tops.total+ "</b>"));
-                                }
-                            });
 
                             if(tops && tops.total){
-                                hint.attr('title', ul[0].outerHTML);
-
                                 let small = $('<small />').css('color', 'green');
                                 small.text(Math.floor(tops.total / (row.budget / 30) * 100) + '%');
 
-                                return row.mastered + " "+ hint[0].outerHTML + "<br />" + small[0].outerHTML;
+                                return row.mastered + "<br />" + small[0].outerHTML;
                             }
 
                             return row.mastered;
