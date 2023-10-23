@@ -1,12 +1,10 @@
-@component('component.card', ['title' =>  'Ваша история анализа'])
+@component('component.card', ['title' =>  'Проекты доступные вам'])
     @slot('css')
         <link rel="stylesheet" type="text/css"
               href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
         <style>
             td i:hover {
                 opacity: 1 !important;
@@ -697,13 +695,10 @@
     </div>
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-        <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
         <script>
             let words = {
                 search: "{{ __('Search') }}",
@@ -714,17 +709,21 @@
                 from: "{{ __('from') }}",
                 to: "{{ __('to') }}",
                 of: "{{ __('of') }}",
-                entries: "{{ __('entries') }}"
+                entries: "{{ __('entries') }}",
+                ignoredDomain: "{{ __('ignored domain') }}",
+                notGetData: "{{ __('Could not get data from the page') }}",
+                successAnalyse: "{{ __('The page has been successfully analyzed') }}",
+                notTop: "{{ __('the site did not get into the top') }}",
+                hideDomains: "{{ __('hide ignored domains') }}",
+                copyLinks: "{{ __('Copy site links') }}",
+                success: "{{ __('Successfully') }}",
+                recommendations: "{{ __('Recommendations for your page') }}",
             };
 
             $('#main_history_table').DataTable({
                 "order": [[0, "desc"]],
                 "pageLength": 10,
                 "searching": true,
-                dom: 'lBfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel'
-                ],
                 language: {
                     paginate: {
                         "first": "«",

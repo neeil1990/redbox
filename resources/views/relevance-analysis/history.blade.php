@@ -843,14 +843,19 @@
     </div>
 
     @slot('js')
-        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <!-- Toastr -->
+        <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+        <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
-        <script src="https://cdn.datatables.net/plug-ins/1.12.0/sorting/date-dd-MMM-yyyy.js"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-editor/js/datatables_editor.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/date-sort.js') }}"></script>
         <script>
             let words = {
                 search: "{{ __('Search') }}",

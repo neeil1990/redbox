@@ -11,6 +11,10 @@
 |
 */
 
+use App\ChecklistNotification;
+use App\ChecklistTasks;
+use App\Classes\SimpleHtmlDom\HtmlDocument;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('info', function () {
@@ -453,6 +457,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/checklist/get-domain-monitoring-projects', 'CheckListController@monitoringSites')->name('checklist.domain.monitoring.projects');
     Route::get('/checklist/notifications', 'CheckListController@getNotifications')->name('checklist.notifications');
     Route::get('/checklist/read-notification/{notification}', 'CheckListController@readNotification')->name('checklist.read.notification');
+    Route::get('/checklist/delete-notification/{notification}', 'CheckListController@deleteNotification')->name('checklist.delete.notification');
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 });

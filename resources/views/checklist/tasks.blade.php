@@ -51,6 +51,10 @@
                 transition: 0.3s;
             }
 
+            #tasks li.new {
+                border-color: #007bff !important;
+            }
+
             #tasks li.ready {
                 border-color: #8bc63e !important;
             }
@@ -337,6 +341,16 @@
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
+            function getParameterByName(name, url) {
+                if (!url) url = window.location.href;
+                name = name.replace(/[\[\]]/g, "\\$&");
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, " "));
+            }
+
             let notificationBlocks = 0
             let checklist = {!! json_encode($checklist) !!};
 
@@ -347,6 +361,8 @@
                 if (localStorage.getItem('REDBOX_SEO_TASKS_COUNT') !== null) {
                     $('#count').val(localStorage.getItem('REDBOX_SEO_TASKS_COUNT'))
                 }
+                let searchTaskValue = getParameterByName("search_task");
+                $('#name').val(searchTaskValue)
 
                 getTasks(0, true)
             })
@@ -389,11 +405,14 @@
             })
 
             function generateNestedLists(task) {
+                let newState = '<option value="new">Новая</option>'
                 let work = '<option value="in_work">В работе</option>'
                 let ready = '<option value="ready">Готово</option>'
                 let expired = '<option value="expired">Просрочено</option>'
 
-                if (task.status === 'in_work') {
+                if (task.status === 'new') {
+                    newState = '<option value="new" selected>Новая</option>'
+                } else if (task.status === 'in_work') {
                     work = '<option value="in_work" selected>В работе</option>'
                 } else if (task.status === 'ready') {
                     ready = '<option value="ready" selected>Готово</option>'
@@ -410,6 +429,7 @@
                     '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + task.deadline + '" ' +
                     '       data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
                     '                <select data-id="status-' + task.id + '" data-target="' + task.id + '" class="custom custom-select edit-checklist" data-type="status">' +
+                    newState +
                     work +
                     ready +
                     expired +
@@ -765,7 +785,6 @@
                 }
                 $('#pagination').html(pagination)
             }
-
 
             $(document).on('click', '.page-link', function () {
                 $('.page-item.active').removeClass('active')

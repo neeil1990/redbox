@@ -296,7 +296,7 @@ class CheckListController extends Controller
 
     public function getTasks(Request $request): array
     {
-        $sql = ChecklistTasks::where('project_id', $request->id)->where('subtask', false);
+        $sql = ChecklistTasks::where('project_id', $request->id);
 
         if (isset($request->search)) {
             $sql->where('name', 'like', "%$request->search%");
@@ -319,11 +319,9 @@ class CheckListController extends Controller
             ->get()
             ->toArray();
 
-        foreach ($tasks as $task) {
-            $tasks = array_merge($tasks, ChecklistTasks::where('task_id', $task['id'])->get()->toArray());
+        if (empty($request->search)) {
+            $tasks = $this->buildTaskStructure($tasks);
         }
-
-        $tasks = $this->buildTaskHierarchy($tasks);
 
         $paginate = (int)ceil($sql->count() / $request->count);
 
@@ -554,6 +552,13 @@ class CheckListController extends Controller
         return response()->json([]);
     }
 
+    public function deleteNotification(ChecklistNotification $notification)
+    {
+        $notification->delete();
+
+        return response()->json();
+    }
+
     private function createSubTasks($tasks, $projectId, $taskId = null)
     {
         foreach ($tasks as $task) {
@@ -648,18 +653,34 @@ class CheckListController extends Controller
         return $lists;
     }
 
-    private function buildTaskHierarchy($tasks, $parentId = null): array
+    private function buildTaskStructure($tasks, $parentId = null): array
     {
         $result = [];
 
-        foreach ($tasks as $task) {
-            if ($task['task_id'] == $parentId) {
-                $subtasks = $this->buildTaskHierarchy($tasks, $task['id']);
+        foreach ($tasks as $item) {
+            if ($item['task_id'] === $parentId) {
+                $task = [
+                    'id' => $item['id'],
+                    'project_id' => $item['project_id'],
+                    'name' => $item['name'],
+                    'status' => $item['status'],
+                    'description' => $item['description'],
+                    'subtask' => $item['subtask'],
+                    'task_id' => $item['task_id'],
+                    'date_start' => $item['date_start'],
+                    'deadline' => $item['deadline'],
+                    'created_at' => $item['created_at'],
+                    'updated_at' => $item['updated_at']
+                ];
+
+                $subtasks = $this->buildTaskStructure($tasks, $item['id']);
                 if (!empty($subtasks)) {
                     $task['subtasks'] = $subtasks;
                 }
+
                 $result[] = $task;
             }
+
         }
 
         return $result;

@@ -3,11 +3,9 @@
         @slot('css')
             <link rel="stylesheet" type="text/css"
                   href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-            <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
             <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
             <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
             <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-            <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
             <link rel="stylesheet" type="text/css"
                   href="{{ asset('plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css') }}"/>
             <style>
@@ -90,46 +88,8 @@
                             @foreach($projects as $item)
                                 <tr id="story-id-{{ $item->id }}">
                                     <td>
-                                    <span>
-                                        <span class="project_name" style="cursor: pointer" data-order="{{ $item->id }}">{{ $item->name }}</span>
-                                        <i class="fa fa-table project_name"
-                                           data-order="{{ $item->id }}"
-                                           style="opacity: 0.6; cursor:pointer;"></i>
-                                        <i class="fa fa-list project_name_v2"
-                                           data-order="{{ $item->id }}"
-                                           style="opacity: 0.6; cursor:pointer;"></i>
-                                    </span>
-                                        <div class="dropdown" style="display: inline">
-                                            <i class="fa fa-cogs" id="dropdownMenuButton" data-toggle="dropdown"
-                                               aria-expanded="false" style="opacity: 0.6; cursor: pointer"></i>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <span class="dropdown-item project_name"
-                                                  style="cursor:pointer;"
-                                                  data-order="{{ $item->id }}">
-                                                <i class="fa fa-table"></i>
-                                                {{ __('Show the results of the analysis') }}
-                                            </span>
-                                                <span class="dropdown-item project_name_v2"
-                                                      style="cursor:pointer;"
-                                                      data-order="{{ $item->id }}">
-                                                <i class="fa fa-list"></i>
-                                                {{ __('View the results in a list') }}
-                                            </span>
-                                                <span class="dropdown-item"
-                                                      style="cursor:pointer;"
-                                                      data-toggle="modal" data-target="#removeModal{{ $item->id }}">
-                                                <i class="fa fa-trash"></i>
-                                                {{ __('Delete results without comments') }}
-                                            </span>
-                                                <span class="dropdown-item"
-                                                      style="cursor:pointer;"
-                                                      data-toggle="modal"
-                                                      data-target="#removeWithFiltersModal{{ $item->id }}">
-                                                <i class="fa fa-trash"></i>
-                                                {{ __('Delete using filters') }}
-                                            </span>
-                                            </div>
-                                        </div>
+                                        <span class="project_name" style="cursor: pointer"
+                                              data-order="{{ $item->id }}">{{ $item->name }}</span>
                                     </td>
                                     <td id="project-{{ $item->id }}">
                                         @foreach($item->relevanceTags as $tag)
@@ -289,7 +249,8 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button class="off-access-button btn btn-secondary click_tracking" data-click="Take access rights">
+                            <button class="off-access-button btn btn-secondary click_tracking"
+                                    data-click="Take access rights">
                                 {{ __('Take access rights') }}
                             </button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -304,6 +265,12 @@
         @slot('js')
             <script src="{{ asset('plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js') }}"></script>
             <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+            <script src="{{ asset('plugins/datatables-editor/js/datatables_editor.min.js') }}"></script>
             <script>
                 let words = {
                     search: "{{ __('Search') }}",

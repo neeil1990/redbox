@@ -81,6 +81,10 @@
 
             #tasks {
                 padding-left: 0;
+                padding-right: 10px;
+                padding-top: 10px;
+                overflow: auto;
+                max-height: 400px;
             }
 
             .accordion.stubs.card.card-body {
@@ -113,10 +117,13 @@
                         </li>
                     @endif
                     <li class="nav-item">
-                        <a class="nav-link" id="notification" data-toggle="pill"
+                        <a class="nav-link d-flex align-items-center" id="notification" data-toggle="pill"
                            href="#notification-tab" role="tab" aria-controls="notification-tab"
-                           aria-selected="false">Уведомления <span style="display: none" id="notification-counter"
-                                                                   class="badge badge-danger">0</span></a>
+                           aria-selected="false">
+                            Уведомления
+                            <span style="display: none" id="notification-counter"
+                                  class="ml-2 badge badge-danger">0</span>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -762,6 +769,7 @@
                     '                <div class="form-group col-4">' +
                     '                    <label>Статус</label>' +
                     '                    <select data-id="status-' + counter + '-' + subTaskCounter + '" class="custom custom-select">' +
+                    '                        <option value="new">Новая</option>' +
                     '                        <option value="in_work">В работе</option>' +
                     '                        <option value="ready">Готово</option>' +
                     '                        <option value="expired">Просрочена</option>' +
@@ -864,6 +872,9 @@
                                     '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
+                                    '                    <span class="width">Новая</span> <span>' + v.work + '</span>' +
+                                    '                </div>' +
+                                    '                <div class="d-flex row">' +
                                     '                    <span class="width">В работе:</span> <span>' + v.work + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
@@ -941,6 +952,7 @@
                     '            <div class="form-group col-4">' +
                     '                <label>Статус</label>' +
                     '                <select data-id="status-' + counter + '" class="custom custom-select">' +
+                    '                    <option value="new">Новая</option>' +
                     '                    <option value="in_work">В работе</option>' +
                     '                    <option value="expired">Просрочен</option>' +
                     '                    <option value="ready">Готово</option>' +
@@ -1200,6 +1212,9 @@
                         '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
+                        '                    <span class="width">Новая:</span> <span>' + v.work + '</span>' +
+                        '                </div>' +
+                        '                <div class="d-flex row">' +
                         '                    <span class="width">В работе:</span> <span>' + v.work + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
@@ -1333,7 +1348,8 @@
                     '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
                     '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
                     '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
-                    '            <option value="in_work" selected>В работе</option>' +
+                    '            <option value="new" selected>Новая</option>' +
+                    '            <option value="in_work">В работе</option>' +
                     '            <option value="ready">Готово</option>' +
                     '            <option value="expired">Просрочено</option>' +
                     '        </select>' +
@@ -1448,7 +1464,8 @@
                         '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
                         '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
                         '        <select data-id="status-' + ID + '" data-target="' + ID + '" class="custom custom-select" data-type="status">' +
-                        '            <option value="in_work" selected>В работе</option>' +
+                        '            <option value="new" selected>Новая</option>' +
+                        '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
                         '            <option value="expired">Просрочено</option>' +
                         '        </select>' +
@@ -1730,7 +1747,7 @@
                                     '            <button class="btn btn-sm btn-flat btn-default delete-notification" data-id="' + notification.id + '">Удалить</button>' +
                                     '        </div>' +
                                     '     </div>' +
-                                    '    <a href="/checklist-tasks/' + notification.task.project.id + '" target="_blank">Перейти к проекту</a>' +
+                                    '    <a href="/checklist-tasks/' + notification.task.project.id + '?search_task=' + notification.task.name + '" target="_blank">Просмотреть задачу</a>' +
                                     '</div>'
                             } else {
                                 html +=
@@ -1744,7 +1761,7 @@
                                     '             <button class="btn btn-sm btn-flat btn-default delete-notification" data-id="' + notification.id + '">Удалить</button>' +
                                     '         </div>' +
                                     '    </div>' +
-                                    '    <a href="/checklist-tasks/' + notification.task.project.id + '" target="_blank">Перейти к проекту</a>' +
+                                    '    <a href="/checklist-tasks/' + notification.task.project.id + '?search_task=' + notification.task.name + '" target="_blank">Просмотреть задачу</a>' +
                                     '</div>'
                             }
                         })
