@@ -28,5 +28,4 @@ class MonitoringDataTableColumnsProject extends Model
     protected $casts = [
         'mastered_info' => 'collection',
     ];
-
 }
