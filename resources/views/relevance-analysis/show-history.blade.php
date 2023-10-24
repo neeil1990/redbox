@@ -1,12 +1,11 @@
 @component('component.card', ['title' =>  __('Detailed analysis') ])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
         <style>
             #app > div > div > div.card-header {
                 display: block;
@@ -61,6 +60,14 @@
             thead th {
                 position: sticky;
                 top: 0;
+            }
+
+            .dataTables_length > label {
+                display: flex;
+            }
+
+            .dataTables_length > label > select{
+                margin: 0 5px !important;
             }
         </style>
     @endslot
@@ -989,6 +996,17 @@
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
+
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>
@@ -998,11 +1016,6 @@
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderPhrasesTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderRecommendationsTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
         <script>
             $(document).ready(function () {
                 $('#app > div > div > div.card-header').append($('#params').html())

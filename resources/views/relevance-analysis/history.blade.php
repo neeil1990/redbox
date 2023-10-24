@@ -1,12 +1,11 @@
 @component('component.card', ['title' =>  'Ваша история анализа'])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
         <style>
             i:hover {
                 opacity: 1 !important;

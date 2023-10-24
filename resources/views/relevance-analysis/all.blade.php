@@ -1,12 +1,13 @@
 @component('component.card', ['title' =>  __('Statistics')])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <link rel="stylesheet"
+              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
+
         <style>
             i:hover {
                 opacity: 1 !important;
@@ -26,6 +27,18 @@
 
             .RelevanceAnalysis {
                 background: oldlace;
+            }
+
+            .dataTables_length > label {
+                display: flex;
+            }
+
+            .dataTables_length > label > select {
+                margin: 0 5px !important;
+            }
+
+            .row {
+                margin: 0 !important;
             }
         </style>
     @endslot
@@ -522,6 +535,17 @@
 
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
+
+
         <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
@@ -973,7 +997,7 @@
                     });
                 }, 10000)
 
-                $('#user_jobs_table_length').append('<button class="btn btn-secondary ml-3" id="reset-statistic">Очистить статистику</button>')
+                $('#user_jobs_table_length > label').append('<button class="btn btn-secondary ml-3" id="reset-statistic">Очистить статистику</button>')
 
                 $('#reset-statistic').on('click', function () {
                     $.ajax({

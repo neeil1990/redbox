@@ -72,7 +72,7 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
             if (key === 1) {
                 $(this).append("<a class='btn btn-secondary click_tracking' data-click='Child Words' href='/show-child-words/" + resultId + "' target='_blank'>Child Words</a>");
                 if (resultId !== 0) {
-                    $(this).append("<a class='btn btn-secondary mr-1 ml-1 click_tracking' data-click='Missing Words' href='/show-missing-words/" + resultId + "' target='_blank'>Missing Words</a>");
+                    $(this).append("<a class='btn btn-secondary mr-1 click_tracking' data-click='Missing Words' href='/show-missing-words/" + resultId + "' target='_blank'>Missing Words</a>");
                 }
             }
         });

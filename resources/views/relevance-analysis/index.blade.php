@@ -1,12 +1,12 @@
 @component('component.card', ['title' =>  __('Relevance analysis') ])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/relevance-analysis/css/style.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
+
         <style>
             #tab_1 > div.d-flex.flex-column > div:nth-child(3) > button.btn.btn-secondary.col-2 > span > span > span,
             #tab_1 > div.d-flex.flex-column > div:nth-child(2) > button.btn.btn-secondary.col-2 > span > span > span,
@@ -46,6 +46,14 @@
                 background: oldlace;
             }
 
+
+            .dataTables_length > label {
+                display: flex;
+            }
+
+            .dataTables_length > label > select{
+                margin: 0 5px !important;
+            }
         </style>
     @endslot
     <div id="toast-container" class="toast-top-right error-message empty" style="display:none;">
@@ -959,7 +967,17 @@
     </div>
     <input type="hidden" name="hash" id="hiddenHash">
     @slot('js')
-        <script src="{{ asset('plugins/common/js/common.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
+
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>
@@ -968,13 +986,7 @@
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderTextTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderPhrasesTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderRecommendationsTable.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
-
-        <script>
+        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script> <script>
 
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {

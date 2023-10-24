@@ -1,10 +1,9 @@
 @component('component.card', ['title' =>  'Проекты доступные вам'])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
             td i:hover {
                 opacity: 1 !important;
@@ -736,7 +735,7 @@
                     "sSearch": "{{ __('Search') }}:",
                     "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
                     "sEmptyTable": "{{ __('No records') }}",
-                    "sInfo" : "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",// text you want show for info section
+                    "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
                 }
             });
 

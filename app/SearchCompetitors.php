@@ -126,7 +126,6 @@ class SearchCompetitors extends Model
                 unset($this->sites[$key]);
             }
         }
-
         TariffSetting::saveStatistics(SearchCompetitors::class, $this->getUserId(), $this->countPhrases);
 
         try {
@@ -159,6 +158,10 @@ class SearchCompetitors extends Model
         foreach ($this->sites as $phrase => $items) {
             $phrase = substr($phrase, 0, -2);
             foreach ($items as $link) {
+                if (!filter_var($link, FILTER_VALIDATE_URL)) {
+                    continue;
+                }
+
                 if (isset($this->duplicates[$link])) {
                     $this->analysedSites[$phrase][$link] = $this->duplicates[$link];
                 } else {
@@ -460,7 +463,11 @@ class SearchCompetitors extends Model
     {
         $url = parse_url($link);
 
-        return $url['path'] === '/' || $url['path'] === 'index.html' || $url['path'] === 'index.php';
+        try {
+            return $url['path'] === '/' || $url['path'] === 'index.html' || $url['path'] === 'index.php';
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /**
