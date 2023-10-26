@@ -62,7 +62,8 @@
                       id="phrases"
                       required></textarea>
         </div>
-        <input class="btn btn-secondary mt-3 mr-2 d-flex align-items-center click_tracking" data-click="Processing" type="button" value="{{__('Processing')}}">
+        <input class="btn btn-secondary mt-3 mr-2 d-flex align-items-center click_tracking" data-click="Processing"
+               type="button" value="{{__('Processing')}}">
         <div id="progress-bar" class="mt-3 mb-3">
             <p>{{ __('Data processing') }}</p>
             <div class="progress-bar" role="progressbar"></div>
@@ -90,7 +91,8 @@
                 <input type="number" min="1" id="lessOrEqual" class="form-control">
             </div>
             <div class="w-25 d-flex flex-column-reverse mt-2">
-                <input type="button" class="btn btn-secondary btn-flat click_tracking" data-click="Remove extra text" value="{{__('Remove')}}" onclick="deleteItems()">
+                <input type="button" class="btn btn-secondary btn-flat click_tracking" data-click="Remove extra text"
+                       value="{{__('Remove')}}" onclick="deleteItems()">
             </div>
         </div>
         <div class="d-flex row m-3">
@@ -317,9 +319,9 @@
             }
 
             function confirmTextForCopy() {
-                var text = '';
-                var result = confirmSeparatorAndTittle()
-                let separator = result[0]
+                let text = '';
+                let separator = confirmSeparatorAndTittle()[0]
+
                 document.querySelectorAll('.table-row').forEach((el) => {
                     if (document.getElementById('unique-word').checked) {
                         text += el.children[1].innerText + ';'
@@ -338,14 +340,15 @@
                             text += document.getElementById('unique-words-td-id-' + id).innerHTML + separator
                         }
                     }
+                    text += '\n'
                 })
 
                 createElementForCopyInformationInBuffer(text)
             }
 
             function confirmTextForDownload() {
-                var text = '';
-                var result = confirmSeparatorAndTittle()
+                let text = '';
+                let result = confirmSeparatorAndTittle()
                 let separator = result[0]
                 text += result[1]
                 document.querySelectorAll('.table-row').forEach((el) => {

@@ -1582,11 +1582,21 @@
                                 '    </div>' +
                                 '</div>'
                         } else {
-                            return '<button data-target="#startThroughScan' + row.id + '" ' +
-                                ' data-toggle="modal"' +
-                                ' data-placement="top" class="btn btn-secondary">' +
-                                ' Сквозной анализ' +
-                                '</button>'
+                            return '<div class="btn-group">' +
+                                '     <button class="btn btn-secondary" data-target="#startThroughScan' + row.id + '"' +
+                                '             data-toggle="modal"' +
+                                '             data-placement="top" class="btn btn-secondary">' +
+                                '         {{ __('End-to-end analysis') }}' +
+                                '     </button>' +
+                                '     <button type="button" class="btn btn-secondary">' +
+                                '     <span class="__helper-link ui_tooltip_w">' +
+                                '         <i class="fa fa-question-circle"></i>' +
+                                '         <span class="ui_tooltip __right">' +
+                                '             <span class="ui_tooltip_content">Для анализа используются результаты последнего сканирования каждой фразы и посадочной страницы</span>' +
+                                '         </span>' +
+                                '     </span>' +
+                                '     </button>' +
+                                ' </div>'
                         }
                     },
                 },

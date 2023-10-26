@@ -1,6 +1,7 @@
 @component('component.card', ['title' =>  'Ваша история анализа'])
     @slot('css')
-        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet"
+              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
         <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
         <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}"/>
@@ -960,7 +961,6 @@
                 {
                     name: 'though',
                     data: function (row) {
-                        console.log(row.though)
                         if (row.though.id) {
                             return '<div id="though' + row.id + '" class="mt-2 mb-2">' +
                                 '    <a href="/show-though/' + row.though.id + '" target="_blank">' +
@@ -971,11 +971,21 @@
                                 '    </div>' +
                                 '</div>'
                         } else {
-                            return '<button data-target="#startThroughScan' + row.id + '" ' +
-                                ' data-toggle="modal"' +
-                                ' data-placement="top" class="btn btn-secondary">' +
-                                ' Сквозной анализ' +
-                                '</button>'
+                            return '<div class="btn-group">' +
+                                '     <button class="btn btn-secondary" data-target="#startThroughScan' + row.id + '"' +
+                                '             data-toggle="modal"' +
+                                '             data-placement="top" class="btn btn-secondary">' +
+                                '         {{ __('End-to-end analysis') }}' +
+                                '     </button>' +
+                                '     <button type="button" class="btn btn-secondary">' +
+                                '     <span class="__helper-link ui_tooltip_w">' +
+                                '         <i class="fa fa-question-circle"></i>' +
+                                '         <span class="ui_tooltip __right">' +
+                                '             <span class="ui_tooltip_content">Для анализа используются результаты последнего сканирования каждой фразы и посадочной страницы</span>' +
+                                '         </span>' +
+                                '     </span>' +
+                                '     </button>' +
+                                ' </div>'
                         }
                     },
                 },

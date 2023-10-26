@@ -1,10 +1,13 @@
 @component('component.card', ['title' =>  __('Result through analyse') ])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet"
+              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
+
         <style>
             .fa {
                 color: grey;
@@ -52,13 +55,27 @@
             .RelevanceAnalysis {
                 background: oldlace;
             }
+
+            .ui_tooltip_content {
+                z-index: 9999;
+                width: 350px;
+            }
+
+            .dataTables_length > label {
+                display: flex;
+            }
+
+            .dataTables_length > label > select{
+                margin: 0 5px !important;
+            }
         </style>
     @endslot
 
     @if(count(json_decode($though->cleaning_projects)) > 0 && $though->cleaning_state == 0)
         <div id="toast-container" class="toast-top-right success-message" style="display:none;">
             <div class="toast toast-success" aria-live="polite">
-                <div class="toast-message" id="message-info">{{ __('Projects have been successfully added to the reanalysis queue') }}</div>
+                <div class="toast-message"
+                     id="message-info">{{ __('Projects have been successfully added to the reanalysis queue') }}</div>
             </div>
         </div>
 
@@ -68,16 +85,30 @@
                 {{ __('You have projects whose information has been cleared.') }} <br>
                 {{ __('In order to get more detailed information, you can reshoot them, and then re-run the end-to-end analysis.') }}
                 <br>
-                <button type="button" class="btn btn-secondary mt-3" data-toggle="modal" data-target="#rescanModal">
-                    {{ __('Reshoot all cleaned projects') }}
-                </button>
+
+                <div class="btn-group col-lg-3 col-md-5 pl-0">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#rescanModal">
+                        {{ __('Reshoot all cleaned projects') }}
+                    </button>
+                    <button type="button" class="btn btn-secondary col-2">
+                    <span class="__helper-link ui_tooltip_w">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="ui_tooltip __right">
+                            <span class="ui_tooltip_content">
+                                мы удаляем старые результаты сканирования которым больше {{ \App\RelevanceAnalysisConfig::first()->cleaning_interval }} дней.
+                            </span>
+                        </span>
+                    </span>
+                    </button>
+                </div>
 
                 <div class="modal fade" id="rescanModal" tabindex="-1" aria-labelledby="rescanModalLabel"
                      aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="rescanModalLabel">{{ __('Reshoot all cleaned projects') }}</h5>
+                                <h5 class="modal-title"
+                                    id="rescanModalLabel">{{ __('Reshoot all cleaned projects') }}</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -169,10 +200,14 @@
 
     @slot('js')
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
         <script>
             let totalResults = "{{ json_encode($allElems) }}";
             totalResults = totalResults.replace(/&quot;/g, '"')
@@ -191,6 +226,25 @@
                     buttons: [
                         'copy', 'csv', 'excel'
                     ],
+                    language: {
+                        search: "{{ __('Search') }}",
+                        show: "{{ __('show') }}",
+                        records: "{{ __('records') }}",
+                        noRecords: "{{ __('No records') }}",
+                        showing: "{{ __('Showing') }}",
+                        from: "{{ __('from') }}",
+                        to: "{{ __('to') }}",
+                        of: "{{ __('of') }}",
+                        entries: "{{ __('entries') }}",
+                        ignoredDomain: "{{ __('ignored domain') }}",
+                        notGetData: "{{ __('Could not get data from the page') }}",
+                        successAnalyse: "{{ __('The page has been successfully analyzed') }}",
+                        notTop: "{{ __('the site did not get into the top') }}",
+                        hideDomains: "{{ __('hide ignored domains') }}",
+                        copyLinks: "{{ __('Copy site links') }}",
+                        success: "{{ __('Successfully') }}",
+                        recommendations: "{{ __('Recommendations for your page') }}",
+                    }
                 });
                 $('.dt-button').addClass('btn btn-secondary')
 
@@ -354,7 +408,6 @@
                     },
                 });
             })
-
         </script>
     @endslot
 @endcomponent
