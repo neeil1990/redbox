@@ -319,18 +319,19 @@
             }
 
             function confirmTextForCopy() {
+                let count = calculateCountObjects()
                 let text = '';
                 let separator = confirmSeparatorAndTittle()[0]
 
                 document.querySelectorAll('.table-row').forEach((el) => {
                     if (document.getElementById('unique-word').checked) {
-                        text += el.children[1].innerText + ';'
+                        text += addSeparator(el.children[1].innerText, count)
                     }
                     if (document.getElementById('unique-word-forms').checked) {
-                        text += el.children[2].innerText + ';'
+                        text += addSeparator(el.children[2].innerText, count)
                     }
                     if (document.getElementById('number-occurrences').checked) {
-                        text += el.children[3].innerText + ';'
+                        text += addSeparator(el.children[3].innerText, count)
                     }
                     if (document.getElementById('key-phrases').checked) {
                         let id = el.id.substr(16)
@@ -344,6 +345,32 @@
                 })
 
                 createElementForCopyInformationInBuffer(text)
+            }
+
+            function calculateCountObjects() {
+                let count = 0;
+                if ($('#unique-word').is(':checked')) {
+                    count++;
+                }
+                if ($('#unique-word-forms').is(':checked')) {
+                    count++;
+                }
+                if ($('#number-occurrences').is(':checked')) {
+                    count++;
+                }
+                if ($('#key-phrases').is(':checked')) {
+                    count++;
+                }
+
+                return count;
+            }
+
+            function addSeparator(text, value) {
+                if (value > 1) {
+                    return text + ';'
+                }
+
+                return text;
             }
 
             function confirmTextForDownload() {
