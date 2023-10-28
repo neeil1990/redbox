@@ -1,11 +1,11 @@
 @component('component.card', ['title' =>  __('My projects') ])
     @slot('css')
-        <!-- Toastr -->
-        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-        <!-- DataTables -->
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/common/css/datatable.css') }}"/>
+        <link href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link href="{{ asset('plugins/keyword-generator/css/style.css') }}">
+        <link href="{{ asset('plugins/common/css/datatable.css') }}">
+        <link href="{{ asset('plugins/toastr/toastr.css') }}">
+        <link href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
+
         <style>
             #clusters-table > tbody > tr > td > table > thead:hover {
                 background: transparent !important;
@@ -34,6 +34,12 @@
 
             .Clusters {
                 background: oldlace;
+            }
+
+            #my-cluster-projects_paginate,
+            #my-cluster-projects_filter {
+                display: flex;
+                justify-content: end;
             }
         </style>
     @endslot
@@ -112,7 +118,7 @@
                                             {{ __('View results') }}
                                         </a>
                                         <a href="{{ route('edit.clusters', $project->id) }}"
-                                           class="btn btn-secondary mb-2"  target="_blank">
+                                           class="btn btn-secondary mb-2" target="_blank">
                                             {{ __('Hands editor') }}
                                         </a>
                                         <button type="button"
@@ -591,6 +597,17 @@
     @slot('js')
         <script src="{{ asset('/plugins/cluster/js/common_v2.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
         <script>
             var progressId
             var interval

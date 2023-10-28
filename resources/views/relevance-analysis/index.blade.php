@@ -1,11 +1,11 @@
 @component('component.card', ['title' =>  __('Relevance analysis') ])
     @slot('css')
-        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
-        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}">
-        <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}">
-        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}">
-        <link rel="stylesheet" href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
+        <link href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link href="{{ asset('plugins/keyword-generator/css/style.css') }}">
+        <link href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}">
+        <link href="{{ asset('plugins/common/css/datatable.css') }}">
+        <link href="{{ asset('plugins/toastr/toastr.css') }}">
+        <link href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
 
         <style>
             #tab_1 > div.d-flex.flex-column > div:nth-child(3) > button.btn.btn-secondary.col-2 > span > span > span,
@@ -45,7 +45,6 @@
             .RelevanceAnalysis {
                 background: oldlace;
             }
-
 
             .dataTables_length > label {
                 display: flex;
@@ -987,7 +986,8 @@
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderTextTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderPhrasesTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderRecommendationsTable.js') }}"></script>
-        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script> <script>
+        <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
+        <script>
 
             $('#recButton').click(function () {
                 if ($('.pb-3.recommendations').is(':visible')) {
