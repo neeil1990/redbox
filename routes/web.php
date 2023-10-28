@@ -477,6 +477,7 @@ Route::get('/test', function () {
         })
         ->get()
         ->toArray();
+    dd($projects);
 
     $dates = [];
 

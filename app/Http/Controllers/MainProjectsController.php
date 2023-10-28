@@ -311,7 +311,6 @@ class MainProjectsController extends Controller
 
     public function statisticsModules(Request $request): array
     {
-        Log::info($request->step);
         $index = $request->action;
         $dateRange = explode(' - ', $request->dateRange);
 
