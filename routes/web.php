@@ -504,7 +504,7 @@ Route::get('/test', function () {
 
     $dates = [];
     foreach ($projects as $key => $project) {
-        dd($project['newStat']);
+        dump($project['newStat']);
         $newStat = [];
         foreach ($project['newStat'] as $date => $stat) {
             $carbonDate = Carbon::parse($date)->format('y-m');
@@ -518,6 +518,7 @@ Route::get('/test', function () {
         $projects[$key]['newStat'] = $newStat;
     }
 
+    dd(1);
 
     foreach ($projects as $id => $project) {
         foreach ($project['newStat'] as $key => $items) {
