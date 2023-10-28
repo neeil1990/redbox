@@ -395,6 +395,11 @@ class MainProjectsController extends Controller
             }
         }
 
+        $dateCollection = collect($dates);
+        $dates = $dateCollection->sortBy(function ($date) {
+            return strtotime($date);
+        })->values()->all();
+
         $datasets = [];
         foreach ($projects as $project) {
             $stat = array_keys($project['newStat']);
