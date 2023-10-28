@@ -477,7 +477,6 @@ Route::get('/test', function () {
         })
         ->get()
         ->toArray();
-    dd($projects);
 
     $dates = [];
 
@@ -517,6 +516,8 @@ Route::get('/test', function () {
 
         $projects[$key]['newStat'] = $newStat;
     }
+
+    dd($dates);
 
     foreach ($projects as $id => $project) {
         foreach ($project['newStat'] as $key => $items) {
