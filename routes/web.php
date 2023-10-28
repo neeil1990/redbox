@@ -502,24 +502,6 @@ Route::get('/test', function () {
         $projects[$key]['newStat'] = $newStat;
     }
 
-    $dates = [];
-    foreach ($projects as $key => $project) {
-        dump($project['newStat']);
-        $newStat = [];
-        foreach ($project['newStat'] as $date => $stat) {
-            $carbonDate = Carbon::parse($date)->format('y-m');
-            if (!in_array($carbonDate, $dates)) {
-                $dates[] = $carbonDate;
-            }
-
-            $newStat[$carbonDate][] = $stat;
-        }
-
-        $projects[$key]['newStat'] = $newStat;
-    }
-
-    dd(1);
-
     foreach ($projects as $id => $project) {
         foreach ($project['newStat'] as $key => $items) {
             $totalActionsCounter = 0;
