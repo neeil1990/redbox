@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
@@ -310,18 +311,17 @@ class MainProjectsController extends Controller
 
     public function statisticsModules(Request $request): array
     {
-        return $this->getLineBarStat($request->action, explode(' - ', $request->dateRange));
-    }
+        Log::info($request->step);
+        $index = $request->action;
+        $dateRange = explode(' - ', $request->dateRange);
 
-    private function getLineBarStat(string $index, array $dateRange): array
-    {
         $projects = MainProject::with('statistics')
             ->whereHas('statistics', function ($query) use ($dateRange) {
                 $query->whereBetween('date', [
                     date('Y-m-d', strtotime($dateRange[0])),
                     date('Y-m-d', strtotime($dateRange[1]))
                 ]);
-            })->get();
+            })->get()->toArray();
 
         $dates = [];
 
@@ -345,6 +345,53 @@ class MainProjectsController extends Controller
             }
 
             $projects[$key]['newStat'] = $newStat;
+        }
+
+        if ($request->step !== 'day') {
+            $step = 7;
+            $dates = [];
+            foreach ($projects as $key => $project) {
+                $newStat = [];
+                foreach ($project['newStat'] as $date => $stat) {
+                    if ($request->step === 'week') {
+                        $counter = Carbon::parse($date)->weekOfMonth;
+                        $weekCounter = $counter * $step <= 9
+                            ? '0' . $counter * $step
+                            : $counter * $step;
+
+                        $carbonDate = Carbon::parse($date)->format('y-m-') . $weekCounter;
+                    } else {
+                        //$request->step === 'month'
+                        $carbonDate = Carbon::parse($date)->format('y-m');
+                    }
+
+                    if (!in_array($carbonDate, $dates)) {
+                        $dates[] = $carbonDate;
+                    }
+
+                    $newStat[$carbonDate][] = $stat;
+                }
+
+                $projects[$key]['newStat'] = $newStat;
+            }
+
+            foreach ($projects as $id => $project) {
+                foreach ($project['newStat'] as $key => $items) {
+                    $totalActionsCounter = 0;
+                    $totalRefreshPageCounter = 0;
+                    $totalSeconds = 0;
+                    foreach ($items as $item) {
+                        $totalActionsCounter += $item['actions_counter'];
+                        $totalRefreshPageCounter += $item['refresh_page_counter'];
+                        $totalSeconds += $item['seconds'];
+                    }
+                    $projects[$id]['newStat'][$key] = [
+                        'actions_counter' => $totalActionsCounter,
+                        'refresh_page_counter' => $totalRefreshPageCounter,
+                        'seconds' => $totalSeconds,
+                    ];
+                }
+            }
         }
 
         $datasets = [];

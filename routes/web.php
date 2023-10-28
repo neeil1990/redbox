@@ -14,6 +14,7 @@
 use App\ChecklistNotification;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
+use App\MainProject;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -460,4 +461,99 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/checklist/delete-notification/{notification}', 'CheckListController@deleteNotification')->name('checklist.delete.notification');
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
+});
+
+Route::get('/test', function () {
+    $step = 7;
+
+    $index = 'actions_counter';
+    $dateRange = explode(' - ', '29-08-2023 - 27-10-2023');
+
+    $projects = MainProject::with('statistics')
+        ->whereHas('statistics', function ($query) use ($dateRange) {
+            $query->whereBetween('date', [
+                date('Y-m-d', strtotime($dateRange[0])),
+                date('Y-m-d', strtotime($dateRange[1]))
+            ]);
+        })->get()
+        ->toArray();
+
+    $dates = [];
+
+    $startDate = Carbon::parse($dateRange[0]);
+    $endDate = Carbon::parse($dateRange[1]);
+
+    foreach ($projects as $key => $project) {
+        $newStat = [];
+        foreach ($project['statistics'] as $statistic) {
+            $checkDate = Carbon::parse($statistic['date']);
+            if ($checkDate->isBefore($startDate) || $checkDate->isAfter($endDate)) {
+                continue;
+            }
+
+            $newStat[$statistic['date']] = $statistic;
+            if (in_array($statistic['date'], $dates)) {
+                continue;
+            } else {
+                $dates[] = $statistic['date'];
+            }
+        }
+
+        $projects[$key]['newStat'] = $newStat;
+    }
+
+    $dates = [];
+    foreach ($projects as $key => $project) {
+        $newStat = [];
+        foreach ($project['newStat'] as $date => $stat) {
+            $carbonDate = Carbon::parse($date)->format('y-m');
+            if (!in_array($carbonDate, $dates)) {
+                $dates[] = $carbonDate;
+            }
+
+            $newStat[$carbonDate][] = $stat;
+        }
+
+        $projects[$key]['newStat'] = $newStat;
+    }
+
+    foreach ($projects as $id => $project) {
+        foreach ($project['newStat'] as $key => $items) {
+            $totalActionsCounter = 0;
+            $totalRefreshPageCounter = 0;
+            $totalSeconds = 0;
+            foreach ($items as $item) {
+                $totalActionsCounter += $item['actions_counter'];
+                $totalRefreshPageCounter += $item['refresh_page_counter'];
+                $totalSeconds += $item['seconds'];
+            }
+            $projects[$id]['newStat'][$key] = [
+                'actions_counter' => $totalActionsCounter,
+                'refresh_page_counter' => $totalRefreshPageCounter,
+                'seconds' => $totalSeconds,
+            ];
+        }
+    }
+    $datasets = [];
+
+    foreach ($projects as $project) {
+        $stat = array_keys($project['newStat']);
+        $data = [];
+        foreach ($dates as $date) {
+            if (in_array($date, $stat)) {
+                $data[] = \App\Common::secondsToDate($project['newStat'][$date][$index]);
+            } else {
+                $data[] = \App\Common::secondsToDate(0);
+            }
+        }
+        $datasets[] = [
+            'label' => __($project['title']),
+            'backgroundColor' => $project['color'],
+            'borderColor' => $project['color'],
+            'data' => $data
+        ];
+    }
+
+    dump($dates);
+    dd($datasets);
 });

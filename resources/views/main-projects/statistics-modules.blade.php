@@ -33,7 +33,7 @@
             <th>Цвет</th>
             <th>Количество действий</th>
             <th>Количество обновлений страницы</th>
-            <th>Время проведённое у модуле</th>
+            <th>Время проведённое в модуле</th>
         </tr>
         </thead>
         <tbody>
@@ -70,6 +70,11 @@
                             </div>
                             <input type="text" id="date-range" class="form-control float-right">
                         </div>
+                        <select id="step" class="custom-select mr-1">
+                            <option value="day">День</option>
+                            <option value="week">Неделя</option>
+                            <option value="month">Месяц</option>
+                        </select>
                         <select id="action" class="custom-select">
                             <option value="actions_counter">Действия</option>
                             <option value="refresh_page_counter">Обновления страниц</option>
@@ -194,7 +199,8 @@
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         dateRange: $('#date-range').val(),
-                        action: $('#action').val()
+                        action: $('#action').val(),
+                        step: $('#step').val()
                     },
                     success: function (response) {
                         if (chart !== undefined) {
@@ -214,13 +220,23 @@
                             options: {
                                 scales: {
                                     y: {
-                                        type: 'linear', // Указываем тип шкалы как линейную
-                                        position: 'bottom', // Местоположение оси X
-                                        ticks: {
-                                            stepSize: 100 // Устанавливаем шаг равный 1
-                                        }
+                                        type: 'linear',
+                                        position: 'bottom',
                                     }
-                                }
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                const seconds = context.parsed.y;
+                                                return convertToHHMMSS(context, seconds);
+                                            },
+                                            footer: function () {
+                                                return 'часы:минуты:секунды'
+                                            }
+                                        },
+                                    },
+                                },
                             }
                         });
                     },
@@ -228,6 +244,18 @@
                     }
                 });
             });
+
+            function convertToHHMMSS(context, totalSeconds) {
+                let hours = Math.floor(totalSeconds / 3600);
+                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                let seconds = totalSeconds % 60;
+
+                hours = hours <= 9 ? '0' + hours : hours
+                minutes = minutes <= 9 ? '0' + minutes : minutes
+                seconds = seconds <= 9 ? '0' + seconds : seconds
+
+                return context.dataset.label + ` ${hours}:${minutes}:${seconds}`;
+            }
         </script>
         <script>
             $('#statistics').DataTable({
