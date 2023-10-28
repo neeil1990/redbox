@@ -213,34 +213,52 @@
                             width: '100%',
                         })
 
-                        chart = new Chart(document.getElementById("bar-chart-grouped"), {
-                            type: 'line',
-                            data: {
-                                labels: response.dates,
-                                datasets: response.datasets
-                            },
-                            options: {
-                                scales: {
-                                    y: {
-                                        type: 'linear',
-                                        position: 'bottom',
-                                    }
+                        if($('#action').val() === 'seconds') {
+                            chart = new Chart(document.getElementById("bar-chart-grouped"), {
+                                type: 'line',
+                                data: {
+                                    labels: response.dates,
+                                    datasets: response.datasets
                                 },
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function (context) {
-                                                const seconds = context.parsed.y;
-                                                return convertToHHMMSS(context, seconds);
+                                options: {
+                                    scales: {
+                                        y: {
+                                            type: 'linear',
+                                            position: 'bottom',
+                                        }
+                                    },
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context) {
+                                                    const seconds = context.parsed.y;
+                                                    return convertToHHMMSS(context, seconds);
+                                                },
+                                                footer: function () {
+                                                    return 'часы:минуты:секунды'
+                                                }
                                             },
-                                            footer: function () {
-                                                return 'часы:минуты:секунды'
-                                            }
                                         },
                                     },
+                                }
+                            });
+                        } else {
+                            chart = new Chart(document.getElementById("bar-chart-grouped"), {
+                                type: 'line',
+                                data: {
+                                    labels: response.dates,
+                                    datasets: response.datasets
                                 },
-                            }
-                        });
+                                options: {
+                                    scales: {
+                                        y: {
+                                            type: 'linear',
+                                            position: 'bottom',
+                                        }
+                                    },
+                                }
+                            });
+                        }
                     },
                     error: function (response) {
                     }
