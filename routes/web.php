@@ -504,6 +504,16 @@ Route::get('/test', function () {
 
     $datasets = [];
 
+    // Создайте коллекцию из массива
+    $dateCollection = collect($dates);
+
+// Отсортируйте коллекцию в порядке возрастания
+    $sortedDates = $dateCollection->sortBy(function ($date) {
+        return strtotime($date);
+    })->values()->all();
+    dump($dates);
+    dd($sortedDates);
+
     foreach ($projects as $project) {
         $stat = array_keys($project['newStat']);
         $data = [];
