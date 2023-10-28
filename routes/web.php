@@ -502,23 +502,6 @@ Route::get('/test', function () {
         $projects[$key]['newStat'] = $newStat;
     }
 
-    foreach ($projects as $id => $project) {
-        foreach ($project['newStat'] as $key => $items) {
-            $totalActionsCounter = 0;
-            $totalRefreshPageCounter = 0;
-            $totalSeconds = 0;
-            foreach ($items as $item) {
-                $totalActionsCounter += $item['actions_counter'];
-                $totalRefreshPageCounter += $item['refresh_page_counter'];
-                $totalSeconds += $item['seconds'];
-            }
-            $projects[$id]['newStat'][$key] = [
-                'actions_counter' => $totalActionsCounter,
-                'refresh_page_counter' => $totalRefreshPageCounter,
-                'seconds' => $totalSeconds,
-            ];
-        }
-    }
     $datasets = [];
 
     foreach ($projects as $project) {
