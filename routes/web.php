@@ -501,10 +501,10 @@ Route::get('/test', function () {
 
         $projects[$key]['newStat'] = $newStat;
     }
-    dd($dates);
 
     $dates = [];
     foreach ($projects as $key => $project) {
+        dd($project['newStat']);
         $newStat = [];
         foreach ($project['newStat'] as $date => $stat) {
             $carbonDate = Carbon::parse($date)->format('y-m');
