@@ -1,10 +1,10 @@
 @component('component.card', ['title' =>  __('My projects') ])
     @slot('css')
-        <link href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
-        <link href="{{ asset('plugins/keyword-generator/css/style.css') }}">
-        <link href="{{ asset('plugins/common/css/datatable.css') }}">
-        <link href="{{ asset('plugins/toastr/toastr.css') }}">
-        <link href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
 
         <style>
             #clusters-table > tbody > tr > td > table > thead:hover {
