@@ -464,7 +464,6 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/test', function () {
-    $step = 7;
 
     $index = 'actions_counter';
     $dateRange = explode(' - ', '29-08-2023 - 27-10-2023');
@@ -474,8 +473,9 @@ Route::get('/test', function () {
             $query->whereBetween('date', [
                 date('Y-m-d', strtotime($dateRange[0])),
                 date('Y-m-d', strtotime($dateRange[1]))
-            ]);
-        })->get()
+            ])->orderBy('date');
+        })
+        ->get()
         ->toArray();
 
     $dates = [];

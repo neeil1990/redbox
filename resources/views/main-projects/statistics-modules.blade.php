@@ -117,6 +117,8 @@
                     'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
                     'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
                     'Последние 60 дней': [moment().subtract(59, 'days'), moment()],
+                    'Последние 100 дней': [moment().subtract(99, 'days'), moment()],
+                    'Последние 200 дней': [moment().subtract(199, 'days'), moment()],
                 },
                 alwaysShowCalendars: true,
                 showCustomRangeLabel: false,

@@ -320,8 +320,10 @@ class MainProjectsController extends Controller
                 $query->whereBetween('date', [
                     date('Y-m-d', strtotime($dateRange[0])),
                     date('Y-m-d', strtotime($dateRange[1]))
-                ]);
-            })->get()->toArray();
+                ])->orderBy('date');
+            })
+            ->get()
+            ->toArray();
 
         $dates = [];
 
