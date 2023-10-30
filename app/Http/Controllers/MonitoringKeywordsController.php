@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Monitoring\MasteredPositions;
 use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
 use App\Location;
 use App\MonitoringKeyword;
+use App\MonitoringKeywordPrice;
 use App\MonitoringOccurrence;
 use App\MonitoringPosition;
 use App\MonitoringProject;
 use App\MonitoringProjectSettings;
 use App\MonitoringSearchengine;
 use App\User;
+use function GuzzleHttp\Psr7\str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -28,6 +31,7 @@ class MonitoringKeywordsController extends Controller
     protected $regions;
     protected $columns;
     protected $mode = "range";
+    protected $total = 0;
 
     public function __construct()
     {
@@ -79,20 +83,18 @@ class MonitoringKeywordsController extends Controller
         $this->setProjectID($id);
         $request = collect($request->all());
 
-        return $this->get($request);
+        return $this->dataPrepare($request)->generateDataTable($request->get('draw', 0));
     }
 
-    public function get(Collection $collection)
+    public function dataPrepare(Collection $collection)
     {
         $this->init();
-        $total = 0;
         $regionID = $collection->get('region_id');
         $order = $collection->get('order');
         $start = $collection->get('start');
         $length = $collection->get('length');
         $filteredColumns = $collection->get('columns', []);
         $datesRange = $collection->get('dates_range');
-        $draw = $collection->get('draw');
 
         $this->setMode($collection->get('mode_range'));
 
@@ -104,9 +106,10 @@ class MonitoringKeywordsController extends Controller
         $page = ($length) ? ($start / $length) + 1 : false;
         if($page){
             $this->queries = $this->queries->paginate($length, ['*'], 'page', $page);
-            $total = $this->queries->total();
+            $this->total = $this->queries->total();
         }else{
             $this->queries = $this->queries->get();
+            $this->total = $this->queries->count();
         }
 
         if($length > 1)
@@ -128,18 +131,7 @@ class MonitoringKeywordsController extends Controller
             $this->getLatestPositions()->updateDynamics();
         }
 
-        $table = $this->generateDataTable();
-
-        $data = collect([
-            'region' => $this->regions->values(),
-            'columns' => $this->columns,
-            'data' => collect($table)->values(),
-            'draw' => $draw,
-            'recordsFiltered' => $total,
-            'recordsTotal' => $total,
-        ]);
-
-        return $data;
+        return $this;
     }
 
     private function isMainView()
@@ -184,7 +176,7 @@ class MonitoringKeywordsController extends Controller
         $this->setColumns($mainColumns);
     }
 
-    private function generateDataTable()
+    protected function generateDataTable($draw = 0)
     {
         $table = [];
         foreach ($this->queries as $keyword) {
@@ -192,13 +184,23 @@ class MonitoringKeywordsController extends Controller
             $table[$id] = $this->generateRowDataTable($keyword);
         }
 
-        return $table;
+        return collect([
+            'region' => $this->regions->values(),
+            'columns' => $this->columns,
+            'data' => collect($table)->values(),
+            'draw' => $draw,
+            'recordsFiltered' => $this->total,
+            'recordsTotal' => $this->total,
+        ]);
     }
 
     private function generateRowDataTable($keyword)
     {
         $row = collect([]);
         $collectionPositions = $keyword->positions_view;
+        if($this->mode == 'finance')
+            $mastered = new MasteredPositions($collectionPositions);
+
         $columns = $this->columns;
 
         foreach ($columns as $i => $v) {
@@ -262,6 +264,58 @@ class MonitoringKeywordsController extends Controller
                         $row->put('exact', $keyword->exact);
                     else
                         $row->put('exact', '-');
+                    break;
+                case 'price_top_1':
+                    $row->put('price_top_1', $keyword->price['top1']);
+                    break;
+                case 'price_top_3':
+                    $row->put('price_top_3', $keyword->price['top3']);
+                    break;
+                case 'price_top_5':
+                    $row->put('price_top_5', $keyword->price['top5']);
+                    break;
+                case 'price_top_10':
+                    $row->put('price_top_10', $keyword->price['top10']);
+                    break;
+                case 'price_top_20':
+                    $row->put('price_top_20', $keyword->price['top20']);
+                    break;
+                case 'price_top_50':
+                    $row->put('price_top_50', $keyword->price['top50']);
+                    break;
+                case 'price_top_100':
+                    $row->put('price_top_100', $keyword->price['top100']);
+                    break;
+                case 'days_top_1':
+                    $top = $mastered->top1();
+                    $row->put('days_top_1', $top['count']);
+                    break;
+                case 'days_top_3':
+                    $top = $mastered->top3();
+                    $row->put('days_top_3', $top['count']);
+                    break;
+                case 'days_top_5':
+                    $top = $mastered->top5();
+                    $row->put('days_top_5', $top['count']);
+                    break;
+                case 'days_top_10':
+                    $top = $mastered->top10();
+                    $row->put('days_top_10', $top['count']);
+                    break;
+                case 'days_top_20':
+                    $top = $mastered->top20();
+                    $row->put('days_top_20', $top['count']);
+                    break;
+                case 'days_top_50':
+                    $top = $mastered->top50();
+                    $row->put('days_top_50', $top['count']);
+                    break;
+                case 'days_top_100':
+                    $top = $mastered->top100();
+                    $row->put('days_top_100', $top['count']);
+                    break;
+                case 'mastered':
+                    $row->put('mastered', $mastered->total());
                     break;
                 default:
                     $mode = $this->mode;
@@ -368,6 +422,9 @@ class MonitoringKeywordsController extends Controller
                     $keyword->positions_view = $lastPosition;
                 }
                 break;
+            case "finance":
+                $this->financeExtension($columnCollection);
+                break;
             default;
                 $this->setColumns($columnCollection);
                 $this->queries->transform(function ($item) use ($columnCollection) {
@@ -386,6 +443,40 @@ class MonitoringKeywordsController extends Controller
         }
 
         return $this;
+    }
+
+    private function financeExtension($columns)
+    {
+        $this->setColumns($columns);
+
+        $this->queries->transform(function ($item) use ($columns) {
+
+            $positions = collect([]);
+            foreach ($columns as $col => $name)
+                if ($item->positions_data_table->has($name))
+                    $positions->put($col, $item->positions_data_table[$name]);
+
+            $this->diffPositionExtension($positions);
+
+            $item->positions_view = $positions;
+
+            return $item;
+        });
+
+        $fields = ['top_1', 'top_3', 'top_5', 'top_10', 'top_20', 'top_50', 'top_100'];
+
+        $price = collect([]);
+        $days = collect([]);
+
+        foreach($fields as $field){
+            $price->put('price_' . $field, __('Price') . ' ' . str_replace("_", "-", $field));
+            $days->put('days_' . $field, __('Days') . ' ' . str_replace("_", "-", $field));
+        }
+
+        $this->setColumns($price);
+        $this->setColumns($days);
+
+        $this->setColumns(collect(['mastered' => __('Mastered')]));
     }
 
     private function diffPositionExtension(&$positions)

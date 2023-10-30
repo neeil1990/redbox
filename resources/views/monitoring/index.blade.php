@@ -713,6 +713,13 @@
                         let content = response.data;
                         modal.find('.modal-content').html(content);
 
+                        modal.find('select[name="mode"]').change(function(){
+                            if($(this).val() === 'finance')
+                                modal.find('#finance').removeClass('d-none');
+                            else
+                                modal.find('#finance').addClass('d-none');
+                        });
+
                         //Date picker
                         modal.find('#startDatePicker, #endDatePicker').datetimepicker({
                             format: 'L',
