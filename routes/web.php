@@ -429,6 +429,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/checklist', 'CheckListController@index')->name('checklist');
     Route::get('/checklist-tasks/{checklist}', 'CheckListController@tasks')->name('checklist.tasks');
     Route::post('/store-checklist', 'CheckListController@store')->name('store.checklist');
+    Route::post('/store-stubs', 'CheckListController@storeStubs')->name('store.stubs');
     Route::post('/add-new-tasks', 'CheckListController@update')->name('update.checklist');
     Route::post('/get-checklist', 'CheckListController@getChecklists')->name('get.checklists');
     Route::get('/move-checklist-to-archive/{project}', 'CheckListController@inArchive')->name('in.archive');
@@ -461,77 +462,4 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/checklist/delete-notification/{notification}', 'CheckListController@deleteNotification')->name('checklist.delete.notification');
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
-});
-
-Route::get('/test', function () {
-
-    $index = 'actions_counter';
-    $dateRange = explode(' - ', '29-08-2023 - 27-10-2023');
-
-    $projects = MainProject::with('statistics')
-        ->whereHas('statistics', function ($query) use ($dateRange) {
-            $query->whereBetween('date', [
-                date('Y-m-d', strtotime($dateRange[0])),
-                date('Y-m-d', strtotime($dateRange[1]))
-            ])->orderBy('date');
-        })
-        ->get()
-        ->toArray();
-
-    $dates = [];
-
-    $startDate = Carbon::parse($dateRange[0]);
-    $endDate = Carbon::parse($dateRange[1]);
-
-    foreach ($projects as $key => $project) {
-        $newStat = [];
-        foreach ($project['statistics'] as $statistic) {
-            $checkDate = Carbon::parse($statistic['date']);
-            if ($checkDate->isBefore($startDate) || $checkDate->isAfter($endDate)) {
-                continue;
-            }
-
-            $newStat[$statistic['date']] = $statistic;
-            if (in_array($statistic['date'], $dates)) {
-                continue;
-            } else {
-                $dates[] = $statistic['date'];
-            }
-        }
-
-        $projects[$key]['newStat'] = $newStat;
-    }
-
-    $datasets = [];
-
-    // Создайте коллекцию из массива
-    $dateCollection = collect($dates);
-
-// Отсортируйте коллекцию в порядке возрастания
-    $sortedDates = $dateCollection->sortBy(function ($date) {
-        return strtotime($date);
-    })->values()->all();
-    dump($dates);
-    dd($sortedDates);
-
-    foreach ($projects as $project) {
-        $stat = array_keys($project['newStat']);
-        $data = [];
-        foreach ($dates as $date) {
-            if (in_array($date, $stat)) {
-                $data[] = \App\Common::secondsToDate($project['newStat'][$date][$index]);
-            } else {
-                $data[] = \App\Common::secondsToDate(0);
-            }
-        }
-        $datasets[] = [
-            'label' => __($project['title']),
-            'backgroundColor' => $project['color'],
-            'borderColor' => $project['color'],
-            'data' => $data
-        ];
-    }
-
-    dump($dates);
-    dd($datasets);
 });

@@ -43,7 +43,8 @@
                 height: 20px;
             }
 
-            #tasks li, .stubs > .example {
+            #tasks li, .stubs > .example,
+            #stubs li, .stubs > .example {
                 font-family: "Trebuchet MS", "Lucida Sans";
                 padding: 7px 20px;
                 border-radius: 5px;
@@ -58,37 +59,44 @@
                 transition: 0.3s;
             }
 
-            #tasks li.ready {
+            #tasks li.ready,
+            #stubs li.ready {
                 border-color: #8bc63e !important;
             }
 
-            #tasks li.expired {
+            #tasks li.expired, #stubs li.expired {
                 border-color: #f05d22 !important;
             }
 
-            #tasks li.in_work {
+            #tasks li.in_work, #stubs li.in_work {
                 border-color: #1ccfc9 !important;
             }
 
-            #tasks li.default, .stubs > .default {
+            #tasks li.default, .stubs > .default,
+            #stubs li.default, .stubs > .default {
                 border-color: #5a6268 !important;
             }
 
-            #tasks li:hover {
+            #tasks li:hover
+            #stubs li:hover {
                 cursor: pointer;
                 box-shadow: 0 0 10px grey;
             }
 
-            #tasks {
+            #tasks, #stubs {
                 padding-left: 0;
                 padding-right: 10px;
                 padding-top: 10px;
                 overflow: auto;
-                max-height: 400px;
+                max-height: 460px;
             }
 
             .accordion.stubs.card.card-body {
                 cursor: pointer;
+            }
+
+            #tasks .custom.custom-select {
+                width: 100px;
             }
         </style>
     @endslot
@@ -142,7 +150,9 @@
                                      style="margin-top: 10px;">
                                     <button class="btn btn-secondary relevance-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
-                                        <i class="fa-solid fa-star" data-toggle="tooltip" data-placement="top"
+                                        <i class="fa-regular fa-star"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
                                            title="Добавить проекты из анализа релевантности"></i>
                                     </button>
                                     <button class="btn btn-secondary position-star mr-1" data-toggle="modal"
@@ -155,10 +165,10 @@
                                         <i class="fas fa-heading" data-toggle="tooltip" data-placement="top"
                                            title="Добавить проекты из мониторинга метатегов"></i>
                                     </button>
-                                    <button class="btn btn-secondary domain-monitoring-star mr-1" data-toggle="modal"
+                                    <button class="btn btn-secondary domain-monitoring-star mr-2" data-toggle="modal"
                                             data-target="#exampleModal">
                                         <i class="fas fa-edit" data-toggle="tooltip" data-placement="top"
-                                           title="Добавить проекты из мониторинга доменов"></i>
+                                           title="Добавить проекты из мониторинга сайтов"></i>
                                     </button>
 
                                     <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
@@ -166,9 +176,14 @@
                                         Управление метками
                                     </button>
 
-                                    <button class="btn btn-secondary" data-toggle="modal"
+                                    <button class="btn btn-secondary mr-1" data-toggle="modal"
                                             data-target="#createNewProject"
-                                            id="add-new-checklist">Добавить новый проект
+                                            id="add-new-checklist">
+                                        <i class="fa fa-plus"></i> Проект
+                                    </button>
+
+                                    <button class="btn btn-secondary" data-toggle="modal" data-target="#createNewSTub">
+                                        <i class="fa fa-plus"></i> Шаблон
                                     </button>
                                 </div>
                                 <div class="form-group col-2">
@@ -262,7 +277,7 @@
 
     <div class="modal fade" id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectLabel"
          aria-hidden="true">
-        <div class="modal-dialog d-flex" style="min-width: 85vw;">
+        <div class="modal-dialog d-flex" style="min-width: 100vw;">
             <div class="modal-content col-9 mr-2">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
@@ -291,15 +306,11 @@
                             <input type="text" name="url" id="url" class="form form-control"
                                    placeholder="https://example.com или example.com">
                         </div>
-                        <div class="form-group block-from-hide">
-                            <label for="save-stub">Сохранить как новый личный шаблон</label>
-                            <select name="save-new-stub" id="save-new-stub" class="custom-select">
-                                <option value="0" selected>Нет</option>
-                                <option value="1">Да</option>
-                            </select>
-                        </div>
                         <div class="form-group">
-                            <label for="tasks">Задачи</label>
+                            <div class="d-flex justify-content-between mb-3">
+                                <label for="tasks">Задачи</label>
+                                <button class="btn btn-secondary" id="add-new-task">Добавить задачу</button>
+                            </div>
                             <div id="accordionExample">
                                 <ol id="tasks"></ol>
                             </div>
@@ -307,9 +318,7 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <div>
-                        <button class="btn btn-secondary" id="add-new-task">Добавить задачу</button>
-                    </div>
+                    <div></div>
                     <div>
                         <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
                         <button type="button" class="btn btn-success" id="save-new-checklist">
@@ -330,6 +339,54 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" id="set-stub">Применить шаблон</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createNewSTub" tabindex="-1" aria-labelledby="createNewSTubLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg d-flex">
+            <div class="modal-content col-12">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createNewSTubLabel">Добавление нового шаблона</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex">
+                    <div class="col-12">
+                        <div class="form-group block-from-hide">
+                            <label for="save-stub-action">Выбор сохранения</label>
+                            <select name="save-stub-action" id="save-stub-action" class="custom-select">
+                                <option value="classic" selected>Сохранить как базовый шаблон</option>
+                                @if(\App\User::isUserAdmin())
+                                    <option value="basic">Сохранить как личный шаблон</option>
+                                    <option value="all">Сохранить как базовый и личный шаблон</option>
+                                @endif
+                            </select>
+                        </div>
+                        <div class="form-group mt-4">
+                            <div class="d-flex justify-content-between">
+                                <label for="stubs">Шаблон</label>
+                                <button class="btn btn-secondary" id="add-new-stub">Добавить</button>
+                            </div>
+                            <div id="accordionExample">
+                                <ol id="stubs"></ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="button" class="btn btn-success" id="save-new-stubs">
+                            {{ __('Save') }}
+                        </button>
+                        <img id="loader-stubs" src="/img/1485.gif" style="width: 30px; height: 30px; display: none">
+                    </div>
                 </div>
             </div>
         </div>
@@ -1226,20 +1283,20 @@
                         '            </div>' +
                         '            <div class="d-flex col-4 flex-column align-items-end">' +
                         '                <div>' +
-                        '                    <a target="_blank" href="{{ route('relevance.history') }}" class="fa-solid fa-star text-dark" data-toggle="tooltip" data-placement="top"' +
-                        '                       title="Анализ релевантности"></a>' +
+                        '                    <a target="_blank" href="{{ route('relevance.history') }}" class="text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Анализ релевантности"><i class="fa-regular fa-star"></i></a>' +
                         '                </div>' +
                         '                <div style="margin-right: 1px">' +
-                        '                    <a target="_blank" href="/monitoring" class="fas fa-chart-line text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                    <a target="_blank" href="/monitoring" class="fa fa-chart-line text-dark" data-toggle="tooltip" data-placement="top"' +
                         '                       title="Мониторинг позиций"></a>' +
                         '                </div>' +
                         '                <div style="margin-right: 3px">' +
-                        '                    <a target="_blank" href="/meta-tags" class="fas fa-heading text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                    <a target="_blank" href="/meta-tags" class="fa fa-heading text-dark" data-toggle="tooltip" data-placement="top"' +
                         '                       title="Мониторинг метатегов"></a>' +
                         '                </div>' +
                         '                <div>' +
-                        '                    <a target="_blank" href="/site-monitoring" class="fas fa-edit text-dark" data-toggle="tooltip" data-placement="top"' +
-                        '                       title="Мониторинг доменов"></a>' +
+                        '                    <a target="_blank" href="/site-monitoring" class="fa fa-edit text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Мониторинг сайтов"></a>' +
                         '                </div>' +
                         '            </div>' +
                         '        </div>' +
@@ -1269,6 +1326,11 @@
             function getRandomInt(max) {
                 return Math.floor(Math.random() * max);
             }
+
+            $('#add-new-stub').on('click', function () {
+                $('.add-new-subtask').hide(300)
+                $('#stubs').append(stub(getRandomInt(999999999), true))
+            })
 
             $('#add-new-task').on('click', function () {
                 $('.add-new-subtask').hide(300)
@@ -1305,10 +1367,14 @@
                 refreshTooltips()
             })
 
+            $(document).on('click', '.add-new-pre-subtask-stub', function () {
+                let ID = $(this).attr('data-id')
+                $('#subtasks-' + ID).append(stub(getRandomInt(999999999), true))
+            });
+
             $(document).on('click', '.add-new-pre-subtask', function () {
                 let ID = $(this).attr('data-id')
                 let randomID = getRandomInt(999999)
-
                 $('#subtasks-' + ID).append(stub(randomID))
 
                 refreshTooltips()
@@ -1339,31 +1405,74 @@
                     },
                     minHeight: 350,
                 });
+                $('.pre-description').summernote({
+                    callbacks: {
+                        onChange: function (contents, $editable) {
+                            editedID = $editable.parents().eq(2).find('textarea:first-child').attr('data-id')
+                            clearTimeout(editedTimeout)
+                            editedTimeout = setTimeout(() => {
+                                $.ajax({
+                                    type: 'post',
+                                    url: "{{ route('edit.checklist.task') }}",
+                                    data: {
+                                        id: editedID,
+                                        type: 'description',
+                                        value: contents,
+                                    },
+                                    success: function (response) {
+                                        successMessage('Успешно')
+                                    },
+                                    error: function (response) {
+                                        errorMessage(response.responseJSON.errors)
+                                    }
+                                })
+                            }, 1000)
+                        }
+                    },
+                    minHeight: 350,
+                })
             })
 
-            function stub(id) {
-                return '<li data-id="' + id + '" class="default">' +
-                    '    <input type="text" class="form form-control hide-border d-inline" data-type="name" placeholder="Без названия" data-target="' + id + '" style="width: 250px">' +
-                    '    <div class="tools d-flex" style="float: right">' +
-                    '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                    '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                    '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
-                    '            <option value="new" selected>Новая</option>' +
-                    '            <option value="in_work">В работе</option>' +
-                    '            <option value="ready">Готово</option>' +
-                    '            <option value="expired">Просрочено</option>' +
-                    '        </select>' +
-                    '        <div class="btn-group pl-2">' +
-                    '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
-                    '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
-                    '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
-                    '        </div>' +
-                    '    </div>' +
-                    '</li>' +
-                    '<div class="collapse" id="collapse-description-' + id + '">' +
-                    '    <div class="card card-body"><textarea class="pre-description" data-id="' + id + '"></textarea></div>' +
-                    '</div>' +
-                    '<ol id="subtasks-' + id + '" class="mt-3" ></ol>'
+            function stub(id, stub = false) {
+                if (stub) {
+                    return '<li data-id="' + id + '" class="default">' +
+                        '    <input type="text" class="form form-control hide-border d-inline w-50" data-type="name" disabled placeholder="Название задачи ' + id + '" data-target="' + id + '">' +
+                        '    <div class="tools d-flex" style="float: right">' +
+                        '        <div class="btn-group pl-2">' +
+                        '            <button class="btn btn-sm btn-default add-new-pre-subtask-stub" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
+                        '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
+                        '        </div>' +
+                        '    </div>' +
+                        '</li>' +
+                        '<div class="collapse" id="collapse-description-' + id + '">' +
+                        '    <div class="card card-body"><textarea class="pre-description" data-id="' + id + '"></textarea></div>' +
+                        '</div>' +
+                        '<ol id="subtasks-' + id + '" class="mt-3"></ol>'
+                } else {
+                    return '<li data-id="' + id + '" class="default d-flex">' +
+                        '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
+                        '    <div class="tools d-flex" style="float: right">' +
+                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
+                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
+                        '            <option value="new" selected>Новая</option>' +
+                        '            <option value="in_work">В работе</option>' +
+                        '            <option value="ready">Готово</option>' +
+                        '            <option value="expired">Просрочено</option>' +
+                        '        </select>' +
+                        '        <div class="btn-group pl-2">' +
+                        '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
+                        '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
+                        '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
+                        '        </div>' +
+                        '    </div>' +
+                        '</li>' +
+                        '<div class="collapse" id="collapse-description-' + id + '">' +
+                        '    <div class="card card-body"><textarea class="pre-description" data-id="' + id + '"></textarea></div>' +
+                        '</div>' +
+                        '<ol id="subtasks-' + id + '" class="mt-3"></ol>'
+                }
+
             }
 
             $('#save-basic-stub').on('click', function () {
@@ -1414,6 +1523,37 @@
                 })
             })
 
+            $(document).on('click', '#save-new-stubs', function () {
+                $('#loader-stubs').show(300)
+                $('#save-new-stubs').attr('disabled', true)
+                let stubs = [];
+
+                $.each($('#stubs').children('li'), function () {
+                    stubs.push(parseTree(($(this))))
+                })
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('store.stubs') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        stubs: stubs,
+                        action: $('#save-stub-action').val()
+                    },
+                    success: function (message) {
+                        $('#loader-stubs').hide(300)
+                        $('#save-new-stubs').attr('disabled', false)
+                        successMessage(message)
+                        $('#createNewSTub > div > div > div.modal-footer.d-flex.justify-content-between > div:nth-child(2) > button.btn.btn-default').trigger('click')
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                        $('#loader-stubs').hide(300)
+                        $('#save-new-stubs').attr('disabled', false)
+                    }
+                })
+            })
+
             $(document).on('click', '.remove-pre-task', function () {
                 if ($(this).parent().find('.save-new-task').length > 0) {
                     $('.add-new-subtask').show(300)
@@ -1459,7 +1599,7 @@
                     task = task[0] ?? task
 
                     let $listItem = '<li data-id="' + ID + '" class="default">' +
-                        '    <input type="text" class="form form-control hide-border d-inline" data-type="name" placeholder="Без названия" data-target="' + ID + '" style="width: 250px">' +
+                        '    <input type="text" class="form form-control hide-border d-inline w-75" data-type="name" placeholder="Без названия" data-target="' + ID + '">' +
                         '    <div class="tools d-flex" style="float: right">' +
                         '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
                         '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
@@ -1501,9 +1641,10 @@
                     let button = ''
                     let classic = ''
                     if (!tasks.classic) {
+                        classic = '<span class="text-primary">Ваш шаблон</span>'
                         button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
                     } else {
-                        classic = '<span class="text-muted">Базовый шаблон</span>'
+                        classic = '<span class="text-info">Базовый шаблон</span>'
                     }
 
                     html += classic

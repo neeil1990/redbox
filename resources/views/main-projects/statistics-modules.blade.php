@@ -59,29 +59,27 @@
     </table>
     <div class="card mt-5">
         <div class="card-header d-flex p-0">
-            <div class="pt-3 pl-3">
-                <div class="form-group">
-                    <div class="btn-group">
-                        <div class="input-group mr-1">
-                            <div class="input-group-prepend">
+            <div class="p-3" style="width: 60% !important;">
+                <div class="d-flex">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
                             <span class="input-group-text">
                                 <i class="far fa-calendar-alt"></i>
                             </span>
-                            </div>
-                            <input type="text" id="date-range" class="form-control float-right">
                         </div>
-                        <select id="step" class="custom-select mr-1">
-                            <option value="day">День</option>
-                            <option value="week">Неделя</option>
-                            <option value="month">Месяц</option>
-                        </select>
-                        <select id="action" class="custom-select">
-                            <option value="actions_counter">Действия</option>
-                            <option value="refresh_page_counter">Обновления страниц</option>
-                            <option value="seconds">Время проведённое в модулях</option>
-                        </select>
-                        <button class="btn btn-secondary" id="get-statistics">Статистика</button>
+                        <input type="text" id="date-range" class="form-control float-right">
                     </div>
+                    <select id="step" class="custom-select">
+                        <option value="day">День</option>
+                        <option value="week">Неделя</option>
+                        <option value="month">Месяц</option>
+                    </select>
+                    <select id="action" class="custom-select">
+                        <option value="actions_counter">Действия</option>
+                        <option value="refresh_page_counter">Обновления страниц</option>
+                        <option value="seconds">Время проведённое в модулях</option>
+                    </select>
+                    <button class="btn btn-secondary" id="get-statistics">Статистика</button>
                 </div>
             </div>
         </div>
@@ -213,7 +211,7 @@
                             width: '100%',
                         })
 
-                        if($('#action').val() === 'seconds') {
+                        if ($('#action').val() === 'seconds') {
                             chart = new Chart(document.getElementById("bar-chart-grouped"), {
                                 type: 'line',
                                 data: {
@@ -225,7 +223,18 @@
                                         y: {
                                             type: 'linear',
                                             position: 'bottom',
-                                        }
+                                            ticks: {
+                                                callback: function (value, index, values) {
+                                                    let hours = Math.floor(value / 3600);
+                                                    let minutes = Math.floor((value % 3600) / 60);
+                                                    let seconds = value % 60;
+                                                    hours = hours <= 9 ? '0' + hours : hours;
+                                                    minutes = minutes <= 9 ? '0' + minutes : minutes;
+                                                    seconds = seconds <= 9 ? '0' + seconds : seconds;
+                                                    return `${hours}:${minutes}:${seconds}`;
+                                                }
+                                            }
+                                        },
                                     },
                                     plugins: {
                                         tooltip: {

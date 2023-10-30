@@ -112,6 +112,36 @@ class CheckListController extends Controller
         return 'Успешно';
     }
 
+    public function storeStubs(Request $request): string
+    {
+        if ($request->input('action') === 'classic') {
+            ChecklistStubs::create([
+                'user_id' => Auth::id(),
+                'tree' => json_encode($request->input('stubs')),
+                'classic' => 1,
+            ]);
+        } else if ($request->input('action') === 'basic') {
+            ChecklistStubs::create([
+                'user_id' => Auth::id(),
+                'tree' => json_encode($request->input('stubs')),
+            ]);
+        } else {
+            // $request->input('action') = 'all'
+            ChecklistStubs::create([
+                'user_id' => Auth::id(),
+                'tree' => json_encode($request->input('stubs')),
+            ]);
+
+            ChecklistStubs::create([
+                'user_id' => Auth::id(),
+                'tree' => json_encode($request->input('stubs')),
+                'classic' => 1,
+            ]);
+        }
+
+        return 'Успешно';
+    }
+
     public function getChecklists(Request $request): JsonResponse
     {
         $userId = Auth::id();
