@@ -15,7 +15,30 @@ use Illuminate\Http\Request;
 class MonitoringExportsController extends MonitoringKeywordsController
 {
     private $groupColumnIndex = 4;
-    private $removeColumns = ['checkbox', 'btn', 'url', 'group', 'dynamics', 'base', 'phrasal', 'exact'];
+    private $removeColumns = [
+        'checkbox',
+        'btn',
+        'url',
+        'group',
+        'dynamics',
+        'base',
+        'phrasal',
+        'exact',
+        'price_top_1',
+        'price_top_3',
+        'price_top_5',
+        'price_top_10',
+        'price_top_20',
+        'price_top_50',
+        'price_top_100',
+        'days_top_1',
+        'days_top_3',
+        'days_top_5',
+        'days_top_10',
+        'days_top_20',
+        'days_top_50',
+        'days_top_100',
+    ];
 
     /**
      * @var IFormat
@@ -59,8 +82,8 @@ class MonitoringExportsController extends MonitoringKeywordsController
                 unset($this->removeColumns[array_search($col, $this->removeColumns)]);
         }
 
-        $this->columns->forget($this->removeColumns);
-        $response = $this->setProjectID($id)->get($params);
+        $this->setProjectID($id)->dataPrepare($params)->columns->forget($this->removeColumns);
+        $response = $this->generateDataTable();
 
         $file = $this->project['url'] . ' ' . $params['dates_range'];
         return $this->downloadFile($response, $file, $request['format']);

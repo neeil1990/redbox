@@ -35,6 +35,7 @@
             <label>Тип</label>
             <select class="custom-select" name="mode">
                 <option value="range">Все дни</option>
+                <option value="finance">Финансовый</option>
                 <option value="datesFind">Две даты (фиксированные)</option>
                 <option value="dates">Две даты (плавающие)</option>
                 <option value="randWeek">Случайная дата 1 за неделю</option>
@@ -100,6 +101,32 @@
                         <input class="custom-control-input" name="dynamicsCol" type="checkbox" id="dynamics" value="1">
                         <label for="dynamics" class="custom-control-label">{{ __('Dynamics') }}</label>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-none" id="finance">
+            <div class="col-sm-6">
+                <!-- checkbox -->
+                <div class="form-group">
+                    @foreach([1, 3, 5, 10, 20, 50, 100] as $top)
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="price_top_{{ $top }}Col" type="checkbox" id="price_top_{{ $top }}" value="1" checked>
+                        <label for="price_top_{{ $top }}" class="custom-control-label">{{ __('Price') }} top-{{ $top }}</label>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <!-- checkbox -->
+                <div class="form-group">
+                    @foreach([1, 3, 5, 10, 20, 50, 100] as $top)
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" name="days_top_{{ $top }}Col" type="checkbox" id="days_top_{{ $top }}" value="1" checked>
+                            <label for="days_top_{{ $top }}" class="custom-control-label">{{ __('Days') }} top-{{ $top }}</label>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
