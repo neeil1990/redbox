@@ -13,7 +13,7 @@
         <div class="form-group">
             <label>Начальная дата:</label>
             <div class="input-group date" id="startDatePicker" data-target-input="nearest">
-                <input type="text" name="startDate" class="form-control datetimepicker-input" data-target="#startDatePicker" data-toggle="datetimepicker" value="{{ Carbon::now()->subMonth()->isoFormat('DD.MM.YYYY') }}"/>
+                <input type="text" name="startDate" class="form-control datetimepicker-input" data-target="#startDatePicker" data-toggle="datetimepicker" value="{{ Carbon::now()->startOfMonth()->isoFormat('DD.MM.YYYY') }}"/>
                 <div class="input-group-append">
                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                 </div>
@@ -111,7 +111,7 @@
                 <div class="form-group">
                     @foreach([1, 3, 5, 10, 20, 50, 100] as $top)
                     <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" name="price_top_{{ $top }}Col" type="checkbox" id="price_top_{{ $top }}" value="1" checked>
+                        <input class="custom-control-input" name="price_top_{{ $top }}Col" type="checkbox" id="price_top_{{ $top }}" value="1" @if(in_array($top, [10])) checked @endif>
                         <label for="price_top_{{ $top }}" class="custom-control-label">{{ __('Price') }} top-{{ $top }}</label>
                     </div>
                     @endforeach
@@ -123,7 +123,7 @@
                 <div class="form-group">
                     @foreach([1, 3, 5, 10, 20, 50, 100] as $top)
                         <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" name="days_top_{{ $top }}Col" type="checkbox" id="days_top_{{ $top }}" value="1" checked>
+                            <input class="custom-control-input" name="days_top_{{ $top }}Col" type="checkbox" id="days_top_{{ $top }}" value="1" @if(in_array($top, [1, 3, 5, 10])) checked @endif>
                             <label for="days_top_{{ $top }}" class="custom-control-label">{{ __('Days') }} top-{{ $top }}</label>
                         </div>
                     @endforeach
