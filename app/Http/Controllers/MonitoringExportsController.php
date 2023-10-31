@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 
 class MonitoringExportsController extends MonitoringKeywordsController
 {
+    private $budget = 0;
     private $groupColumnIndex = 4;
     private $removeColumns = [
         'checkbox',
@@ -83,7 +84,11 @@ class MonitoringExportsController extends MonitoringKeywordsController
         }
 
         $this->setProjectID($id)->dataPrepare($params)->columns->forget($this->removeColumns);
+        $this->budget = $this->project->budget;
         $response = $this->generateDataTable();
+
+        if($request['mode'] == 'finance')
+            $this->setTotalSum($response);
 
         $file = $this->project['url'] . ' ' . $params['dates_range'];
         return $this->downloadFile($response, $file, $request['format']);
@@ -93,5 +98,14 @@ class MonitoringExportsController extends MonitoringKeywordsController
     {
         $project = MonitoringProject::findOrFail($id);
         return view('monitoring.export.edit', compact('project'));
+    }
+
+    private function setTotalSum(&$response)
+    {
+        $total = $response['data']->pluck('mastered')->sum();
+        $count = $response['columns']->count();
+
+        $response['data']->push(collect(['Выведено фраз на сумму:', $total])->pad(-$count, ''));
+        $response['data']->push(collect(['Максимальный бюджет:', $this->budget])->pad(-$count, ''));
     }
 }

@@ -42,6 +42,9 @@ class PositionsExport implements FromView, WithDefaultStyles, WithEvents, WithSt
     {
         $data = $this->data['data'];
         foreach ($data as $ek => $el){
+            if(!isset($el['target']))
+                continue;
+
             $target = trim(strip_tags($el['target']));
 
             foreach ($el as $fk => $field){
