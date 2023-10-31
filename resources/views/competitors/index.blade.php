@@ -87,7 +87,14 @@
                 word-break: break-word;
             }
 
+            #recommendations-table_length > label,
+            #urls-table_length > label {
+                display: flex;
+            }
 
+            .custom-select.custom-select-sm.form-control.form-control-sm {
+                margin: 0 5px;
+            }
         </style>
 
     @endslot
@@ -97,7 +104,7 @@
         <div class="card-header d-flex p-0">
             <ul class="nav nav-pills p-2">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('relevance-analysis') }}">{{ __('Analyzer') }}</a>
+                    <a class="nav-link active" href="#">{{ __('Analyzer') }}</a>
                 </li>
                 @if($admin)
                     <li class="nav-item">
@@ -481,6 +488,18 @@
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
+        <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+        <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+
+        <script src="{{ asset('plugins/common/js/common.js') }}"></script>
+
         <script src="{{ asset('plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-top-sites-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/render-nesting-table.js') }}"></script>
@@ -489,15 +508,7 @@
         <script src="{{ asset('plugins/competitor-analysis/js/render-urls-table.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/refresh-all.js') }}"></script>
         <script src="{{ asset('plugins/competitor-analysis/js/duallbox-block.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-        <script src="{{ asset('plugins/jszip/jszip.js') }}"></script>
-        <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
-        <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
-        <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.js') }}"></script>
-        <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.js') }}"></script>
-        <script src="{{ asset('plugins/common/js/common.js') }}"></script>
+
         <script>
             window.session = String(new Date()).shuffle();
             localStorage.setItem("sessionCompetitors", window.session);
@@ -513,7 +524,7 @@
             window.addEventListener('storage', onStorage);
             $('#duallistbox_tags').bootstrapDualListbox();
 
-            $('.btn.btn-secondary.pull-left').click(() => {
+            $('#start-analyse').click(() => {
                 let phrases = $.trim($('.form-control.phrases').val())
                 let count = $('.custom-select.rounded-0.count').val()
                 let token = $('meta[name="csrf-token"]').attr('content')
@@ -596,6 +607,7 @@
                             await renderTagsTable(response.result.totalMetaTags)
                             await renderUrlsTable(response.result.urls, {{ $config->urls_length }})
                             await duallboxBlockRender(response.result.totalMetaTags, count, localization)
+
                         } else {
                             setProgressBarStyles(response.percent)
                         }

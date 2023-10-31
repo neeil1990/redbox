@@ -46,7 +46,7 @@ function renderTopSitesV2(analysedSites, messages) {
     $.each(analysedSites, function (phrase, sites) {
         let newTable = '' +
             '<div class="card render mt-3" style="width: 300px; flex-shrink: 0">' +
-            '   <div class="card-header separate-header border" title="' + phrase + '"><h3>' + phrase + '</h3></div>' +
+            '   <div class="card-header separate-header border" data-toggle="tooltip" data-placement="top" title="' + phrase + '"><h3>' + phrase + '</h3></div>' +
             '   <div class="card-body p-0 d-flex flex-column">' +
             '       <div class="fixed-color d-flex p-2 border">' +
             '           <div class="font-weight-bold pr-2">#</div>' +
@@ -89,6 +89,7 @@ function renderTopSitesV2(analysedSites, messages) {
 
     $('#sites-block').show()
     showEquivalentElements()
+    $('[data-toggle="tooltip"]').tooltip()
 }
 
 function getStub(host, btnGroup, html, showBlock = false) {

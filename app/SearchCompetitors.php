@@ -111,7 +111,6 @@ class SearchCompetitors extends Model
 
         foreach ($this->phrases as $phrase) {
             $phrase = trim($phrase);
-            $phrase .= '\n';
             if ($phrase != '') {
                 $xml->setQuery($phrase);
                 $this->sites[$phrase] = $xml->getXMLResponse();
@@ -126,6 +125,7 @@ class SearchCompetitors extends Model
                 unset($this->sites[$key]);
             }
         }
+
         TariffSetting::saveStatistics(SearchCompetitors::class, $this->getUserId(), $this->countPhrases);
 
         try {
