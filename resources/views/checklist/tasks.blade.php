@@ -129,6 +129,7 @@
             <div class="form-group col-2">
                 <label for="count">Количество задач</label>
                 <select name="count" id="count" class="custom custom-select">
+                    <option value="1">1</option>
                     <option value="3">3</option>
                     <option value="5">5</option>
                     <option value="10">10</option>
@@ -167,7 +168,67 @@
     <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
 
     <div class="d-flex justify-content-end">
-        <button class="btn btn-secondary" id="add-new-task">Добавить новую задачу</button>
+{{--        <button class="btn btn-secondary" id="add-new-task">Добавить новую задачу</button>--}}
+        <button class="btn btn-secondary mr-1" data-toggle="modal"
+                data-target="#createNewProject"
+                id="add-new-checklist">
+            Добавить новую задачу
+        </button>
+    </div>
+
+    <div class="modal fade" id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectLabel"
+         aria-hidden="true">
+        <div class="modal-dialog d-flex" style="min-width: 100vw;">
+            <div class="modal-content col-9 mr-2">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex">
+                    <div class="col-12">
+                        <div class="form-group block-from-hide">
+                            <label for="url">Ссылка</label>
+                            <input type="text" name="url" id="url" class="form form-control"
+                                   placeholder="https://example.com или example.com">
+                        </div>
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between mb-3">
+                                <label for="tasks">Задачи</label>
+                                <button class="btn btn-secondary" id="add-new-task">Добавить задачу</button>
+                            </div>
+                            <div id="accordionExample">
+                                <ol id="tasks"></ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <div></div>
+                    <div>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="button" class="btn btn-success" id="save-new-checklist">
+                            {{ __('Save') }}
+                        </button>
+                        <img id="loader" src="/img/1485.gif" style="width: 30px; height: 30px; display: none">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-content col-3">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createNewProjectLabel">Шаблоны</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="stubs-place" style="overflow: auto;">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="set-stub">Применить шаблон</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel"
@@ -192,162 +253,23 @@
         </div>
     </div>
 
-    <div class="modal fade" id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="url">Url</label>
-                        <input type="text" name="url" id="url" class="form form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="tasks">Задачи</label>
-                        <div>
-                            <div class="accordion" id="accordionExample">
-                                <ol id="tasks">
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <div>
-                        <button class="btn btn-default" id="add-task">Добавить задачу</button>
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
-                        <button type="button" class="btn btn-success" id="save-new-checklist">
-                            {{ __('Save') }}
-                        </button>
-                        <img id="loader" src="/img/1485.gif" style="width: 30px; height: 30px; display: none">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="removeModalLabel">Подтвердите действие</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Вы собираетесь удалить проект из архива, данные будут потеряны и их нельзя будет восстановить.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="remove">{{ __('Delete') }}</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="rotateModal" tabindex="-1" aria-labelledby="rotateModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rotateModalLabel">Подтвердите действие</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Восстановление проекта из архива
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="rotate-checklist">Восстановить</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="removeRelationModal" tabindex="-1" aria-labelledby="removeRelationModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="removeRelationModalLabel">Подтвердите действие</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Вы собираетесь убрать метку с чеклиста
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="removeRelation">{{ __('Remove') }}</button>
-                    <button type="button" class="btn btn-default" id="closeRemoveRelationModal"
-                            data-dismiss="modal">{{ __('Close') }}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="checklistTaskModal" tabindex="-1" aria-labelledby="checklistTaskModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 65vw">
-            <div class="modal-content">
-                <div class="modal-header" style="font-size: 1.1rem">
-                    <div class="d-flex row justify-content-between w-75">
-                        <div id="project-name"></div>
-                        <div style="margin-top: 5px">
-                            Готово: <b id="tasks-ready"></b>
-                        </div>
-                        <div style="margin-top: 5px">
-                            В работе: <b id="tasks-work"></b>
-                        </div>
-                        <div style="margin-top: 5px">
-                            Просрочены: <b id="tasks-expired"></b>
-                        </div>
-                    </div>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul id="tasks-info" class="todo-list"></ul>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <div>
-                        <button class="btn btn-success"
-                                id="save-new-tasks"
-                                style="display:none;">
-                            {{ __('Save') }}
-                        </button>
-                    </div>
-                    <div>
-                        <button class="btn btn-secondary" id="add-real-task">Добавить задачу</button>
-                        <button type="button" class="btn btn-default" id="close-real-tasks"
-                                data-dismiss="modal">{{ __('Close') }}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     @slot('js')
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
             function getParameterByName(name, url) {
-                if (!url) url = window.location.href;
+                if (!url) {
+                    url = window.location.href
+                }
+
                 name = name.replace(/[\[\]]/g, "\\$&");
-                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
                     results = regex.exec(url);
+
                 if (!results) return null;
+
                 if (!results[2]) return '';
+
                 return decodeURIComponent(results[2].replace(/\+/g, " "));
             }
 
@@ -689,6 +611,7 @@
                         skip: page * $('#count').val(),
                     },
                     success: function (response) {
+                        console.log(response)
                         let checklist = response.checklist[0]
 
                         $(".checklist-icon").html('<img src="/storage/' + checklist.icon + '" alt="' + checklist.icon + '" class="icon mr-2">')

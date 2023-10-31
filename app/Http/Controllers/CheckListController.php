@@ -42,15 +42,6 @@ class CheckListController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->input('saveBasicStub', false) === 'basic' && User::isUserAdmin()) {
-            ChecklistStubs::create([
-                'user_id' => Auth::id(),
-                'tree' => json_encode($request->input('tasks')),
-                'classic' => 1,
-            ]);
-            return 'Успешно';
-        }
-
         $request->validate([
             'url' => 'required',
         ], [
@@ -69,6 +60,7 @@ class CheckListController extends Controller
             ], 422);
         }
 
+        DB::beginTransaction();
         try {
             $client = new Client();
             $response = $client->get($fullUrl);
@@ -83,14 +75,12 @@ class CheckListController extends Controller
 
                 $this->createSubTasks($request->input('tasks'), $project->id);
 
-                if ($request->input('newStub', false)) {
+                if ($request->input('saveStub', false) === 'personal') {
                     ChecklistStubs::create([
                         'user_id' => Auth::id(),
-                        'tree' => json_encode($request->input('tasks'))
+                        'tree' => json_encode($request->input('tasks')),
                     ]);
-                }
-
-                if ($request->input('saveBasicStub', false) && User::isUserAdmin()) {
+                } else if ($request->input('saveStub', false) === 'basic') {
                     ChecklistStubs::create([
                         'user_id' => Auth::id(),
                         'tree' => json_encode($request->input('tasks')),
@@ -153,6 +143,7 @@ class CheckListController extends Controller
         if ($labelName) {
             $labels = CheckListsLabels::where('user_id', $userId)
                 ->where('name', 'like', "%$labelName%")
+                ->with('checklists')
                 ->get();
 
             $projectIds = [];
@@ -172,7 +163,7 @@ class CheckListController extends Controller
         }
 
         $lists = $sql->skip($request->input('skip', 0))
-            ->take($request->input('countOnPage'), 3)
+            ->take($request->input('countOnPage', 3))
             ->with('tasks:project_id,status')
             ->with('labels')
             ->get(['icon', 'url', 'id'])
@@ -344,8 +335,7 @@ class CheckListController extends Controller
             $sql->where('status', 'expired');
         }
 
-        $tasks = $sql->skip($request->input('skip', 0))
-            ->take($request->input('count'), 3)
+        $tasks = $sql
             ->get()
             ->toArray();
 
@@ -353,13 +343,13 @@ class CheckListController extends Controller
             $tasks = $this->buildTaskStructure($tasks);
         }
 
-        $paginate = (int)ceil($sql->count() / $request->count);
+        $paginate = (int)ceil($sql->where('subtask', 0)->count() / $request->count);
 
         return [
             'checklist' => $this->confirmArray([
                 CheckLists::where('id', $request->id)->where('user_id', Auth::id())->with('tasks')->first()
             ]),
-            'tasks' => $tasks,
+            'tasks' => array_slice($tasks, $request->input('skip', 0), $request->input('count', 3)),
             'paginate' => $paginate
         ];
     }
@@ -476,12 +466,22 @@ class CheckListController extends Controller
 
     public function getClassicStubs()
     {
-        return ChecklistStubs::Where('classic', 1)->get();
+        return ChecklistStubs::where('classic', 1)
+            ->get();
+    }
+
+    public function getPersonalStubs()
+    {
+        return ChecklistStubs::where('classic', 0)
+            ->where('user_id', Auth::id())
+            ->get();
     }
 
     public function removeStub(ChecklistStubs $stub): string
     {
-        if ($stub->user_id === Auth::id() || User::isUserAdmin()) {
+        if ($stub->classic && User::isUserAdmin()) {
+            $stub->delete();
+        } else if ($stub->user_id === Auth::id()) {
             $stub->delete();
         }
 

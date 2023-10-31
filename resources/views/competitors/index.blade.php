@@ -428,7 +428,7 @@
 
             <div class="modal fade" id="recommendationModal" data-backdrop="static" data-keyboard="false"
                  tabindex="-1" aria-labelledby="recommendationModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog" style="max-width: 85% !important;">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="recommendationModalLabel"></h5>

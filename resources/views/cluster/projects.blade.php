@@ -63,7 +63,7 @@
                     <a class="nav-link" href="{{ route('cluster') }}">{{ __('Analyzer') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link admin-link active"
+                    <a class="nav-link active"
                        href="{{ route('cluster.projects') }}">{{ __('My projects') }}</a>
                 </li>
                 @if($admin)

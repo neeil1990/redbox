@@ -11,7 +11,7 @@
                 width: 85px;
                 height: 20px;
                 font-size: 1rem;
-                letter-spacing: 1px;
+                letter-spacing: 0;
                 float: left
             }
 
@@ -125,6 +125,11 @@
                         </li>
                     @endif
                     <li class="nav-item">
+                        <a class="nav-link" id="personal-stubs" data-toggle="pill"
+                           href="#personal-tabs-stub" role="tab" aria-controls="personal-tabs-stub"
+                           aria-selected="false">Личные шаблоны</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link d-flex align-items-center" id="notification" data-toggle="pill"
                            href="#notification-tab" role="tab" aria-controls="notification-tab"
                            aria-selected="false">
@@ -182,7 +187,8 @@
                                         <i class="fa fa-plus"></i> Проект
                                     </button>
 
-                                    <button class="btn btn-secondary" data-toggle="modal" data-target="#createNewSTub">
+                                    <button id="create-new-stub" class="btn btn-secondary" data-toggle="modal"
+                                            data-target="#createNewSTub">
                                         <i class="fa fa-plus"></i> Шаблон
                                     </button>
                                 </div>
@@ -246,6 +252,10 @@
                             <div id="classic-stubs-place" class="d-flex row"></div>
                         </div>
                     @endif
+                    <div class="tab-pane fade" id="personal-tabs-stub" role="tabpanel"
+                         aria-labelledby="personal-stubs">
+                        <div id="personal-stubs-place" class="d-flex row"></div>
+                    </div>
                     <div class="tab-pane fade" id="notification-tab" role="tabpanel" aria-labelledby="notification">
                     </div>
                 </div>
@@ -277,7 +287,7 @@
 
     <div class="modal fade" id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectLabel"
          aria-hidden="true">
-        <div class="modal-dialog d-flex" style="min-width: 100vw;">
+        <div class="modal-dialog d-flex" style="min-width: 95vw;">
             <div class="modal-content col-9 mr-2">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
@@ -287,27 +297,25 @@
                 </div>
                 <div class="modal-body d-flex">
                     <div class="col-12">
-                        @if(\App\User::isUserAdmin())
-                            <div class="form-group card">
-                                <div class="card-body">
-                                    <label for="save-basic-stub">Сохранить как базовый шаблон</label>
-                                    <span class="text-muted">(Эта настройка видна только админам)</span>
-                                    <select name="save-basic-stub" id="save-basic-stub" class="custom-select">
-                                        <option value="0" selected>Нет</option>
-                                        <option value="1">Да</option>
-                                        <option value="basic">Сохранить только новый базовый шаблон</option>
-                                    </select>
-                                </div>
-                            </div>
-                        @endif
+                        <div class="mb-3">
+                            <label for="save-stub">Выбор сохранения</label>
+                            <select name="save-stub" id="save-stub" class="custom-select">
+                                <option value="personal" selected>Сохранить как новый личный шаблон</option>
+                                @if(\App\User::isUserAdmin())
+                                    <option value="basic">Сохранить как новый базовый шаблон</option>
+                                @endif
+                                <option value="no">Не сохранять шаблон</option>
 
-                        <div class="form-group block-from-hide">
+                            </select>
+                        </div>
+
+                        <div class="form-group block-from-hide mb-3">
                             <label for="url">Ссылка</label>
                             <input type="text" name="url" id="url" class="form form-control"
                                    placeholder="https://example.com или example.com">
                         </div>
-                        <div class="form-group">
-                            <div class="d-flex justify-content-between mb-3">
+                        <div class="form-group mb-3">
+                            <div class="d-flex justify-content-between">
                                 <label for="tasks">Задачи</label>
                                 <button class="btn btn-secondary" id="add-new-task">Добавить задачу</button>
                             </div>
@@ -368,7 +376,7 @@
                         </div>
                         <div class="form-group mt-4">
                             <div class="d-flex justify-content-between">
-                                <label for="stubs">Шаблон</label>
+                                <label for="stubs">Настройте ваш шаблон:</label>
                                 <button class="btn btn-secondary" id="add-new-stub">Добавить</button>
                             </div>
                             <div id="accordionExample">
@@ -1436,7 +1444,7 @@
             function stub(id, stub = false) {
                 if (stub) {
                     return '<li data-id="' + id + '" class="default">' +
-                        '    <input type="text" class="form form-control hide-border d-inline w-50" data-type="name" disabled placeholder="Название задачи ' + id + '" data-target="' + id + '">' +
+                        '    <span class="text-muted" style="font-size: 1rem; letter-spacing: 0">Задача №: ' + id + '</span>' +
                         '    <div class="tools d-flex" style="float: right">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default add-new-pre-subtask-stub" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
@@ -1484,6 +1492,7 @@
             })
 
             $(document).on('click', '#save-new-checklist', function () {
+
                 $(this).attr('disabled', true)
                 $('#loader').show(300)
 
@@ -1501,7 +1510,7 @@
                         url: $('#url').val(),
                         tasks: tasks,
                         newStub: $('#save-new-stub').val(),
-                        saveBasicStub: $('#save-basic-stub').val()
+                        saveStub: $('#save-stub').val()
                     },
                     success: function (message) {
                         loadChecklists()
@@ -1521,6 +1530,12 @@
                         $('#loader').hide(300)
                     }
                 })
+            })
+
+            $('#create-new-stub').on('click', function () {
+                if ($('#stubs').html() === '') {
+                    $('#add-new-stub').trigger('click')
+                }
             })
 
             $(document).on('click', '#save-new-stubs', function () {
@@ -1639,16 +1654,16 @@
 
                 $.each(basicTasks, function (index, tasks) {
                     let button = ''
-                    let classic = ''
+                    let stubType = ''
                     if (!tasks.classic) {
-                        classic = '<span class="text-primary">Ваш шаблон</span>'
+                        stubType = '<span class="text-primary">Ваш шаблон</span>'
                         button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
                     } else {
-                        classic = '<span class="text-info">Базовый шаблон</span>'
+                        stubType = '<span class="text-info">Базовый шаблон</span>'
                     }
 
-                    html += classic
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
+                    html += stubType
                     html += generateNestedLists(JSON.parse(tasks.tree), index === 0)
                     html += button
                     html += '</ol>'
@@ -1661,7 +1676,7 @@
                 let ID = $(this).attr('data-id')
                 let $parent = $(this).parent()
 
-                if (confirm('Вы действительно хотите удалить ваш шаблон?')) {
+                if (confirm('Вы действительно хотите удалить шаблон?')) {
                     $.ajax({
                         type: 'get',
                         url: '/remove-checklist-stub/' + ID,
@@ -1677,7 +1692,6 @@
             })
 
             $(document).on('click', '#classic-stubs', function () {
-                $('#custom-tabs-three-profile').html('')
                 $.ajax({
                     type: 'get',
                     url: "{{ route('checklist.classic.stubs') }}",
@@ -1685,7 +1699,7 @@
                         let html = ''
                         $.each(tasks, function (index, tasks) {
                             let button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
-                            html += '<ol class="stubs card card-body col-3 mt-4" data-id="' + index + '">'
+                            html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
                             html += generateNestedLists(JSON.parse(tasks.tree))
                             html += button
                             html += '</ol>'
@@ -1693,6 +1707,28 @@
 
 
                         $('#classic-stubs-place').html(html)
+                    }
+                })
+            })
+
+            $(document).on('click', '#personal-stubs', function () {
+                $('#personal-stubs-place').html('')
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('checklist.personal.stubs') }}",
+                    success: function (tasks) {
+                        let html = ''
+                        $.each(tasks, function (index, tasks) {
+                            html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
+                            html += generateNestedLists(JSON.parse(tasks.tree))
+                            html += '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '">' +
+                                '<i class="fa fa-trash"></i>' +
+                                 '</button>'
+                            html += '</ol>'
+                        });
+
+
+                        $('#personal-stubs-place').html(html)
                     }
                 })
             })
@@ -1787,9 +1823,9 @@
                     $listItem +=
                         ' <li class="default example">' +
                         '     <div style="height: 20px;">' +
-                        '         <div class="stub-style">' +
+                        '         <span class="stub-style text-muted">' +
                         '             Название' +
-                        '         </div>' +
+                        '         </span>' +
                         '         <div style="float: right" class="d-flex">' +
                         '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
                         '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
