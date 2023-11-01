@@ -353,6 +353,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/keywords/queue', 'MonitoringKeywordsController@addingQueue')->name('keywords.queue');
 
     Route::get('/monitoring/{project}/competitors', 'MonitoringController@monitoringCompetitors')->name('monitoring.competitors');
+    Route::get('/monitoring-competitors/{project}', 'MonitoringController@getProjectCompetitorsInfo')->name('get.monitoring.competitors');
     Route::post('/monitoring/projects/competitors', 'MonitoringController@getCompetitorsInfo')->name('monitoring.get.competitors');
     Route::post('/monitoring/projects/competitors-domain', 'MonitoringController@getCompetitorsDomain')->name('monitoring.get.competitors.domain');
     Route::get('/monitoring/{project}/competitors/positions', 'MonitoringController@competitorsPositions')->name('monitoring.competitors.positions');

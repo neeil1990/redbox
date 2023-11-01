@@ -110,7 +110,7 @@
             <h3 class="card-title">Список конкурентов у проекта {{ $project->name }}</h3>
         </div>
         <div class="card-body" style="padding: 0">
-            <table class="table table-striped border">
+            <table class="table table-striped border" id="competitors-info">
                 <thead>
                 <tr>
                     <td>Конкурент</td>
@@ -155,9 +155,9 @@
                     Вы собираетесь удалить конкурента <span id="competitor-name"></span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
                     <button type="button" class="btn btn-secondary" id="remove-competitor"
                             data-dismiss="modal">{{ __('Remove') }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
                 </div>
             </div>
         </div>
@@ -399,6 +399,40 @@
                     getCompetitors()
                 })
             })
+
+            function getCompetitorsInfo() {
+                $.ajax({
+                    type: "get",
+                    dataType: "json",
+                    url: "/monitoring-competitors/{{ $project->id }}",
+                    success: function (response) {
+                        let trs = ''
+
+                        $.each(response, function (index, competitor) {
+                            trs +=
+                                '<tr>' +
+                                '    <td>' +
+                                '        <b>' + competitor.url + '</b>' +
+                                '    </td>' +
+                                '    <td>' +
+                                '        <div class="d-flex justify-content-end">' +
+                                '            <button class="btn btn-default remove-competitor-button"' +
+                                '                    data-id="' + competitor.id + '"' +
+                                '                    data-name="' + competitor.url + '"' +
+                                '                    data-toggle="modal"' +
+                                '                    data-target="#removeCompetitor">' +
+                                '                <i class="fa fa-trash"></i>' +
+                                '            </button>' +
+                                '        </div>' +
+                                '    </td>' +
+                                '</tr>'
+                        })
+
+                        $('#competitors-info tbody').html(trs)
+                        $('#counter-competitors').html(response.length)
+                    },
+                });
+            }
 
             function getCompetitors() {
                 getCompetitorsArray()
@@ -772,7 +806,7 @@
                 }
             })
 
-            $('.remove-competitor-button').on('click', function () {
+            $(document).on('click', '.remove-competitor-button', function () {
                 $('#competitor-name').html($(this).attr('data-name'))
                 removedRow = $(this).parents().eq(2)
             })
@@ -795,10 +829,6 @@
                         $('#app > div > div > div.card-body > div.row > div:nth-child(2) > a > div.inner > h3').html(
                             Number($('#app > div > div > div.card-body > div.row > div:nth-child(2) > a > div.inner > h3').html()) - 1
                         )
-
-                        if ($('#table > tbody').html() !== '') {
-                            $('#start-analyse-region').trigger('click')
-                        }
                     },
                 });
             })

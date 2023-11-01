@@ -516,6 +516,11 @@ class MonitoringController extends Controller
         ));
     }
 
+    public function getProjectCompetitorsInfo(MonitoringProject $project)
+    {
+        return $project->competitors->toArray();
+    }
+
     public function getCompetitorsInfo(Request $request): JsonResponse
     {
         if ($request->region == '') {
@@ -604,11 +609,6 @@ class MonitoringController extends Controller
     public function addCompetitor(Request $request): ?JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
-
-        if ($project->user->id !== Auth::id()) {
-            return abort(403);
-        }
-
         $parse = parse_url($request->url);
         $domain = $parse['host'] ?? $parse['path'];
         $url = Common::domainFilter($domain);
@@ -633,9 +633,6 @@ class MonitoringController extends Controller
     {
         $project = MonitoringProject::findOrFail($request->projectId);
         $urls = [];
-        if ($project->user->id !== Auth::id()) {
-            return abort(403);
-        }
 
         foreach ($request->domains as $domain) {
             if ($domain === null) {
@@ -667,10 +664,6 @@ class MonitoringController extends Controller
     public function removeCompetitor(Request $request): ?JsonResponse
     {
         $project = MonitoringProject::findOrFail($request->projectId);
-
-        if ($project->user->id !== Auth::id()) {
-            return abort(403);
-        }
 
         MonitoringCompetitor::where('monitoring_project_id', $request->projectId)
             ->where('url', $request->url)
