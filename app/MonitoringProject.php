@@ -80,8 +80,13 @@ class MonitoringProject extends Model
             ->whereIn('monitoring_keyword_id', $keywords)
             ->orderBy('id', 'desc')
             ->with('engine')
-            ->first()
-            ->toArray();
+            ->first();
+
+        if (isset($result)) {
+            $result->toArray();
+        } else {
+            return [];
+        }
 
         if ($dateOnly) {
             return $result['dateOnly'];

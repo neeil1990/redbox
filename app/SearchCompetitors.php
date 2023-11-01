@@ -113,6 +113,7 @@ class SearchCompetitors extends Model
             $phrase = trim($phrase);
             if ($phrase != '') {
                 $xml->setQuery($phrase);
+                $xml->setAttempt();
                 $this->sites[$phrase] = $xml->getXMLResponse();
             }
         }

@@ -103,7 +103,6 @@ class XmlFacade
     public function setQuery(string $query)
     {
         $this->query = $query;
-        $this->setAttempt();
 
         return $this;
     }
