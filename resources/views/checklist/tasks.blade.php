@@ -8,15 +8,6 @@
                 cursor: pointer;
             }
 
-            .width {
-                width: 150px;
-                font-size: 1.2rem;
-            }
-
-            .updated-font-size {
-                font-size: 1.2rem;
-            }
-
             .card-header::after {
                 display: none;
             }
@@ -36,7 +27,7 @@
                 padding: 0;
             }
 
-            #tasks li {
+            #tasks li, #new-tasks li, #stubs li, .stubs > .example {
                 font-family: "Trebuchet MS", "Lucida Sans";
                 padding: 7px 20px;
                 border-radius: 5px;
@@ -67,7 +58,8 @@
                 border-color: #1ccfc9 !important;
             }
 
-            #tasks li.default {
+            #tasks li.default,
+            .stubs > .example {
                 border-color: #5a6268 !important;
             }
 
@@ -86,6 +78,26 @@
 
             .hide-border:active, .hide-border:focus {
                 border: 1px solid #ced4da !important;
+            }
+
+            .fa-square:before {
+                font-size: 1.6rem;
+            }
+
+            #new-tasks {
+                padding-left: 0;
+                padding-right: 10px;
+                padding-top: 10px;
+                overflow: auto;
+                max-height: 600px;
+            }
+
+            .stub-style {
+                width: 85px;
+                height: 20px;
+                font-size: 1rem;
+                letter-spacing: 0;
+                float: left;
             }
         </style>
     @endslot
@@ -117,12 +129,88 @@
         </div>
     </div>
 
+    <div class="d-flex align-items-baseline">
+        <h3>Метки проекта:</h3>
+        <ol class="d-flex" id="project-labels">
+            @foreach($labels as $label)
+                <li class="checklist-label mr-2"
+                    data-target="{{ $checklist[0]['id'] }}"
+                    data-id="{{ $label['id'] }}"
+                    data-toggle="tooltip"
+                    data-placement="top" title="{{ $label['name'] }}">
+                     <span class="fas fa-square"
+                           style="color: {{ $label['color'] }}"
+                           data-toggle="modal"
+                           data-target="#removeRelationModal"></span>
+                </li>
+            @endforeach
+        </ol>
+        <a href="#" data-toggle="modal"
+           data-target="#addRelationModal">
+            <u>
+                Добавить метку
+            </u>
+        </a>
+    </div>
+
+    <div class="modal fade" id="removeRelationModal" tabindex="-1" aria-labelledby="removeRelationModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeRelationModalLabel">Подтвердите действие</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Вы собираетесь убрать метку с чеклиста
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="removeRelation">{{ __('Remove') }}</button>
+                    <button type="button" class="btn btn-default" id="closeRemoveRelationModal"
+                            data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addRelationModal" tabindex="-1" aria-labelledby="addRelationModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addRelationModalLabel">Добавить метку к проекту</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="labels">Ваши метки</label>
+                    <select name="labels" id="new-label" class="form form-control">
+                        @foreach($allLabels as $label)
+                            <option value="{{ $label['id'] }}" id="option-tag-{{ $label['id'] }}"
+                                    style="color: {{ $label['color'] }}">
+                                {{ $label['name'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="add-relation">{{ __('Add') }}</button>
+                    <button type="button" class="btn btn-default" id="closeRemoveRelationModal"
+                            data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="block-from-notifications"></div>
 
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                Филтьры
+                Фильтры
             </h3>
         </div>
         <div class="card-body row">
@@ -168,38 +256,33 @@
     <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
 
     <div class="d-flex justify-content-end">
-{{--        <button class="btn btn-secondary" id="add-new-task">Добавить новую задачу</button>--}}
         <button class="btn btn-secondary mr-1" data-toggle="modal"
                 data-target="#createNewProject"
-                id="add-new-checklist">
+                id="add-new-tasks">
             Добавить новую задачу
         </button>
     </div>
 
     <div class="modal fade" id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectLabel"
          aria-hidden="true">
-        <div class="modal-dialog d-flex" style="min-width: 100vw;">
+        <div class="modal-dialog d-flex" style="min-width: 95vw;">
             <div class="modal-content col-9 mr-2">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createNewProjectLabel">Добавление нового проекта</h5>
+                    <h5 class="modal-title" id="createNewProjectLabel">Добавление новых задач к
+                        проекту {{ $checklist[0]['url'] }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body d-flex">
                     <div class="col-12">
-                        <div class="form-group block-from-hide">
-                            <label for="url">Ссылка</label>
-                            <input type="text" name="url" id="url" class="form form-control"
-                                   placeholder="https://example.com или example.com">
-                        </div>
-                        <div class="form-group">
+                        <div class="form-group mb-3">
                             <div class="d-flex justify-content-between mb-3">
-                                <label for="tasks">Задачи</label>
+                                <label for="tasks">Новые задачи</label>
                                 <button class="btn btn-secondary" id="add-new-task">Добавить задачу</button>
                             </div>
                             <div id="accordionExample">
-                                <ol id="tasks"></ol>
+                                <ol id="new-tasks"></ol>
                             </div>
                         </div>
                     </div>
@@ -222,7 +305,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="stubs-place" style="overflow: auto;">
+                <div class="modal-body" id="stubs-place" style="overflow: auto; height: 80vh">
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" id="set-stub">Применить шаблон</button>
@@ -257,6 +340,94 @@
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
+            let stubs
+            $(document).on('click', '#set-stub', function () {
+                let basicID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
+
+                if (basicID === undefined) {
+                    errorMessage(['Шаблон не выбран'])
+                } else {
+                    $('#new-tasks').html(generateTasks(JSON.parse(stubs[basicID].tree)))
+                    refreshTooltips()
+                }
+            })
+
+            function generateTasks(tasks) {
+                let html = ''
+                $.each(tasks, function (index, task) {
+                    let ID = getRandomInt(9999999)
+                    task = task[0] ?? task
+
+                    let $listItem = '<li data-id="' + ID + '" class="default">' +
+                        '    <input type="text" class="form form-control hide-border d-inline w-75" data-type="name" placeholder="Без названия" data-target="' + ID + '">' +
+                        '    <div class="tools d-flex" style="float: right">' +
+                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
+                        '        <select data-id="status-' + ID + '" data-target="' + ID + '" class="custom custom-select" data-type="status">' +
+                        '            <option value="new" selected>Новая</option>' +
+                        '            <option value="in_work">В работе</option>' +
+                        '            <option value="ready">Готово</option>' +
+                        '            <option value="expired">Просрочено</option>' +
+                        '        </select>' +
+                        '        <div class="btn-group pl-2">' +
+                        '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + ID + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + ID + '"><i class="fa fa-eye"></i></button>' +
+                        '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + ID + '"><i class="fa fa-plus"></i></button>' +
+                        '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
+                        '        </div>' +
+                        '    </div>' +
+                        '</li>' +
+                        '<div class="collapse" id="collapse-description-' + ID + '">' +
+                        '    <div class="card card-body"><textarea class="pre-description" data-id="' + ID + '"></textarea></div>' +
+                        '</div>'
+
+                    let $subList = '<ol id="subtasks-' + ID + '" class="mt-3">';
+
+                    if (task.subtasks) {
+                        $subList += generateTasks(task.subtasks);
+                    }
+                    $listItem += $subList + '</ol>'
+                    html += $listItem
+                })
+
+                return html
+            }
+
+            $(document).on('click', '.accordion.stubs.card.card-body', function (e) {
+                if (!$(e.target).hasClass('remove-stub')) {
+                    $('.ribbon-wrapper.ribbon-lg').remove();
+
+                    $(this).append(
+                        '<div class="ribbon-wrapper ribbon-lg">' +
+                        '    <div class="ribbon bg-primary">' +
+                        '        Выбрано' +
+                        '    </div>' +
+                        '</div>'
+                    );
+                }
+            });
+
+            $('#add-new-tasks').on('click', function () {
+                if ($('#new-tasks').html() === '') {
+                    $('#add-new-task').trigger('click')
+                }
+
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('checklist.stubs') }}",
+                    data: {
+                        labelID: labelID,
+                        checkListID: {{ $checklist[0]['id'] }}
+                    },
+                    success: function (response) {
+                        stubs = response
+                        renderStubs(response)
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
+            })
+
             function getParameterByName(name, url) {
                 if (!url) {
                     url = window.location.href
@@ -293,10 +464,8 @@
             let editedTimeout
 
             $('#add-new-task').on('click', function () {
-                $(this).attr('disabled', true)
-                $('.add-new-subtask').hide(300)
                 let id = getRandomInt(99999)
-                $('#tasks').append(stub(id, true))
+                $('#new-tasks').append(stub(id))
 
                 $('.pre-description').summernote({
                     callbacks: {
@@ -326,56 +495,40 @@
                 })
             })
 
-            function generateNestedLists(task) {
-                let newState = '<option value="new">Новая</option>'
-                let work = '<option value="in_work">В работе</option>'
-                let ready = '<option value="ready">Готово</option>'
-                let expired = '<option value="expired">Просрочено</option>'
+            function generateNestedLists(tasks, ribbion = false) {
+                let $listItem = ''
+                $.each(tasks, function (k, task) {
+                    task = task[0] ?? task
+                    $listItem +=
+                        ' <li class="default example">' +
+                        '     <div style="height: 20px;">' +
+                        '         <span class="stub-style text-muted">' +
+                        '             Название' +
+                        '         </span>' +
+                        '         <div style="float: right" class="d-flex">' +
+                        '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
+                        '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
+                        '         </div>' +
+                        '     </div>' +
+                        ' </li>'
 
-                if (task.status === 'new') {
-                    newState = '<option value="new" selected>Новая</option>'
-                } else if (task.status === 'in_work') {
-                    work = '<option value="in_work" selected>В работе</option>'
-                } else if (task.status === 'ready') {
-                    ready = '<option value="ready" selected>Готово</option>'
-                } else {
-                    expired = '<option value="expired" selected>Просрочено</option>'
+                    let $subList = '<ol class="accordion stubs">';
+                    if (task.subtasks && task.subtasks.length > 0) {
+                        task.subtasks.forEach(function (subtask) {
+                            $subList += generateNestedLists(subtask);
+                        });
+                    }
+                    $subList += '</ol>';
+                    $listItem += $subList
+                });
+
+                if (ribbion) {
+                    $listItem += '<div class="ribbon-wrapper ribbon-lg">' +
+                        '    <div class="ribbon bg-primary">' +
+                        '        Выбрано' +
+                        '    </div>' +
+                        '</div>'
                 }
-
-                let $listItem =
-                    '<li data-id="' + task.id + '" class="' + task.status + '">' +
-                    '    <input type="text" class="form form-control hide-border d-inline edit-checklist" data-type="name" data-target="' + task.id + '" style="width: 350px" value="' + task.name + '">' +
-                    '    <div class="tools d-flex" style="float: right">' +
-                    '       <input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + task.date_start + '" ' +
-                    '       data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                    '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + task.deadline + '" ' +
-                    '       data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                    '                <select data-id="status-' + task.id + '" data-target="' + task.id + '" class="custom custom-select edit-checklist" data-type="status">' +
-                    newState +
-                    work +
-                    ready +
-                    expired +
-                    '               </select>' +
-                    '       <div class="btn-group pl-2">' +
-                    '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + task.id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + task.id + '"><i class="fa fa-eye"></i></button>' +
-                    '           <button class="btn btn-sm btn-default add-new-subtask" data-id="' + task.id + '"><i class="fa fa-plus"></i></button>' +
-                    '           <button class="btn btn-sm btn-default remove-real-task" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>' +
-                    '       </div>' +
-                    '    </div>' +
-                    '</li>' +
-                    '<div class="collapse" id="collapse-description-' + task.id + '">' +
-                    '    <div class="card card-body"><textarea class="description" data-id="' + task.id + '">' + task.description + '</textarea></div>' +
-                    '</div>'
-
-                let $subList = '<ol id="subtasks-' + task.id + '" class="mt-3" >';
-                if (task.subtasks && task.subtasks.length > 0) {
-                    task.subtasks.forEach(function (subtask) {
-                        $subList += generateNestedLists(subtask);
-                    });
-                }
-                $subList += '</ol>';
-
-                $listItem += $subList
 
                 return $listItem
             }
@@ -523,7 +676,7 @@
 
                 $('#add-new-task').attr('disabled', true)
                 $('.add-new-subtask').hide(300)
-                $('#subtasks-' + ID).append(stub(randomID, true))
+                $('#subtasks-' + ID).append(stub(randomID))
             })
 
             $(document).on('click', '.remove-real-task', function () {
@@ -535,7 +688,6 @@
                     }
                     removeTasks(taskID, false)
                 }
-
             })
 
             $(document).on('click', '.save-new-task', function () {
@@ -611,7 +763,6 @@
                         skip: page * $('#count').val(),
                     },
                     success: function (response) {
-                        console.log(response)
                         let checklist = response.checklist[0]
 
                         $(".checklist-icon").html('<img src="/storage/' + checklist.icon + '" alt="' + checklist.icon + '" class="icon mr-2">')
@@ -645,36 +796,56 @@
                 })
             }
 
+            function renderStubs(basicTasks) {
+                let html = ''
+
+                $.each(basicTasks, function (index, tasks) {
+                    let button = ''
+                    let stubType = ''
+                    if (tasks.type === 'personal') {
+                        stubType = '<span class="text-primary mb-3">Ваш шаблон</span>'
+                        button = '<button class="btn btn-sm btn-default remove-stub mt-3" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
+                    } else {
+                        stubType = '<span class="text-info mb-3">Базовый шаблон</span>'
+                    }
+
+                    html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
+                    html += stubType
+                    html += generateNestedLists(JSON.parse(tasks.tree), index === 0)
+                    html += button
+                    html += '</ol>'
+                });
+
+                $('#stubs-place').html(html)
+            }
+
             function getRandomInt(max) {
                 return Math.floor(Math.random() * max);
             }
 
-            function stub(id, parent = false) {
-                let save = ''
-                if (parent) {
-                    save = '<button class="btn btn-sm btn-success save-new-task"><i class="fa fa-save"></i></button>'
-                }
-                return '<li data-id="' + id + '" class="default">' +
-                    '    <input type="text" class="form form-control hide-border d-inline" data-type="name" value="Без названия" data-target="' + id + '" style="width: 350px">' +
+            function stub(id) {
+                return '<li data-id="' + id + '" class="default d-flex">' +
+                    '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
                     '    <div class="tools d-flex" style="float: right">' +
-                    '       <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '">' +
-                    '                <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
-                    '                    <option value="in_work" selected>В работе</option>' +
-                    '                    <option value="ready">Готово</option>' +
-                    '                    <option value="expired">Просрочено</option>' +
-                    '                </select>' +
-                    ' <div class="btn-group pl-2">' +
-                    save +
-                    '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
-                    '           <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
-                    '           <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
-                    '       </div>' +
+                    '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                    '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
+                    '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status" style="width: 135px">' +
+                    '            <option value="new" selected>Новая</option>' +
+                    '            <option value="in_work">В работе</option>' +
+                    '            <option value="ready">Готово</option>' +
+                    '            <option value="expired">Просрочено</option>' +
+                    '        </select>' +
+                    '        <div class="btn-group pl-2">' +
+                    '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
+                    '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
+                    '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
+                    '        </div>' +
                     '    </div>' +
                     '</li>' +
                     '<div class="collapse" id="collapse-description-' + id + '">' +
                     '    <div class="card card-body"><textarea class="pre-description" data-id="' + id + '"></textarea></div>' +
                     '</div>' +
-                    '<ol id="subtasks-' + id + '" class="mt-3" ></ol>'
+                    '<ol id="subtasks-' + id + '" class="mt-3"></ol>'
             }
 
             function removeTasks(taskID, removeSubTasks) {
@@ -733,6 +904,64 @@
 
             $(document).on('change', '#sort', function () {
                 getTasks(0, true)
+            })
+
+            let labelID
+            let removedLI
+
+            $(document).on('click', '.checklist-label', function () {
+                labelID = $(this).attr('data-id')
+                removedLI = $(this)
+            })
+
+            $('#removeRelation').on('click', function () {
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('remove.checklist.relation') }}",
+                    data: {
+                        labelID: labelID,
+                        checkListID: {{ $checklist[0]['id'] }}
+                    },
+                    success: function (message) {
+                        successMessage(message)
+                        removedLI.remove()
+                        $('#closeRemoveRelationModal').trigger('click')
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
+            })
+
+            $('#add-relation').on('click', function () {
+                let checklistID = "{{ $checklist[0]['id'] }}";
+                let labelID = $('#new-label').val()
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('create.checklist.relation') }}",
+                    data: {
+                        checklistId: checklistID,
+                        labelId: labelID
+                    },
+                    success: function (label) {
+                        successMessage('Метка добавлена к проекту')
+                        $('#project-labels').append(
+                            '<li class="checklist-label mr-2" data-target="' + checklistID + '" data-id="' + labelID + '" data-toggle="tooltip"' +
+                            '    data-placement="top" title="' + label.name + '">' +
+                            '         <span class="fas fa-square"' +
+                            '               style="color: ' + label.color + ' !important;"' +
+                            '               data-toggle="modal"' +
+                            '               data-target="#removeRelationModal"></span>' +
+                            '</li>'
+                        )
+
+                        refreshTooltips()
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
             })
         </script>
     @endslot

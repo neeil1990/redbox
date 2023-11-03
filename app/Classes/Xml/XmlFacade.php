@@ -3,6 +3,7 @@
 
 namespace App\Classes\Xml;
 
+use Illuminate\Support\Facades\Log;
 use Ixudra\Curl\Facades\Curl;
 
 class XmlFacade
@@ -162,20 +163,20 @@ class XmlFacade
     public function getByArray()
     {
         $response = Curl::to($this->path)
-            ->withData( $this->buildQuery() )
+            ->withData($this->buildQuery())
             ->withResponseHeaders()
             ->returnResponseObject()
             ->get();
 
         $content = $this->filter($response->content);
 
-        if($response->status == 404)
+        if ($response->status == 404)
             throw new \InvalidArgumentException('Wrong path or request, Check field path!');
 
         $xml = $this->load($content);
         $json = json_encode($xml);
 
-        return json_decode($json,TRUE);
+        return json_decode($json, TRUE);
     }
 
     /**
@@ -185,14 +186,14 @@ class XmlFacade
     public function getByObject()
     {
         $response = Curl::to($this->path)
-            ->withData( $this->buildQuery() )
+            ->withData($this->buildQuery())
             ->withResponseHeaders()
             ->returnResponseObject()
             ->get();
 
         $content = $response->content;
 
-        if($response->status == 404)
+        if ($response->status == 404)
             throw new \InvalidArgumentException('Wrong path or request, Check field path!');
 
         $xml = $this->load($content);
@@ -207,7 +208,7 @@ class XmlFacade
      */
     public function getQueryURL()
     {
-        if($this->path && $this->buildQuery())
+        if ($this->path && $this->buildQuery())
             return $this->path . '?' . http_build_query($this->buildQuery());
         else
             return null;
@@ -227,7 +228,7 @@ class XmlFacade
      */
     protected function buildQuery()
     {
-        return  [
+        return [
             'user' => $this->user,
             'key' => $this->key,
             'query' => $this->query,

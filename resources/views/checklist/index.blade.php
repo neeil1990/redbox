@@ -1,5 +1,8 @@
 @component('component.card', ['title' =>  __('SEO Checklist') ])
     @slot('css')
+
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
+
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
@@ -98,6 +101,14 @@
             #tasks .custom.custom-select {
                 width: 100px;
             }
+
+            .hide-border {
+                border: none;
+            }
+
+            .hide-border:active, .hide-border:focus {
+                border: 1px solid #ced4da !important;
+            }
         </style>
     @endslot
 
@@ -147,7 +158,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">
-                                    Филтьры
+                                    Фильтры
                                 </h3>
                             </div>
                             <div class="card-body row">
@@ -184,12 +195,12 @@
                                     <button class="btn btn-secondary mr-1" data-toggle="modal"
                                             data-target="#createNewProject"
                                             id="add-new-checklist">
-                                        <i class="fa fa-plus"></i> Проект
+                                        Добавить проект
                                     </button>
 
                                     <button id="create-new-stub" class="btn btn-secondary" data-toggle="modal"
                                             data-target="#createNewSTub">
-                                        <i class="fa fa-plus"></i> Шаблон
+                                        Добавить шаблон
                                     </button>
                                 </div>
                                 <div class="form-group col-2">
@@ -256,7 +267,7 @@
                          aria-labelledby="personal-stubs">
                         <div id="personal-stubs-place" class="d-flex row"></div>
                     </div>
-                    <div class="tab-pane fade" id="notification-tab" role="tabpanel" aria-labelledby="notification">
+                    <div class="tab-pane fade" id="notification-tab" role="tabpanel">
                     </div>
                 </div>
             </div>
@@ -297,15 +308,31 @@
                 </div>
                 <div class="modal-body d-flex">
                     <div class="col-12">
-                        <div class="mb-3">
-                            <label for="save-stub">Выбор сохранения</label>
-                            <select name="save-stub" id="save-stub" class="custom-select">
-                                <option value="personal" selected>Сохранить как новый личный шаблон</option>
-                                @if(\App\User::isUserAdmin())
-                                    <option value="basic">Сохранить как новый базовый шаблон</option>
-                                @endif
-                                <option value="no">Не сохранять шаблон</option>
 
+                        <div class="mb-3">
+                            <label for="save-stub">Тип шаблона</label>
+                            <select name="save-stub" id="save-stub" class="custom-select">
+                                <option value="no" selected>Не сохранять шаблон</option>
+                                <option value="personal">Сохранить как новый личный шаблон</option>
+                                @if(\App\User::isUserAdmin())
+                                    <option value="classic">Сохранить как новый базовый шаблон</option>
+                                @endif
+                            </select>
+                        </div>
+
+                        <div class="mb-3" style="display: none">
+                            <label for="dynamic-stub">Динамичный шаблон</label>
+                            <span class="__helper-link ui_tooltip_w">
+                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                <span class="ui_tooltip __bottom">
+                                    <span class="ui_tooltip_content" style="width: 300px">
+                                        Если шаблон динамичный, то он будет иметь такую же структуру задач, которую имеет ваш проект
+                                    </span>
+                                </span>
+                            </span>
+                            <select name="dynamic-stub" id="dynamic-stub" class="custom-select">
+                                <option value="1">Да</option>
+                                <option value="0" selected>Нет</option>
                             </select>
                         </div>
 
@@ -314,6 +341,7 @@
                             <input type="text" name="url" id="url" class="form form-control"
                                    placeholder="https://example.com или example.com">
                         </div>
+
                         <div class="form-group mb-3">
                             <div class="d-flex justify-content-between">
                                 <label for="tasks">Задачи</label>
@@ -323,6 +351,7 @@
                                 <ol id="tasks"></ol>
                             </div>
                         </div>
+
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
@@ -367,9 +396,9 @@
                         <div class="form-group block-from-hide">
                             <label for="save-stub-action">Выбор сохранения</label>
                             <select name="save-stub-action" id="save-stub-action" class="custom-select">
-                                <option value="classic" selected>Сохранить как базовый шаблон</option>
+                                <option value="personal">Сохранить как личный шаблон</option>
                                 @if(\App\User::isUserAdmin())
-                                    <option value="basic">Сохранить как личный шаблон</option>
+                                    <option value="classic" selected>Сохранить как базовый шаблон</option>
                                     <option value="all">Сохранить как базовый и личный шаблон</option>
                                 @endif
                             </select>
@@ -464,9 +493,7 @@
                             <div id="add-to-project" class="tab-pane active">
                                 <label for="checklist-select">Ваши чеклисты</label>
                                 <select name="checklist-select" id="checklist-select" class="form form-control mb-3">
-                                    <option value="2">lorshop.ru</option>
-                                    <option value="3">тари-стом.рф</option>
-                                    <option value="4">kawe.su</option>
+
                                 </select>
 
                                 <label for="labels">Ваши метки</label>
@@ -623,8 +650,8 @@
                         checklistId: checklistID,
                         labelId: labelID
                     },
-                    success: function (message) {
-                        successMessage(message)
+                    success: function (label) {
+                        successMessage('Метка успешно добавлена к проекту')
                         let labelsBlock = $('.col-8[data-action="labels"][data-id="' + checklistID + '"]').children('ul').eq(0)
                         let color = $('.label-color-input[data-target="' + labelID + '"]').val()
                         let text = $('.label-name-input[data-target="' + labelID + '"]').val()
@@ -881,9 +908,8 @@
 
             $(document).on('click', '#archived-checklists', function () {
                 $('#custom-tabs-three-profile').html(
-                    '<div class="d-flex justify-content-center align-items-center w-100 mt-5"' +
-                    '     style="width: 100%;">' +
-                    '    <img src="/img/1485.gif" style="width: 80px; height: 80px;">' +
+                    '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
+                    '    <img src="/img/1485.gif">' +
                     '</div>'
                 )
 
@@ -1188,9 +1214,8 @@
             function loadChecklists(page = 0, renderPaginate = false) {
                 $('#custom-tabs-three-profile').html('')
                 $('#lists').html(
-                    '<div class="d-flex justify-content-center align-items-center w-100 mt-5"' +
-                    '     style="width: 100%;">' +
-                    '    <img src="/img/1485.gif" style="width: 80px; height: 80px;">' +
+                    '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
+                    '    <img src="/img/1485.gif">' +
                     '</div>'
                 )
 
@@ -1491,6 +1516,14 @@
                 }
             })
 
+            $('#save-stub').on('change', function () {
+                if ($(this).val() === 'no') {
+                    $('#dynamic-stub').parent().hide(300)
+                } else {
+                    $('#dynamic-stub').parent().show(300)
+                }
+            })
+
             $(document).on('click', '#save-new-checklist', function () {
 
                 $(this).attr('disabled', true)
@@ -1509,8 +1542,8 @@
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         url: $('#url').val(),
                         tasks: tasks,
-                        newStub: $('#save-new-stub').val(),
-                        saveStub: $('#save-stub').val()
+                        saveStub: $('#save-stub').val(),
+                        dynamicStub: $('#dynamic-stub').val()
                     },
                     success: function (message) {
                         loadChecklists()
@@ -1655,11 +1688,11 @@
                 $.each(basicTasks, function (index, tasks) {
                     let button = ''
                     let stubType = ''
-                    if (!tasks.classic) {
-                        stubType = '<span class="text-primary">Ваш шаблон</span>'
-                        button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
+                    if (tasks.type === 'personal') {
+                        stubType = '<span class="text-primary mb-3">Ваш шаблон</span>'
+                        button = '<button class="btn btn-sm btn-default remove-stub mt-3" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
                     } else {
-                        stubType = '<span class="text-info">Базовый шаблон</span>'
+                        stubType = '<span class="text-info mb-3">Базовый шаблон</span>'
                     }
 
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
@@ -1692,6 +1725,13 @@
             })
 
             $(document).on('click', '#classic-stubs', function () {
+                $('#custom-tabs-three-profile').html('')
+                $('#classic-stubs-place').html(
+                    '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
+                    '    <img src="/img/1485.gif">' +
+                    '</div>'
+                )
+
                 $.ajax({
                     type: 'get',
                     url: "{{ route('checklist.classic.stubs') }}",
@@ -1705,14 +1745,21 @@
                             html += '</ol>'
                         });
 
-
+                        $('#classic-stubs-loader').remove()
                         $('#classic-stubs-place').html(html)
                     }
                 })
             })
 
             $(document).on('click', '#personal-stubs', function () {
-                $('#personal-stubs-place').html('')
+                $('#custom-tabs-three-profile').html('')
+                $('#personal-stubs-place').html(
+                    '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
+                    '    <img src="/img/1485.gif">' +
+                    '</div>'
+                )
+
+
                 $.ajax({
                     type: 'get',
                     url: "{{ route('checklist.personal.stubs') }}",
@@ -1723,10 +1770,9 @@
                             html += generateNestedLists(JSON.parse(tasks.tree))
                             html += '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '">' +
                                 '<i class="fa fa-trash"></i>' +
-                                 '</button>'
+                                '</button>'
                             html += '</ol>'
                         });
-
 
                         $('#personal-stubs-place').html(html)
                     }
@@ -1895,13 +1941,17 @@
             })
 
             getNotifications()
-            $(document).ready(function () {
-                setInterval(() => {
-                    getNotifications()
-                }, 30000)
+            $('#notification').on('click', function () {
+                getNotifications()
             })
 
             function getNotifications() {
+                $('#notification-tab').html(
+                    '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
+                    '    <img src="/img/1485.gif">' +
+                    '</div>'
+                )
+
                 $.ajax({
                     type: 'get',
                     url: "{{ route('checklist.notifications') }}",
@@ -1949,6 +1999,7 @@
                         } else {
                             $('#notification-counter').hide(300)
                             $('#notification-counter').html(counter)
+                            html = 'У вас нет уведомлений'
                         }
 
                         $('#notification-tab').html(html)

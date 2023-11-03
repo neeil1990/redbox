@@ -320,7 +320,7 @@
                                     </div>
                                     <p>{{ __('Experimental mode') }} </p>
                                     <span class="__helper-link ui_tooltip_w">
-                                    <i class="fa fa-question-circle" style="color: grey"></i>
+                                        <i class="fa fa-question-circle" style="color: grey"></i>
                                         <span class="ui_tooltip __bottom">
                                             <span class="ui_tooltip_content" style="width: 300px">
                                                 Происходит опрос первых 50ти сайтов конкурентов<br>

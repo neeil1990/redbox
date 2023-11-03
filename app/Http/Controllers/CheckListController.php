@@ -35,9 +35,11 @@ class CheckListController extends Controller
     public function tasks(CheckLists $checklist)
     {
         $host = parse_url($checklist->url)['host'];
+        $labels = $checklist->labels->toArray();
         $checklist = $this->confirmArray([$checklist]);
+        $allLabels = CheckListsLabels::where('user_id', Auth::id())->get()->toArray();
 
-        return view('checklist.tasks', compact('checklist', 'host'));
+        return view('checklist.tasks', compact('checklist', 'host', 'labels', 'allLabels'));
     }
 
     public function store(Request $request)
@@ -75,17 +77,18 @@ class CheckListController extends Controller
 
                 $this->createSubTasks($request->input('tasks'), $project->id);
 
-                if ($request->input('saveStub', false) === 'personal') {
-                    ChecklistStubs::create([
+                if ($request->input('saveStub', false) !== 'no') {
+                    $data = [
                         'user_id' => Auth::id(),
                         'tree' => json_encode($request->input('tasks')),
-                    ]);
-                } else if ($request->input('saveStub', false) === 'basic') {
-                    ChecklistStubs::create([
-                        'user_id' => Auth::id(),
-                        'tree' => json_encode($request->input('tasks')),
-                        'classic' => 1,
-                    ]);
+                        'type' => $request->input('saveStub', false),
+                    ];
+
+                    if ($request->input('dynamicStub') == 1) {
+                        $data['checklist_id'] = $project->id;
+                    }
+
+                    ChecklistStubs::create($data);
                 }
             }
 
@@ -104,28 +107,24 @@ class CheckListController extends Controller
 
     public function storeStubs(Request $request): string
     {
-        if ($request->input('action') === 'classic') {
+        Log::info($request->input('action'));
+        if ($request->input('action') === 'all') {
             ChecklistStubs::create([
                 'user_id' => Auth::id(),
                 'tree' => json_encode($request->input('stubs')),
-                'classic' => 1,
-            ]);
-        } else if ($request->input('action') === 'basic') {
-            ChecklistStubs::create([
-                'user_id' => Auth::id(),
-                'tree' => json_encode($request->input('stubs')),
-            ]);
-        } else {
-            // $request->input('action') = 'all'
-            ChecklistStubs::create([
-                'user_id' => Auth::id(),
-                'tree' => json_encode($request->input('stubs')),
+                'type' => 'classic',
             ]);
 
             ChecklistStubs::create([
                 'user_id' => Auth::id(),
                 'tree' => json_encode($request->input('stubs')),
-                'classic' => 1,
+                'type' => 'personal',
+            ]);
+        } else {
+            ChecklistStubs::create([
+                'user_id' => Auth::id(),
+                'tree' => json_encode($request->input('stubs')),
+                'type' => $request->input('action'),
             ]);
         }
 
@@ -212,6 +211,11 @@ class CheckListController extends Controller
 
         if ($project->archive) {
             $project->delete();
+
+            ChecklistStubs::where('checklist_id', $project->id)
+                ->update([
+                    'checklist_id' => null
+                ]);
         }
 
         return 'Чеклист был удалён';
@@ -298,7 +302,7 @@ class CheckListController extends Controller
                 'checklist_label_id' => $request->labelId,
             ]);
 
-            return 'Метка успешно добавлена к проекту';
+            return CheckListsLabels::find($request->labelId);
         } else {
             return response()->json([
                 'errors' => ['unique' => 'Метка уже привязана к проекту']
@@ -459,20 +463,20 @@ class CheckListController extends Controller
     public function getStubs()
     {
         return ChecklistStubs::where('user_id', Auth::id())
-            ->orWhere('classic', 1)
-            ->orderByDesc('classic')
+            ->orWhere('type', 'classic')
+            ->orderByDesc('type')
             ->get();
     }
 
     public function getClassicStubs()
     {
-        return ChecklistStubs::where('classic', 1)
+        return ChecklistStubs::where('type', 'classic')
             ->get();
     }
 
     public function getPersonalStubs()
     {
-        return ChecklistStubs::where('classic', 0)
+        return ChecklistStubs::where('type', 'personal')
             ->where('user_id', Auth::id())
             ->get();
     }
