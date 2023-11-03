@@ -100,6 +100,110 @@
                 float: left;
             }
         </style>
+        <style>
+            .callout a:hover {
+                color: #007bff !important;
+            }
+
+            .stub-style {
+                width: 85px;
+                height: 20px;
+                font-size: 1rem;
+                letter-spacing: 0;
+                float: left
+            }
+
+            i {
+                transition: 0.3s;
+                cursor: pointer;
+            }
+
+            .width {
+                width: 150px;
+                font-size: 1.2rem;
+            }
+
+            .updated-font-size {
+                font-size: 1.2rem;
+            }
+
+            .card ol {
+                list-style: none;
+                counter-reset: li;
+            }
+
+            .card-header::after {
+                display: none;
+            }
+
+            .icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            #tasks li, .stubs > .example,
+            #stubs li, .stubs > .example {
+                font-family: "Trebuchet MS", "Lucida Sans";
+                padding: 7px 20px;
+                border-radius: 5px;
+                margin-bottom: 10px;
+                border-left: 10px solid #f05d22;
+                box-shadow: 2px -2px 5px 0 rgba(0, 0, 0, .1),
+                -2px -2px 5px 0 rgba(0, 0, 0, .1),
+                2px 2px 5px 0 rgba(0, 0, 0, .1),
+                -2px 2px 5px 0 rgba(0, 0, 0, .1);
+                font-size: 20px;
+                letter-spacing: 2px;
+                transition: 0.3s;
+            }
+
+            #tasks li.ready,
+            #stubs li.ready {
+                border-color: #8bc63e !important;
+            }
+
+            #tasks li.expired, #stubs li.expired {
+                border-color: #f05d22 !important;
+            }
+
+            #tasks li.in_work, #stubs li.in_work {
+                border-color: #1ccfc9 !important;
+            }
+
+            #tasks li.default, .stubs > .default,
+            #stubs li.default, .stubs > .default {
+                border-color: #5a6268 !important;
+            }
+
+            #tasks li:hover
+            #stubs li:hover {
+                cursor: pointer;
+                box-shadow: 0 0 10px grey;
+            }
+
+            #tasks, #stubs {
+                padding-left: 0;
+                padding-right: 10px;
+                padding-top: 10px;
+                overflow: auto;
+            }
+
+            .accordion.stubs.card.card-body {
+                cursor: pointer;
+            }
+
+            #tasks .custom.custom-select {
+                width: 100px;
+            }
+
+            .hide-border {
+                border: none;
+            }
+
+            .hide-border:active, .hide-border:focus {
+                border: 1px solid #ced4da !important;
+            }
+        </style>
     @endslot
 
     <div id="project-info" class="d-flex justify-content-between w-75">
@@ -214,34 +318,44 @@
             </h3>
         </div>
         <div class="card-body row">
-            <div class="form-group col-2">
-                <label for="count">Количество задач</label>
-                <select name="count" id="count" class="custom custom-select">
-                    <option value="1">1</option>
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                    <option value="40">40</option>
-                    <option value="50">50</option>
-                    <option value="60">60</option>
-                </select>
+            <div class="d-flex col-6">
+                <div class="form-group mr-3">
+                    <label for="count">Количество задач</label>
+                    <select name="count" id="count" class="custom custom-select">
+                        <option value="1">1</option>
+                        <option value="3">3</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                        <option value="50">50</option>
+                        <option value="60">60</option>
+                    </select>
+                </div>
+                <div class="form-group mr-3">
+                    <label for="name">Название</label>
+                    <input type="text" id="name" name="name" class="form form-control">
+                </div>
+                <div class="form-group mr-3">
+                    <label for="sort">Сортировка</label>
+                    <select name="sort" id="sort" class="custom custom-select">
+                        <option value="all" selected>Любые</option>
+                        <option value="new">Сначала новые</option>
+                        <option value="old">Сначала старые</option>
+                        <option value="ready">Готовые</option>
+                        <option value="in_work">В работе</option>
+                        <option value="expired">Просроченные</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group col-2">
-                <label for="name">Название</label>
-                <input type="text" id="name" name="name" class="form form-control">
-            </div>
-            <div class="form-group col-2">
-                <label for="sort">Сортировка</label>
-                <select name="sort" id="sort" class="custom custom-select">
-                    <option value="all" selected>Любые</option>
-                    <option value="new">Сначала новые</option>
-                    <option value="old">Сначала старые</option>
-                    <option value="ready">Завершённые</option>
-                    <option value="work">В работе</option>
-                    <option value="expired">Просроченные</option>
-                </select>
+            <div class="d-flex col-6 justify-content-end align-items-center">
+                <button class="btn btn-secondary" data-toggle="modal"
+                        data-target="#createNewProject"
+                        style="height: 38px"
+                        id="add-new-tasks">
+                    Добавить новую задачу
+                </button>
             </div>
         </div>
     </div>
@@ -254,14 +368,6 @@
     </ol>
 
     <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
-
-    <div class="d-flex justify-content-end">
-        <button class="btn btn-secondary mr-1" data-toggle="modal"
-                data-target="#createNewProject"
-                id="add-new-tasks">
-            Добавить новую задачу
-        </button>
-    </div>
 
     <div class="modal fade" id="createNewProject" tabindex="-1" aria-labelledby="createNewProjectLabel"
          aria-hidden="true">
@@ -290,8 +396,9 @@
                 <div class="modal-footer d-flex justify-content-between">
                     <div></div>
                     <div>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
-                        <button type="button" class="btn btn-success" id="save-new-checklist">
+                        <button type="button" class="btn btn-default" id="close-create-tasks-modal"
+                                data-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="button" class="btn btn-success" id="save-new-tasks">
                             {{ __('Save') }}
                         </button>
                         <img id="loader" src="/img/1485.gif" style="width: 30px; height: 30px; display: none">
@@ -340,6 +447,39 @@
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
+            $(document).on('click', '#save-new-tasks', function () {
+                $(this).attr('disabled', true)
+                $('#loader').show(300)
+
+                let tasks = [];
+
+                $.each($('#new-tasks').children('li'), function () {
+                    tasks.push(parseTree(($(this))))
+                })
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('update.checklist') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        tasks: tasks,
+                        id: {{ $checklist[0]['id']}}
+                    },
+                    success: function (message) {
+                        successMessage(message)
+                        $(this).attr('disabled', false)
+                        $('#loader').hide(300)
+
+                        $('#close-create-tasks-modal').trigger('click')
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                        $('#save-new-checklist').attr('disabled', false)
+                        $('#loader').hide(300)
+                    }
+                })
+            })
+
             let stubs
             $(document).on('click', '#set-stub', function () {
                 let basicID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
@@ -355,32 +495,32 @@
             function generateTasks(tasks) {
                 let html = ''
                 $.each(tasks, function (index, task) {
-                    let ID = getRandomInt(9999999)
+                    let id = getRandomInt(9999999999)
                     task = task[0] ?? task
 
-                    let $listItem = '<li data-id="' + ID + '" class="default">' +
-                        '    <input type="text" class="form form-control hide-border d-inline w-75" data-type="name" placeholder="Без названия" data-target="' + ID + '">' +
+                    let $listItem = '<li data-id="' + id + '" class="default d-flex">' +
+                        '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
                         '    <div class="tools d-flex" style="float: right">' +
-                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                        '        <select data-id="status-' + ID + '" data-target="' + ID + '" class="custom custom-select" data-type="status">' +
+                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
+                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status" style="width: 135px">' +
                         '            <option value="new" selected>Новая</option>' +
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
                         '            <option value="expired">Просрочено</option>' +
                         '        </select>' +
                         '        <div class="btn-group pl-2">' +
-                        '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + ID + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + ID + '"><i class="fa fa-eye"></i></button>' +
-                        '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + ID + '"><i class="fa fa-plus"></i></button>' +
+                        '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
+                        '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
                         '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
                         '        </div>' +
                         '    </div>' +
                         '</li>' +
-                        '<div class="collapse" id="collapse-description-' + ID + '">' +
-                        '    <div class="card card-body"><textarea class="pre-description" data-id="' + ID + '"></textarea></div>' +
+                        '<div class="collapse" id="collapse-description-' + id + '">' +
+                        '    <div class="card card-body"><textarea class="pre-description" data-id="' + id + '"></textarea></div>' +
                         '</div>'
 
-                    let $subList = '<ol id="subtasks-' + ID + '" class="mt-3">';
+                    let $subList = '<ol id="subtasks-' + id + '" class="mt-3">';
 
                     if (task.subtasks) {
                         $subList += generateTasks(task.subtasks);
@@ -445,8 +585,6 @@
             }
 
             let notificationBlocks = 0
-            let checklist = {!! json_encode($checklist) !!};
-
             $('#app > div > div > div.card-header').append($('#project-info'))
             $('#app > div > div > div.card-header > .card-title').remove()
 
@@ -495,7 +633,7 @@
                 })
             })
 
-            function generateNestedLists(tasks, ribbion = false) {
+            function generateNestedStubs(tasks, ribbion = false) {
                 let $listItem = ''
                 $.each(tasks, function (k, task) {
                     task = task[0] ?? task
@@ -515,7 +653,7 @@
                     let $subList = '<ol class="accordion stubs">';
                     if (task.subtasks && task.subtasks.length > 0) {
                         task.subtasks.forEach(function (subtask) {
-                            $subList += generateNestedLists(subtask);
+                            $subList += generateNestedStubs(subtask);
                         });
                     }
                     $subList += '</ol>';
@@ -529,6 +667,60 @@
                         '    </div>' +
                         '</div>'
                 }
+
+                return $listItem
+            }
+
+            function generateNestedLists(task) {
+                let newState = '<option value="new">Новая</option>'
+                let work = '<option value="in_work">В работе</option>'
+                let ready = '<option value="ready">Готово</option>'
+                let expired = '<option value="expired">Просрочено</option>'
+
+                if (task.status === 'new') {
+                    newState = '<option value="new" selected>Новая</option>'
+                } else if (task.status === 'in_work') {
+                    work = '<option value="in_work" selected>В работе</option>'
+                } else if (task.status === 'ready') {
+                    ready = '<option value="ready" selected>Готово</option>'
+                } else {
+                    expired = '<option value="expired" selected>Просрочено</option>'
+                }
+
+                let $listItem =
+                    '<li data-id="' + task.id + '" class="' + task.status + '">' +
+                    '    <input type="text" class="form form-control hide-border d-inline edit-checklist" data-type="name" data-target="' + task.id + '" style="width: 350px" value="' + task.name + '">' +
+                    '    <div class="tools d-flex" style="float: right">' +
+                    '       <input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + task.date_start + '" ' +
+                    '       data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                    '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + task.deadline + '" ' +
+                    '       data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
+                    '       <select data-id="status-' + task.id + '" data-target="' + task.id + '" class="custom custom-select edit-checklist" data-type="status" style="width: 135px">' +
+                    newState +
+                    work +
+                    ready +
+                    expired +
+                    '       </select>' +
+                    '       <div class="btn-group pl-2">' +
+                    '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + task.id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + task.id + '"><i class="fa fa-eye"></i></button>' +
+                    '           <button class="btn btn-sm btn-default add-new-subtask" data-id="' + task.id + '"><i class="fa fa-plus"></i></button>' +
+                    '           <button class="btn btn-sm btn-default remove-real-task" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>' +
+                    '       </div>' +
+                    '    </div>' +
+                    '</li>' +
+                    '<div class="collapse" id="collapse-description-' + task.id + '">' +
+                    '    <div class="card card-body"><textarea class="description" data-id="' + task.id + '">' + task.description + '</textarea></div>' +
+                    '</div>'
+
+                let $subList = '<ol id="subtasks-' + task.id + '" class="mt-3" >';
+                if (task.subtasks && task.subtasks.length > 0) {
+                    task.subtasks.forEach(function (subtask) {
+                        $subList += generateNestedLists(subtask);
+                    });
+                }
+                $subList += '</ol>';
+
+                $listItem += $subList
 
                 return $listItem
             }
@@ -705,7 +897,7 @@
                     url: "{{ route('add.new.tasks.in.checklist') }}",
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        id: checklist[0].id,
+                        id: {{ $checklist[0]['id'] }},
                         parentID: parentID,
                         tasks: objects
                     },
@@ -756,7 +948,7 @@
                     type: 'post',
                     url: "{{ route('checklist.tasks') }}",
                     data: {
-                        id: checklist[0].id,
+                        id: {{ $checklist[0]['id'] }},
                         sort: $('#sort').val(),
                         count: $('#count').val(),
                         search: $('#name').val(),
@@ -771,7 +963,6 @@
                         $(".checklist-work").html(checklist.work)
                         $(".checklist-expired").html(checklist.expired)
                         $(".checklist-ready").html(checklist.ready)
-
 
                         $('#tasks-ready').html(checklist.ready)
                         $('#tasks-work').html(checklist.work)
@@ -811,7 +1002,7 @@
 
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
                     html += stubType
-                    html += generateNestedLists(JSON.parse(tasks.tree), index === 0)
+                    html += generateNestedStubs(JSON.parse(tasks.tree), index === 0)
                     html += button
                     html += '</ol>'
                 });
@@ -868,15 +1059,20 @@
 
             function renderPagination(response) {
                 let pagination = ''
-                for (let i = 0; i < response.paginate; i++) {
-                    let html = i + 1
 
-                    if (i === 0) {
-                        pagination += '<li class="page-item active"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
-                    } else {
-                        pagination += '<li class="page-item"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                if (response.paginate > 1) {
+                    for (let i = 0; i < response.paginate; i++) {
+                        let html = i + 1
+
+                        if (i === 0) {
+                            pagination += '<li class="page-item active"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                        } else {
+                            pagination += '<li class="page-item"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                        }
                     }
+                    $('#pagination').html(pagination)
                 }
+
                 $('#pagination').html(pagination)
             }
 

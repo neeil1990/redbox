@@ -105,6 +105,25 @@ class CheckListController extends Controller
         return 'Успешно';
     }
 
+
+    public function update(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $this->createSubTasks($request->input('tasks'), $request->input('id'));
+            DB::commit();
+        } catch (Throwable $e) {
+            Log::debug('error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            DB::rollback();
+        }
+
+        return 'Успешно';
+    }
+
     public function storeStubs(Request $request): string
     {
         Log::info($request->input('action'));
@@ -327,16 +346,13 @@ class CheckListController extends Controller
             $sql->where('name', 'like', "%$request->search%");
         }
 
+        Log::info($request->sort);
         if ($request->sort === 'new') {
             $sql->orderBy('id');
         } elseif ($request->sort === 'old') {
             $sql->orderByDesc('id');
-        } elseif ($request->sort === 'ready') {
-            $sql->where('status', 'ready');
-        } elseif ($request->sort === 'work') {
-            $sql->where('status', 'work');
-        } elseif ($request->sort === 'expired') {
-            $sql->where('status', 'expired');
+        } else {
+            $sql->where('status', $request->sort);
         }
 
         $tasks = $sql
@@ -444,13 +460,6 @@ class CheckListController extends Controller
         }
 
         return response()->json();
-    }
-
-    public function update(Request $request)
-    {
-        ChecklistTasks::where('project_id', $request->id)->delete();
-
-        $this->createSubTasks($request->tree, $request->id);
     }
 
     public function addNewTasks(Request $request): string
@@ -586,7 +595,7 @@ class CheckListController extends Controller
         return response()->json([]);
     }
 
-    public function deleteNotification(ChecklistNotification $notification)
+    public function deleteNotification(ChecklistNotification $notification): JsonResponse
     {
         $notification->delete();
 

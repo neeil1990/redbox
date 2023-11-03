@@ -1643,32 +1643,32 @@
             function generateTasks(tasks) {
                 let html = ''
                 $.each(tasks, function (index, task) {
-                    let ID = getRandomInt(9999999)
+                    let id = getRandomInt(9999999)
                     task = task[0] ?? task
 
-                    let $listItem = '<li data-id="' + ID + '" class="default">' +
-                        '    <input type="text" class="form form-control hide-border d-inline w-75" data-type="name" placeholder="Без названия" data-target="' + ID + '">' +
+                    let $listItem = '<li data-id="' + id + '" class="default d-flex">' +
+                        '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
                         '    <div class="tools d-flex" style="float: right">' +
-                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + ID + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                        '        <select data-id="status-' + ID + '" data-target="' + ID + '" class="custom custom-select" data-type="status">' +
+                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
+                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
                         '            <option value="new" selected>Новая</option>' +
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
                         '            <option value="expired">Просрочено</option>' +
                         '        </select>' +
                         '        <div class="btn-group pl-2">' +
-                        '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + ID + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + ID + '"><i class="fa fa-eye"></i></button>' +
-                        '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + ID + '"><i class="fa fa-plus"></i></button>' +
+                        '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
+                        '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
                         '            <button class="btn btn-sm btn-default remove-pre-task"><i class="fa fa-trash"></i></button>' +
                         '        </div>' +
                         '    </div>' +
                         '</li>' +
-                        '<div class="collapse" id="collapse-description-' + ID + '">' +
-                        '    <div class="card card-body"><textarea class="pre-description" data-id="' + ID + '"></textarea></div>' +
+                        '<div class="collapse" id="collapse-description-' + id + '">' +
+                        '    <div class="card card-body"><textarea class="pre-description" data-id="' + id + '"></textarea></div>' +
                         '</div>'
 
-                    let $subList = '<ol id="subtasks-' + ID + '" class="mt-3">';
+                    let $subList = '<ol id="subtasks-' + id + '" class="mt-3">';
 
                     if (task.subtasks) {
                         $subList += generateTasks(task.subtasks);
