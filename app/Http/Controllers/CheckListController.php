@@ -346,12 +346,11 @@ class CheckListController extends Controller
             $sql->where('name', 'like', "%$request->search%");
         }
 
-        Log::info($request->sort);
         if ($request->sort === 'new') {
             $sql->orderBy('id');
         } elseif ($request->sort === 'old') {
             $sql->orderByDesc('id');
-        } else {
+        } elseif ($request->sort != 'all') {
             $sql->where('status', $request->sort);
         }
 
