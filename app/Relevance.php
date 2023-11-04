@@ -114,7 +114,7 @@ class Relevance
             $domain = Str::lower($item['item']);
             Log::info($domain);
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
-            Log::info('+');
+            Log::info('success scan');
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
@@ -137,6 +137,7 @@ class Relevance
                 $this->sites[$domain]['mainPage'] = false;
                 $this->sites[$domain]['ignored'] = $item['ignored'];
             }
+            Log::info('next iteration');
         }
 
         if (!$this->mainPageIsRelevance) {
