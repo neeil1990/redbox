@@ -42,7 +42,6 @@ class SimplifiedXmlFacade extends XmlFacade
 
         try {
             $result = $this->sendRequest($searchEngine);
-            Log::debug($this->attempt, [$result]);
 
             if (isset($result['response']['results']['grouping']['group'])) {
                 return $this->parseResult($result['response']['results']['grouping']['group']);

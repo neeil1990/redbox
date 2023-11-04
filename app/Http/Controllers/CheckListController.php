@@ -84,6 +84,7 @@ class CheckListController extends Controller
                         'type' => $request->input('saveStub', false),
                     ];
 
+                    // допилить динамические шаблоны и добавление задач по времени
                     if ($request->input('dynamicStub') == 1) {
                         $data['checklist_id'] = $project->id;
                     }

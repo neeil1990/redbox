@@ -114,6 +114,7 @@ class Relevance
             $domain = Str::lower($item['item']);
             Log::info($domain);
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
+            Log::info('+');
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
@@ -167,20 +168,35 @@ class Relevance
     {
         try {
             $this->removeNoIndex();
+            Log::info('removeNoIndex');
             $this->getHiddenData();
+            Log::info('getHiddenData');
             $this->separateLinksFromText();
+            Log::info('separateLinksFromText');
             $this->removePartsOfSpeech();
+            Log::info('removePartsOfSpeech');
             $this->removeListWords();
+            Log::info('removeListWords');
             $this->getTextFromCompetitors();
+            Log::info('getTextFromCompetitors');
             $this->separateAllText();
+            Log::info('separateAllText');
             $this->preparePhrasesTable();
+            Log::info('preparePhrasesTable');
             $this->searchWordForms();
+            Log::info('searchWordForms');
             $this->processingOfGeneralInformation();
+            Log::info('processingOfGeneralInformation');
             $this->prepareUnigramTable();
+            Log::info('prepareUnigramTable');
             $this->analyseRecommendations();
+            Log::info('analyseRecommendations');
             $this->prepareAnalysedSitesTable();
+            Log::info('prepareAnalysedSitesTable');
             $this->prepareClouds();
+            Log::info('prepareClouds');
             $this->saveHistory($historyId);
+            Log::info('saveHistory');
 
             UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
 
