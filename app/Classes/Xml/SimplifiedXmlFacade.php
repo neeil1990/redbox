@@ -42,6 +42,7 @@ class SimplifiedXmlFacade extends XmlFacade
 
         try {
             $result = $this->sendRequest($searchEngine);
+            Log::debug($this->attempt, [$result]);
 
             if (isset($result['response']['results']['grouping']['group'])) {
                 return $this->parseResult($result['response']['results']['grouping']['group']);
@@ -102,21 +103,21 @@ class SimplifiedXmlFacade extends XmlFacade
         $query = str_replace(' ', '%20', $this->query);
 
         if ($this->attempt <= 2) {
-            $this->setPath('https://xmlproxy.ru/search/xml');
-            $this->setUser(config('xmlproxy.user'));
-            $this->setKey(config('xmlproxy.key'));
-
-            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
-                . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
-        } elseif ($this->attempt <= 4) {
             $this->setPath('https://xmlstock.com/yandex/xml/');
             $this->setUser(config('xmlstock.user'));
             $this->setKey(config('xmlstock.key'));
 
             return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
                 . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
+        } elseif ($this->attempt <= 4) {
+            $this->setPath('https://xmlproxy.ru/search/xml');
+            $this->setUser(config('xmlproxy.user'));
+            $this->setKey(config('xmlproxy.key'));
+
+            return "$this->path?user=$this->user&key=$this->key&query=$query&groupby=attr=d.mode%3Ddeep.groups-on-page%3D"
+                . "$this->count.docs-in-group%3D1&lr=$this->lr&sortby=$this->sortby&page=$this->page";
         } elseif ($this->attempt <= 6) {
-            $this->setPath('https://xmlriver.com/search_yandex/xml');
+            $this->setPath('https://xmlriver.com/yandex/xml');
             $this->setUser(config('xmlriver.user'));
             $this->setKey(config('xmlriver.key'));
             $loc = $this->getRiverLocation();
