@@ -60,6 +60,13 @@ class TextAnalyzer extends Model
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
             if ($headers['http_code'] == 200 && $html) {
+
+                $contentType = strtolower($headers['content_type']);
+                if (strpos($contentType, 'application/pdf') !== false) {
+                    // Пропустить обработку PDF-страниц
+                    return '';
+                }
+
                 $html = preg_replace('//i', '', $html);
                 break;
             }

@@ -166,6 +166,7 @@ class Relevance
 
     public function analysis($historyId = false)
     {
+        Log::info('analysis');
         try {
             $this->removeNoIndex();
             Log::info('removeNoIndex');

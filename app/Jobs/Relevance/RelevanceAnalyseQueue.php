@@ -70,7 +70,6 @@ class RelevanceAnalyseQueue implements ShouldQueue
                 ->first();
             $this->relevance->getMainPageHtml();
             $this->relevance->setSites($params->sites);
-
         }
 
         $this->relevance->analysis();
