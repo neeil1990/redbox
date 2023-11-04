@@ -759,12 +759,12 @@ class Relevance
         $iterator = 0;
 
         foreach ($sites as $key => $item) {
-            if (str_contains($item, '.pdf')) {
+            if (str_contains($item, '.pdf') || str_contains($item, 'video')) {
                 continue;
             }
+
             $domain = parse_url($item);
             $domain = str_replace('www.', "", mb_strtolower($domain['host']));
-
 
             if ($iterator < $request['count']) {
                 $this->domains[$key] = [
