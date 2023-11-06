@@ -1,3 +1,11 @@
+function getSuccessMessage(message, time = 3000) {
+    $('.toast-top-right.success-message').show(300)
+    $('#toast-message').html(message)
+    setTimeout(() => {
+        $('.toast-top-right.success-message').hide(300)
+    }, time)
+}
+
 function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPassages = false) {
     if (searchPassages) {
         $('#unigram > thead > tr:nth-child(2) > th:nth-child(12)').after(
@@ -66,6 +74,23 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
                 "sLengthMenu": words.show + " _MENU_ " + words.records,
                 "sEmptyTable": words.noRecords,
                 "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+            },
+            drawCallback: function () {
+                $('#unigram tbody td:nth-child(2)').each(function () {
+                    let cell = $(this);
+                    let clipboard = new ClipboardJS(cell[0], {
+                        text: function () {
+                            return cell.text().trim();
+                        }
+                    });
+
+                    cell.html('<div>' + cell.html() + ' <i class="fa fa-copy copy-icon"></i></div>');
+
+                    clipboard.on('success', function (e) {
+                        e.clearSelection();
+                        getSuccessMessage('Успешно скопированно')
+                    });
+                });
             }
         });
         $.each($(".dt-buttons"), function (key, value) {
@@ -369,6 +394,7 @@ function renderChildTr(elem, key, word, stats) {
         "    <span class='lock-block'>" +
         "        <i class='fa fa-solid fa-plus-square-o lock' data-target='" + word + "' onclick='addWordInIgnore($(this))'></i>" +
         "        <i class='fa fa-solid fa-minus-square-o unlock' data-target='" + word + "' style='display:none;' onclick='removeWordFromIgnored($(this))'></i>" +
+        "        <i class='fa fa-copy copy-text-in-buffer' data-target='" + word + "'></i>" +
         "    </span>";
 
     let newChildRow = "<tr style='background-color: #f4f6f9;' data-order='" + key + "' class='render child-table-row'>" +
@@ -407,6 +433,16 @@ function renderChildTr(elem, key, word, stats) {
         newChildRow
     )
 }
+
+$(document).on('click', '.copy-text-in-buffer', function () {
+    let textToCopy = $(this).attr('data-target');
+    let tempInput = $('<input>');
+    $('body').append(tempInput);
+    tempInput.val(textToCopy).select();
+    document.execCommand('copy');
+    tempInput.remove();
+    getSuccessMessage('Успешно скопированно')
+})
 
 function showWordWorms(elem) {
     if (elem.attr('generated-child') === 'true') {

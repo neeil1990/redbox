@@ -1759,7 +1759,6 @@
                     '</div>'
                 )
 
-
                 $.ajax({
                     type: 'get',
                     url: "{{ route('checklist.personal.stubs') }}",
@@ -1767,7 +1766,7 @@
                         let html = ''
                         $.each(tasks, function (index, tasks) {
                             html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
-                            html += generateNestedLists(JSON.parse(tasks.tree))
+                            html += generateNestedStubs(JSON.parse(tasks.tree))
                             html += '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '">' +
                                 '<i class="fa fa-trash"></i>' +
                                 '</button>'
@@ -1861,6 +1860,61 @@
                     }
                 })
             })
+
+            function generateNestedStubs(tasks, each = true) {
+                let $listItem = ''
+
+                if (each) {
+                    $.each(tasks, function (k, task) {
+
+                        $listItem +=
+                            ' <li class="default example">' +
+                            '     <div style="height: 20px;">' +
+                            '         <span class="stub-style text-muted">' +
+                            '             Название' +
+                            '         </span>' +
+                            '         <div style="float: right" class="d-flex">' +
+                            '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
+                            '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
+                            '         </div>' +
+                            '     </div>' +
+                            ' </li>'
+
+                        let $subList = '<ol class="accordion stubs">';
+                        if (task.subtasks && task.subtasks.length > 0) {
+                            task.subtasks.forEach(function (subtask) {
+                                $subList += generateNestedStubs(subtask, false);
+                            });
+                        }
+                        $subList += '</ol>';
+                        $listItem += $subList
+                    });
+                } else {
+                    $listItem +=
+                        ' <li class="default example">' +
+                        '     <div style="height: 20px;">' +
+                        '         <span class="stub-style text-muted">' +
+                        '             Название' +
+                        '         </span>' +
+                        '         <div style="float: right" class="d-flex">' +
+                        '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
+                        '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
+                        '         </div>' +
+                        '     </div>' +
+                        ' </li>'
+
+                    let $subList = '<ol class="accordion stubs">';
+                    if (tasks.subtasks && tasks.subtasks.length > 0) {
+                        tasks.subtasks.forEach(function (subtask) {
+                            $subList += generateNestedStubs(subtask, false);
+                        });
+                    }
+                    $subList += '</ol>';
+                    $listItem += $subList
+                }
+
+                return $listItem
+            }
 
             function generateNestedLists(tasks, ribbion = false) {
                 let $listItem = ''

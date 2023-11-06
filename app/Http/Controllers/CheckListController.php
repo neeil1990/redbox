@@ -84,7 +84,7 @@ class CheckListController extends Controller
                         'type' => $request->input('saveStub', false),
                     ];
 
-                    // допилить динамические шаблоны и добавление задач по времени
+                    // 1) довить добавление подзадачь у списка задач 1.1) добавить изменение типа шаблона 2) добавление задач по времени 2.1) добавить возможность выбирать не дату начала \ окончания, а диапозон
                     if ($request->input('dynamicStub') == 1) {
                         $data['checklist_id'] = $project->id;
                     }
@@ -109,25 +109,21 @@ class CheckListController extends Controller
 
     public function update(Request $request)
     {
-        DB::beginTransaction();
-        try {
-            $this->createSubTasks($request->input('tasks'), $request->input('id'));
-            DB::commit();
-        } catch (Throwable $e) {
-            Log::debug('error', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
+        $this->createSubTasks($request->input('tasks'), $request->input('id'));
+
+        $tasks = ChecklistTasks::where('project_id', $request->input('id'))->get()->toArray();
+        $tree = $this->buildTaskStructure($tasks);
+
+        ChecklistStubs::where('checklist_id', $request->input('id'))
+            ->update([
+                'tree' => json_encode($tree)
             ]);
-            DB::rollback();
-        }
 
         return 'Успешно';
     }
 
     public function storeStubs(Request $request): string
     {
-        Log::info($request->input('action'));
         if ($request->input('action') === 'all') {
             ChecklistStubs::create([
                 'user_id' => Auth::id(),
@@ -341,7 +337,7 @@ class CheckListController extends Controller
 
     public function getTasks(Request $request): array
     {
-        $sql = ChecklistTasks::where('project_id', $request->id);
+        $sql = ChecklistTasks::where('project_id', $request->input('id'));
 
         if (isset($request->search)) {
             $sql->where('name', 'like', "%$request->search%");
@@ -376,30 +372,39 @@ class CheckListController extends Controller
 
     public function removeTask(Request $request): string
     {
-        ChecklistTasks::where('id', $request->id)->delete();
+        $task = ChecklistTasks::where('id', $request->input('id'))->first();
+        $id = $task->project_id;
+        $task->delete();
 
         if (filter_var($request->removeSubTasks, FILTER_VALIDATE_BOOLEAN)) {
             $childIds = [];
-            $this->findChildIds($request->id, $childIds);
+            $this->findChildIds($request->input('id'), $childIds);
 
             ChecklistNotification::whereIn('checklist_task_id', $childIds)->delete();
             ChecklistTasks::whereIn('id', $childIds)->delete();
         } else {
             ChecklistTasks::where('subtask', 1)
-                ->where('task_id', $request->id)
+                ->where('task_id', $request->input('id'))
                 ->update([
                     'subtask' => 0,
                     'task_id' => null
                 ]);
         }
 
+        $tasks = ChecklistTasks::where('project_id', $id)->get()->toArray();
+        $tree = $this->buildTaskStructure($tasks);
+
+        ChecklistStubs::where('checklist_id', $id)
+            ->update([
+                'tree' => json_encode($tree)
+            ]);
+
         return 'Успешно удалено';
     }
 
     public function findChildIds($parentId, &$childIds)
     {
-        $children = DB::table('checklist_tasks')
-            ->where('task_id', $parentId)
+        $children = ChecklistTasks::where('task_id', $parentId)
             ->pluck('id')
             ->toArray();
 

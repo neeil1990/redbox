@@ -28,6 +28,23 @@
             .RelevanceAnalysis {
                 background: oldlace;
             }
+
+            .dataTables_length > label {
+                display: flex;
+            }
+
+            .dataTables_length > label > select {
+                margin: 0 5px;
+            }
+
+            .row {
+                margin: 0 !important;
+            }
+
+            #historyTbody > tr > td:nth-child(3),
+            #historyTbody > tr > td:nth-child(5) {
+                cursor: pointer;
+            }
         </style>
     @endslot
 
@@ -856,6 +873,9 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-editor/js/datatables_editor.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/date-sort.js') }}"></script>
+        <script src="{{ asset('plugins/keyword-generator/js/lib/clipboard.min.js') }}"></script>
+        <script src="{{ asset('plugins/clipboard/index.min.js') }}"></script>
+
         <script>
             let words = {
                 search: "{{ __('Search') }}",
@@ -1203,6 +1223,22 @@
                                                                 $('#toast-container').hide(300)
                                                             }, 3000)
                                                         },
+                                                    });
+                                                });
+
+                                                $('#history_table tbody td:nth-child(3), #history_table tbody td:nth-child(5)').each(function () {
+                                                    let cell = $(this);
+                                                    let clipboard = new ClipboardJS(cell[0], {
+                                                        text: function () {
+                                                            return cell.text();
+                                                        }
+                                                    });
+
+                                                    cell.html('<div>' + cell.html() + ' <i class="fa fa-copy copy-icon"></i></div>');
+
+                                                    clipboard.on('success', function (e) {
+                                                        e.clearSelection();
+                                                        getSuccessMessage("{{ __('Success copied') }}")
                                                     });
                                                 });
                                             },

@@ -1,6 +1,7 @@
 @component('component.card', ['title' =>  __('Detailed analysis') ])
     @slot('css')
-        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link rel="stylesheet"
+              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}">
@@ -66,8 +67,12 @@
                 display: flex;
             }
 
-            .dataTables_length > label > select{
+            .dataTables_length > label > select {
                 margin: 0 5px !important;
+            }
+
+            i.fa.fa-copy {
+                cursor: pointer;
             }
         </style>
     @endslot
@@ -297,7 +302,8 @@
 
                     <div id="rec" style="display: none" class="mb-3">
                         <h2>{{ __('TLP Recommendations and Spam check') }}</h2>
-                        <button class="btn btn-secondary click_tracking" data-click="TLP Recommendations and Spam check" id="recButton">{{ __('show') }}</button>
+                        <button class="btn btn-secondary click_tracking" data-click="TLP Recommendations and Spam check"
+                                id="recButton">{{ __('show') }}</button>
                     </div>
 
                     <div class="pb-3 recommendations" style="display:none;">
@@ -710,8 +716,9 @@
 
                     <div class="pb-3 pt-3" id="competitorsTfClouds" style="display: none !important;">
                         <div class="align-items-end clouds-div">
-                            <button class="btn btn-secondary col-lg-3 col-md-5 click_tracking" id="coverage-clouds-button"
-                            data-click="Clouds of the first 200 important tf idf words from competitors">
+                            <button class="btn btn-secondary col-lg-3 col-md-5 click_tracking"
+                                    id="coverage-clouds-button"
+                                    data-click="Clouds of the first 200 important tf idf words from competitors">
                                 {{ __('Clouds of the first 200 important (tf-idf) words from competitors') }}
                             </button>
                         </div>
@@ -1007,6 +1014,7 @@
         <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
 
+        <script src="{{ asset('plugins/clipboard/index.min.js') }}"></script>
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>

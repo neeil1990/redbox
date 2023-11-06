@@ -354,7 +354,7 @@
                         data-target="#createNewProject"
                         style="height: 38px"
                         id="add-new-tasks">
-                    Добавить новую задачу
+                    Добавление задач
                 </button>
             </div>
         </div>
@@ -448,11 +448,10 @@
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
             $(document).on('click', '#save-new-tasks', function () {
-                $(this).attr('disabled', true)
+                $('#save-new-tasks').attr('disabled', true)
                 $('#loader').show(300)
 
                 let tasks = [];
-
                 $.each($('#new-tasks').children('li'), function () {
                     tasks.push(parseTree(($(this))))
                 })
@@ -467,14 +466,16 @@
                     },
                     success: function (message) {
                         successMessage(message)
-                        $(this).attr('disabled', false)
-                        $('#loader').hide(300)
-
                         $('#close-create-tasks-modal').trigger('click')
+
+                        $('#save-new-tasks').attr('disabled', true)
+                        $('#loader').hide(300)
+                        getTasks(0, true)
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
-                        $('#save-new-checklist').attr('disabled', false)
+
+                        $('#save-new-tasks').attr('disabled', true)
                         $('#loader').hide(300)
                     }
                 })
