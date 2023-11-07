@@ -1234,7 +1234,7 @@
                                                         }
                                                     });
 
-                                                    cell.html('<div>' + cell.html() + ' <i class="fa fa-copy copy-icon"></i></div>');
+                                                    cell.html('<div>' + cell.text() + ' <i class="fa fa-copy copy-icon"></i></div>');
 
                                                     clipboard.on('success', function (e) {
                                                         e.clearSelection();
