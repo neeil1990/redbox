@@ -54,6 +54,12 @@
             .dropdown-item {
                 cursor: pointer;
             }
+            .user-list .badge-success {
+                display: none;
+            }
+            .user-list li:hover .badge-success {
+                display: block;
+            }
         </style>
 
         @hasanyrole('Super Admin|admin')
@@ -217,23 +223,44 @@
                         title: '{{ __('Users') }}',
                         name: 'users',
                         data: function (row) {
-                            let ul = $('<ul />', { class : 'list-inline'});
+                            let ul = $('<ul />', { class : 'list-inline user-list'});
 
                             $.each(row.users, function(i, item){
-                                let li = $('<li />', {class : 'list-inline-item position-relative tooltip-on', title : item.name + ' ' + item.last_name}).append($('<img />', { class : 'table-avatar', src : item.image }));
+                                let li = $('<li />', {class : 'list-inline-item position-relative tooltip-on', "user-id": item.id, title : item.name + ' ' + item.last_name}).append($('<img />', { class : 'table-avatar', src : item.image }));
 
                                 if(item.pivot.admin)
-                                    li.append($('<span />', {class : 'badge badge-danger navbar-badge'}).css('top', 0).text('Admin'));
+                                    li.append($('<span />', {class : 'badge badge-danger navbar-badge'})
+                                        .css({'left' : 0, 'right' : 0, 'top' : '-10px'}).text('ADMIN'));
                                 else{
                                     if(row.pivot.admin){
                                         li.append($('<span />', {class : 'badge badge-secondary navbar-badge detach-user'}).css({
                                             cursor: 'pointer',
-                                            top: 0,
+                                            top: '-5px',
                                             right: 0,
                                             "font-size": 'x-small',
                                         }).attr("data-id", item.id).html('<i class="fas fa-times"></i>'));
                                     }
                                 }
+
+                                let status = '{{ __('EMPTY') }}';
+
+                                switch (item.pivot.status)
+                                {
+                                    case 1:
+                                        status = '{{ __('TM') }}';
+                                        break;
+                                    case 2:
+                                        status = '{{ __('SEO') }}';
+                                        break;
+                                    case 3:
+                                        status = '{{ __('PM') }}';
+                                        break;
+                                }
+
+                                li.append($('<span />', {class : 'badge badge-success navbar-badge'})
+                                    .css({'right' : 0, 'left' : 0, 'top' : 'unset', 'bottom' : '-15px', cursor : 'pointer'})
+                                    .text(status)
+                                );
 
                                 ul.append(li);
                             });
@@ -780,15 +807,28 @@
                                 val: "",
                                 placeholder: 'test@mail.ru, test2@mail.ru, test3@mail.ru',
                             }]
+                        },
+                        {
+                            type: 'select',
+                            name: "status",
+                            label: '{{ __('User status') }}',
+                            params: [
+                                { text: '{{ __('Remove status') }}', val: 'DEF' },
+                                { text: '{{ __('Team Lead') }}', val: 'TM' },
+                                { text: '{{ __('Seo') }}', val: 'SEO' },
+                                { text: '{{ __('Project manager') }}', val: 'PM' },
+                            ]
                         }
                     ],
                     onAgree: function (m) {
                         const formData = new FormData(m.find('form').get(0));
                         let email = formData.getAll('email')[0];
+                        let status = formData.getAll('status')[0];
 
                         axios.post('{{ route('approve.attach') }}', {
                             id: id,
                             email: email,
+                            status: status,
                         }).then(function (response) {
                             toastr.success('{{ __('Request has been sent') }}');
                             table.draw(false);
@@ -816,6 +856,8 @@
                         toastr.error('{{ __('Wrong request') }}');
                     });
                 }
+
+                return false;
             });
 
             $('#projects').on('click', '.update-project', function(){
@@ -824,6 +866,48 @@
                 axios.get( '/monitoring/project/update-data-table/' + id ).then(function () {
                     table.draw(false);
                 });
+            });
+
+            $('#projects').on('click', '.user-list li', function(){
+                let self = $(this);
+                let user = self.attr('user-id');
+                let project = $(this).closest('tr').find('input[type="checkbox"]').val();
+
+                $('.modal').modal('show').BootstrapModalFormTemplates({
+                    title: '{{ __('Set user status') }}',
+                    btnText: '{{ __('Save') }}',
+                    fields: [
+                        {
+                            type: 'select',
+                            name: "status",
+                            label: '{{ __('User status') }}',
+                            params: [
+                                { text: '{{ __('Remove status') }}', val: 'DEF' },
+                                { text: '{{ __('Team Lead') }}', val: 'TM' },
+                                { text: '{{ __('Seo') }}', val: 'SEO' },
+                                { text: '{{ __('Project manager') }}', val: 'PM' },
+                            ]
+                        }
+                    ],
+                    onAgree: function (m) {
+                        const formData = new FormData(m.find('form').get(0));
+                        let status = formData.getAll('status')[0];
+
+                        axios.post('{{ route('monitoring.user.project.status') }}', {
+                            user: user,
+                            project: project,
+                            status: status,
+                        }).then(function (response) {
+                            toastr.success('{{ __('Saved') }}');
+                            table.draw(false);
+                            m.modal('hide');
+                        }).catch(function (error) {
+                            toastr.error('{{ __('You must be administrator project.') }}');
+                        });
+                    }
+                });
+
+                return false;
             });
         </script>
     @endslot

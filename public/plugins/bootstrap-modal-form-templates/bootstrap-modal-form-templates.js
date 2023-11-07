@@ -37,6 +37,16 @@
                         }]
                 },
                 {
+                    type: 'select',
+                    name: "select",
+                    label: 'select field',
+                    params: [{
+                        val: "",
+                        selected: false,
+                        text: "option field",
+                    }]
+                },
+                {
                     type: 'textarea',
                     name: "textarea",
                     label: 'Text field area',
@@ -74,6 +84,9 @@
                         break;
                     case "checkbox":
                         field = checkboxField(f);
+                        break;
+                    case "select":
+                        field = selectField(f);
                         break;
                 }
 
@@ -198,6 +211,35 @@
 
                 container.append(input);
             });
+
+            return container;
+        }
+
+        function selectField(f)
+        {
+            let params = f.params;
+
+            if(!Array.isArray(params))
+                return false;
+
+            let container = $('<div />');
+
+            let check = $('<select />', {
+                class: 'custom-select',
+                name: f.name,
+            });
+
+            $.each(params, function (i, param) {
+
+                let checkbox = $('<option />', {
+                    value: param.val,
+                    selected: param.selected
+                }).text(param.text);
+
+                check.append(checkbox)
+            });
+
+            container.append(check);
 
             return container;
         }

@@ -221,7 +221,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function monitoringProjects()
     {
-        return $this->belongsToMany(MonitoringProject::class)->withPivot('admin', 'approved');
+        return $this->belongsToMany(MonitoringProject::class)->withPivot('admin', 'approved', 'status');
     }
 
     public function monitoringProjectsWithDataTable()

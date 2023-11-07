@@ -12,7 +12,7 @@ class MonitoringProject extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot('admin', 'approved');
+        return $this->belongsToMany(User::class)->withPivot('admin', 'approved', 'status');
     }
 
     public function admin()

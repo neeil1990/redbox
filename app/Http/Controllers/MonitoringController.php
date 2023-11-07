@@ -84,8 +84,10 @@ class MonitoringController extends Controller
             $id = $request->input('id');
             if($user->monitoringProjects()->find($id) === null){
                 $result = $user->monitoringProjects()->syncWithoutDetaching([$id => ['approved' => 0]]);
-                if(count($result['attached']) > 0)
+                if(count($result['attached']) > 0){
                     Mail::to($user)->send(new MonitoringShareProjectMail(MonitoringProject::find($id)));
+                    (new MonitoringProjectUserStatusController())->setStatusUser($user, $id, $request->input('status'));
+                }
             }
         }
 

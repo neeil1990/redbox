@@ -30,6 +30,13 @@ Route::get('jobs', function () {
     dd(unserialize($job->payload['data']['command'])->handle());
 });
 
+Route::get('status-test', function () {
+    $user = \App\User::find(2);
+    $project = $user->monitoringProjects()->find(30);
+
+    dd($project->admin);
+});
+
 Auth::routes(['verify' => true]);
 Route::post('/validate-registration-form', 'Auth\RegisterController@validateData')->name('validate.registration.form');
 Route::post('/validate-verify-code', 'Auth\VerificationController@validateVerifyCode')->name('validate.verify.code');
@@ -308,6 +315,9 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/groups', 'MonitoringGroupsController@store');
     Route::get('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
+
+    // Monitoring user status
+    Route::post('monitoring/set-user-project-status', 'MonitoringProjectUserStatusController@set')->name('monitoring.user.project.status');
 
     Route::resource('monitoring', 'MonitoringController');
 
