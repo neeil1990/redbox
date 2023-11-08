@@ -62,6 +62,10 @@
                 transition: 0.3s;
             }
 
+            .datetime-counter {
+                width: 75px;
+            }
+
             #tasks li.ready,
             #stubs li.ready {
                 border-color: #8bc63e !important;
@@ -1466,7 +1470,52 @@
                 })
             })
 
+            const count_ml_in_day = 86400000
+            let lastStartDate
+            let lastEndDate
+
+            $(document).on('click', '.datetime[data-type="start"]', function () {
+                lastStartDate = $(this).val()
+            })
+
+            $(document).on('click', '.datetime[data-type="deadline"]', function () {
+                lastEndDate = $(this).val()
+            })
+
+            $(document).on('input', '.datetime', function () {
+                let $id = $(this).attr('data-target')
+                let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
+                let $startDate = new Date($start.val());
+                let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
+                let $endDate = new Date($deadline.val())
+
+                let countDays = ($endDate - $startDate) / count_ml_in_day
+
+                if ($(this).attr('data-type') === 'start' && countDays < 0) {
+                    $start.val(lastStartDate)
+                    errorMessage(['Дата начала должна быть раньше даты окончания'])
+                } else if ($(this).attr('data-type') === 'deadline' && countDays < 0) {
+                    $deadline.val(lastEndDate)
+                    errorMessage(['Дата окончания не может быть раньше даты начала'])
+                } else {
+                    $('.datetime-counter[data-target="' + $id + '"]').val(Math.round(countDays))
+                }
+            })
+
+            $(document).on('input', '.datetime-counter', function () {
+                let $id = $(this).attr('data-target')
+                let value = $(this).val()
+
+                let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
+                let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
+                let newDate = new Date(new Date($start.val()).getTime() + (value * count_ml_in_day)).toISOString().slice(0, 16)
+
+                $deadline.val(newDate)
+            })
+
             function stub(id, stub = false) {
+                let date = new Date().toISOString().slice(0, 16);
+
                 if (stub) {
                     return '<li data-id="' + id + '" class="default">' +
                         '    <span class="text-muted" style="font-size: 1rem; letter-spacing: 0">Задача №: ' + id + '</span>' +
@@ -1485,9 +1534,10 @@
                     return '<li data-id="' + id + '" class="default d-flex">' +
                         '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
                         '    <div class="tools d-flex" style="float: right">' +
-                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
+                        '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" value="0" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
+                        '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
+                        '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
+                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
                         '            <option value="new" selected>Новая</option>' +
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
