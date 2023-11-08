@@ -34,6 +34,13 @@
             .shrink-color {
                 background-color: rgb(251, 225, 223);
             }
+            input[type="checkbox"] {
+                vertical-align: sub;
+            }
+            div.DTE_Field_Type_checkbox div.DTE_Field_InputControl, div.DTE_Field_Type_checkbox div.controls {
+                padding-top: 0px;
+                margin-top: 0em;
+            }
         </style>
     @endslot
 
@@ -46,7 +53,7 @@
     <div class="row">
         <div class="col-12 card-table">
             <div class="card">
-                <table class="table table-hover table-sm" id="groups"></table>
+                <table class="table table-hover table-sm projects" id="groups"></table>
             </div>
             <!-- /.card -->
         </div>
@@ -97,6 +104,11 @@
                     label: "Перенести запросы в раздел:",
                     name: "groups",
                     type:  "select",
+                },
+                {
+                    label: "Пользователи:",
+                    name: "users",
+                    type: "checkbox",
                 },
             ];
 
@@ -171,6 +183,23 @@
                         title: 'Добавлено',
                         data: 'created',
                         name: 'created_at',
+                    },
+                    {
+                        title: 'Пользователи',
+                        orderable: false,
+                        data: function(row) {
+                            let users = row.users;
+                            let list = $('<ul />', { class: 'list-inline'});
+
+                            $.each(users, function(i, val){
+                                let li = $('<li />', {class: 'list-inline-item', title: val.name + ' ' + val.last_name})
+                                    .append($('<img />', {class: 'table-avatar', src: val.image}));
+
+                                list.append(li);
+                            });
+
+                            return list[0].outerHTML;
+                        }
                     },
                     {
                         title: 'Открыть группу',

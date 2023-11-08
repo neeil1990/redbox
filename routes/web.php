@@ -30,13 +30,6 @@ Route::get('jobs', function () {
     dd(unserialize($job->payload['data']['command'])->handle());
 });
 
-Route::get('status-test', function () {
-    $user = \App\User::find(2);
-    $project = $user->monitoringProjects()->find(30);
-
-    dd($project->admin);
-});
-
 Auth::routes(['verify' => true]);
 Route::post('/validate-registration-form', 'Auth\RegisterController@validateData')->name('validate.registration.form');
 Route::post('/validate-verify-code', 'Auth\VerificationController@validateVerifyCode')->name('validate.verify.code');
