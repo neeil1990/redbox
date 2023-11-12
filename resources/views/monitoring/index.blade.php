@@ -247,7 +247,7 @@
                                 switch (item.pivot.status)
                                 {
                                     case 1:
-                                        status = '{{ __('TM') }}';
+                                        status = '{{ __('TL') }}';
                                         break;
                                     case 2:
                                         status = '{{ __('SEO') }}';
@@ -813,8 +813,8 @@
                             name: "status",
                             label: '{{ __('User status') }}',
                             params: [
-                                { text: '{{ __('Remove status') }}', val: 'DEF' },
-                                { text: '{{ __('Team Lead') }}', val: 'TM' },
+                                { text: '{{ __('Without status') }}', val: 'DEF' },
+                                { text: '{{ __('Team Lead') }}', val: 'TL' },
                                 { text: '{{ __('Seo') }}', val: 'SEO' },
                                 { text: '{{ __('Project manager') }}', val: 'PM' },
                             ]
@@ -882,8 +882,8 @@
                             name: "status",
                             label: '{{ __('User status') }}',
                             params: [
-                                { text: '{{ __('Remove status') }}', val: 'DEF' },
-                                { text: '{{ __('Team Lead') }}', val: 'TM' },
+                                { text: '{{ __('Without status') }}', val: 'DEF' },
+                                { text: '{{ __('Team Lead') }}', val: 'TL' },
                                 { text: '{{ __('Seo') }}', val: 'SEO' },
                                 { text: '{{ __('Project manager') }}', val: 'PM' },
                             ]

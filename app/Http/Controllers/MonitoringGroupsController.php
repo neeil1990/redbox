@@ -67,6 +67,7 @@ class MonitoringGroupsController extends Controller
         $options = collect([]);
 
         $options->put('groups', $this->getGroupsOptions($this->project->groups));
+        $options->put('users', $this->getUsersOptions());
 
         $collection->put('data', $this->groups);
         $collection->put('options', $options);
@@ -84,6 +85,19 @@ class MonitoringGroupsController extends Controller
         foreach($collection->pluck('name', 'id') as $id => $name){
             $options->push(collect(['label' => $name, 'value' => $id]));
         }
+
+        return $options;
+    }
+
+    public function getUsersOptions()
+    {
+        $users = $this->project->users;
+        if($users->isEmpty())
+            return false;
+
+        $options = collect([]);
+        foreach($users->pluck('fullName', 'id') as $id => $name)
+            $options->push(collect(['label' => $name, 'value' => $id]));
 
         return $options;
     }
@@ -139,6 +153,12 @@ class MonitoringGroupsController extends Controller
         $model->update([
             'name' => $data['name']
         ]);
+
+        $users = [];
+        if ($data->has('users'))
+            $users = $data['users'];
+
+        $model->users()->sync($users);
 
         $group = (int) $data['groups'];
         if($group > 0){

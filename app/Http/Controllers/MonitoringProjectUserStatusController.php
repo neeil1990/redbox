@@ -12,7 +12,7 @@ class MonitoringProjectUserStatusController extends Controller
     protected $auth;
     protected $status = [
         'DEF' => 0, // Default
-        'TM' => 1, // Team Lead
+        'TL' => 1, // Team Lead
         'SEO' => 2, // SEO
         'PM' => 3, // Project manager
     ];

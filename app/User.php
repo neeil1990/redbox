@@ -219,6 +219,11 @@ class User extends Authenticatable implements MustVerifyEmail
             ->latest('created_at');
     }
 
+    public function monitoringGroups()
+    {
+        return $this->belongsToMany(MonitoringGroup::class)->withTimestamps();
+    }
+
     public function monitoringProjects()
     {
         return $this->belongsToMany(MonitoringProject::class)->withPivot('admin', 'approved', 'status');
