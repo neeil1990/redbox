@@ -77,16 +77,35 @@ class CheckListController extends Controller
 
                 $this->createSubTasks($request->input('tasks'), $project->id);
 
-                if ($request->input('saveStub', false) !== 'no') {
-                    $data = [
+                if ($request->input('saveStub') === 'all') {
+                    $tree = $this->configureStubs($project->id);
+                    $data = [];
+
+                    $data[] = [
                         'user_id' => Auth::id(),
-                        'tree' => json_encode($request->input('tasks')),
-                        'type' => $request->input('saveStub', false),
+                        'tree' => $tree,
+                        'type' => 'personal',
+                        'checklist_id' => $request->input('dynamicStub') == 1 ? $project->id : null,
                     ];
 
-                    // 1) довить добавление подзадачь у списка задач
-                    // 2) добавление задач по времени
-                    // 2.1) добавить возможность выбирать не дату начала \ окончания, а диапозон (+)
+                    $data[] = [
+                        'user_id' => Auth::id(),
+                        'tree' => $tree,
+                        'type' => 'classic',
+                        'checklist_id' => $request->input('dynamicStub') == 1 ? $project->id : null,
+                    ];
+
+                    ChecklistStubs::insert($data);
+
+                } else if ($request->input('saveStub') !== 'no') {
+                    $tree = $this->configureStubs($project->id);
+
+                    $data = [
+                        'user_id' => Auth::id(),
+                        'tree' => $tree,
+                        'type' => $request->input('saveStub'),
+                    ];
+
                     if ($request->input('dynamicStub') == 1) {
                         $data['checklist_id'] = $project->id;
                     }
@@ -108,17 +127,13 @@ class CheckListController extends Controller
         return 'Успешно';
     }
 
-
     public function update(Request $request)
     {
-        $this->createSubTasks($request->input('tasks'), $request->input('id'));
+        $this->createSubTasks($request->input('tasks'), $request->input('projectID'), $request->input('parentTask'));
 
-        $tasks = ChecklistTasks::where('project_id', $request->input('id'))->get()->toArray();
-        $tree = $this->buildTaskStructure($tasks);
-
-        ChecklistStubs::where('checklist_id', $request->input('id'))
+        ChecklistStubs::where('checklist_id', $request->input('projectID'))
             ->update([
-                'tree' => json_encode($tree)
+                'tree' => $this->configureStubs($request->input('projectID'))
             ]);
 
         return 'Успешно';
@@ -181,7 +196,7 @@ class CheckListController extends Controller
 
         $lists = $sql->skip($request->input('skip', 0))
             ->take($request->input('countOnPage', 3))
-            ->with('tasks:project_id,status')
+            ->with('tasks:project_id,status,active_after')
             ->with('labels')
             ->get(['icon', 'url', 'id'])
             ->toArray();
@@ -210,7 +225,7 @@ class CheckListController extends Controller
     public function archive(): array
     {
         $lists = CheckLists::where('user_id', Auth::id())
-            ->with('tasks:project_id,status')
+            ->with('tasks:project_id,status,active_after')
             ->with('labels')
             ->where('archive', 1)
             ->get(['icon', 'url', 'id'])
@@ -339,7 +354,8 @@ class CheckListController extends Controller
 
     public function getTasks(Request $request): array
     {
-        $sql = ChecklistTasks::where('project_id', $request->input('id'));
+        $sql = ChecklistTasks::where('project_id', $request->input('id'))
+            ->whereDate('active_after', '<=', Carbon::now());
 
         if (isset($request->search)) {
             $sql->where('name', 'like', "%$request->search%");
@@ -393,7 +409,11 @@ class CheckListController extends Controller
                 ]);
         }
 
-        $tasks = ChecklistTasks::where('project_id', $id)->get()->toArray();
+        $tasks = ChecklistTasks::where('project_id', $id)
+            ->whereDate('active_after', '<=', Carbon::now())
+            ->get()
+            ->toArray();
+
         $tree = $this->buildTaskStructure($tasks);
 
         ChecklistStubs::where('checklist_id', $id)
@@ -407,6 +427,7 @@ class CheckListController extends Controller
     public function findChildIds($parentId, &$childIds)
     {
         $children = ChecklistTasks::where('task_id', $parentId)
+            ->whereDate('active_after', '<=', Carbon::now())
             ->pluck('id')
             ->toArray();
 
@@ -471,7 +492,19 @@ class CheckListController extends Controller
 
     public function addNewTasks(Request $request): string
     {
-        $this->createSubTasks($request->input('tasks'), $request->id, $request->parentID ?? null);
+        $this->createSubTasks($request->input('tasks'), $request->input('id'), $request->input('parentID'));
+
+        $tasks = ChecklistTasks::where('project_id', $request->input('id'))
+            ->whereDate('active_after', '<=', Carbon::now())
+            ->get()
+            ->toArray();
+
+        $tree = $this->buildTaskStructure($tasks);
+
+        ChecklistStubs::where('checklist_id', $request->input('id'))
+            ->update([
+                'tree' => json_encode($tree)
+            ]);
 
         return 'Успешно';
     }
@@ -560,8 +593,9 @@ class CheckListController extends Controller
         return $projects;
     }
 
-    public function multiplyCreate(Request $request): string
+    public function multiplyCreate(Request $request): JsonResponse
     {
+        $fails = [];
         foreach ($request->urls as $url) {
             if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
                 $fullUrl = "https://" . $url;
@@ -569,19 +603,26 @@ class CheckListController extends Controller
                 $fullUrl = $url;
             }
 
-            $client = new Client();
-            $response = $client->get($fullUrl);
-            if ($response->getStatusCode() === 200) {
-                $icon = $this->findIcon($response->getBody()->getContents());
-                CheckLists::create([
-                    'user_id' => Auth::id(),
-                    'icon' => $this->saveIcon($icon, $fullUrl),
-                    'url' => $fullUrl,
-                ]);
+            try {
+                $client = new Client();
+                $response = $client->get($fullUrl);
+                if ($response->getStatusCode() === 200) {
+                    $icon = $this->findIcon($response->getBody()->getContents());
+                    CheckLists::create([
+                        'user_id' => Auth::id(),
+                        'icon' => $this->saveIcon($icon, $fullUrl),
+                        'url' => $fullUrl,
+                    ]);
+                }
+            } catch (Throwable $exception) {
+                $fails[] = "<u><a href='$fullUrl' target='_blank'>$fullUrl</a></u> не удалось подключится, проект не был сохранён";
             }
         }
 
-        return 'Новые проекты успешно добавлены';
+        return response()->json([
+            'message' => 'Новые проекты успешно добавлены',
+            'fails' => $fails
+        ]);
     }
 
     public function getNotifications()
@@ -613,17 +654,21 @@ class CheckListController extends Controller
     {
         foreach ($tasks as $task) {
             $task = $task[0] ?? $task;
-            $date = Carbon::parse($task['deadline']);
             $deadline = isset($task['deadline']) ? Carbon::parse($task['deadline'])->toDateTimeString() : Carbon::now()->toDateTimeString();
 
             $object = [
                 'project_id' => $projectId,
                 'name' => $task['name'] ?? 'Без названия',
-                'status' => $date->isPast() ? 'expired' : $task['status'],
+                'status' => $task['status'],
                 'description' => $task['description'] ?? '',
-                'deadline' => $deadline,
                 'date_start' => isset($task['start']) ? Carbon::parse($task['start'])->toDateTimeString() : Carbon::now()->toDateTimeString(),
+                'deadline' => $deadline,
             ];
+
+            if ($task['status'] === 'deactivated') {
+                $object['status'] = 'in_work';
+                $object['active_after'] = $task['active_after'] ?? Carbon::now()->toDateTimeString();
+            }
 
             if (isset($taskId)) {
                 $object['subtask'] = 1;
@@ -682,22 +727,32 @@ class CheckListController extends Controller
     {
         foreach ($lists as $key => $list) {
             $inWork = 0;
+            $new = 0;
+            $inactive = 0;
             $ready = 0;
             $expired = 0;
 
             foreach ($list['tasks'] as $task) {
                 if ($task['status'] === 'in_work') {
-                    $inWork++;
+                    if (Carbon::now() <= Carbon::parse($task['active_after'])) {
+                        $inactive++;
+                    } else {
+                        $inWork++;
+                    }
                 } else if ($task['status'] === 'ready') {
                     $ready++;
+                } else if ($task['status'] === 'new') {
+                    $new++;
                 } else {
                     $expired++;
                 }
             }
 
             $lists[$key]['work'] = $inWork;
+            $lists[$key]['inactive'] = $inactive;
             $lists[$key]['ready'] = $ready;
             $lists[$key]['expired'] = $expired;
+            $lists[$key]['new'] = $new;
         }
 
         return $lists;
@@ -734,5 +789,15 @@ class CheckListController extends Controller
         }
 
         return $result;
+    }
+
+    private function configureStubs($id)
+    {
+        $tasks = ChecklistTasks::where('project_id', $id)
+            ->whereDate('active_after', '<=', Carbon::now())
+            ->get()
+            ->toArray();
+
+        return json_encode($this->buildTaskStructure($tasks));
     }
 }

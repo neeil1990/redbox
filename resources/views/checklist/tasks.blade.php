@@ -3,6 +3,10 @@
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
+            .datetime-counter {
+                width: 75px;
+            }
+
             i {
                 transition: 0.3s;
                 cursor: pointer;
@@ -27,7 +31,7 @@
                 padding: 0;
             }
 
-            #tasks li, #new-tasks li, #stubs li, .stubs > .example {
+            #tasks li, #new-tasks li, #new-sub-tasks li, #stubs li, .stubs > .example {
                 font-family: "Trebuchet MS", "Lucida Sans";
                 padding: 7px 20px;
                 border-radius: 5px;
@@ -42,33 +46,34 @@
                 transition: 0.3s;
             }
 
-            #tasks li.new {
+            #tasks li.new, #new-sub-tasks.new {
                 border-color: #007bff !important;
             }
 
-            #tasks li.ready {
+            #tasks li.ready, #new-sub-tasks.ready {
                 border-color: #8bc63e !important;
             }
 
-            #tasks li.expired {
+            #tasks li.expired, #new-sub-tasks.expired {
                 border-color: #f05d22 !important;
             }
 
-            #tasks li.in_work {
+            #tasks li.in_work, #new-sub-tasks.in_work {
                 border-color: #1ccfc9 !important;
             }
 
             #tasks li.default,
+            #new-sub-tasks.default,
             .stubs > .example {
                 border-color: #5a6268 !important;
             }
 
-            #tasks li:hover {
+            #tasks li:hover, #new-sub-tasks li:hover {
                 cursor: pointer;
                 box-shadow: 0 0 10px grey;
             }
 
-            #tasks {
+            #tasks, #new-sub-tasks {
                 padding-left: 0;
             }
 
@@ -206,36 +211,44 @@
         </style>
     @endslot
 
-    <div id="project-info" class="d-flex justify-content-between w-75">
+    <div id="project-info" class="d-flex justify-content-between w-100">
         <div class="d-flex row align-items-center">
             <div>
-                <span class="checklist-icon"></span>
+                <span id="checklist-icon"></span>
             </div>
             <div>
-                <span class="checklist-name"></span>
+                <span id="checklist-name"></span>
             </div>
         </div>
         <div>
             Количество задач:
-            <span class="checklist-counter"></span>
+            <span id="checklist-counter"></span>
+        </div>
+        <div>
+            Новые:
+            <span id="checklist-new"></span>
         </div>
         <div>
             В работе:
-            <span class="checklist-work"></span>
+            <span id="checklist-work"></span>
         </div>
         <div>
-            Готово:
-            <span class="checklist-ready"></span>
+            Отложенные:
+            <span id="checklist-inactive"></span>
         </div>
         <div>
-            Просрочено:
-            <span class="checklist-expired"></span>
+            Готовые:
+            <span id="checklist-ready"></span>
+        </div>
+        <div>
+            Просроченые:
+            <span id="checklist-expired"></span>
         </div>
     </div>
 
     <div class="d-flex align-items-baseline">
         <h3>Метки проекта:</h3>
-        <ol class="d-flex" id="project-labels">
+        <ol class="d-flex" id="project-labels" style="padding-left: 10px;">
             @foreach($labels as $label)
                 <li class="checklist-label mr-2"
                     data-target="{{ $checklist[0]['id'] }}"
@@ -318,7 +331,7 @@
             </h3>
         </div>
         <div class="card-body row">
-            <div class="d-flex col-6">
+            <div class="d-flex col-8">
                 <div class="form-group mr-3">
                     <label for="count">Количество задач</label>
                     <select name="count" id="count" class="custom custom-select">
@@ -349,7 +362,7 @@
                     </select>
                 </div>
             </div>
-            <div class="d-flex col-6 justify-content-end align-items-center">
+            <div class="d-flex col-4 justify-content-end align-items-center">
                 <button class="btn btn-secondary" data-toggle="modal"
                         data-target="#createNewProject"
                         style="height: 38px"
@@ -421,6 +434,60 @@
         </div>
     </div>
 
+    <div class="modal fade" id="addNewSubtasks" tabindex="-1" aria-labelledby="addNewSubtasksLabel"
+         aria-hidden="true">
+        <div class="modal-dialog d-flex" style="min-width: 95vw;">
+            <div class="modal-content col-9 mr-2">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNewSubtasksLabel">Добавление новых подзадач к
+                        проекту {{ $checklist[0]['url'] }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex">
+                    <div class="col-12">
+                        <div class="form-group mb-3">
+                            <div class="d-flex justify-content-between mb-3">
+                                <label for="tasks">Новые задачи</label>
+                                <button class="btn btn-secondary" id="add-new-sub-task">Добавить новую подзадачу
+                                </button>
+                            </div>
+                            <div id="accordionExample">
+                                <ol id="new-sub-tasks"></ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <div></div>
+                    <div>
+                        <button type="button" class="btn btn-default" id="close-create-sub-tasks-modal"
+                                data-dismiss="modal">{{ __('Close') }}</button>
+                        <button type="button" class="btn btn-success" id="save-new-sub-tasks">
+                            {{ __('Save') }}
+                        </button>
+                        <img id="new-subtasks-loader" src="/img/1485.gif"
+                             style="width: 30px; height: 30px; display: none">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-content col-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">Шаблоны</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="stubs-place-2" style="overflow: auto; height: 80vh">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="set-stub-2">Применить шаблон</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="projectModal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -462,13 +529,13 @@
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         tasks: tasks,
-                        id: {{ $checklist[0]['id']}}
+                        projectID: {{ $checklist[0]['id']}}
                     },
                     success: function (message) {
                         successMessage(message)
                         $('#close-create-tasks-modal').trigger('click')
 
-                        $('#save-new-tasks').attr('disabled', true)
+                        $('#save-new-tasks').attr('disabled', false)
                         $('#loader').hide(300)
                         getTasks(0, true)
                     },
@@ -481,35 +548,82 @@
                 })
             })
 
+            $(document).on('click', '#save-new-sub-tasks', function () {
+                $('#save-new-sub-tasks').attr('disabled', true)
+                $('#new-subtasks-loader').show(300)
+
+                let subtasks = [];
+                $.each($('#new-sub-tasks').children('li'), function () {
+                    subtasks.push(parseTree(($(this))))
+                })
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('update.checklist') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        tasks: subtasks,
+                        parentTask: targetTask,
+                        projectID: {{ $checklist[0]['id'] }}
+                    },
+                    success: function (message) {
+                        successMessage(message)
+                        $('#save-new-sub-tasks').attr('disabled', false)
+                        $('#new-subtasks-loader').hide(300)
+                        $('#close-create-sub-tasks-modal').trigger('click')
+                        getTasks(0, true)
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+
+                        $('#save-new-sub-tasks').attr('disabled', false)
+                        $('#new-subtasks-loader').hide(300)
+                    }
+                })
+            })
+
             let stubs
             $(document).on('click', '#set-stub', function () {
+                setStubs('#new-tasks')
+            })
+
+            $(document).on('click', 'set-stub-2', function () {
+                setStubs('#new-sub-tasks')
+            })
+
+            function setStubs(target) {
                 let basicID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
 
                 if (basicID === undefined) {
                     errorMessage(['Шаблон не выбран'])
                 } else {
-                    $('#new-tasks').html(generateTasks(JSON.parse(stubs[basicID].tree)))
+                    $(target).html(generateTasks(JSON.parse(stubs[basicID].tree)))
                     refreshTooltips()
                 }
-            })
+            }
 
             function generateTasks(tasks) {
+                let date = new Date().toISOString().slice(0, 16);
                 let html = ''
+
                 $.each(tasks, function (index, task) {
-                    let id = getRandomInt(9999999999)
+                    let id = getRandomInt(9999999)
                     task = task[0] ?? task
 
                     let $listItem = '<li data-id="' + id + '" class="default d-flex">' +
                         '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
                         '    <div class="tools d-flex" style="float: right">' +
-                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status" style="width: 135px">' +
+                        '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" value="0" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
+                        '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
+                        '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
+                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
                         '            <option value="new" selected>Новая</option>' +
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
                         '            <option value="expired">Просрочено</option>' +
+                        '            <option value="deactivated">Не активная</option>' +
                         '        </select>' +
+                        '        <input class="form form-control deactivated" style="display: none" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
                         '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
@@ -552,6 +666,29 @@
                     $('#add-new-task').trigger('click')
                 }
 
+                getStubs('#stubs-place')
+            })
+
+            let targetTask
+            $(document).on('click', '.add-new-subtasks', function () {
+                targetTask = $(this).attr('data-id')
+                if ($('#new-sub-tasks').html() === '') {
+                    $('#add-new-sub-task').trigger('click')
+                }
+
+                getStubs('#stubs-place-2')
+            })
+
+            $(document).on('click', '#add-new-sub-task', function () {
+                let id = getRandomInt(99999)
+                $('#new-sub-tasks').append(stub(id))
+
+                $('.pre-description').summernote({
+                    minHeight: 350,
+                })
+            })
+
+            function getStubs(target) {
                 $.ajax({
                     type: 'get',
                     url: "{{ route('checklist.stubs') }}",
@@ -561,13 +698,13 @@
                     },
                     success: function (response) {
                         stubs = response
-                        renderStubs(response)
+                        renderStubs(response, target)
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
                     }
                 })
-            })
+            }
 
             function getParameterByName(name, url) {
                 if (!url) {
@@ -634,10 +771,54 @@
                 })
             })
 
-            function generateNestedStubs(tasks, ribbion = false) {
+            $(document).on('click', '.remove-stub', function () {
+                let ID = $(this).attr('data-id')
+                let $parent = $(this).parent()
+
+                if (confirm('Вы действительно хотите удалить шаблон?')) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/remove-checklist-stub/' + ID,
+                        success: function (message) {
+                            successMessage(message)
+                            $parent.remove()
+                        },
+                        error: function (response) {
+                            errorMessage(response.responseJSON.errors)
+                        }
+                    })
+                }
+            })
+
+            function generateNestedStubs(tasks, each = true) {
                 let $listItem = ''
-                $.each(tasks, function (k, task) {
-                    task = task[0] ?? task
+
+                if (each) {
+                    $.each(tasks, function (k, task) {
+
+                        $listItem +=
+                            ' <li class="default example">' +
+                            '     <div style="height: 20px;">' +
+                            '         <span class="stub-style text-muted">' +
+                            '             Название' +
+                            '         </span>' +
+                            '         <div style="float: right" class="d-flex">' +
+                            '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
+                            '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
+                            '         </div>' +
+                            '     </div>' +
+                            ' </li>'
+
+                        let $subList = '<ol class="accordion stubs">';
+                        if (task.subtasks && task.subtasks.length > 0) {
+                            task.subtasks.forEach(function (subtask) {
+                                $subList += generateNestedStubs(subtask, false);
+                            });
+                        }
+                        $subList += '</ol>';
+                        $listItem += $subList
+                    });
+                } else {
                     $listItem +=
                         ' <li class="default example">' +
                         '     <div style="height: 20px;">' +
@@ -652,21 +833,13 @@
                         ' </li>'
 
                     let $subList = '<ol class="accordion stubs">';
-                    if (task.subtasks && task.subtasks.length > 0) {
-                        task.subtasks.forEach(function (subtask) {
-                            $subList += generateNestedStubs(subtask);
+                    if (tasks.subtasks && tasks.subtasks.length > 0) {
+                        tasks.subtasks.forEach(function (subtask) {
+                            $subList += generateNestedStubs(subtask, false);
                         });
                     }
                     $subList += '</ol>';
                     $listItem += $subList
-                });
-
-                if (ribbion) {
-                    $listItem += '<div class="ribbon-wrapper ribbon-lg">' +
-                        '    <div class="ribbon bg-primary">' +
-                        '        Выбрано' +
-                        '    </div>' +
-                        '</div>'
                 }
 
                 return $listItem
@@ -688,13 +861,16 @@
                     expired = '<option value="expired" selected>Просрочено</option>'
                 }
 
+                let start = new Date(task.date_start).toISOString().slice(0, 16);
+                let end = new Date(task.deadline).toISOString().slice(0, 16);
+
                 let $listItem =
-                    '<li data-id="' + task.id + '" class="' + task.status + '">' +
-                    '    <input type="text" class="form form-control hide-border d-inline edit-checklist" data-type="name" data-target="' + task.id + '" style="width: 350px" value="' + task.name + '">' +
+                    '<li data-id="' + task.id + '" class="' + task.status + '" class="d-flex">' +
+                    '    <input type="text" class="form form-control hide-border d-inline edit-checklist w-auto" data-type="name" data-target="' + task.id + '" value="' + task.name + '">' +
                     '    <div class="tools d-flex" style="float: right">' +
-                    '       <input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + task.date_start + '" ' +
+                    '       <input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + start + '" ' +
                     '       data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                    '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + task.deadline + '" ' +
+                    '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + end + '" ' +
                     '       data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
                     '       <select data-id="status-' + task.id + '" data-target="' + task.id + '" class="custom custom-select edit-checklist" data-type="status" style="width: 135px">' +
                     newState +
@@ -704,7 +880,7 @@
                     '       </select>' +
                     '       <div class="btn-group pl-2">' +
                     '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + task.id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + task.id + '"><i class="fa fa-eye"></i></button>' +
-                    '           <button class="btn btn-sm btn-default add-new-subtask" data-id="' + task.id + '"><i class="fa fa-plus"></i></button>' +
+                    '           <button class="btn btn-sm btn-default add-new-subtasks" data-toggle="modal" data-target="#addNewSubtasks" data-id="' + task.id + '"><i class="fa fa-plus"></i></button>' +
                     '           <button class="btn btn-sm btn-default remove-real-task" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>' +
                     '       </div>' +
                     '    </div>' +
@@ -913,6 +1089,49 @@
                 })
             })
 
+            const count_ml_in_day = 86400000
+            let lastStartDate
+            let lastEndDate
+
+            $(document).on('click', '.datetime[data-type="start"]', function () {
+                lastStartDate = $(this).val()
+            })
+
+            $(document).on('click', '.datetime[data-type="deadline"]', function () {
+                lastEndDate = $(this).val()
+            })
+
+            $(document).on('input', '.datetime', function () {
+                let $id = $(this).attr('data-target')
+                let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
+                let $startDate = new Date($start.val());
+                let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
+                let $endDate = new Date($deadline.val())
+
+                let countDays = ($endDate - $startDate) / count_ml_in_day
+
+                if ($(this).attr('data-type') === 'start' && countDays < 0) {
+                    $start.val(lastStartDate)
+                    errorMessage(['Дата начала должна быть раньше даты окончания'])
+                } else if ($(this).attr('data-type') === 'deadline' && countDays < 0) {
+                    $deadline.val(lastEndDate)
+                    errorMessage(['Дата окончания не может быть раньше даты начала'])
+                } else {
+                    $('.datetime-counter[data-target="' + $id + '"]').val(Math.round(countDays))
+                }
+            })
+
+            $(document).on('input', '.datetime-counter', function () {
+                let $id = $(this).attr('data-target')
+                let value = $(this).val()
+
+                let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
+                let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
+                let newDate = new Date(new Date($start.val()).getTime() + (value * count_ml_in_day)).toISOString().slice(0, 16)
+
+                $deadline.val(newDate)
+            })
+
             function parseTree($object) {
                 let $dataId = $object.attr('data-id')
                 let object = []
@@ -923,6 +1142,7 @@
                     status: $('select[data-target="' + $dataId + '"][data-type="status"]').val(),
                     description: $('.pre-description[data-id="' + $dataId + '"]').val(),
                     deadline: $('input[data-type="deadline"][data-target="' + $dataId + '"]').val(),
+                    active_after: $('input[data-type="active_after"][data-target="' + $dataId + '"]').val(),
                 }
 
                 if ($('#subtasks-' + $dataId).children('li').length > 0) {
@@ -958,12 +1178,14 @@
                     success: function (response) {
                         let checklist = response.checklist[0]
 
-                        $(".checklist-icon").html('<img src="/storage/' + checklist.icon + '" alt="' + checklist.icon + '" class="icon mr-2">')
-                        $(".checklist-name").html('<a href="' + checklist.url + '" target="_blank" data-toggle="tooltip" data-placement="top" title="' + checklist.url + '">' + new URL(checklist.url)['host'] + '</a>')
-                        $(".checklist-counter").html(checklist.work + checklist.ready + checklist.expired)
-                        $(".checklist-work").html(checklist.work)
-                        $(".checklist-expired").html(checklist.expired)
-                        $(".checklist-ready").html(checklist.ready)
+                        $("#checklist-icon").html('<img src="/storage/' + checklist.icon + '" alt="' + checklist.icon + '" class="icon mr-2">')
+                        $("#checklist-name").html('<a href="' + checklist.url + '" target="_blank" data-toggle="tooltip" data-placement="top" title="' + checklist.url + '">' + new URL(checklist.url)['host'] + '</a>')
+                        $("#checklist-counter").html(checklist.work + checklist.ready + checklist.expired + checklist.new + checklist.inactive)
+                        $("#checklist-new").html(checklist.new)
+                        $("#checklist-work").html(checklist.work)
+                        $("#checklist-inactive").html(checklist.inactive)
+                        $("#checklist-expired").html(checklist.expired)
+                        $("#checklist-ready").html(checklist.ready)
 
                         $('#tasks-ready').html(checklist.ready)
                         $('#tasks-work').html(checklist.work)
@@ -988,7 +1210,7 @@
                 })
             }
 
-            function renderStubs(basicTasks) {
+            function renderStubs(basicTasks, target) {
                 let html = ''
 
                 $.each(basicTasks, function (index, tasks) {
@@ -1003,30 +1225,46 @@
 
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
                     html += stubType
-                    html += generateNestedStubs(JSON.parse(tasks.tree), index === 0)
+                    html += generateNestedStubs(JSON.parse(tasks.tree), true)
                     html += button
                     html += '</ol>'
                 });
 
-                $('#stubs-place').html(html)
+                $(target).html(html)
             }
 
             function getRandomInt(max) {
                 return Math.floor(Math.random() * max);
             }
 
+            $(document).on('change', '.task-status', function () {
+                let $id = $(this).attr('data-target')
+
+                refreshTooltips()
+                if ($(this).val() === 'deactivated') {
+                    $('.deactivated[data-target="' + $id + '"]').show(300)
+                } else {
+                    $('.deactivated[data-target="' + $id + '"]').hide()
+                }
+            })
+
             function stub(id) {
+                let date = new Date().toISOString().slice(0, 16);
+
                 return '<li data-id="' + id + '" class="default d-flex">' +
                     '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
                     '    <div class="tools d-flex" style="float: right">' +
-                    '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                    '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                    '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status" style="width: 135px">' +
+                    '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" value="0" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
+                    '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
+                    '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
+                    '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" style="width: 135px" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
                     '            <option value="new" selected>Новая</option>' +
                     '            <option value="in_work">В работе</option>' +
                     '            <option value="ready">Готово</option>' +
                     '            <option value="expired">Просрочено</option>' +
+                    '            <option value="deactivated">Не активная</option>' +
                     '        </select>' +
+                    '        <input class="form form-control deactivated" style="display: none" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
                     '        <div class="btn-group pl-2">' +
                     '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
                     '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +

@@ -225,7 +225,7 @@
                                     <input type="text" id="name" name="name" class="form form-control">
                                 </div>
                                 <div class="form-group col-2">
-                                    <label for="tags">Фильтр по тегам</label>
+                                    <label for="tags">Фильтр по меткам</label>
                                     <input type="text" id="tags" name="tags" class="form form-control">
                                 </div>
                             </div>
@@ -243,6 +243,8 @@
                                     </div>
                                     <div class="modal-body" id="place-from-projects"></div>
                                     <div class="modal-footer">
+                                        <img id="multiple-loader" src="/img/1485.gif"
+                                             style="width: 30px; height: 30px; display: none">
                                         <button type="button" class="btn btn-secondary" id="add-multiply-projects">
                                             Добавить
                                         </button>
@@ -257,6 +259,7 @@
 
                         <div id="lists" class="row d-flex"></div>
 
+                        <p id="empty-message" style="display: none">У вас нет активных проектов</p>
                         <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-profile" role="tabpanel"
@@ -317,9 +320,10 @@
                             <label for="save-stub">Тип шаблона</label>
                             <select name="save-stub" id="save-stub" class="custom-select">
                                 <option value="no" selected>Не сохранять шаблон</option>
-                                <option value="personal">Сохранить как новый личный шаблон</option>
+                                <option value="personal">Личный шаблон</option>
                                 @if(\App\User::isUserAdmin())
-                                    <option value="classic">Сохранить как новый базовый шаблон</option>
+                                    <option value="classic">Базовый шаблон</option>
+                                    <option value="all">Базовый и личный шаблон</option>
                                 @endif
                             </select>
                         </div>
@@ -503,7 +507,8 @@
                                 <label for="labels">Ваши метки</label>
                                 <select name="labels" id="labels" class="form form-control">
                                     @foreach($labels as $label)
-                                        <option value="{{ $label->id }}" id="option-tag-{{ $label->id }}">
+                                        <option value="{{ $label->id }}" id="option-tag-{{ $label->id }}"
+                                                style="color: {{ $label->color }}">
                                             {{ $label->name }}
                                         </option>
                                     @endforeach
@@ -588,6 +593,13 @@
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
+            $(function () {
+                if (localStorage.getItem('SEO_CHECKLIST_COUNT') !== null) {
+                    $('#count').val(localStorage.getItem('SEO_CHECKLIST_COUNT'))
+                }
+                loadChecklists(0, true)
+            })
+
             let editedID
             let editedTimeout
             let notificationBlocks = 0
@@ -630,7 +642,7 @@
                                 '</li>'
                             );
                             $('#labels').append(
-                                '<option value="' + response.label.id + '" id="option-tag-' + response.label.id + '">' +
+                                '<option value="' + response.label.id + '" id="option-tag-' + response.label.id + '" style="' + response.label.color + '">' +
                                 name +
                                 '</option>'
                             )
@@ -806,13 +818,6 @@
                 $('#createNewProject').removeClass('d-flex')
             })
 
-            $(function () {
-                if (localStorage.getItem('SEO_CHECKLIST_COUNT') !== null) {
-                    $('#count').val(localStorage.getItem('SEO_CHECKLIST_COUNT'))
-                }
-                loadChecklists(0, true)
-            })
-
             $(document).on('click', '.remove-task', function () {
                 $(this).parents().eq(3).remove()
             })
@@ -848,7 +853,6 @@
             })
 
             $(document).on('click', '.add-subtask', function () {
-                $('#save-new-tasks').show()
                 let id = $(this).attr('data-id')
 
                 $('#subtasks-' + id).append(
@@ -967,13 +971,16 @@
                                     '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
-                                    '                    <span class="width">Новая</span> <span>' + v.work + '</span>' +
+                                    '                    <span class="width">Новые</span> <span>' + v.new + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
                                     '                    <span class="width">В работе:</span> <span>' + v.work + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
-                                    '                    <span class="width">Готово:</span> <span>' + v.ready + '</span>' +
+                                    '                    <span class="width">Не активные:</span> <span>' + v.inactive + '</span>' +
+                                    '                </div>' +
+                                    '                <div class="d-flex row">' +
+                                    '                    <span class="width">Готовые:</span> <span>' + v.ready + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
                                     '                    <span class="width">Просрочены:</span> <span>' + v.expired + '</span>' +
@@ -1001,7 +1008,7 @@
                             $('#custom-tabs-three-profile').html(cards)
                             refreshTooltips()
                         } else {
-                            $('#custom-tabs-three-profile').html('В архиве ничего нет.')
+                            $('#custom-tabs-three-profile').html('<p>В вашем архиве ничего нет</p>')
                         }
                     },
                     error: function (response) {
@@ -1113,15 +1120,16 @@
 
             function parseTree($object) {
                 let $dataId = $object.attr('data-id')
-                let object = []
+                let objects = []
                 let $subtasks = []
 
-                let test = {
+                let object = {
                     name: $('input[data-target="' + $dataId + '"][data-type="name"]').val(),
                     status: $('select[data-target="' + $dataId + '"][data-type="status"]').val(),
                     description: $('.pre-description[data-id="' + $dataId + '"]').val(),
                     deadline: $('input[data-type="deadline"][data-target="' + $dataId + '"]').val(),
                     start: $('input[data-type="start"][data-target="' + $dataId + '"]').val(),
+                    active_after: $('input[data-type="active_after"][data-target="' + $dataId + '"]').val(),
                 }
 
                 if ($('#subtasks-' + $dataId).children('li').length > 0) {
@@ -1130,13 +1138,13 @@
                     })
                 }
 
-                test.subtasks = $subtasks
-                object.push(test)
+                object.subtasks = $subtasks
+                objects.push(object)
 
-                return object
+                return objects
             }
 
-            function errorMessage(errors) {
+            function errorMessage(errors, time = 5000) {
                 let messages = ''
                 $.each(errors, function (k, v) {
                     messages += v + "<br>"
@@ -1162,7 +1170,7 @@
                 setTimeout(() => {
                     $block.remove()
                     notificationBlocks--
-                }, 5000)
+                }, time)
             }
 
             function successMessage(message) {
@@ -1246,24 +1254,34 @@
 
             function renderPagination(response) {
                 let pagination = ''
-                for (let i = 0; i < response.paginate; i++) {
-                    let html = i + 1
 
-                    if (i === 0) {
-                        pagination += '<li class="page-item active"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
-                    } else {
-                        pagination += '<li class="page-item"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                if (response.paginate > 1) {
+                    for (let i = 0; i < response.paginate; i++) {
+                        let html = i + 1
+
+                        if (i === 0) {
+                            pagination += '<li class="page-item active"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                        } else {
+                            pagination += '<li class="page-item"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                        }
                     }
                 }
+
                 $('#pagination').html(pagination)
             }
 
             function renderChecklists(lists) {
-
                 let cards = ''
                 let options = ''
+
+                if (lists.length === 0) {
+                    $('#empty-message').show(300)
+                } else {
+                    $('#empty-message').hide(300)
+                }
+
                 $.each(lists, function (k, v) {
-                    let totalTasks = v.ready + v.work + v.expired
+                    let totalTasks = v.ready + v.work + v.expired + v.inactive + v.new
                     let labels =
                         '<div class="col-8" data-action="labels" data-id="' + v.id + '">' +
                         '    <ul class="fc-color-picker">'
@@ -1306,16 +1324,19 @@
                         '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
-                        '                    <span class="width">Новая:</span> <span>' + v.work + '</span>' +
+                        '                    <span class="width">Новые:</span> <span>' + v.new + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
                         '                    <span class="width">В работе:</span> <span>' + v.work + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
-                        '                    <span class="width">Готово:</span> <span>' + v.ready + '</span>' +
+                        '                    <span class="width">Не активные:</span> <span>' + v.inactive + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
-                        '                    <span class="width">Просрочены:</span> <span>' + v.expired + '</span>' +
+                        '                    <span class="width">Готовые:</span> <span>' + v.ready + '</span>' +
+                        '                </div>' +
+                        '                <div class="d-flex row">' +
+                        '                    <span class="width">Просроченые:</span> <span>' + v.expired + '</span>' +
                         '                </div>' +
                         '            </div>' +
                         '            <div class="d-flex col-4 flex-column align-items-end">' +
@@ -1513,6 +1534,17 @@
                 $deadline.val(newDate)
             })
 
+            $(document).on('change', '.task-status', function () {
+                let $id = $(this).attr('data-target')
+
+                refreshTooltips()
+                if ($(this).val() === 'deactivated') {
+                    $('.deactivated[data-target="' + $id + '"]').show(300)
+                } else {
+                    $('.deactivated[data-target="' + $id + '"]').hide()
+                }
+            })
+
             function stub(id, stub = false) {
                 let date = new Date().toISOString().slice(0, 16);
 
@@ -1537,12 +1569,14 @@
                         '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" value="0" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
                         '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
                         '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
-                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
+                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
                         '            <option value="new" selected>Новая</option>' +
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
                         '            <option value="expired">Просрочено</option>' +
+                        '            <option value="deactivated">Не активная</option>' +
                         '        </select>' +
+                        '        <input class="form form-control deactivated" style="display: none" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
                         '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
@@ -1575,7 +1609,6 @@
             })
 
             $(document).on('click', '#save-new-checklist', function () {
-
                 $(this).attr('disabled', true)
                 $('#loader').show(300)
 
@@ -1596,7 +1629,6 @@
                         dynamicStub: $('#dynamic-stub').val()
                     },
                     success: function (message) {
-                        loadChecklists()
                         successMessage(message)
                         $('#loader').hide(300)
                         $('#save-new-checklist').attr('disabled', false)
@@ -1605,7 +1637,7 @@
                         $('#url').val('')
                         $('#tasks').html('')
 
-                        loadChecklists()
+                        loadChecklists(0, true)
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -1691,7 +1723,9 @@
             })
 
             function generateTasks(tasks) {
+                let date = new Date().toISOString().slice(0, 16);
                 let html = ''
+
                 $.each(tasks, function (index, task) {
                     let id = getRandomInt(9999999)
                     task = task[0] ?? task
@@ -1699,14 +1733,17 @@
                     let $listItem = '<li data-id="' + id + '" class="default d-flex">' +
                         '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
                         '    <div class="tools d-flex" style="float: right">' +
-                        '        <input class="form form-control hide-border" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                        '        <input class="form form-control hide-border" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select" data-type="status">' +
+                        '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" value="0" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
+                        '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
+                        '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
+                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
                         '            <option value="new" selected>Новая</option>' +
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
                         '            <option value="expired">Просрочено</option>' +
+                        '            <option value="deactivated">Не активная</option>' +
                         '        </select>' +
+                        '        <input class="form form-control deactivated" style="display: none" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
                         '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
@@ -1747,7 +1784,7 @@
 
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
                     html += stubType
-                    html += generateNestedLists(JSON.parse(tasks.tree), index === 0)
+                    html += generateNestedStubs(JSON.parse(tasks.tree), true)
                     html += button
                     html += '</ol>'
                 });
@@ -1785,15 +1822,19 @@
                 $.ajax({
                     type: 'get',
                     url: "{{ route('checklist.classic.stubs') }}",
-                    success: function (tasks) {
+                    success: function (stubs) {
                         let html = ''
-                        $.each(tasks, function (index, tasks) {
-                            let button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
-                            html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
-                            html += generateNestedLists(JSON.parse(tasks.tree))
-                            html += button
-                            html += '</ol>'
-                        });
+                        if (stubs.length > 0) {
+                            $.each(stubs, function (index, task) {
+                                let button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
+                                html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
+                                html += generateNestedStubs(JSON.parse(task.tree))
+                                html += button
+                                html += '</ol>'
+                            });
+                        } else {
+                            html = '<p>Базовые шаблоны отсутсвуют</p>'
+                        }
 
                         $('#classic-stubs-loader').remove()
                         $('#classic-stubs-place').html(html)
@@ -1812,16 +1853,21 @@
                 $.ajax({
                     type: 'get',
                     url: "{{ route('checklist.personal.stubs') }}",
-                    success: function (tasks) {
+                    success: function (stubs) {
                         let html = ''
-                        $.each(tasks, function (index, tasks) {
-                            html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
-                            html += generateNestedStubs(JSON.parse(tasks.tree))
-                            html += '<button class="btn btn-sm btn-default remove-stub" data-id="' + tasks.id + '">' +
-                                '<i class="fa fa-trash"></i>' +
-                                '</button>'
-                            html += '</ol>'
-                        });
+
+                        if (stubs.length > 0) {
+                            $.each(stubs, function (index, stub) {
+                                html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
+                                html += generateNestedStubs(JSON.parse(stub.tree), true)
+                                html += '<button class="btn btn-sm btn-default remove-stub" data-id="' + stub.id + '">' +
+                                    '<i class="fa fa-trash"></i>' +
+                                    '</button>'
+                                html += '</ol>'
+                            });
+                        } else {
+                            html = '<p>У вас нет личных шаблонов</p>'
+                        }
 
                         $('#personal-stubs-place').html(html)
                     }
@@ -1857,7 +1903,7 @@
                         })
 
                         if (html === '') {
-                            $('#place-from-projects').html('В модуле нет проектов, которые ещё не добавлены в чеклист')
+                            $('#place-from-projects').html('Нечего добавлять')
                         } else {
                             $('#place-from-projects').html('<p>Проекты которые ещё не были добавлены:</p>' + html + '<br><br><button class="btn btn-sm btn-default" data-action="mark" id="mark-all">Выделить всё</button>')
                         }
@@ -1883,6 +1929,7 @@
 
             $(document).on('click', '#add-multiply-projects', function () {
                 $('#add-multiply-projects').attr('disabled', true)
+                $('#multiple-loader').show(300)
                 let urls = []
 
                 $.each($('.new-project-variable'), function () {
@@ -1891,32 +1938,45 @@
                     }
                 })
 
+                if (urls.length === 0) {
+                    errorMessage(['Проекты не выбраны'])
+
+                    $('#add-multiply-projects').attr('disabled', false)
+                    $('#multiple-loader').hide(300)
+
+                    return;
+                }
+
                 $.ajax({
                     type: 'post',
                     url: "{{ route('checklist.multiply.create') }}",
                     data: {
                         urls: urls
                     },
-                    success: function (message) {
+                    success: function (response) {
                         $('#add-multiply-projects').attr('disabled', false)
-                        successMessage(message)
+                        $('#multiple-loader').hide(300)
                         loadChecklists($('.page-item.active > .page-link').attr('data-id'))
-
                         $('#close-multiply-projects').trigger('click')
+
+                        if (response.fails.length > 0) {
+                            errorMessage(response.fails, 10000)
+                        }
                     },
                     error: function (response) {
-                        $('#add-multiply-projects').attr('disabled', false)
                         errorMessage(response.responseJSON.errors)
+                        $('#add-multiply-projects').attr('disabled', false)
+                        $('#multiple-loader').hide(300)
                     }
                 })
             })
 
-            function generateNestedStubs(tasks, each = true) {
+            function generateNestedStubs(stubs, each = true) {
                 let $listItem = ''
 
                 if (each) {
-                    $.each(tasks, function (k, task) {
-
+                    $.each(stubs, function (k, stub) {
+                        stub = stub[0] ?? stub
                         $listItem +=
                             ' <li class="default example">' +
                             '     <div style="height: 20px;">' +
@@ -1931,11 +1991,12 @@
                             ' </li>'
 
                         let $subList = '<ol class="accordion stubs">';
-                        if (task.subtasks && task.subtasks.length > 0) {
-                            task.subtasks.forEach(function (subtask) {
+                        if (stub.subtasks && stub.subtasks.length > 0) {
+                            stub.subtasks.forEach(function (subtask) {
                                 $subList += generateNestedStubs(subtask, false);
                             });
                         }
+
                         $subList += '</ol>';
                         $listItem += $subList
                     });
@@ -1954,51 +2015,14 @@
                         ' </li>'
 
                     let $subList = '<ol class="accordion stubs">';
-                    if (tasks.subtasks && tasks.subtasks.length > 0) {
-                        tasks.subtasks.forEach(function (subtask) {
+                    if (stubs.subtasks && stubs.subtasks.length > 0) {
+                        stubs.subtasks.forEach(function (subtask) {
                             $subList += generateNestedStubs(subtask, false);
                         });
                     }
+
                     $subList += '</ol>';
                     $listItem += $subList
-                }
-
-                return $listItem
-            }
-
-            function generateNestedLists(tasks, ribbion = false) {
-                let $listItem = ''
-                $.each(tasks, function (k, task) {
-                    task = task[0] ?? task
-                    $listItem +=
-                        ' <li class="default example">' +
-                        '     <div style="height: 20px;">' +
-                        '         <span class="stub-style text-muted">' +
-                        '             Название' +
-                        '         </span>' +
-                        '         <div style="float: right" class="d-flex">' +
-                        '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
-                        '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
-                        '         </div>' +
-                        '     </div>' +
-                        ' </li>'
-
-                    let $subList = '<ol class="accordion stubs">';
-                    if (task.subtasks && task.subtasks.length > 0) {
-                        task.subtasks.forEach(function (subtask) {
-                            $subList += generateNestedLists(subtask);
-                        });
-                    }
-                    $subList += '</ol>';
-                    $listItem += $subList
-                });
-
-                if (ribbion) {
-                    $listItem += '<div class="ribbon-wrapper ribbon-lg">' +
-                        '    <div class="ribbon bg-primary">' +
-                        '        Выбрано' +
-                        '    </div>' +
-                        '</div>'
                 }
 
                 return $listItem

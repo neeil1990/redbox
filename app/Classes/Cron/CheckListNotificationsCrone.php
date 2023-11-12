@@ -12,6 +12,7 @@ class CheckListNotificationsCrone
     {
         $tasks = ChecklistTasks::where('deadline', '<', Carbon::now())
             ->where('status', 'in_work')
+            ->orWhere('status', 'new')
             ->get();
 
         foreach ($tasks as $task) {
