@@ -420,7 +420,7 @@
                                     {{ __('Words') }}
                                     <span class="__helper-link ui_tooltip_w">
                                     <i class="fa fa-question-circle"></i>
-                                    <span class="ui_tooltip __right">
+                                    <span class="ui_tooltip __left">
                                             <span class="ui_tooltip_content" style="z-index: 999999 !important;">{{ __('Words and their word forms that are present on competitors websites.') }}
                                             </span>
                                         </span>
