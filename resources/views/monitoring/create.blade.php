@@ -802,6 +802,7 @@
                 let duplicates = $('#remove-duplicates');
                 let groupInput = $('#keyword-groups');
                 let target = $('select[name="target"]');
+                let delimiter = $('#csv-delimiter').val();
 
                 if(csv[0].files.length){
 
@@ -812,10 +813,9 @@
 
                     csv.parse({
                         config: {
-                            delimiter: ";",
+                            delimiter: delimiter,
                             skipEmptyLines: 'greedy',
                             complete: function (result) {
-
                                 if(duplicates.prop('checked'))
                                     result.data = $.unique(result.data);
 

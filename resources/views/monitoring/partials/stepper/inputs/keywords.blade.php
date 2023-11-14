@@ -1,8 +1,5 @@
-
-
 <div class="row">
-
-    <div class="col-6">
+    <div class="col-5">
         <div class="row">
             <div class="col-12 clearfix">
                 <div class="card">
@@ -27,6 +24,14 @@
                         <div class="form-group">
                             <input type="file" id="csv-keywords">
                             <p class="text-sm text-muted">Вы можете загрузить csv файл где в первой колонке будут запросы, второй группа запроса, третьей релевантная страница.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>CSV разделитель</label>
+                            <select class="custom-select" id="csv-delimiter">
+                                <option value=";">Точка с запятой ( ; )</option>
+                                <option value=",">Запятая ( , )</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -77,8 +82,7 @@
 
         </div>
     </div>
-
-    <div class="col-6">
+    <div class="col-7">
         <div class="row">
             <div class="col-12 clearfix">
                 <div class="card">
@@ -88,7 +92,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <div class="input-keywords"></div>
