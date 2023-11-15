@@ -203,6 +203,12 @@
                             "next": "»",
                             "previous": "«"
                         }
+                    },
+                    "oLanguage": {
+                        "sSearch": "{{ __('Search') }}:",
+                        "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
+                        "sEmptyTable": "{{ __('No records') }}",
+                        "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
                     }
                 });
             });
