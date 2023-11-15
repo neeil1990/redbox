@@ -157,9 +157,6 @@ class SearchCompetitors extends Model
         $iterator = 0;
         $total = ($this->count * count($this->phrases)) / 100;
         foreach ($this->sites as $phrase => $items) {
-            Log::info($phrase);
-            $phrase = substr($phrase, 0, -2);
-            Log::info($phrase);
             foreach ($items as $link) {
                 if (!filter_var($link, FILTER_VALIDATE_URL)) {
                     continue;
