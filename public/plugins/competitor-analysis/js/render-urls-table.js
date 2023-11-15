@@ -25,18 +25,18 @@ function renderUrlsTable(urls, pageLength) {
 
     $(document).ready(function () {
         $('#urls-table').dataTable({
-            "order": [[2, "desc"]],
-            "pageLength": pageLength,
-            "searching": true,
+            order: [[2, "desc"]],
+            pageLength: pageLength,
+            searching: true,
             language: {
-                paginate: {
+                "paginate": {
                     "first": "«",
                     "last": "»",
                     "next": "»",
                     "previous": "«"
-                },
+                }
             }
-        })
+        });
 
         $('#urls-table').wrap('<div style="width: 100%; overflow: auto"></div>')
     })

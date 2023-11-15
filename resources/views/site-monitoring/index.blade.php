@@ -51,7 +51,7 @@
     </a>
     <input type="hidden" class="checked-projects">
     <div>{{ __('Count tracked projects') }}: <span id="count-projects">{{ $countProjects }}</span></div>
-    <table id="example" class="table table-bordered table-striped dataTable dtr-inline">
+    <table id="table" class="table table-bordered table-striped dataTable dtr-inline">
         <thead>
         <tr>
             <th></th>
@@ -195,7 +195,16 @@
         <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
         <script defer>
             $(document).ready(function () {
-                $('#example').DataTable();
+                $('#table').DataTable({
+                    language: {
+                        "paginate": {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        }
+                    }
+                });
             });
             var oldValue = ''
             var oldProjectName = ''
