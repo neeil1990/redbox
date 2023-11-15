@@ -28,14 +28,20 @@ function renderUrlsTable(urls, pageLength) {
             "order": [[2, "desc"]],
             "pageLength": pageLength,
             "searching": true,
-            drawCallback: function () {
-                $('#urls-table').wrap('<div style="width: 100%; overflow: auto"></div>')
+            language: {
+                paginate: {
+                    "first": "«",
+                    "last": "»",
+                    "next": "»",
+                    "previous": "«"
+                },
             }
         })
+
+        $('#urls-table').wrap('<div style="width: 100%; overflow: auto"></div>')
     })
 
     $('.urls.mt-5').show()
-
 
     setTimeout(() => {
         $('#render-bar').hide(300)

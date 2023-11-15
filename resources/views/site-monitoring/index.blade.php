@@ -12,6 +12,14 @@
             .domainMonitoringProject {
                 background: oldlace;
             }
+
+            .dataTables_length > label {
+                display: flex;
+            }
+
+            .dataTables_length > label > select {
+                margin: 0 5px !important;
+            }
         </style>
     @endslot
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -174,7 +182,17 @@
             </span>
     @endif
     @slot('js')
+        <script src="{{ asset('plugins/common/js/common.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
         <script defer>
             $(document).ready(function () {
                 $('#example').DataTable();

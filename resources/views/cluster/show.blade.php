@@ -485,12 +485,19 @@
         <script src="{{ asset('/plugins/cluster/js/render-result-table_v2.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-result-fast-table.min.js') }}"></script>
         <script src="{{ asset('/plugins/cluster/js/render-hidden-fast.min.js') }}"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="{{ asset('plugins/common/js/common.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
         <script>
-            const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
+            const cluster_tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
 
             $(document).on('click', '.click_tracking', function () {
                 $.ajax({
@@ -500,12 +507,10 @@
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         button_text: $(this).attr('data-click'),
                         url: location.href,
-                        project_id: tracking_project_id
+                        project_id: cluster_tracking_project_id
                     },
-                    success: function (response) {
-                    },
-                    error: function () {
-                    }
+                    success: function (response) {},
+                    error: function () {}
                 })
             });
 

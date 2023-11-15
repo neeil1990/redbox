@@ -1,7 +1,10 @@
 window.onload = function () {
     $(document).ready(function () {
-        $('#example').DataTable();
+        $('#table').DataTable();
     });
+
+    $('#table').wrap('<div style="width: 100%; overflow: auto"></div>')
+
     setTimeout(() => {
         var block = $('#example_length')
         if (localStorage.getItem('entries-information-option') !== undefined) {

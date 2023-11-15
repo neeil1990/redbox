@@ -13,6 +13,18 @@
             .RelevanceAnalysis {
                 background: oldlace;
             }
+
+            .dataTables_length > label {
+                display: flex;
+            }
+
+            .dataTables_length > label > select {
+                margin: 0 5px;
+            }
+
+            .row {
+                margin: 0 !important;
+            }
         </style>
     @endslot
 
@@ -693,9 +705,13 @@
         </div>
     </div>
     @slot('js')
+        <script src="{{ asset('plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/childHistoryTable.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/history/common.js') }}"></script>
         <script>
@@ -719,25 +735,29 @@
                 recommendations: "{{ __('Recommendations for your page') }}",
             };
 
-            $('#main_history_table').DataTable({
-                "order": [[0, "desc"]],
-                "pageLength": 10,
-                "searching": true,
-                language: {
-                    paginate: {
-                        "first": "«",
-                        "last": "»",
-                        "next": "»",
-                        "previous": "«"
+            $(document).ready(function (){
+                $('#main_history_table').dataTable({
+                    "order": [[0, "desc"]],
+                    "pageLength": 10,
+                    "searching": true,
+                    language: {
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
                     },
-                },
-                "oLanguage": {
-                    "sSearch": "{{ __('Search') }}:",
-                    "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
-                    "sEmptyTable": "{{ __('No records') }}",
-                    "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
-                }
-            });
+                    "oLanguage": {
+                        "sSearch": "{{ __('Search') }}:",
+                        "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
+                        "sEmptyTable": "{{ __('No records') }}",
+                        "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
+                    }
+                });
+
+                $('#main_history_table').wrap('<div style="width: 100%; overflow: auto"></div>')
+            })
 
             $(".dt-button").addClass('btn btn-secondary')
 

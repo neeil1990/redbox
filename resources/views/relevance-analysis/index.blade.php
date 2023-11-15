@@ -1,6 +1,7 @@
 @component('component.card', ['title' =>  __('Relevance analysis') ])
     @slot('css')
-        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
+        <link rel="stylesheet"
+              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/jqcloud/css/jqcloud.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/common/css/datatable.css') }}">
@@ -50,7 +51,7 @@
                 display: flex;
             }
 
-            .dataTables_length > label > select{
+            .dataTables_length > label > select {
                 margin: 0 5px !important;
             }
         </style>
@@ -340,7 +341,8 @@
 
                     <div class="d-flex flex-column">
                         <div class="btn-group col-lg-3 col-md-5 mb-2">
-                            <button class="btn btn-secondary click_tracking" data-click="Full analysis" id="full-analyse" data-name="Full analysis">
+                            <button class="btn btn-secondary click_tracking" data-click="Full analysis"
+                                    id="full-analyse" data-name="Full analysis">
                                 {{ __('Full analysis') }}
                             </button>
                             <button type="button" class="btn btn-secondary col-2">
