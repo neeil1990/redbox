@@ -70,7 +70,6 @@ class SearchCompetitors extends Model
         $phrases = explode("\n", $string);
 
         $this->phrases = array_unique(array_diff($phrases, ['']));
-        Log::debug('phrases', $this->phrases);
     }
 
     public function setRegion(string $region)
@@ -110,7 +109,9 @@ class SearchCompetitors extends Model
     {
         $xml = new SimplifiedXmlFacade($this->region, $this->count);
 
+        Log::debug('phrases', $this->phrases);
         foreach ($this->phrases as $phrase) {
+            Log::info($phrase);
             $phrase = trim($phrase);
             if ($phrase != '') {
                 $xml->setQuery($phrase);
