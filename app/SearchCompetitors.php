@@ -70,6 +70,7 @@ class SearchCompetitors extends Model
         $phrases = explode("\n", $string);
 
         $this->phrases = array_unique(array_diff($phrases, ['']));
+        Log::debug('phrases', $this->phrases);
     }
 
     public function setRegion(string $region)
