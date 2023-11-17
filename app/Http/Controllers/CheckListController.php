@@ -556,7 +556,7 @@ class CheckListController extends Controller
 
     public function metaTagsProjects()
     {
-        $projects = MetaTag::where('user_id', Auth::id())->get()->pluck('name');
+        $projects = MetaTag::where('user_id', Auth::id())->get()->pluck('links');
 
         foreach ($projects as $key => $project) {
             if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
@@ -569,7 +569,7 @@ class CheckListController extends Controller
 
     public function monitoringProjects()
     {
-        $projects = Auth::user()->monitoringProjects->pluck('name');
+        $projects = Auth::user()->monitoringProjects->pluck('url');
 
         foreach ($projects as $key => $project) {
             if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {

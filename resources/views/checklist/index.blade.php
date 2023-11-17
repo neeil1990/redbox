@@ -573,17 +573,19 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="removeRelationModalLabel">Подтвердите действие</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            id="closeRemoveRelationModal">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Вы собираетесь убрать метку с чеклиста
+                    Выберите, что вы хотите сделать
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="removeRelation">{{ __('Remove') }}</button>
-                    <button type="button" class="btn btn-default" id="closeRemoveRelationModal"
-                            data-dismiss="modal">{{ __('Close') }}</button>
+                <div class="modal-footer justify-content-between">
+                    <button type="button"
+                            class="btn btn-primary" id="add-in-filter">{{ __('Search label') }}</button>
+                    <button type="button" class="btn btn-danger"
+                            id="removeRelation">{{ __('Remove label') }}</button>
                 </div>
             </div>
         </div>
@@ -673,7 +675,11 @@
                         let text = $('.label-name-input[data-target="' + labelID + '"]').val()
 
                         labelsBlock.append(
-                            '<li class="checklist-label" data-target="' + checklistID + '" data-id="' + labelID + '" data-toggle="tooltip"' +
+                            '<li class="checklist-label"' +
+                            ' data-name="' + text + '"' +
+                            ' data-target="' + checklistID + '"' +
+                            ' data-id="' + labelID + '"' +
+                            ' data-toggle="tooltip"' +
                             '    data-placement="top" title="' + text + '">' +
                             '         <span class="fas fa-square"' +
                             '               style="color: ' + color + ' !important;"' +
@@ -759,10 +765,19 @@
                 })
             })
 
+            let filterLabel
             $(document).on('click', '.checklist-label', function () {
                 labelID = $(this).attr('data-id')
                 checkListID = $(this).attr('data-target')
                 removedLI = $(this)
+                filterLabel = $(this).attr('data-name')
+            })
+
+            $('#add-in-filter').on('click', function () {
+                $('#tags').val(filterLabel)
+                loadChecklists()
+
+                $('#closeRemoveRelationModal').trigger('click')
             })
 
             $(document).on('change', '.edit-checklist', function () {
@@ -935,7 +950,7 @@
 
                                 $.each(v.labels, function (index, label) {
                                     labels +=
-                                        '<li class="checklist-label" data-target="' + v.id + '" data-id="' + label.id + '" ' +
+                                        '<li class="checklist-label" data-name="' + label.name + '" data-target="' + v.id + '" data-id="' + label.id + '" ' +
                                         '    data-toggle="tooltip" data-placement="top" ' +
                                         '    title="' + label.name + '">' +
                                         '    <span class="fas fa-square" style="color: ' + label.color + ' !important;" data-toggle="modal" data-target="#removeRelationModal"></span>' +
@@ -1288,7 +1303,7 @@
 
                     $.each(v.labels, function (index, label) {
                         labels +=
-                            '<li class="checklist-label" data-target="' + v.id + '" data-id="' + label.id + '" ' +
+                            '<li class="checklist-label" data-name="' + label.name + '" data-target="' + v.id + '" data-id="' + label.id + '" ' +
                             '    data-toggle="tooltip" data-placement="top" ' +
                             '    title="' + label.name + '">' +
                             '    <span class="fas fa-square" style="color: ' + label.color + ' !important;" data-toggle="modal" data-target="#removeRelationModal"></span>' +
