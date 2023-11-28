@@ -55,12 +55,12 @@
         <thead>
         <tr>
             <th></th>
-            <th class="col-2">{{ __('Project name') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Link') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Keyword') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1">{{ __('Frequency every') }} <i class="fa fa-sort"></i></th>
-            <th class="col-1">{{ __('Response waiting time') }} <i class="fa fa-sort"></i></th>
-            <th class="col-2">{{ __('Status') }}<i class="fa fa-sort"></i>
+            <th class="col-2">{{ __('Project name') }} </th>
+            <th class="col-2">{{ __('Link') }} </th>
+            <th class="col-2">{{ __('Keyword') }} </th>
+            <th class="col-1">{{ __('Frequency every') }} </th>
+            <th class="col-1">{{ __('Response waiting time') }} </th>
+            <th class="col-2">{{ __('Status') }}
             </th>
             <th>{{ __('Receive notifications?') }}</th>
             <th class="col-1"></th>
@@ -209,11 +209,17 @@
                         "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
                         "sEmptyTable": "{{ __('No records') }}",
                         "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
+                    },
+                    drawCallback: function () {
+                        $('#table').wrap("<div style='width: 100%; overflow: auto' id='wrap-block'></div>")
                     }
                 });
             });
-            var oldValue = ''
-            var oldProjectName = ''
+
+
+            let oldValue = ''
+            let oldProjectName = ''
+
             $('input.send-notification-switch').click(function () {
                 $.ajax({
                     type: "POST",
@@ -314,7 +320,10 @@
                 });
             });
 
-            $('.check').on('click', function () {
+            $(document).on('click', '.check', function () {
+                let targetButton = $(this)
+                targetButton.find('i').attr('class', 'fa-solid fa-clock')
+
                 let parentRow = $(this).parents().eq(1)
                 $.ajax({
                     type: "POST",
@@ -324,24 +333,28 @@
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function (response) {
+                        targetButton.find('i').attr('class', 'fa fa-search')
                         let content
 
                         if (response.broken) {
                             content = '<span class="text-danger">' +
                                 '<div> ' + response.status + '</div>' +
                                 '<div> http code: ' + response.code + '</div>' +
-                                '<div> {{ __('Uptime') }} : ' + response.uptime + '</div>' +
+                                '<div> {{ __('Uptime') }} : ' + response.uptime + ' %</div>' +
                                 '</span>'
                         } else {
                             content = '<span class="text-info">' +
                                 '<div> ' + response.status + '</div>' +
                                 '<div> http code: ' + response.code + '</div>' +
-                                '<div> {{ __('Uptime') }} : ' + response.uptime + '</div>' +
+                                '<div> {{ __('Uptime') }} : ' + response.uptime + ' %</div>' +
                                 '</span>'
                         }
 
                         parentRow.children('td').eq(6).html(content)
                     },
+                    error: function () {
+                        targetButton.attr('disabled', false)
+                    }
                 });
 
             })
