@@ -316,6 +316,8 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getFullNameAttribute(): string
     {
-        return "{$this->name} {$this->last_name}";
+        $arFio = array_unique([$this->name, $this->last_name]);
+
+        return implode(" ", $arFio);
     }
 }
