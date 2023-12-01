@@ -75,3 +75,7 @@ a.bg-purple-light:focus, a.bg-purple-light:hover, button.bg-purple-light:focus, 
 #video-course > div, .video-course > div {
     position: absolute;
 }
+
+.user-panel .info {
+    white-space: normal;
+}

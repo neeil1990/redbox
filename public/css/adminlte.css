@@ -13197,7 +13197,6 @@ body:not(.layout-fixed) .main-sidebar .sidebar {
 .user-panel,
 .user-panel .info {
   overflow: hidden;
-  white-space: nowrap;
 }
 
 .user-panel .image {
