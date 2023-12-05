@@ -43,6 +43,7 @@ class TextAnalyzerController extends Controller
         }
 
         $request = $request->all();
+
         if ($request['type'] === 'url') {
             $html = TextAnalyzer::curlInit($request['url']);
             if (!$html) {

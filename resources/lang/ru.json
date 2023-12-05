@@ -709,7 +709,7 @@
     "The tool will show the number of characters, word frequency clouds, the number of repetitions of words and phrases, as well as Zipf's law analysis.": "Инструмент покажет количество символов, облака частотности слов, количество повторений слов и словосочетаний, а также анализ по закону Ципфа.\n\n",
     "Track the text in the noindex tag": "Отслеживать текст в теге noindex",
     "Track words in the alt, title, and data-text attributes": "Отслеживать слова в атрибутах alt, tittle и data-text",
-    "Track conjunctions, prepositions, pronouns": "Отслеживать союзы, предлоги, местоимения",
+    "Exclude conjunctions, prepositions, pronouns": "Исключать союзы, предлоги, местоимения",
     "Exclude": "Исключать",
     "(your own list of words)": "(свой список слов)",
     "Number of words": "Количество слов",

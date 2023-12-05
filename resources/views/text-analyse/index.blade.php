@@ -12,12 +12,23 @@
                 background: oldlace;
             }
 
+            <<<<<<< HEAD
+                    #totalTable_length > label,
+                    #phrasesTable_length > label {
+                        display: flex;
+                    }
+
+            #totalTable_length > label > select,
+            #phrasesTable_length > label > select {
+                margin: 0 10px;
+            =======
             .dataTables_length > label {
                 display: flex;
             }
 
             .dataTables_length > label > select {
                 margin: 0 5px !important;
+            >>>>>>> 93f2cb064ea490ebbf06de88578b5d8398c8d711
             }
         </style>
     @endslot
@@ -39,7 +50,9 @@
         <div class="collapse multi-collapse w-50 collapse show" id="analyse-text">
             <div class="form-group required text-or-html">
                 <textarea name="textarea" class="form form-control" rows="10" placeholder="{{ __('Your text') }}"
-                >@isset($request['textarea']){{ $request['textarea'] }}@endisset</textarea>
+                >@isset($request['textarea'])
+                        {{ $request['textarea'] }}
+                    @endisset</textarea>
             </div>
         </div>
         <div class="collapse multi-collapse w-50" id="analyse-url">
@@ -99,7 +112,7 @@
                     <label class="custom-control-label" for="switchConjunctionsPrepositionsPronouns"></label>
                 </div>
             </div>
-            <p>{{ __('Track conjunctions, prepositions, pronouns') }}</p>
+            <p>{{ __('Exclude conjunctions, prepositions, pronouns') }}</p>
         </div>
         <div class="d-flex">
             <div class="__helper-link ui_tooltip_w">
@@ -119,9 +132,8 @@
 
     <div class="form-group required list-words mt-1"
          @if(!(isset($request['removeWords']) && $request['removeWords'])) style="display: none" @endif>
-        <textarea class="form form-control w-50" name="listWords" id="listWords" cols="8" rows="5">@if(isset($request['listWords']))
-                {{ $request['listWords'] }}
-            @endif</textarea>
+        <textarea class="form form-control w-50" name="listWords" id="listWords" cols="8" rows="5"
+        >@if(isset($request['listWords'])){{ $request['listWords'] }}@endif</textarea>
     </div>
 
     <input type="submit" class="btn btn-secondary mt-2" value="{{ __('Analyse') }}">
@@ -171,7 +183,7 @@
         </div>
         <h3 class="mt-5 mb-3">{{ __('Text analysis according to Zipfs law') }}</h3>
         <div id="chartContainer" class="w-100" style="height: 370px; width: 100%;"></div>
-        <div class="mt-5 mb-3" style="max-height: 600px; overflow-y: auto;">
+        <div class="mt-5 mb-3">
             <h3>{{ __('General word analysis') }}</h3>
             <table id="totalTable" class="table table-bordered table-striped dataTable dtr-inline">
                 <thead>
@@ -186,8 +198,8 @@
                 <tbody>
                 @foreach($response['totalWords'] as $word)
                     <tr>
-                        <td data-order="{{ $word['text'] }}" class="w-50">
-                            <u class=" unique-word" style="cursor: pointer">{{ $word['text'] }}</u>
+                        <td data-order="{{ $word['text'] }}" class="w-50 unique-word">
+                            {{ $word['text'] }} <i class="fa fa-plus pointer"></i>
                             <span class="text-muted" style="display: none">
                                 @isset($word['wordForms']['inLink'])
                                     <p class="mt-2"><b>{{__('Link Zone')}}:</b></p>
@@ -236,7 +248,7 @@
             <h3>{{ __('Text and Link zone') }}</h3>
             <div class="mr-auto ml-auto" id="textWithLinks" style="height: 400px;"></div>
         </div>
-        <div class="mt-5 mb-3" style="max-height: 600px; overflow-y: auto;">
+        <div class="mt-5 mb-3">
             <h3>{{ __('Phrases of 2 words') }}</h3>
             <table id="phrasesTable" class="table table-bordered table-striped dataTable dtr-inline">
                 <thead>
@@ -393,18 +405,48 @@
             <script>
                 $(document).ready(function () {
                     $('#totalTable').DataTable({
-                        "order": [[2, "desc"]]
+                        order: [[2, "desc"]],
+                        language: {
+                            paginate: {
+                                "first": "«",
+                                "last": "»",
+                                "next": "»",
+                                "previous": "«"
+                            },
+                        },
+                        oLanguage: {
+                            "sSearch": "{{ __('Search') }}:",
+                            "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
+                            "sEmptyTable": "{{ __('No records') }}",
+                            "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
+                        },
                     });
                     $('#phrasesTable').DataTable({
-                        "order": [[1, "desc"]]
+                        order: [[1, "desc"]],
+                        language: {
+                            paginate: {
+                                "first": "«",
+                                "last": "»",
+                                "next": "»",
+                                "previous": "«"
+                            },
+                        },
+                        oLanguage: {
+                            "sSearch": "{{ __('Search') }}:",
+                            "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",
+                            "sEmptyTable": "{{ __('No records') }}",
+                            "sInfo": "{{ __('Showing') }} {{ __('from') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
+                        },
                     });
                 });
 
                 $('.unique-word').click(function () {
-                    if ($(this).parent().children('span').css('display') === 'none') {
-                        $(this).parent().children('span').show()
+                    if ($(this).children('span').css('display') === 'none') {
+                        $(this).children('span').show()
+                        $(this).children('i').attr('class', 'fa fa-minus')
                     } else {
-                        $(this).parent().children('span').hide()
+                        $(this).children('span').hide()
+                        $(this).children('i').attr('class', 'fa fa-plus')
                     }
                 });
             </script>

@@ -37,10 +37,6 @@ class TextAnalyzer extends Model
         return TextAnalyzer::curlConnect($curl);
     }
 
-    /**
-     * @param $curl
-     * @return bool|string|string[]|null
-     */
     public static function curlConnect($curl)
     {
         $userAgents = [
@@ -84,11 +80,6 @@ class TextAnalyzer extends Model
         return $html;
     }
 
-    /**
-     * @param $string
-     * @param $request
-     * @return array
-     */
     public static function analyze($string, $request): array
     {
         $data = '';
@@ -101,6 +92,7 @@ class TextAnalyzer extends Model
         }
 
         $link = TextAnalyzer::getLinkText($html);
+
         if ($request['hiddenText'] ?? false) {
             $title = TextAnalyzer::getHiddenText($html, "<.*?title=\"(.*?)\".*>");
             $alt = TextAnalyzer::getHiddenText($html, "<.*?alt=\"(.*?)\".*>");
@@ -131,6 +123,7 @@ class TextAnalyzer extends Model
         $countSpaces = substr_count(trim($total . ' ' . $link), ' ');
         $totalWords = TextAnalyzer::deleteEverythingExceptCharacters($string);
         $length = mb_strlen($totalWords);
+
         $response['general'] = [
             'textLength' => $length,
             'countSpaces' => $countSpaces,
@@ -142,7 +135,7 @@ class TextAnalyzer extends Model
         $linksText = TextAnalyzer::prepareCloud($link);
         $textWithLinks = TextAnalyzer::prepareCloud(trim($total . ' ' . $link));
 
-        $response['totalWords'] = TextAnalyzer::AnalyzeWords($total, $link);
+        $response['totalWords'] = TextAnalyzer::analyzeWords($total, $link);
         $response['phrases'] = TextAnalyzer::searchPhrases(trim($total . ' ' . $link));
 
         JavaScript::put([
@@ -157,10 +150,6 @@ class TextAnalyzer extends Model
         return $response;
     }
 
-    /**
-     * @param $html
-     * @return array|string|string[]|null
-     */
     public static function deleteEverythingExceptCharacters($html)
     {
         $html = TextAnalyzer::removeStylesAndScripts($html);
@@ -177,10 +166,43 @@ class TextAnalyzer extends Model
             "(", ")", "+", ";", ":", "-",
             "₽", "$", "/", "[", "]", "“"
         ], ' ', $text);
-        $text = preg_replace("/\d/", "", $text);
         $text = str_replace("ё", "е", $text);
 
+        $text = TextAnalyzer::removeNumbersWithoutLetters($text);
+
         return preg_replace('| +|', ' ', $text);
+    }
+
+    protected static function removeNumbersWithoutLetters($text): string
+    {
+        $words = explode(' ', $text);
+        $result = [];
+
+        foreach ($words as $word) {
+            if (TextAnalyzer::hasLetters($word) || TextAnalyzer::hasLettersNearby($word)) {
+                $result[] = $word;
+            }
+        }
+
+        return implode(' ', $result);
+    }
+
+    protected static function hasLetters($word)
+    {
+        return preg_match('/[a-zA-Zа-яА-Я]/u', $word);
+    }
+
+    protected static function hasLettersNearby($word): bool
+    {
+        $length = strlen($word);
+
+        for ($i = 0; $i < $length; $i++) {
+            if (TextAnalyzer::hasLetters(substr($word, $i, 1))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function removeStylesAndScripts($html): string
@@ -208,10 +230,6 @@ class TextAnalyzer extends Model
         return $document->outertext;
     }
 
-    /**
-     * @param $text
-     * @return mixed|string|string[]
-     */
     public static function removeConjunctionsPrepositionsPronouns($text)
     {
         $pronouns = [
@@ -290,11 +308,6 @@ class TextAnalyzer extends Model
         return $text;
     }
 
-    /**
-     * @param $listWords
-     * @param $text
-     * @return string
-     */
     public static function removeWords($listWords, $text): string
     {
         $listWords = str_replace("\r\n", "\n", strtolower($listWords));
@@ -307,12 +320,6 @@ class TextAnalyzer extends Model
         return trim($text);
     }
 
-    /**
-     * @param $search
-     * @param $replace
-     * @param $string
-     * @return array|string|string[]
-     */
     public static function mbStrReplace($search, $replace, $string)
     {
         $charset = mb_detect_encoding($string);
@@ -322,11 +329,6 @@ class TextAnalyzer extends Model
         return str_replace($search, $replace, $unicodeString);
     }
 
-    /**
-     * @param $string
-     * @param int $separator
-     * @return array
-     */
     public static function prepareCloud($string, int $separator = 2): array
     {
         $words = [];
@@ -364,16 +366,12 @@ class TextAnalyzer extends Model
         return $collection->sortByDesc('weight')->toArray();
     }
 
-    /**
-     * @param $textWords
-     * @param $linkWords
-     * @return array
-     */
-    public static function AnalyzeWords($textWords, $linkWords): array
+    public static function analyzeWords($textWords, $linkWords): array
     {
-        $linkWords = explode(' ', $linkWords);
         $textWords = explode(' ', $textWords);
+        $linkWords = explode(' ', $linkWords);
         $totalWords = array_merge($linkWords, $textWords);
+
         $text = TextAnalyzer::countWordsInText($textWords);
         $link = TextAnalyzer::countWordsInLink($linkWords);
         $result = TextAnalyzer::mergeTextAndLinks($text, $link);
@@ -382,7 +380,6 @@ class TextAnalyzer extends Model
 
         return TextAnalyzer::calculateTFIDF($result, $totalWords, 'inText');
     }
-
 
     public static function searchPhrases($string)
     {
@@ -414,11 +411,6 @@ class TextAnalyzer extends Model
         return array_splice($result, 0, 26);
     }
 
-    /**
-     * @param $html
-     * @param $regex
-     * @return string|string[]|null
-     */
     public static function getHiddenText($html, $regex)
     {
         $hiddenText = '';
@@ -431,10 +423,6 @@ class TextAnalyzer extends Model
         return TextAnalyzer::deleteEverythingExceptCharacters($hiddenText);
     }
 
-    /**
-     * @param $html
-     * @return string|string[]|null
-     */
     public static function getLinkText($html)
     {
         $linkText = '';
@@ -451,10 +439,6 @@ class TextAnalyzer extends Model
         return TextAnalyzer::deleteEverythingExceptCharacters($linkText);
     }
 
-    /**
-     * @param $array
-     * @return array
-     */
     public static function prepareDataGraph($array): array
     {
         $result = [];
@@ -474,10 +458,6 @@ class TextAnalyzer extends Model
         return $result;
     }
 
-    /**
-     * @param $html
-     * @return string
-     */
     public static function clearHTMLFromLinks($html): string
     {
         $html = str_replace(["\n", "\r", "\t"], " ", $html);
@@ -491,10 +471,6 @@ class TextAnalyzer extends Model
         return trim($html);
     }
 
-    /**
-     * @param $text
-     * @return array
-     */
     public static function countWordsInText($text): array
     {
         $wordForms = TextAnalyzer::searchWordForms($text);
@@ -523,30 +499,21 @@ class TextAnalyzer extends Model
         return $result;
     }
 
-    /**
-     * @param $array
-     * @return array
-     */
     public static function searchWordForms($array): array
     {
-        $will = [];
         $array = array_count_values($array);
         asort($array);
         $array = array_reverse($array);
+
         $morphy = new Morphy();
-        $result = [];
         $wordForms = [];
+        $result = [];
+        $will = [];
 
         foreach ($array as $key => $item) {
             if (!in_array($key, $will)) {
                 $will[] = $key;
-
-                $root = $morphy->base($key);
-
-                if ($root == null) {
-                    continue;
-                }
-
+                $root = $morphy->base($key) ?? $key;
                 $result[$root][] = [
                     $key => $item
                 ];
@@ -593,11 +560,6 @@ class TextAnalyzer extends Model
         return $links;
     }
 
-    /**
-     * @param $text
-     * @param $link
-     * @return array
-     */
     public static function mergeTextAndLinks($text, $link): array
     {
         $result = [];
@@ -638,15 +600,10 @@ class TextAnalyzer extends Model
         }
 
         $collect = collect($resultWithDensity);
+
         return $collect->sortByDesc('total')->toArray();
     }
 
-    /**
-     * @param $array
-     * @param $textAr
-     * @param $type
-     * @return array
-     */
     public static function calculateTFIDF($array, $textAr, $type): array
     {
         for ($i = 0; $i < count($array); $i++) {
