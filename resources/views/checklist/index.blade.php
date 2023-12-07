@@ -1356,19 +1356,19 @@
                         '            </div>' +
                         '            <div class="d-flex col-4 flex-column align-items-end">' +
                         '                <div>' +
-                        '                    <a target="_blank" href="{{ route('relevance.history') }}" class="text-dark" data-toggle="tooltip" data-placement="top"' +
-                        '                       title="Анализ релевантности"><i class="fa-regular fa-star"></i></a>' +
+                        '                    <a target="_blank" href="{{ route('relevance.history') }}" data-target="' + v.url + '" class="fa-regular fa-star text-dark localstorage-item" data-toggle="tooltip" data-placement="top"' +
+                        '                       title="Анализ релевантности"></a>' +
                         '                </div>' +
                         '                <div style="margin-right: 1px">' +
-                        '                    <a target="_blank" href="/monitoring" class="fa fa-chart-line text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                    <a target="_blank" href="/monitoring" data-target="' + v.url + '" class="fa fa-chart-line text-dark localstorage-item" data-toggle="tooltip" data-placement="top"' +
                         '                       title="Мониторинг позиций"></a>' +
                         '                </div>' +
                         '                <div style="margin-right: 3px">' +
-                        '                    <a target="_blank" href="/meta-tags" class="fa fa-heading text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                    <a target="_blank" href="/meta-tags" data-target="' + v.url + '" class="fa fa-heading text-dark localstorage-item" data-toggle="tooltip" data-placement="top"' +
                         '                       title="Мониторинг метатегов"></a>' +
                         '                </div>' +
                         '                <div>' +
-                        '                    <a target="_blank" href="/site-monitoring" class="fa fa-edit text-dark" data-toggle="tooltip" data-placement="top"' +
+                        '                    <a target="_blank" href="{{ route('site.monitoring') }}" data-target="' + v.url + '" class="fa fa-edit text-dark localstorage-item" data-toggle="tooltip" data-placement="top"' +
                         '                       title="Мониторинг сайтов"></a>' +
                         '                </div>' +
                         '            </div>' +
@@ -2153,6 +2153,10 @@
                 })
 
             }
+
+            $(document).on('click', '.localstorage-item', function () {
+                localStorage.setItem('redbox_localstorage_item', $(this).attr('data-target'))
+            })
         </script>
     @endslot
 @endcomponent

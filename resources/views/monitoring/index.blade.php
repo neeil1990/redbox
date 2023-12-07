@@ -108,6 +108,7 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/search.js') }}"></script>
         <!-- Moment js -->
         <script src="{{ asset('plugins/moment/moment-with-locales.min.js') }}"></script>
         <!-- Papa parse -->
@@ -565,6 +566,8 @@
                     $('.pagination').addClass('pagination-sm');
                 },
             });
+
+            search(table)
 
             $('.column-visible').click(function (e) {
                 e.preventDefault();

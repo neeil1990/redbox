@@ -875,6 +875,7 @@
         <script src="{{ asset('plugins/datatables/date-sort.js') }}"></script>
         <script src="{{ asset('plugins/keyword-generator/js/lib/clipboard.min.js') }}"></script>
         <script src="{{ asset('plugins/clipboard/index.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/search.js') }}"></script>
 
         <script>
             let words = {
@@ -1015,7 +1016,7 @@
                 },
             ];
 
-            $('#main_history_table').DataTable({
+            let historyTable = $('#main_history_table').DataTable({
                 ajax: "{{ route('get.relevance.projects') }}",
                 columns: columns,
                 paging: true,
@@ -1411,10 +1412,13 @@
             });
 
             $('#main_history_table').css({
-                width: '100%'
+                width: '100%',
             })
 
             $('#main_history_table').wrap('<div style="width: 100%; overflow: auto"></div>')
+
+            search(historyTable)
+
             $(".dt-button").addClass('btn btn-secondary')
 
             $('.repeat-scan-unique-sites').on('click', function () {
