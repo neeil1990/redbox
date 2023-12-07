@@ -1230,7 +1230,7 @@
                                                     let cell = $(this);
                                                     let clipboard = new ClipboardJS(cell[0], {
                                                         text: function () {
-                                                            return cell.text();
+                                                            return cell.text().trim().replaceAll('  ', ' ');
                                                         }
                                                     });
 
@@ -1407,13 +1407,14 @@
                     })
 
                     refreshMethods()
-
-                    $('#main_history_table').css({
-                        width: '100%'
-                    })
                 }
             });
 
+            $('#main_history_table').css({
+                width: '100%'
+            })
+
+            $('#main_history_table').wrap('<div style="width: 100%; overflow: auto"></div>')
             $(".dt-button").addClass('btn btn-secondary')
 
             $('.repeat-scan-unique-sites').on('click', function () {

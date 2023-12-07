@@ -80,7 +80,7 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
                     let cell = $(this);
                     let clipboard = new ClipboardJS(cell[0], {
                         text: function () {
-                            return cell.text().trim();
+                            return cell.text().trim().replaceAll('  ', ' ');
                         }
                     });
 
