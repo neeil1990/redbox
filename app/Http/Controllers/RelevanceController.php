@@ -119,58 +119,6 @@ class RelevanceController extends Controller
         ]);
     }
 
-    public static function successResponse($relevance): JsonResponse
-    {
-        $config = RelevanceAnalysisConfig::first();
-
-        $result = [
-            'clouds' => [
-                'competitors' => [
-                    'totalTf' => $relevance->competitorsCloud['totalTf'],
-                    'textTf' => $relevance->competitorsCloud['textTf'],
-                    'linkTf' => $relevance->competitorsCloud['linkTf'],
-
-                    'textAndLinks' => $relevance->competitorsTextAndLinksCloud,
-                    'links' => $relevance->competitorsLinksCloud,
-                    'text' => $relevance->competitorsTextCloud,
-                ],
-                'mainPage' => [
-                    'totalTf' => $relevance->mainPage['totalTf'],
-                    'textTf' => $relevance->mainPage['textTf'],
-                    'linkTf' => $relevance->mainPage['linkTf'],
-                    'textWithLinks' => $relevance->mainPage['textWithLinks'],
-                    'links' => $relevance->mainPage['links'],
-                    'text' => $relevance->mainPage['text'],
-                ]
-            ],
-            'avg' => [
-                'countWords' => $relevance->countWords / $relevance->countNotIgnoredSites,
-                'countSymbols' => $relevance->countSymbols / $relevance->countNotIgnoredSites,
-            ],
-            'mainPage' => [
-                'countWords' => $relevance->countWordsInMyPage,
-                'countSymbols' => $relevance->countSymbolsInMyPage,
-            ],
-            'unigramTable' => $relevance->wordForms,
-            'history_id' => $relevance->params['result_id'],
-            'sites' => $relevance->sites,
-            'sitesAVG' => $relevance->avg,
-            'tfCompClouds' => $relevance->tfCompClouds,
-            'phrases' => $relevance->phrases,
-            'avgCoveragePercent' => $relevance->avgCoveragePercent ?? null,
-            'recommendations' => $relevance->recommendations ?? null,
-            'ltp_count' => $config->ltp_count,
-            'ltps_count' => $config->ltps_count,
-            'recommendations_count' => $config->recommendations_count,
-            'scanned_sites_count' => $config->scanned_sites_count,
-            'hide_ignored_domains' => $config->hide_ignored_domains,
-            'boostPercent' => $config->boostPercent,
-            'searchPassages' => $relevance->request['searchPassages'] ?? false
-        ];
-
-        return response()->json($result);
-    }
-
     public function createQueue(): View
     {
         $config = RelevanceAnalysisConfig::first();

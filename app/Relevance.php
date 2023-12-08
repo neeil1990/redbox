@@ -526,7 +526,6 @@ class Relevance
         $array = explode(' ', $this->competitorsTextAndLinks);
         $array = array_count_values($array);
         arsort($array);
-
         foreach ($array as $key => $item) {
             if (!in_array($key, $this->ignoredWords)) {
                 $this->ignoredWords[] = $key;
@@ -975,6 +974,7 @@ class Relevance
                     }
                 }
             }
+
             if ($numberOccurrences > 0) {
                 $countOccurrences = $numberTextOccurrences + $numberLinkOccurrences;
                 $tf = round($countOccurrences / $totalCount, 6);

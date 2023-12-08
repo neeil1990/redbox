@@ -15,6 +15,7 @@ use App\ChecklistNotification;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\MainProject;
+use App\RelevanceHistoryResult;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 

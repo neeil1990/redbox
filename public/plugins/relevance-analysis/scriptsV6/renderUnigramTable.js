@@ -93,6 +93,7 @@ function renderUnigramTable(unigramTable, count, words, resultId = 0, searchPass
                 });
             }
         });
+
         $.each($(".dt-buttons"), function (key, value) {
             if (key === 1) {
                 $(this).append("<a class='btn btn-secondary click_tracking' data-click='Child Words' href='/show-child-words/" + resultId + "' target='_blank'>Child Words</a>");
