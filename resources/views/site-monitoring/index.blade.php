@@ -193,9 +193,12 @@
         <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/search.js') }}"></script>
+
         <script defer>
+            let table
             $(document).ready(function () {
-                $('#table').DataTable({
+                table = $('#table').DataTable({
                     language: {
                         "paginate": {
                             "first": "«",
@@ -214,6 +217,8 @@
                         $('#table').wrap("<div style='width: 100%; overflow: auto' id='wrap-block'></div>")
                     }
                 });
+
+                search(table)
             });
 
 

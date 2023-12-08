@@ -40,11 +40,15 @@
         <!-- Toastr -->
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 
+        <script src="{{ asset('plugins/datatables/search.js') }}"></script>
+
         <script>
             toastr.options = {
                 "preventDuplicates": true,
                 "timeOut": "1500"
             };
+
+            search(null, false)
         </script>
     @endslot
 
