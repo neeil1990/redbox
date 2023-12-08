@@ -1417,7 +1417,7 @@
 
             $('#main_history_table').wrap('<div style="width: 100%; overflow: auto"></div>')
 
-            search(historyTable)
+            search(historyTable, true, true)
 
             $(".dt-button").addClass('btn btn-secondary')
 

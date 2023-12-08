@@ -13,7 +13,6 @@
             .stub-style {
                 width: 85px;
                 height: 20px;
-                font-size: 1rem;
                 letter-spacing: 0;
                 float: left
             }
@@ -25,11 +24,6 @@
 
             .width {
                 width: 150px;
-                font-size: 1.2rem;
-            }
-
-            .updated-font-size {
-                font-size: 1.2rem;
             }
 
             .card ol {
@@ -166,7 +160,7 @@
                                 </h3>
                             </div>
                             <div class="card-body row">
-                                <div class="d-flex col-6 align-items-center"
+                                <div class="d-flex col-xs-12 col-xl-6 align-items-center"
                                      style="margin-top: 10px;">
                                     <button class="btn btn-secondary relevance-star mr-1" data-toggle="modal"
                                             data-target="#exampleModal">
@@ -207,26 +201,28 @@
                                         Добавить шаблон
                                     </button>
                                 </div>
-                                <div class="form-group col-2">
-                                    <label for="count">Количество проектов</label>
-                                    <select name="count" id="count" class="custom custom-select">
-                                        <option value="3">3</option>
-                                        <option value="5">5</option>
-                                        <option value="10">10</option>
-                                        <option value="20">20</option>
-                                        <option value="30">30</option>
-                                        <option value="40">40</option>
-                                        <option value="50">50</option>
-                                        <option value="60">60</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-2">
-                                    <label for="name">URL проекта</label>
-                                    <input type="text" id="name" name="name" class="form form-control">
-                                </div>
-                                <div class="form-group col-2">
-                                    <label for="tags">Фильтр по меткам</label>
-                                    <input type="text" id="tags" name="tags" class="form form-control">
+                                <div class="d-flex col-xs-12 col-xl-6 align-items-center justify-content-between">
+                                    <div class="form-group">
+                                        <label for="count">Количество проектов</label>
+                                        <select name="count" id="count" class="custom custom-select">
+                                            <option value="3">3</option>
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="20">20</option>
+                                            <option value="30">30</option>
+                                            <option value="40">40</option>
+                                            <option value="50">50</option>
+                                            <option value="60">60</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="name">URL проекта</label>
+                                        <input type="text" id="name" name="name" class="form form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tags">Фильтр по меткам</label>
+                                        <input type="text" id="tags" name="tags" class="form form-control">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -292,7 +288,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Перенести проект в архив ?
+                    Поместить проект в архив ?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="move-to-archive"
@@ -979,7 +975,7 @@
                                     '            </div>' +
                                     '        </div>' +
                                     '    </div>' +
-                                    '    <div class="card-body updated-font-size">' +
+                                    '    <div class="card-body">' +
                                     '        <div class="d-flex">' +
                                     '            <div class="d-flex flex-column col-8">' +
                                     '                <div class="d-flex row">' +
@@ -1000,8 +996,6 @@
                                     '                <div class="d-flex row">' +
                                     '                    <span class="width">Просрочены:</span> <span>' + v.expired + '</span>' +
                                     '                </div>' +
-                                    '            </div>' +
-                                    '            <div class="d-flex col-4 flex-column align-items-end">' +
                                     '            </div>' +
                                     '        </div>' +
                                     '        <div class="row mt-3">' +
@@ -1331,8 +1325,12 @@
                         '                </button>' +
                         '            </div>' +
                         '        </div>' +
+                        
+                        '        <div>' +
+                        '        Кол-во слов, средняя позиция, топ 10, топ 100' +
+                        '        </div>' +
                         '    </div>' +
-                        '    <div class="card-body updated-font-size">' +
+                        '    <div class="card-body">' +
                         '        <div class="d-flex">' +
                         '            <div class="d-flex flex-column col-8">' +
                         '                <div class="d-flex row">' +
@@ -1565,7 +1563,7 @@
 
                 if (stub) {
                     return '<li data-id="' + id + '" class="default">' +
-                        '    <span class="text-muted" style="font-size: 1rem; letter-spacing: 0">Задача №: ' + id + '</span>' +
+                        '    <span class="text-muted" style="letter-spacing: 0">Задача №: ' + id + '</span>' +
                         '    <div class="tools d-flex" style="float: right">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default add-new-pre-subtask-stub" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
