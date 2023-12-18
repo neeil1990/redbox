@@ -49,7 +49,9 @@ class PublicController extends Controller
 
         try {
             $behavior = Behavior::where('domain', $domain)->firstOrFail();
-            $phrases = $behavior->phrases()->where('status', 0)->where('code', $code)->firstOrFail();
+            $phrases = $behavior->phrases()->where('status', 0)->sortOrder()->firstOrFail();
+            if($phrases['code'] !== $code)
+                throw new ModelNotFoundException();
         } catch (ModelNotFoundException $e) {
             return back()->withErrors(['code' => __('Code not found!')])->withInput();
         }
