@@ -27,7 +27,7 @@ class DeleteUsersNoVerify
      */
     public function handle($request, Closure $next)
     {
-        $this->user->deleteNoVerify();
+        //$this->user->deleteNoVerify();
 
         return $next($request);
     }

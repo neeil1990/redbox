@@ -69,7 +69,7 @@ class PublicController extends Controller
         header('Access-Control-Allow-Origin: *');
 
         $behavior = Behavior::where('domain', $site)->firstOrFail();
-        $phrases = $behavior->phrases()->where('status', 0)->firstOrFail();
+        $phrases = $behavior->phrases()->where('status', 0)->sortOrder()->firstOrFail();
         return $phrases;
     }
 
