@@ -100,8 +100,8 @@
                         @foreach($projects as $item)
                             <tr id="story-id-{{ $item->id }}">
                                 <td>
-                                        <span class="project_name" style="cursor: pointer"
-                                              data-order="{{ $item->id }}">{{ $item->name }}</span>
+                                    <span class="project_name" style="cursor: pointer"
+                                          data-order="{{ $item->id }}">{{ $item->name }}</span>
                                 </td>
                                 <td id="project-{{ $item->id }}">
                                     @foreach($item->relevanceTags as $tag)
