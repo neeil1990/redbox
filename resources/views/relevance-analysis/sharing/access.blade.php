@@ -748,6 +748,16 @@
                             "previous": "«"
                         },
                     },
+                    aoColumnDefs: [
+                        {
+                            bSortable: false,
+                            aTargets: [1, 2, 7]
+                        },
+                        {
+                            type: "num",
+                            targets: [3, 4, 5]
+                        }
+                    ],
                     "oLanguage": {
                         "sSearch": "{{ __('Search') }}:",
                         "sLengthMenu": "{{ __('show') }} _MENU_ {{ __('records') }}",

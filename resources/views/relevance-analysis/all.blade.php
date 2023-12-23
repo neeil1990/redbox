@@ -1021,6 +1021,10 @@
                         {
                             bSortable: false,
                             aTargets: [1, 2, 7]
+                        },
+                        {
+                            type: "num",
+                            targets: [3, 4, 5]
                         }
                     ],
                     language: {

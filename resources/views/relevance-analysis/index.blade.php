@@ -980,6 +980,9 @@
         <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
 
+        <script src="{{ asset('plugins/keyword-generator/js/lib/clipboard.min.js') }}"></script>
+        <script src="{{ asset('plugins/clipboard/index.min.js') }}"></script>
+
         <script src="{{ asset('plugins/canvasjs/js/canvasjs.js') }}"></script>
         <script src="{{ asset('plugins/jqcloud/js/jqcloud-1.0.4.min.js') }}"></script>
         <script src="{{ asset('plugins/relevance-analysis/scriptsV6/renderClouds.js') }}"></script>
