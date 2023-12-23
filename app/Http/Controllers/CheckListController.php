@@ -11,6 +11,7 @@ use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\DomainMonitoring;
 use App\MetaTag;
+use App\MonitoringDataTableColumnsProject;
 use App\ProjectRelevanceHistory;
 use App\User;
 use GuzzleHttp\Client;
@@ -139,29 +140,42 @@ class CheckListController extends Controller
         return 'Успешно';
     }
 
-    public function storeStubs(Request $request): string
+    public function storeStub(Request $request): string
     {
         if ($request->input('action') === 'all') {
             ChecklistStubs::create([
                 'user_id' => Auth::id(),
+                'name' => $request->input('name'),
                 'tree' => json_encode($request->input('stubs')),
                 'type' => 'classic',
             ]);
 
             ChecklistStubs::create([
                 'user_id' => Auth::id(),
+                'name' => $request->input('name'),
                 'tree' => json_encode($request->input('stubs')),
                 'type' => 'personal',
             ]);
         } else {
             ChecklistStubs::create([
                 'user_id' => Auth::id(),
+                'name' => $request->input('name'),
                 'tree' => json_encode($request->input('stubs')),
                 'type' => $request->input('action'),
             ]);
         }
 
         return 'Успешно';
+    }
+
+    public function editStub(Request $request): JsonResponse
+    {
+        ChecklistStubs::where('id', $request->input('id'))
+            ->update([
+                'name' => $request->input('name')
+            ]);
+
+        return response()->json([]);
     }
 
     public function getChecklists(Request $request): JsonResponse
@@ -200,6 +214,14 @@ class CheckListController extends Controller
             ->with('labels')
             ->get(['icon', 'url', 'id'])
             ->toArray();
+
+        $user = Auth::user();
+        foreach ($lists as $key => $list) {
+            $project = $user->monitoringProjects()->where('url', parse_url($list['url'])['host'])->first();
+            if ($project) {
+                $lists[$key]['statistics'] = MonitoringDataTableColumnsProject::find($project->id);
+            }
+        }
 
         $paginate = (int)ceil($sql->count() / $request->countOnPage);
 
@@ -517,10 +539,24 @@ class CheckListController extends Controller
             ->get();
     }
 
-    public function getClassicStubs()
+    public function getClassicStubs(Request $request): JsonResponse
     {
-        return ChecklistStubs::where('type', 'classic')
+        $sql = ChecklistStubs::where('type', 'classic');
+
+        if ($request->input('name')) {
+            $sql->where('name', 'like', "%$request->name%");
+        }
+
+        $stubs = $sql->skip($request->input('skip', 0))
+            ->take($request->input('count', 3))
             ->get();
+
+        $paginate = (int)ceil($sql->count() / $request->input('count', 3));
+
+        return response()->json([
+            'stubs' => $stubs,
+            'paginate' => $paginate
+        ]);
     }
 
     public function getPersonalStubs()

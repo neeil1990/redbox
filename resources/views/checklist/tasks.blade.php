@@ -32,7 +32,6 @@
             }
 
             #tasks li, #new-tasks li, #new-sub-tasks li, #stubs li, .stubs > .example {
-                font-family: "Trebuchet MS", "Lucida Sans";
                 padding: 7px 20px;
                 border-radius: 5px;
                 margin-bottom: 10px;
@@ -682,6 +681,7 @@
             $(document).on('click', '#add-new-sub-task', function () {
                 let id = getRandomInt(99999)
                 $('#new-sub-tasks').append(stub(id))
+                refreshTooltips()
 
                 $('.pre-description').summernote({
                     minHeight: 350,
@@ -742,33 +742,7 @@
             $('#add-new-task').on('click', function () {
                 let id = getRandomInt(99999)
                 $('#new-tasks').append(stub(id))
-
-                $('.pre-description').summernote({
-                    callbacks: {
-                        onChange: function (contents, $editable) {
-                            editedID = $editable.parents().eq(2).find('textarea:first-child').attr('data-id')
-                            clearTimeout(editedTimeout)
-                            editedTimeout = setTimeout(() => {
-                                $.ajax({
-                                    type: 'post',
-                                    url: "{{ route('edit.checklist.task') }}",
-                                    data: {
-                                        id: editedID,
-                                        type: 'description',
-                                        value: contents,
-                                    },
-                                    success: function (response) {
-                                        successMessage('Успешно')
-                                    },
-                                    error: function (response) {
-                                        errorMessage(response.responseJSON.errors)
-                                    }
-                                })
-                            }, 1000)
-                        }
-                    },
-                    minHeight: 350,
-                })
+                refreshTooltips()
             })
 
             $(document).on('click', '.remove-stub', function () {
@@ -1037,6 +1011,7 @@
                 let randomID = getRandomInt(999999)
 
                 $('#subtasks-' + ID).append(stub(randomID))
+                refreshTooltips()
             })
 
             $(document).on('click', '.add-new-subtask', function () {
@@ -1046,6 +1021,7 @@
                 $('#add-new-task').attr('disabled', true)
                 $('.add-new-subtask').hide(300)
                 $('#subtasks-' + ID).append(stub(randomID))
+                refreshTooltips()
             })
 
             $(document).on('click', '.remove-real-task', function () {

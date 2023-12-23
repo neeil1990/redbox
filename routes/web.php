@@ -436,7 +436,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/store-checklist', 'CheckListController@store')->name('store.checklist');
     Route::post('/update-checklist', 'CheckListController@update')->name('update.checklist');
     Route::post('/add-subtasks', 'CheckListController@addSubtasks')->name('add.new.subtasks');
-    Route::post('/store-stubs', 'CheckListController@storeStubs')->name('store.stubs');
+    Route::post('/store-stub', 'CheckListController@storeStub')->name('store.stub');
+    Route::post('/edit-stub', 'CheckListController@editStub')->name('edit.stub');
     Route::post('/get-checklist', 'CheckListController@getChecklists')->name('get.checklists');
     Route::get('/move-checklist-to-archive/{project}', 'CheckListController@inArchive')->name('in.archive');
     Route::get('/restore-checklist/{project}', 'CheckListController@restore')->name('restore.checklist');
@@ -457,7 +458,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/get-checklists-stubs', 'CheckListController@getStubs')->name('checklist.stubs');
     Route::get('/remove-checklist-stub/{stub}', 'CheckListController@removeStub')->name('checklist.remove.stub');
-    Route::get('/get-checklists-classic-stubs', 'CheckListController@getClassicStubs')->name('checklist.classic.stubs');
+    Route::post('/get-checklists-classic-stubs', 'CheckListController@getClassicStubs')->name('checklist.classic.stubs');
     Route::get('/get-checklists-personal-stubs', 'CheckListController@getPersonalStubs')->name('checklist.personal.stubs');
 
     Route::get('/checklist/get-analyse-relevance-projects', 'CheckListController@relevanceProjects')->name('checklist.relevance.projects');

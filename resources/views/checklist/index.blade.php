@@ -14,7 +14,6 @@
                 width: 85px;
                 height: 20px;
                 letter-spacing: 0;
-                float: left
             }
 
             i {
@@ -51,7 +50,6 @@
                 -2px -2px 5px 0 rgba(0, 0, 0, .1),
                 2px 2px 5px 0 rgba(0, 0, 0, .1),
                 -2px 2px 5px 0 rgba(0, 0, 0, .1);
-                font-size: 20px;
                 letter-spacing: 2px;
                 transition: 0.3s;
             }
@@ -89,7 +87,7 @@
                 padding-right: 10px;
                 padding-top: 10px;
                 overflow: auto;
-                max-height: 460px;
+                max-height: 530px;
             }
 
             .accordion.stubs.card.card-body {
@@ -205,6 +203,7 @@
                                     <div class="form-group">
                                         <label for="count">Количество проектов</label>
                                         <select name="count" id="count" class="custom custom-select">
+                                            <option value="1">1</option>
                                             <option value="3">3</option>
                                             <option value="5">5</option>
                                             <option value="10">10</option>
@@ -255,7 +254,8 @@
 
                         <div id="lists" class="row d-flex"></div>
 
-                        <p id="empty-message" style="display: none">У вас нет активных проектов</p>
+                        <p id="empty-message" style="display: none">У вас нет активных проектов с заданными
+                            фильтрами</p>
                         <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-profile" role="tabpanel"
@@ -263,7 +263,46 @@
                     @if(\App\User::isUserAdmin())
                         <div class="tab-pane fade" id="classic-tabs-stub" role="tabpanel"
                              aria-labelledby="classic-stubs">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        Фильтры
+                                    </h3>
+                                </div>
+                                <div class="card-body row">
+                                    <div class="d-flex col-xs-12 col-xl-6 align-items-center"
+                                         style="margin-top: 10px;">
+                                        <button id="create-new-stub" class="btn btn-secondary" data-toggle="modal"
+                                                data-target="#createNewSTub">
+                                            Добавить шаблон
+                                        </button>
+                                    </div>
+                                    <div class="d-flex col-xs-12 col-xl-6 align-items-center justify-content-end">
+                                        <div class="form-group">
+                                            <label for="count-classic-stub">Количество шаблонов</label>
+                                            <select name="count-classic-stub" id="count-classic-stub"
+                                                    class="custom custom-select">
+                                                <option value="1">1</option>
+                                                <option value="3">3</option>
+                                                <option value="5">5</option>
+                                                <option value="10">10</option>
+                                                <option value="20">20</option>
+                                                <option value="30">30</option>
+                                                <option value="40">40</option>
+                                                <option value="50">50</option>
+                                                <option value="60">60</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group ml-3">
+                                            <label for="name-classic-stub">Название шаблона</label>
+                                            <input type="text" id="name-classic-stub" name="name-classic-stub"
+                                                   class="form form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div id="classic-stubs-place" class="d-flex row"></div>
+                            <ul class="pagination d-flex justify-content-end w-100" id="classic-pagination"></ul>
                         </div>
                     @endif
                     <div class="tab-pane fade" id="personal-tabs-stub" role="tabpanel"
@@ -311,26 +350,13 @@
                 </div>
                 <div class="modal-body d-flex">
                     <div class="col-12">
-
-                        <div class="mb-3">
-                            <label for="save-stub">Тип шаблона</label>
-                            <select name="save-stub" id="save-stub" class="custom-select">
-                                <option value="no" selected>Не сохранять шаблон</option>
-                                <option value="personal">Личный шаблон</option>
-                                @if(\App\User::isUserAdmin())
-                                    <option value="classic">Базовый шаблон</option>
-                                    <option value="all">Базовый и личный шаблон</option>
-                                @endif
-                            </select>
-                        </div>
-
                         <div class="mb-3" style="display: none">
                             <label for="dynamic-stub">Динамичный шаблон</label>
                             <span class="__helper-link ui_tooltip_w">
                                 <i class="fa fa-question-circle" style="color: grey"></i>
                                 <span class="ui_tooltip __bottom">
                                     <span class="ui_tooltip_content" style="width: 300px">
-                                        Если шаблон динамичный, то он будет иметь такую же структуру задач, которую имеет ваш проект
+                                        Динамичный шаблон отслеживает задачи и вложенность задач у создаваемого проекта и имеет идентичную иерархию задач
                                     </span>
                                 </span>
                             </span>
@@ -359,7 +385,30 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <div></div>
+                    <div>
+                        <label for="save-stub">Сохранение шаблона</label>
+                        <span class="__helper-link ui_tooltip_w">
+                                <i class="fa fa-question-circle" style="color: grey"></i>
+                                <span class="ui_tooltip __top">
+                                    <span class="ui_tooltip_content" style="width: 300px">
+                                        <p>Личный шаблон - это шаблон который доступен только вам</p>
+                                        @if(\App\User::isUserAdmin())
+                                            <p class="text-info">
+                                                Базовы шаблон - это шаблон который доступен всем пользователям (эта часть подсказки видна только админам)
+                                            </p>
+                                        @endif
+                                    </span>
+                                </span>
+                            </span>
+                        <select name="save-stub" id="save-stub" class="custom-select">
+                            <option value="no" selected>Не сохранять шаблон</option>
+                            <option value="personal">Личный шаблон</option>
+                            @if(\App\User::isUserAdmin())
+                                <option value="classic">Базовый шаблон</option>
+                                <option value="all">Базовый и личный шаблон</option>
+                            @endif
+                        </select>
+                    </div>
                     <div>
                         <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
                         <button type="button" class="btn btn-success" id="save-new-checklist">
@@ -397,6 +446,10 @@
                 </div>
                 <div class="modal-body d-flex">
                     <div class="col-12">
+                        <div class="form-group">
+                            <label for="stub-name">Название шаблона</label>
+                            <input type="text" class="form form-control" id="stub-name" name="stub-name">
+                        </div>
                         <div class="form-group block-from-hide">
                             <label for="save-stub-action">Выбор сохранения</label>
                             <select name="save-stub-action" id="save-stub-action" class="custom-select">
@@ -410,7 +463,7 @@
                         <div class="form-group mt-4">
                             <div class="d-flex justify-content-between">
                                 <label for="stubs">Настройте ваш шаблон:</label>
-                                <button class="btn btn-secondary" id="add-new-stub">Добавить</button>
+                                <button class="btn btn-secondary" id="add-new-stub">Добавить пункт</button>
                             </div>
                             <div id="accordionExample">
                                 <ol id="stubs"></ol>
@@ -1229,7 +1282,15 @@
                 $('.page-item.active').removeClass('active')
                 $(this).parent().addClass('active')
 
-                loadChecklists($(this).attr('data-id'), false)
+                if ($(this).attr('data-type') === 'pagination') {
+                    loadChecklists($(this).attr('data-id'), false)
+                }
+                if ($(this).attr('data-type') === 'classic') {
+                    loadClassicStubs($(this).attr('data-id'), false)
+                }
+                if ($(this).attr('data-type') === 'personal') {
+                    loadClassicStubs($(this).attr('data-id'), false)
+                }
             })
 
             function loadChecklists(page = 0, renderPaginate = false) {
@@ -1252,7 +1313,7 @@
                     success: function (response) {
                         renderChecklists(response.lists)
                         if (renderPaginate) {
-                            renderPagination(response)
+                            renderPagination(response.paginate, '#pagination', 'pagination')
                         }
                     },
                     error: function (response) {
@@ -1261,22 +1322,22 @@
                 })
             }
 
-            function renderPagination(response) {
+            function renderPagination(paginate, target, type) {
                 let pagination = ''
 
-                if (response.paginate > 1) {
-                    for (let i = 0; i < response.paginate; i++) {
+                if (paginate > 1) {
+                    for (let i = 0; i < paginate; i++) {
                         let html = i + 1
 
                         if (i === 0) {
-                            pagination += '<li class="page-item active"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                            pagination += '<li class="page-item active"><a href="#" class="page-link" data-type="' + type + '" data-id="' + i + '">' + html + '</a></li>'
                         } else {
-                            pagination += '<li class="page-item"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
+                            pagination += '<li class="page-item"><a href="#" class="page-link" data-type="' + type + '" data-id="' + i + '">' + html + '</a></li>'
                         }
                     }
                 }
 
-                $('#pagination').html(pagination)
+                $(target).html(pagination)
             }
 
             function renderChecklists(lists) {
@@ -1294,6 +1355,7 @@
                     let labels =
                         '<div class="col-8" data-action="labels" data-id="' + v.id + '">' +
                         '    <ul class="fc-color-picker">'
+                    let statistics = ''
 
                     $.each(v.labels, function (index, label) {
                         labels +=
@@ -1307,6 +1369,13 @@
                     labels += '</ul></div>'
 
                     options += '<option value="' + v.id + '">' + v.url + '</option>'
+
+                    if (v.statistics) {
+                        statistics += '<div> Кол-во слов: ' + v.statistics.words + '</div>' +
+                            '<div> Cр.позиция: ' + v.statistics.middle + '</div>' +
+                            '<div> Топ 10: ' + v.statistics.top10 + '% </div>' +
+                            '<div> Топ 100: ' + v.statistics.top100 + '% </div>'
+                    }
 
                     cards +=
                         '<div class="col-4"><div class="card">' +
@@ -1325,14 +1394,10 @@
                         '                </button>' +
                         '            </div>' +
                         '        </div>' +
-                        
-                        '        <div>' +
-                        '        Кол-во слов, средняя позиция, топ 10, топ 100' +
-                        '        </div>' +
                         '    </div>' +
                         '    <div class="card-body">' +
                         '        <div class="d-flex">' +
-                        '            <div class="d-flex flex-column col-8">' +
+                        '            <div class="d-flex flex-column col-6">' +
                         '                <div class="d-flex row">' +
                         '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
                         '                </div>' +
@@ -1352,7 +1417,8 @@
                         '                    <span class="width">Просроченые:</span> <span>' + v.expired + '</span>' +
                         '                </div>' +
                         '            </div>' +
-                        '            <div class="d-flex col-4 flex-column align-items-end">' +
+                        '            <div class="d-flex col-4 flex-column">' + statistics + '</div>' +
+                        '            <div class="d-flex col-2 flex-column align-items-end">' +
                         '                <div>' +
                         '                    <a target="_blank" href="{{ route('relevance.history') }}" data-target="' + v.url + '" class="fa-regular fa-star text-dark localstorage-item" data-toggle="tooltip" data-placement="top"' +
                         '                       title="Анализ релевантности"></a>' +
@@ -1562,8 +1628,8 @@
                 let date = new Date().toISOString().slice(0, 16);
 
                 if (stub) {
-                    return '<li data-id="' + id + '" class="default">' +
-                        '    <span class="text-muted" style="letter-spacing: 0">Задача №: ' + id + '</span>' +
+                    return '<li data-id="' + id + '" class="default d-flex justify-content-between" style="height: 46px">' +
+                        '    <span class="text-muted d-flex justify-content-center align-items-center" style="letter-spacing: 0">Задача №: ' + id + '</span>' +
                         '    <div class="tools d-flex" style="float: right">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default add-new-pre-subtask-stub" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
@@ -1677,9 +1743,10 @@
 
                 $.ajax({
                     type: 'post',
-                    url: "{{ route('store.stubs') }}",
+                    url: "{{ route('store.stub') }}",
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
+                        name: $('#stub-name').val(),
                         stubs: stubs,
                         action: $('#save-stub-action').val()
                     },
@@ -1825,6 +1892,23 @@
             })
 
             $(document).on('click', '#classic-stubs', function () {
+                loadClassicStubs()
+            })
+
+            $(document).on('change', '#count-classic-stub', function () {
+                loadClassicStubs()
+            })
+
+            let loadTimeout
+            $(document).on('input', '#name-classic-stub', function () {
+                clearTimeout(loadTimeout)
+
+                loadTimeout = setTimeout(() => {
+                    loadClassicStubs()
+                }, 300)
+            })
+
+            function loadClassicStubs(page = 0, renderPagionate = true) {
                 $('#custom-tabs-three-profile').html('')
                 $('#classic-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
@@ -1833,27 +1917,23 @@
                 )
 
                 $.ajax({
-                    type: 'get',
                     url: "{{ route('checklist.classic.stubs') }}",
-                    success: function (stubs) {
-                        let html = ''
-                        if (stubs.length > 0) {
-                            $.each(stubs, function (index, task) {
-                                let button = '<button class="btn btn-sm btn-default remove-stub" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
-                                html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
-                                html += generateNestedStubs(JSON.parse(task.tree))
-                                html += button
-                                html += '</ol>'
-                            });
-                        } else {
-                            html = '<p>Базовые шаблоны отсутсвуют</p>'
-                        }
-
+                    type: 'post',
+                    data: {
+                        name: $('#name-classic-stub').val(),
+                        count: $('#count-classic-stub').val(),
+                        skip: page * $('#count-classic-stub').val()
+                    },
+                    success: function (response) {
                         $('#classic-stubs-loader').remove()
-                        $('#classic-stubs-place').html(html)
+                        $('#classic-stubs-place').html(renderStubsHtml(response.stubs))
+
+                        if (renderPagionate) {
+                            renderPagination(response.paginate, '#classic-pagination', 'classic')
+                        }
                     }
                 })
-            })
+            }
 
             $(document).on('click', '#personal-stubs', function () {
                 $('#custom-tabs-three-profile').html('')
@@ -1867,22 +1947,48 @@
                     type: 'get',
                     url: "{{ route('checklist.personal.stubs') }}",
                     success: function (stubs) {
-                        let html = ''
+                        $('#personal-stubs-place').html(renderStubsHtml(stubs))
+                    }
+                })
+            })
 
-                        if (stubs.length > 0) {
-                            $.each(stubs, function (index, stub) {
-                                html += '<ol class="stubs card card-body col-4 mt-4" data-id="' + index + '">'
-                                html += generateNestedStubs(JSON.parse(stub.tree), true)
-                                html += '<button class="btn btn-sm btn-default remove-stub" data-id="' + stub.id + '">' +
-                                    '<i class="fa fa-trash"></i>' +
-                                    '</button>'
-                                html += '</ol>'
-                            });
-                        } else {
-                            html = '<p>У вас нет личных шаблонов</p>'
-                        }
+            function renderStubsHtml(stubs) {
+                let html = ''
 
-                        $('#personal-stubs-place').html(html)
+                if (stubs.length > 0) {
+                    $.each(stubs, function (index, stub) {
+                        html += '<div class="col-xl-3 col-xs-6"><div class="card">'
+                        html += '<div class="card-header d-flex justify-content-between">'
+                            + '<input type="text" value="' + stub.name + '" data-id="' + stub.id + '" class="form form-control hide-border stub-name col-10">' +
+                            '<button class="btn btn-default remove-stub" data-id="' + stub.id + '"><i class="fa fa-trash"></i></button></div>'
+                        html += '<ol class="stubs card-body" data-id="' + index + '">'
+                        html += generateNestedStubs(JSON.parse(stub.tree), true)
+                        html += '</ol></div></div>'
+                    });
+                } else {
+                    html = '<p>У вас нет личных шаблонов</p>'
+                }
+
+                return html;
+            }
+
+            $(document).on('change', '.stub-name', function () {
+                let ID = $(this).attr('data-id')
+                let name = $(this).val()
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('edit.stub') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: ID,
+                        name: name
+                    },
+                    success: function (response) {
+                        successMessage('Успешно')
+                    },
+                    error: function (response) {
+                        errorMessage(['Ошибка'])
                     }
                 })
             })
@@ -1992,21 +2098,17 @@
                         stub = stub[0] ?? stub
                         $listItem +=
                             ' <li class="default example">' +
-                            '     <div style="height: 20px;">' +
+                            '     <div>' +
                             '         <span class="stub-style text-muted">' +
                             '             Название' +
                             '         </span>' +
-                            '         <div style="float: right" class="d-flex">' +
-                            '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
-                            '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
-                            '         </div>' +
                             '     </div>' +
                             ' </li>'
 
                         let $subList = '<ol class="accordion stubs">';
                         if (stub.subtasks && stub.subtasks.length > 0) {
                             stub.subtasks.forEach(function (subtask) {
-                                $subList += generateNestedStubs(subtask, false);
+                                $subList += generateNestedStubs(subtask, true);
                             });
                         }
 
@@ -2020,10 +2122,6 @@
                         '         <span class="stub-style text-muted">' +
                         '             Название' +
                         '         </span>' +
-                        '         <div style="float: right" class="d-flex">' +
-                        '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
-                        '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
-                        '         </div>' +
                         '     </div>' +
                         ' </li>'
 
