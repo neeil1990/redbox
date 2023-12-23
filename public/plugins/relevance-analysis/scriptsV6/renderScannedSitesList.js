@@ -1,3 +1,20 @@
+function getColor(result, ideal) {
+    let percent = ideal / 100
+
+    let difference = 100 - (result / percent)
+
+    if (difference >= 0 && difference < 15 || difference < 0) {
+        return 'rgba(78,183,103,0.5)';
+    }
+
+    if (difference >= 15 && difference <= 20) {
+        return 'rgba(245,226,170,0.5)';
+    }
+
+    return 'rgba(220,53,69,0.5)';
+}
+
+
 function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, boostPercent, avg = null) {
     $('.sites').show(300)
     let iterator = 1;
@@ -5,30 +22,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
     $.each(sites, function (key, value) {
         let site = value['site']
 
-        let btnGroup =
-            "<div class='btn-group'>" +
-            "        <button type='button' data-toggle='dropdown' aria-expanded='false' class='text-dark btn btn-tool dropdown-toggle'>" +
-            "            <i class='fas fa-external-link-alt'></i>" +
-            "        </button> " +
-            "       <div role='menu' class='dropdown-menu dropdown-menu-left'>" +
-            "            <a target='_blank' class='dropdown-item' href='" + value['site'] + "'>" +
-            "                <i class='fas fa-external-link-alt first-action'></i>" +
-            "           </a>" +
-            "            <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" +
-            "                <i class='fas fa-external-link-alt second-action'></i>" +
-            "           </a>" +
-            "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" +
-            "                  data-target='" + value['site'] + "'>" +
-            "                <i class='fas fa-external-link-alt third-action'></i>" +
-            "                " +
-            "            </span>" +
-            "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" +
-            "                 data-target='" + value['site'] + "'>" +
-            "               <i class='fas fa-external-link-alt fourth-action'></i>" +
-            "               " +
-            "           </span>" +
-            "        </div>" +
-            "</div>";
+        let btnGroup = "<div class='btn-group'>" + "        <button type='button' data-toggle='dropdown' aria-expanded='false' class='text-dark btn btn-tool dropdown-toggle'>" + "            <i class='fas fa-external-link-alt'></i>" + "        </button> " + "       <div role='menu' class='dropdown-menu dropdown-menu-left'>" + "            <a target='_blank' class='dropdown-item' href='" + value['site'] + "'>" + "                <i class='fas fa-external-link-alt first-action'></i>" + "           </a>" + "            <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" + "                <i class='fas fa-external-link-alt second-action'></i>" + "           </a>" + "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" + "                  data-target='" + value['site'] + "'>" + "                <i class='fas fa-external-link-alt third-action'></i>" + "                " + "            </span>" + "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" + "                 data-target='" + value['site'] + "'>" + "               <i class='fas fa-external-link-alt fourth-action'></i>" + "               " + "           </span>" + "        </div>" + "</div>";
 
         let noTop = ''
         let ignorBlock = ''
@@ -42,21 +36,17 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         }
 
         if (value['danger']) {
-            warning = "<td class='bg-warning'>" +
-                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'>" + words.notGetData + "</span>"
-                + ignorBlock +
-                "</td>";
+            warning = "<td class='bg-warning'>" + "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'>" + words.notGetData + "</span>" + ignorBlock + "</td>";
         } else {
-            warning = "<td>" +
-                "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> " + words.successAnalyse + " </span>"
-                + ignorBlock +
-                "</td>"
+            warning = "<td>" + "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> " + words.successAnalyse + " </span>" + ignorBlock + "</td>"
         }
 
+        let color = false
         if (value['mainPage']) {
             if (!value['inRelevance']) {
                 noTop = "<span class='text-muted'>(" + words.notTop + ")</span>"
             }
+            color = true
             className = 'bg-my-site'
         } else if (value['equallyHost']) {
             className = 'bg-warning-elem'
@@ -71,22 +61,29 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
             position = "<td data-order='" + value['position'] + "'> " + value['position'] + " </td>"
         }
 
-        let width = value['width']
-        rows +=
-            "<tr class='render" + ignorClass + "'>" +
-            position +
-            "<td data-target='" + iterator + "' style='max-width: 450px;' class='" + className + "'>" +
-            "   <span class='analyzed-site' id='site-" + value['position'] + "'>" + value['site'] + "</span>"
-            + noTop + btnGroup
-            + "</td>" +
-            "<td data-target='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>" +
-            "<td data-target='" + value['coverage'] + "'>" + value['coverage'] + "% </td>" +
-            "<td data-target='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>" +
-            "<td data-target='" + width + "'>" + width + "</td>" +
-            "<td data-target='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "</td>" +
-            "<td data-target='" + value['countSymbols'] + "'>" + value['countSymbols'] + "</td>" +
-            warning +
-            "</tr>"
+        rows += "<tr class='render" + ignorClass + "'>"
+        rows += position
+        rows += "<td data-target='" + iterator + "' style='max-width: 450px;' class='" + className + "'>"
+        rows += "<span class='analyzed-site' id='site-" + value['position'] + "'>" + value['site'] + "</span>"
+        rows += +noTop + btnGroup
+        rows += +"</td>"
+        if (color) {
+            rows += "<td style='background-color:" + getColor(value.mainPoints, avg.points) + "' data-target='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>"
+            rows += "<td style='background-color:" + getColor(value.coverage, avg.coverage) + "' data-target='" + value['coverage'] + "'>" + value['coverage'] + "% </td>"
+            rows += "<td style='background-color:" + getColor(value.coverageTf, avg.coverageTf) + "' data-target='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>"
+            rows += "<td style='background-color:" + getColor(value.width, avg.width) + "' data-target='" + value.width + "'>" + value.width + "</td>"
+            rows += "<td style='background-color:" + getColor(value.density.densityMainPercent, avg.densityPercent) + "' data-target='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "</td>"
+        } else {
+            rows += "<td data-target='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>"
+            rows += "<td data-target='" + value['coverage'] + "'>" + value['coverage'] + "% </td>"
+            rows += "<td data-target='" + value['coverageTf'] + "'>" + value['coverageTf'] + "% </td>"
+            rows += "<td data-target='" + value.width + "'>" + value.width + "</td>"
+            rows += "<td data-target='" + value['density']['densityMainPercent'] + "'>" + value['density']['densityMainPercent'] + "</td>"
+        }
+
+        rows += "<td data-target='" + value['countSymbols'] + "'>" + value['countSymbols'] + "</td>"
+        rows += warning
+        rows += "</tr>"
 
         iterator++
     });
@@ -99,28 +96,13 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         }
 
         $('#scanned-sites').DataTable({
-            "order": [[0, "asc"]],
-            "pageLength": count,
-            "searching": true,
-            aoColumnDefs: [
-                {
-                    bSortable: false,
-                    aTargets: [8]
-                }
-            ],
-            dom: 'lBfrtip',
-            buttons: [
-                'copy', 'csv', 'excel'
-            ],
-            language: {
+            "order": [[0, "asc"]], "pageLength": count, "searching": true, aoColumnDefs: [{
+                bSortable: false, aTargets: [8]
+            }], dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel'], language: {
                 paginate: {
-                    "first": "«",
-                    "last": "»",
-                    "next": "»",
-                    "previous": "«"
+                    "first": "«", "last": "»", "next": "»", "previous": "«"
                 },
-            },
-            "oLanguage": {
+            }, "oLanguage": {
                 "sSearch": words.search + ":",
                 "sLengthMenu": words.show + " _MENU_ " + words.records,
                 "sEmptyTable": words.noRecords,
@@ -130,20 +112,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
     });
 
     setTimeout(() => {
-        $('#scanned-sites_length').before(
-            "    <div class='d-flex'>" +
-            "        <div class='__helper-link ui_tooltip_w'>" +
-            "            <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" +
-            "                <input type='checkbox'" +
-            "                       class='custom-control-input'" +
-            "                       id='showOrHideIgnoredSites'" +
-            "                       name='noIndex'>" +
-            "                <label class='custom-control-label' for='showOrHideIgnoredSites'></label>" +
-            "            </div>" +
-            "        </div>" +
-            "        <p>" + words.hideDomains + "</p>" +
-            "    </div>"
-        )
+        $('#scanned-sites_length').before("    <div class='d-flex'>" + "        <div class='__helper-link ui_tooltip_w'>" + "            <div class='custom-control custom-switch custom-switch-off-danger custom-switch-on-success'>" + "                <input type='checkbox'" + "                       class='custom-control-input'" + "                       id='showOrHideIgnoredSites'" + "                       name='noIndex'>" + "                <label class='custom-control-label' for='showOrHideIgnoredSites'></label>" + "            </div>" + "        </div>" + "        <p>" + words.hideDomains + "</p>" + "    </div>")
 
         $('#showOrHideIgnoredSites').click(function () {
             if ($('.ignored-site').is(':visible')) {
@@ -157,10 +126,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
             $('#showOrHideIgnoredSites').trigger('click');
         }
 
-        $('#scanned-sites_wrapper > .dt-buttons').after(
-            "<button class='btn btn-secondary ml-1 click_tracking' data-click='Copy links sites'" +
-            " id='copySites' style='cursor: pointer'>" + words.copyLinks + "</button>"
-        )
+        $('#scanned-sites_wrapper > .dt-buttons').after("<button class='btn btn-secondary ml-1 click_tracking' data-click='Copy links sites'" + " id='copySites' style='cursor: pointer'>" + words.copyLinks + "</button>")
 
         $('#copySites').click(function () {
             let sites = ''
@@ -179,19 +145,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         })
 
         if (avg !== null) {
-            $('#scanned-sites-row').after(
-                '<tr class="render">' +
-                '    <th>-</th>' +
-                '    <th>' + words.recommendations + '</th>' +
-                '    <th>' + Number(avg.points).toFixed(2) + '</th>' +
-                '    <th>' + Number(avg.coverage).toFixed(2) + '</th>' +
-                '    <th>' + Number(avg.coverageTf).toFixed(2) + '</th>' +
-                '    <th>' + Number(avg.width).toFixed(2) + '</th>' +
-                '    <th>' + Number(avg.densityPercent).toFixed(2) + '</th>' +
-                '    <th>' + Number(avg.countSymbols).toFixed(0) + '</th>' +
-                '    <th>-</th>' +
-                '</tr>'
-            )
+            $('#scanned-sites-row').after('<tr class="render">' + '    <th>-</th>' + '    <th>' + words.recommendations + '</th>' + '    <th>' + Number(avg.points).toFixed(2) + '</th>' + '    <th>' + Number(avg.coverage).toFixed(2) + '</th>' + '    <th>' + Number(avg.coverageTf).toFixed(2) + '</th>' + '    <th>' + Number(avg.width).toFixed(2) + '</th>' + '    <th>' + Number(avg.densityPercent).toFixed(2) + '</th>' + '    <th>' + Number(avg.countSymbols).toFixed(0) + '</th>' + '    <th>-</th>' + '</tr>')
         }
 
     }, 2000)
@@ -238,9 +192,8 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         var el = $(this);
         var dest = el.attr('data-scroll');
         $('html').animate({
-                scrollTop: $(dest).offset().top
-            }, 500
-        );
+            scrollTop: $(dest).offset().top
+        }, 500);
         return false;
     });
 
