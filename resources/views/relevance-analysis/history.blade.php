@@ -1135,14 +1135,14 @@
                                             "   <td>" + phrase + "</td>" +
                                             "   <td>" + getRegionName(val.region) + "</td>" +
                                             "   <td>" + val.main_link + "</td>" +
-                                            "   <td>" + position + "</td>"
+                                            "   <td data-order='" + position + "'>" + position + "</td>"
 
                                         if (val.average_values == null) {
                                             newRow += "   <td>" + val.points + "</td>" +
-                                                "   <td>" + val.coverage + "</td>" +
-                                                "   <td>" + val.coverage_tf + "</td>" +
-                                                "   <td>" + val.width + "</td>" +
-                                                "   <td>" + val.density + "</td>" +
+                                                "   <td data-order='" + val.coverage + "'>" + val.coverage + "</td>" +
+                                                "   <td data-order='" + val.coverage_tf + "'>" + val.coverage_tf + "</td>" +
+                                                "   <td data-order='" + val.width + "'>" + val.width + "</td>" +
+                                                "   <td data-order='" + val.density + "'>" + val.density + "</td>" +
                                                 "   <td>" +
                                                 "      <div class='d-flex justify-content-center'> " +
                                                 "          <div class='__helper-link ui_tooltip_w'> " +
@@ -1158,11 +1158,11 @@
                                                 "   </td>" +
                                                 "</tr>"
                                         } else {
-                                            newRow += "   <td style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + getTextResult(val.points, Math.round(val.average_values.points)) + "</td>" +
-                                                "   <td style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + getTextResult(val.coverage, Math.round(val.average_values.coverage)) + "</td>" +
-                                                "   <td style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + getTextResult(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "</td>" +
-                                                "   <td style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + getTextResult(val.width, Math.round(val.average_values.width)) + "</td>" +
-                                                "   <td style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + getTextResult(val.density, Math.round(val.average_values.densityPercent)) + "</td>" +
+                                            newRow += "   <td data-order='" + val.points + "' style='background: " + getColor(val.points, Math.round(val.average_values.points)) + "'>" + getTextResult(val.points, Math.round(val.average_values.points)) + "</td>" +
+                                                "   <td data-order='" + val.coverage + "' style='background: " + getColor(val.coverage, Math.round(val.average_values.coverage)) + "'>" + getTextResult(val.coverage, Math.round(val.average_values.coverage)) + "</td>" +
+                                                "   <td data-order='" + val.coverage_tf + "' style='background: " + getColor(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "'>" + getTextResult(val.coverage_tf, Math.round(val.average_values.coverageTf)) + "</td>" +
+                                                "   <td data-order='" + val.width + "' style='background: " + getColor(val.width, Math.round(val.average_values.width)) + "'>" + getTextResult(val.width, Math.round(val.average_values.width)) + "</td>" +
+                                                "   <td data-order='" + val.density + "' style='background: " + getColor(val.density, Math.round(val.average_values.densityPercent)) + "'>" + getTextResult(val.density, Math.round(val.average_values.densityPercent)) + "</td>" +
                                                 "   <td>" +
                                                 "      <div class='d-flex justify-content-center'> " +
                                                 "          <div class='__helper-link ui_tooltip_w'> " +
