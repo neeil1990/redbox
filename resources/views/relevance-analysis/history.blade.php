@@ -1135,7 +1135,7 @@
                                             "   <td>" + phrase + "</td>" +
                                             "   <td>" + getRegionName(val.region) + "</td>" +
                                             "   <td>" + val.main_link + "</td>" +
-                                            "   <td data-order='" + position + "'>" + position + "</td>"
+                                            "   <td data-order='" + val.position + "'>" + position + "</td>"
 
                                         if (val.average_values == null) {
                                             newRow += "   <td>" + val.points + "</td>" +
