@@ -98,13 +98,20 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         }
 
         $('#scanned-sites').DataTable({
-            "order": [[0, "asc"]], "pageLength": count, "searching": true, aoColumnDefs: [{
+            "order": [[0, "asc"]],
+            "pageLength": count,
+            "searching": true,
+            aoColumnDefs: [{
                 bSortable: false, aTargets: [8]
-            }], dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel'], language: {
+            }],
+            dom: 'lBfrtip',
+            buttons: ['copy', 'csv', 'excel'],
+            language: {
                 paginate: {
                     "first": "«", "last": "»", "next": "»", "previous": "«"
                 },
-            }, "oLanguage": {
+            },
+            "oLanguage": {
                 "sSearch": words.search + ":",
                 "sLengthMenu": words.show + " _MENU_ " + words.records,
                 "sEmptyTable": words.noRecords,

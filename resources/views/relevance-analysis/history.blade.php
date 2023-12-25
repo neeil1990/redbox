@@ -1199,6 +1199,12 @@
                                                     "previous": "«"
                                                 },
                                             },
+                                            "columnDefs": [
+                                                {
+                                                    type: "num",
+                                                    targets: [5, 6, 7, 8, 9, 10]
+                                                },
+                                            ],
                                             "oLanguage": {
                                                 "sSearch": words.search + ":",
                                                 "sLengthMenu": words.show + " _MENU_ " + words.records,
@@ -1253,7 +1259,6 @@
                                         )
                                         $('#history_table').wrap('<div style="width:100%; overflow: auto"></div>')
 
-
                                         $(".dt-button").addClass('btn btn-secondary')
 
                                         $('#history_table_filter').hide()
@@ -1297,28 +1302,32 @@
                                 } else {
                                     $('#history-list-subject').show()
                                     $('#list-history').show()
+
                                     object = response.object
+
+                                    let html = ''
                                     $.each(response.object, function (key, value) {
                                         let position = value[0]['position']
                                         if (position == 0) {
                                             position = 'Не попал в топ 100'
                                         }
-                                        $('#list-history-body').append(
-                                            '<tr class="render">' +
+                                        html += '<tr class="render">' +
                                             '   <td data-target="' + key + '" class="col-1" style="text-align: center; vertical-align: inherit; width: 50px"></td>' +
                                             '   <td>' + value[0]['created_at'] + '</td>' +
                                             '   <td>' + key + '</td>' +
                                             '   <td>' + getRegionName(value[0]['region']) + '</td>' +
                                             '   <td>' + value[0]['main_link'] + '</td>' +
                                             '   <td>' + position + '</td>' +
-                                            '   <td>' + value[0]['points'] + '</td>' +
+                                            '   <td>' + value[0]['points'] + ' </td>' +
                                             '   <td>' + value[0]['coverage'] + '</td>' +
                                             '   <td>' + value[0]['coverage_tf'] + '</td>' +
                                             '   <td>' + value[0]['width'] + '</td>' +
                                             '   <td>' + value[0]['density'] + '</td>' +
                                             '</tr>'
-                                        )
                                     })
+
+                                    $('#list-history-body').html(html)
+
                                     $(document).ready(function () {
                                         $('.dataTables_wrapper.no-footer').css({
                                             width: '100%'
@@ -1368,6 +1377,7 @@
                                         scrollTo('#history-list-subject')
 
                                         customFiltersWithoutComment('list-history', listTable, 'List', 1)
+
                                         $('#list-history').unbind().on('click', 'td.dt-control', function () {
                                             let tr = $(this).closest('tr');
                                             let row = listTable.row(tr);
