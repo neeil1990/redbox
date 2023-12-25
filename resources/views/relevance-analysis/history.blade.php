@@ -1116,9 +1116,11 @@
                                         }
 
                                         let position = val.position
+                                        let dataOrderPosition = val.position
 
                                         if (val.position == 0) {
                                             position = "{{ __('Did not get into the top 100') }}"
+                                            dataOrderPosition = 100
                                         }
 
                                         let phrase = val.phrase
@@ -1135,7 +1137,7 @@
                                             "   <td>" + phrase + "</td>" +
                                             "   <td>" + getRegionName(val.region) + "</td>" +
                                             "   <td>" + val.main_link + "</td>" +
-                                            "   <td data-order='" + val.position + "'>" + position + "</td>"
+                                            "   <td data-order='" + dataOrderPosition + "'>" + position + "</td>"
 
                                         if (val.average_values == null) {
                                             newRow += "   <td>" + val.points + "</td>" +
