@@ -243,6 +243,9 @@
             Просроченые:
             <span id="checklist-expired"></span>
         </div>
+        <div>
+            <a href="{{ route('checklist') }}">Вернутся к списку проектов</a>
+        </div>
     </div>
 
     <div class="d-flex align-items-baseline">
@@ -591,6 +594,8 @@
             })
 
             function setStubs(target) {
+                // TODO баг парсинга
+                console.log(JSON.parse(stubs[basicID].tree))
                 let basicID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
 
                 if (basicID === undefined) {
@@ -615,7 +620,7 @@
                         '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" value="0" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
                         '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
                         '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
-                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
+                        '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" data-toggle="tooltip" data-placement="left" title="Статус задачи" style="width: 135px">' +
                         '            <option value="new" selected>Новая</option>' +
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
@@ -776,10 +781,6 @@
                             '         <span class="stub-style text-muted">' +
                             '             Название' +
                             '         </span>' +
-                            '         <div style="float: right" class="d-flex">' +
-                            '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
-                            '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
-                            '         </div>' +
                             '     </div>' +
                             ' </li>'
 
@@ -907,6 +908,9 @@
                     minHeight: 350,
                 });
 
+                $('.pre-description').summernote({
+                    minHeight: 350,
+                })
             }
 
             function errorMessage(errors) {
@@ -1186,28 +1190,29 @@
                 })
             }
 
-            function renderStubs(basicTasks, target) {
+            function renderStubs(tasks, target) {
                 let html = ''
 
-                $.each(basicTasks, function (index, tasks) {
+                $.each(tasks, function (index, task) {
                     let button = ''
                     let stubType = ''
-                    if (tasks.type === 'personal') {
-                        stubType = '<span class="text-primary mb-3">Ваш шаблон</span>'
-                        button = '<button class="btn btn-sm btn-default remove-stub mt-3" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
+                    if (task.type === 'personal') {
+                        stubType = '<span class="text-primary">' + task.name + '</span>(личный шаблон)'
+                        button = '<button class="btn btn-sm btn-default remove-stub mt-3" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
                     } else {
-                        stubType = '<span class="text-info mb-3">Базовый шаблон</span>'
+                        stubType = '<span class="text-primary">' + task.name + '</span>(базовый шаблон)'
                     }
 
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
-                    html += stubType
-                    html += generateNestedStubs(JSON.parse(tasks.tree), true)
+                    html += '<div class="d-flex justify-content-between mb-3">' + stubType + '</div>'
+                    html += generateNestedStubs(JSON.parse(task.tree), true)
                     html += button
                     html += '</ol>'
                 });
 
                 $(target).html(html)
             }
+
 
             function getRandomInt(max) {
                 return Math.floor(Math.random() * max);
@@ -1368,6 +1373,7 @@
                         )
 
                         refreshTooltips()
+                        $('#closeRemoveRelationModal').trigger('click')
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)

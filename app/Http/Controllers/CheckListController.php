@@ -128,7 +128,7 @@ class CheckListController extends Controller
         return 'Успешно';
     }
 
-    public function update(Request $request)
+    public function update(Request $request): string
     {
         $this->createSubTasks($request->input('tasks'), $request->input('projectID'), $request->input('parentTask'));
 
@@ -559,11 +559,25 @@ class CheckListController extends Controller
         ]);
     }
 
-    public function getPersonalStubs()
+    public function getPersonalStubs(Request $request)
     {
-        return ChecklistStubs::where('type', 'personal')
-            ->where('user_id', Auth::id())
+        $sql = ChecklistStubs::where('type', 'personal')
+            ->where('user_id', Auth::id());
+
+        if ($request->input('name')) {
+            $sql->where('name', 'like', "%$request->name%");
+        }
+
+        $stubs = $sql->skip($request->input('skip', 0))
+            ->take($request->input('count', 3))
             ->get();
+
+        $paginate = (int)ceil($sql->count() / $request->input('count', 3));
+
+        return response()->json([
+            'stubs' => $stubs,
+            'paginate' => $paginate
+        ]);
     }
 
     public function removeStub(ChecklistStubs $stub): string

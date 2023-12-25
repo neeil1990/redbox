@@ -87,7 +87,6 @@
                 padding-right: 10px;
                 padding-top: 10px;
                 overflow: auto;
-                max-height: 530px;
             }
 
             .accordion.stubs.card.card-body {
@@ -307,7 +306,46 @@
                     @endif
                     <div class="tab-pane fade" id="personal-tabs-stub" role="tabpanel"
                          aria-labelledby="personal-stubs">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    Фильтры
+                                </h3>
+                            </div>
+                            <div class="card-body row">
+                                <div class="d-flex col-xs-12 col-xl-6 align-items-center"
+                                     style="margin-top: 10px;">
+                                    <button id="create-new-stub" class="btn btn-secondary" data-toggle="modal"
+                                            data-target="#createNewSTub">
+                                        Добавить шаблон
+                                    </button>
+                                </div>
+                                <div class="d-flex col-xs-12 col-xl-6 align-items-center justify-content-end">
+                                    <div class="form-group">
+                                        <label for="count-personal-stub">Количество шаблонов</label>
+                                        <select name="count-personal-stub" id="count-personal-stub"
+                                                class="custom custom-select">
+                                            <option value="1">1</option>
+                                            <option value="3">3</option>
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="20">20</option>
+                                            <option value="30">30</option>
+                                            <option value="40">40</option>
+                                            <option value="50">50</option>
+                                            <option value="60">60</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group ml-3">
+                                        <label for="name-personal-stub">Название шаблона</label>
+                                        <input type="text" id="name-personal-stub" name="name-personal-stub"
+                                               class="form form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div id="personal-stubs-place" class="d-flex row"></div>
+                        <ul class="pagination d-flex justify-content-end w-100" id="personal-pagination"></ul>
                     </div>
                     <div class="tab-pane fade" id="notification-tab" role="tabpanel">
                     </div>
@@ -348,7 +386,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body d-flex">
+                <div class="modal-body d-flex overflow-auto">
                     <div class="col-12">
                         <div class="mb-3" style="display: none">
                             <label for="dynamic-stub">Динамичный шаблон</label>
@@ -377,8 +415,8 @@
                                 <label for="tasks">Задачи</label>
                                 <button class="btn btn-secondary" id="add-new-task">Добавить задачу</button>
                             </div>
-                            <div id="accordionExample">
-                                <ol id="tasks"></ol>
+                            <div id="accordionExample" class="mt-3">
+                                <ol id="tasks" class="overflow-auto"></ol>
                             </div>
                         </div>
 
@@ -647,6 +685,12 @@
             $(function () {
                 if (localStorage.getItem('SEO_CHECKLIST_COUNT') !== null) {
                     $('#count').val(localStorage.getItem('SEO_CHECKLIST_COUNT'))
+                }
+                if (localStorage.getItem('SEO_CHECKLIST_CLASSIC_COUNT') !== null) {
+                    $('#count-classic-stub').val(localStorage.getItem('SEO_CHECKLIST_CLASSIC_COUNT'))
+                }
+                if (localStorage.getItem('SEO_CHECKLIST_PERSONAL_COUNT') !== null) {
+                    $('#count-personal-stub').val(localStorage.getItem('SEO_CHECKLIST_PERSONAL_COUNT'))
                 }
                 loadChecklists(0, true)
             })
@@ -1289,7 +1333,7 @@
                     loadClassicStubs($(this).attr('data-id'), false)
                 }
                 if ($(this).attr('data-type') === 'personal') {
-                    loadClassicStubs($(this).attr('data-id'), false)
+                    loadPersonalStubs($(this).attr('data-id'), false)
                 }
             })
 
@@ -1849,22 +1893,22 @@
 
             let basicTasks
 
-            function renderStubs(basicTasks) {
+            function renderStubs(tasks) {
                 let html = ''
 
-                $.each(basicTasks, function (index, tasks) {
+                $.each(tasks, function (index, task) {
                     let button = ''
                     let stubType = ''
-                    if (tasks.type === 'personal') {
-                        stubType = '<span class="text-primary mb-3">Ваш шаблон</span>'
-                        button = '<button class="btn btn-sm btn-default remove-stub mt-3" data-id="' + tasks.id + '"><i class="fa fa-trash"></i></button>'
+                    if (task.type === 'personal') {
+                        stubType = '<span class="text-primary">' + task.name + '</span>(личный шаблон)'
+                        button = '<button class="btn btn-sm btn-default remove-stub mt-3" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
                     } else {
-                        stubType = '<span class="text-info mb-3">Базовый шаблон</span>'
+                        stubType = '<span class="text-primary">' + task.name + '</span>(базовый шаблон)'
                     }
 
                     html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
-                    html += stubType
-                    html += generateNestedStubs(JSON.parse(tasks.tree), true)
+                    html += '<div class="d-flex justify-content-between mb-3">' + stubType + '</div>'
+                    html += generateNestedStubs(JSON.parse(task.tree), true)
                     html += button
                     html += '</ol>'
                 });
@@ -1896,6 +1940,7 @@
             })
 
             $(document).on('change', '#count-classic-stub', function () {
+                localStorage.setItem('SEO_CHECKLIST_CLASSIC_COUNT', $(this).val())
                 loadClassicStubs()
             })
 
@@ -1908,7 +1953,7 @@
                 }, 300)
             })
 
-            function loadClassicStubs(page = 0, renderPagionate = true) {
+            function loadClassicStubs(page = 0, pagination = true) {
                 $('#custom-tabs-three-profile').html('')
                 $('#classic-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
@@ -1928,14 +1973,14 @@
                         $('#classic-stubs-loader').remove()
                         $('#classic-stubs-place').html(renderStubsHtml(response.stubs))
 
-                        if (renderPagionate) {
+                        if (pagination) {
                             renderPagination(response.paginate, '#classic-pagination', 'classic')
                         }
                     }
                 })
             }
 
-            $(document).on('click', '#personal-stubs', function () {
+            function loadPersonalStubs(page = 0, pagination = true) {
                 $('#custom-tabs-three-profile').html('')
                 $('#personal-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
@@ -1944,12 +1989,39 @@
                 )
 
                 $.ajax({
-                    type: 'get',
+                    type: 'post',
+                    data: {
+                        name: $('#name-personal-stub').val(),
+                        count: $('#count-personal-stub').val(),
+                        skip: page * $('#count-personal-stub').val()
+                    },
                     url: "{{ route('checklist.personal.stubs') }}",
-                    success: function (stubs) {
-                        $('#personal-stubs-place').html(renderStubsHtml(stubs))
+                    success: function (response) {
+                        $('#personal-stubs-place').html(renderStubsHtml(response.stubs))
+
+                        if (pagination) {
+                            renderPagination(response.paginate, '#personal-pagination', 'personal')
+                        }
                     }
                 })
+            }
+
+            $(document).on('click', '#personal-stubs', function () {
+                loadPersonalStubs()
+            })
+
+            $(document).on('change', '#count-personal-stub', function () {
+                localStorage.setItem('SEO_CHECKLIST_PERSONAL_COUNT', $(this).val())
+                loadPersonalStubs()
+            })
+
+            $(document).on('input', '#name-personal-stub', function () {
+                clearTimeout(loadTimeout)
+
+                loadTimeout = setTimeout(() => {
+                    loadPersonalStubs()
+
+                }, 300)
             })
 
             function renderStubsHtml(stubs) {
