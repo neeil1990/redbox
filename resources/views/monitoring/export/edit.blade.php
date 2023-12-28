@@ -101,6 +101,10 @@
                         <input class="custom-control-input" name="dynamicsCol" type="checkbox" id="dynamics" value="1">
                         <label for="dynamics" class="custom-control-label">{{ __('Dynamics') }}</label>
                     </div>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="urlCol" type="checkbox" id="url" value="1">
+                        <label for="url" class="custom-control-label">{{ __('URL') }}</label>
+                    </div>
                 </div>
             </div>
         </div>

@@ -11,6 +11,7 @@ use App\Exports\Monitoring\PositionsExportFactory;
 use App\MonitoringProject;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class MonitoringExportsController extends MonitoringKeywordsController
 {
@@ -90,6 +91,8 @@ class MonitoringExportsController extends MonitoringKeywordsController
         if($request['mode'] == 'finance')
             $this->setTotalSum($response);
 
+        $this->urlColumn($response);
+
         $file = $this->project['url'] . ' ' . $params['dates_range'];
         return $this->downloadFile($response, $file, $request['format']);
     }
@@ -107,5 +110,19 @@ class MonitoringExportsController extends MonitoringKeywordsController
 
         $response['data']->push(collect(['Выведено фраз на сумму:', $total])->pad(-$count, ''));
         $response['data']->push(collect(['Максимальный бюджет:', $this->budget])->pad(-$count, ''));
+    }
+
+    private function urlColumn(Collection &$collection)
+    {
+        $collection['data']->transform(function($item){
+            if($item->has('url')){
+                $url = $item['url'];
+                $doc = new \DOMDocument();
+                $doc->loadHTML($url);
+                $a = $doc->getElementsByTagName('a');
+                $item['url'] = strip_tags($a[0]->getAttribute('data-content'));
+            }
+            return $item;
+        });
     }
 }
