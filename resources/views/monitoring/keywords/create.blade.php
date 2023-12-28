@@ -29,6 +29,10 @@
             </div>
         </div>
 
+        <p class="text-sm text-muted">
+            Вы можете выгрузить только ключевые слова. Если Вы хотите добавить сразу через файл ключевые слова + группу + релевантную, то перейдите в <a href="/monitoring/create#id={{ $project->id }}">редактирование проекта</a>
+        </p>
+
         <div class="form-group">
             <label class="col-form-label">{{ __('Relative URL') }}:</label>
             <input type="text" class="form-control" name="page" value="">
