@@ -884,12 +884,25 @@
             }
 
             let keywordSelect2 = $('#keyword-groups');
-            keywordSelect2.select2({
-                theme: 'bootstrap4'
-            });
+            let hashId = window.hash.getParam('id')[0];
+            axios.get('/monitoring/creator/groups', {
+                params: { id: hashId }
+            }).then(function (response) {
+                let options = [];
+                if($.isArray(response.data)){
+                    $.each(response.data, function(i, val){
+                        options.push(new Option(val.name, val.name, false, false));
+                    });
+                }else{
+                    options.push(new Option(response.data, response.data, false, false));
+                }
 
-            let newOption = new Option("Основная", "Основная", false, false);
-            keywordSelect2.append(newOption).trigger('change');
+                keywordSelect2.select2({ theme: 'bootstrap4' });
+
+                keywordSelect2.append(options).trigger('change');
+            }).catch(function (error) {
+                console.log(error);
+            });
 
             $('#create-group').click(function(){
                 let el = $(this);

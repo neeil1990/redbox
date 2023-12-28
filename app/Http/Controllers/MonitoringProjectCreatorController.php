@@ -302,6 +302,19 @@ class MonitoringProjectCreatorController extends Controller
         }
     }
 
+    public function getGroups(Request $request)
+    {
+        $id = $request->input('id');
+        if(empty($id))
+            return __('Main');
+
+        /** @var User $user */
+        $user = $this->user;
+        $project = $user->monitoringProjects()->find($id);
+
+        return $project['groups'];
+    }
+
     private function stringToInt(string $str)
     {
         return intval(filter_var($str, FILTER_SANITIZE_NUMBER_INT));

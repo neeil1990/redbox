@@ -25,7 +25,7 @@
                 <label class="custom-file-label" for="upload">{{ __('Upload CSV file') }}</label>
             </div>
             <div class="input-group-append">
-                <span class="input-group-text" id="upload-queries">{{ __('Upload') }}</span>
+                <button type="button" class="btn btn-success" id="upload-queries">{{ __('Upload') }}</button>
             </div>
         </div>
 
