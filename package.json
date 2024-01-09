@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "copy-to-clipboard": "^3.3.1",
+        "currency-formatter": "^1.5.9",
         "generate-password": "^1.6.1",
         "hash.subscribe": "^2.2.0",
         "js-cookie": "^3.0.0",

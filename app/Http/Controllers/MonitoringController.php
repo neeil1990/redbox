@@ -229,8 +229,6 @@ class MonitoringController extends Controller
                 return '<span class="badge badge-light"><i class="fab fa-' . $item . ' fa-sm"></i></span>';
             })->implode(' ');
 
-            $item->mastered = number_format($item->mastered, 2, ',', ' ');
-
             return $item;
         });
 

@@ -338,7 +338,7 @@
                             if(row.mastered_percent)
                                 sup.text(row.mastered_percent + '%');
 
-                            return row.budget + sup[0].outerHTML;
+                            return currencyFormatRu(row.budget) + sup[0].outerHTML;
                         },
                     },
                     {
@@ -351,10 +351,10 @@
                                 let small = $('<small />').css('color', 'green');
                                 small.text(Math.floor(tops.total / (row.budget / 30) * 100) + '%');
 
-                                return row.mastered + "<br />" + small[0].outerHTML;
+                                return currencyFormatRu(row.mastered) + "<br />" + small[0].outerHTML;
                             }
 
-                            return row.mastered;
+                            return currencyFormatRu(row.mastered);
                         },
                     },
                     {

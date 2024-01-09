@@ -78,3 +78,7 @@ window.loading = function () {
 
     return window.pleaseWait;
 };
+
+window.currencyFormatRu = function(num) {
+    return currencyFormatter.format(num, {locale: 'ru-RU', symbol: '', decimal: '.'});
+};
