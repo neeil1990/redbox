@@ -34,7 +34,7 @@ class MonitoringProjectCreatorController extends Controller
         if(!$project)
             return false;
 
-        $user->monitoringProjects()->updateExistingPivot($project['id'], ["admin" => 1]);
+        $user->monitoringProjects()->withTimestamps()->updateExistingPivot($project['id'], ['admin' => 1, 'status' => MonitoringProjectUserStatusController::STATUS_OWNER]);
 
         return $project['id'];
     }

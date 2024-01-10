@@ -256,10 +256,13 @@
                                     case 3:
                                         status = '{{ __('PM') }}';
                                         break;
+                                    case 4:
+                                        status = '{{ __('OWNER') }}';
+                                        break;
                                 }
 
                                 li.append($('<span />', {class : 'badge badge-success navbar-badge'})
-                                    .css({'right' : 0, 'left' : 0, 'top' : 'unset', 'bottom' : '-15px', cursor : 'pointer'})
+                                    .css({'right' : 0, 'left' : 0, 'top' : 'unset', 'bottom' : '-15px', cursor : 'pointer', "z-index" : 1})
                                     .text(status)
                                 );
 
@@ -440,6 +443,11 @@
                     let api = this.api();
                     let json = api.ajax.json();
 
+                    // filter
+                    $('#filter-user-status').change(function(){
+                        api.column('users:name').search($(this).val()).draw();
+                    });
+
                     this.find('tbody').on('click', 'tr.main', function () {
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
 
@@ -567,7 +575,7 @@
                 },
             });
 
-            search(table)
+            search(table);
 
             $('.column-visible').click(function (e) {
                 e.preventDefault();
@@ -886,6 +894,7 @@
                             label: '{{ __('User status') }}',
                             params: [
                                 { text: '{{ __('Without status') }}', val: 'DEF' },
+                                { text: '{{ __('Owner') }}', val: 'OWNER' },
                                 { text: '{{ __('Team Lead') }}', val: 'TL' },
                                 { text: '{{ __('Seo') }}', val: 'SEO' },
                                 { text: '{{ __('Project manager') }}', val: 'PM' },
