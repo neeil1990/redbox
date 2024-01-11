@@ -153,7 +153,7 @@
             window.loading();
 
             let table = $('#projects').DataTable({
-                dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0 overflow-auto"rt><"card-footer clearfix"p><"clear">',
                 fixedHeader: true,
                 lengthMenu: LENGTH_MENU,
                 pageLength: PAGE_LENGTH,
@@ -256,10 +256,13 @@
                                     case 3:
                                         status = '{{ __('PM') }}';
                                         break;
+                                    case 4:
+                                        status = '{{ __('OWNER') }}';
+                                        break;
                                 }
 
                                 li.append($('<span />', {class : 'badge badge-success navbar-badge'})
-                                    .css({'right' : 0, 'left' : 0, 'top' : 'unset', 'bottom' : '-15px', cursor : 'pointer'})
+                                    .css({'right' : 0, 'left' : 0, 'top' : 'unset', 'bottom' : '-15px', cursor : 'pointer', "z-index" : 1})
                                     .text(status)
                                 );
 
@@ -338,7 +341,7 @@
                             if(row.mastered_percent)
                                 sup.text(row.mastered_percent + '%');
 
-                            return row.budget + sup[0].outerHTML;
+                            return currencyFormatRu(row.budget) + sup[0].outerHTML;
                         },
                     },
                     {
@@ -351,10 +354,10 @@
                                 let small = $('<small />').css('color', 'green');
                                 small.text(Math.floor(tops.total / (row.budget / 30) * 100) + '%');
 
-                                return row.mastered + "<br />" + small[0].outerHTML;
+                                return currencyFormatRu(row.mastered) + "<br />" + small[0].outerHTML;
                             }
 
-                            return row.mastered;
+                            return currencyFormatRu(row.mastered);
                         },
                     },
                     {
@@ -439,6 +442,11 @@
                 initComplete: function () {
                     let api = this.api();
                     let json = api.ajax.json();
+
+                    // filter
+                    $('#filter-user-status').change(function(){
+                        api.column('users:name').search($(this).val()).draw();
+                    });
 
                     this.find('tbody').on('click', 'tr.main', function () {
                         $(this).toggleClass(HIGHLIGHT_TR_CLASS);
@@ -567,7 +575,7 @@
                 },
             });
 
-            search(table)
+            search(table);
 
             $('.column-visible').click(function (e) {
                 e.preventDefault();
@@ -886,6 +894,7 @@
                             label: '{{ __('User status') }}',
                             params: [
                                 { text: '{{ __('Without status') }}', val: 'DEF' },
+                                { text: '{{ __('Owner') }}', val: 'OWNER' },
                                 { text: '{{ __('Team Lead') }}', val: 'TL' },
                                 { text: '{{ __('Seo') }}', val: 'SEO' },
                                 { text: '{{ __('Project manager') }}', val: 'PM' },

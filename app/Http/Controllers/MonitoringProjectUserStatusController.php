@@ -9,12 +9,19 @@ use Illuminate\Support\Facades\Auth;
 
 class MonitoringProjectUserStatusController extends Controller
 {
+    const STATUS_DEF = 0;
+    const STATUS_TL = 1;
+    const STATUS_SEO = 2;
+    const STATUS_PM = 3;
+    const STATUS_OWNER = 4;
+
     protected $auth;
     protected $status = [
-        'DEF' => 0, // Default
-        'TL' => 1, // Team Lead
-        'SEO' => 2, // SEO
-        'PM' => 3, // Project manager
+        'DEF' => self::STATUS_DEF, // Default
+        'TL' => self::STATUS_TL, // Team Lead
+        'SEO' => self::STATUS_SEO, // SEO
+        'PM' => self::STATUS_PM, // Project manager
+        'OWNER' => self::STATUS_OWNER, // Project owner
     ];
 
     public function __construct()
@@ -43,7 +50,7 @@ class MonitoringProjectUserStatusController extends Controller
         if(!isset($this->status[$status]))
             abort(403, 'wrong user status code.');
 
-        return $user->monitoringProjects()->updateExistingPivot($project, ["status" => $this->status[$status]]);
+        return $user->monitoringProjects()->withTimestamps()->updateExistingPivot($project, ["status" => $this->status[$status]]);
     }
 
     public function isProjectAdmin(User $user, int $project)

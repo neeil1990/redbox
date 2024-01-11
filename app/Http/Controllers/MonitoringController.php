@@ -177,6 +177,8 @@ class MonitoringController extends Controller
         if ($search = $request->input('search.value'))
             $model = $model->where('name', 'like', $search . '%');
 
+        $model = $this->filterByUserStatus($model, $request->input('columns'));
+
         if ($order = Arr::first($request->input('order'))) {
             $columns = $request->input('columns');
             $model->orderBy($columns[$order['column']]['name'], $order['dir']);
@@ -195,6 +197,30 @@ class MonitoringController extends Controller
         ]);
 
         return $data;
+    }
+
+    private function filterByUserStatus($model, $columns)
+    {
+        $name = 'users';
+        $column = $this->searchColumnByName($name, $columns);
+        if($column && strlen($column['search']['value']) > 0){
+            $value = $column['search']['value'];
+
+            return $model->whereHas($name, function ($query) use ($value) {
+                $query->where('status', $value);
+            });
+        }
+
+        return $model;
+    }
+
+    public function searchColumnByName(string $name, array $columns)
+    {
+        foreach($columns as $key => $col)
+            if($col['name'] === $name)
+                return $columns[$key];
+
+        return null;
     }
 
     public function getCountProject($id)
@@ -228,8 +254,6 @@ class MonitoringController extends Controller
             $item->engines = $item->searchengines->pluck('engine')->map(function ($item) {
                 return '<span class="badge badge-light"><i class="fab fa-' . $item . ' fa-sm"></i></span>';
             })->implode(' ');
-
-            $item->mastered = number_format($item->mastered, 2, ',', ' ');
 
             return $item;
         });

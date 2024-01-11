@@ -33,6 +33,18 @@
             <a href="javascript:void(0)" class="btn btn-default btn-sm column-visible click_tracking" data-click="{{ $col['text'] }}" data-toggle="tooltip" data-column="{{ $col['name'] }}" title="Скрыть/Показать столбец">{{ $col['text'] }}</a>
         @endforeach
     </div>
+
+    <div class="btn-group">
+        <select id="filter-user-status" class="custom-select custom-select-sm form-control form-control-sm">
+            <option value="">{{ __('Show all users status') }}</option>
+            <option value="0">{{ __('EMPTY') }}</option>
+            <option value="4">{{ __('OWNER') }}</option>
+            <option value="1">{{ __('TL') }}</option>
+            <option value="2">{{ __('SEO') }}</option>
+            <option value="3">{{ __('PM') }}</option>
+        </select>
+    </div>
+
 </div>
 
 
