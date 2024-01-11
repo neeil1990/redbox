@@ -1297,6 +1297,7 @@
                         $('.toast-top-right.success-message').hide(300)
                     }, 10000)
                 }
+
                 renderScannedSitesList(
                     localization,
                     history.sites,

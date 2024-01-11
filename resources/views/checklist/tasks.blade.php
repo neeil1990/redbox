@@ -1,5 +1,6 @@
 @component('component.card', ['title' =>  "SEO чеклист: проект $host"])
     @slot('css')
+        <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
@@ -207,6 +208,24 @@
             .hide-border:active, .hide-border:focus {
                 border: 1px solid #ced4da !important;
             }
+
+            .hide-li {
+                display: block;
+                width: 15px;
+                height: 15px;
+                background: url("/img/down_arrow.svg");
+                float: left;
+            }
+
+            div > div > div.modal.note-modal.show > div > div > div.modal-header > button,
+            div > div > div.modal.note-modal.link-dialog.show > div > div > div.modal-header > button,
+            div > div > div.modal.note-modal.show > div > div > div.modal-header > button {
+                display: none;
+            }
+
+            .default.example {
+                height: 38px;
+            }
         </style>
     @endslot
 
@@ -391,7 +410,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="createNewProjectLabel">Добавление новых задач к
                         проекту {{ $checklist[0]['url'] }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close close-modal" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -589,13 +608,11 @@
                 setStubs('#new-tasks')
             })
 
-            $(document).on('click', 'set-stub-2', function () {
+            $(document).on('click', '#set-stub-2', function () {
                 setStubs('#new-sub-tasks')
             })
 
             function setStubs(target) {
-                // TODO баг парсинга
-                console.log(JSON.parse(stubs[basicID].tree))
                 let basicID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
 
                 if (basicID === undefined) {
@@ -627,7 +644,7 @@
                         '            <option value="expired">Просрочено</option>' +
                         '            <option value="deactivated">Не активная</option>' +
                         '        </select>' +
-                        '        <input class="form form-control deactivated" style="display: none" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
+                        '        <input class="form form-control deactivated" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
                         '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
@@ -690,6 +707,7 @@
 
                 $('.pre-description').summernote({
                     minHeight: 350,
+                    lang: "ru-RU"
                 })
             })
 
@@ -769,15 +787,15 @@
                 }
             })
 
-            function generateNestedStubs(tasks, each = true) {
+            function generateNestedStubs(stubs, each = true) {
                 let $listItem = ''
 
                 if (each) {
-                    $.each(tasks, function (k, task) {
-
+                    $.each(stubs, function (k, stub) {
+                        stub = stub[0] ?? stub
                         $listItem +=
                             ' <li class="default example">' +
-                            '     <div style="height: 20px;">' +
+                            '     <div>' +
                             '         <span class="stub-style text-muted">' +
                             '             Название' +
                             '         </span>' +
@@ -785,34 +803,32 @@
                             ' </li>'
 
                         let $subList = '<ol class="accordion stubs">';
-                        if (task.subtasks && task.subtasks.length > 0) {
-                            task.subtasks.forEach(function (subtask) {
-                                $subList += generateNestedStubs(subtask, false);
+                        if (stub.subtasks && stub.subtasks.length > 0) {
+                            stub.subtasks.forEach(function (subtask) {
+                                $subList += generateNestedStubs(subtask, true);
                             });
                         }
+
                         $subList += '</ol>';
                         $listItem += $subList
                     });
                 } else {
                     $listItem +=
                         ' <li class="default example">' +
-                        '     <div style="height: 20px;">' +
+                        '     <div>' +
                         '         <span class="stub-style text-muted">' +
                         '             Название' +
                         '         </span>' +
-                        '         <div style="float: right" class="d-flex">' +
-                        '             <div class="btn btn-sm btn-default" style="width: 35px; height: 20px; border-radius: 4px"></div>' +
-                        '             <div class="btn btn-sm btn-default" style="width: 25px; height: 20px;"></div>' +
-                        '         </div>' +
                         '     </div>' +
                         ' </li>'
 
                     let $subList = '<ol class="accordion stubs">';
-                    if (tasks.subtasks && tasks.subtasks.length > 0) {
-                        tasks.subtasks.forEach(function (subtask) {
+                    if (stubs.subtasks && stubs.subtasks.length > 0) {
+                        stubs.subtasks.forEach(function (subtask) {
                             $subList += generateNestedStubs(subtask, false);
                         });
                     }
+
                     $subList += '</ol>';
                     $listItem += $subList
                 }
@@ -839,8 +855,14 @@
                 let start = new Date(task.date_start).toISOString().slice(0, 16);
                 let end = new Date(task.deadline).toISOString().slice(0, 16);
 
+
+                let button = ''
+                // if (task.subtasks && task.subtasks.length > 0) {
+                //     button = '<div class="hide-li"></div>'
+                // }
+
                 let $listItem =
-                    '<li data-id="' + task.id + '" class="' + task.status + '" class="d-flex">' +
+                    '<li data-id="' + task.id + '" class="' + task.status + '" class="d-flex">' + button +
                     '    <input type="text" class="form form-control hide-border d-inline edit-checklist w-auto" data-type="name" data-target="' + task.id + '" value="' + task.name + '">' +
                     '    <div class="tools d-flex" style="float: right">' +
                     '       <input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + start + '" ' +
@@ -906,10 +928,12 @@
                         }
                     },
                     minHeight: 350,
+                    lang: "ru-RU"
                 });
 
                 $('.pre-description').summernote({
                     minHeight: 350,
+                    lang: "ru-RU"
                 })
             }
 
@@ -1101,6 +1125,7 @@
                 }
             })
 
+
             $(document).on('input', '.datetime-counter', function () {
                 let $id = $(this).attr('data-target')
                 let value = $(this).val()
@@ -1112,6 +1137,23 @@
                 $deadline.val(newDate)
             })
 
+            $(document).on('input', '.datetime-after', function () {
+                let $id = $(this).attr('data-target')
+                let value = $(this).val()
+
+                let $days = $('.datetime-counter[data-target="' + $id + '"]')
+                let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
+                let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
+
+                let newDate = new Date(value).toISOString().slice(0, 16)
+
+                $start.val(value)
+
+                newDate = new Date(new Date(value).getTime() + ($days.val() * count_ml_in_day)).toISOString().slice(0, 16)
+                $deadline.val(newDate)
+
+            })
+
             function parseTree($object) {
                 let $dataId = $object.attr('data-id')
                 let object = []
@@ -1121,6 +1163,7 @@
                     name: $('input[data-target="' + $dataId + '"][data-type="name"]').val(),
                     status: $('select[data-target="' + $dataId + '"][data-type="status"]').val(),
                     description: $('.pre-description[data-id="' + $dataId + '"]').val(),
+                    start: $('input[data-type="start"][data-target="' + $dataId + '"]').val(),
                     deadline: $('input[data-type="deadline"][data-target="' + $dataId + '"]').val(),
                     active_after: $('input[data-type="active_after"][data-target="' + $dataId + '"]').val(),
                 }
@@ -1194,25 +1237,31 @@
                 let html = ''
 
                 $.each(tasks, function (index, task) {
-                    let button = ''
+                    let button = '<button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-example-' + index + '" aria-expanded="false" aria-controls="collapse-example-' + index + '" id="heading-example' + index + '"><i class="fa fa-eye"></i></button>'
                     let stubType = ''
                     if (task.type === 'personal') {
-                        stubType = '<span class="text-primary">' + task.name + '</span>(личный шаблон)'
-                        button = '<button class="btn btn-sm btn-default remove-stub mt-3" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
+                        stubType = '(личный шаблон)'
+                        button += '<button class="btn btn-sm btn-default remove-stub" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
                     } else {
-                        stubType = '<span class="text-primary">' + task.name + '</span>(базовый шаблон)'
+                        stubType = '(базовый шаблон)'
                     }
 
-                    html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
-                    html += '<div class="d-flex justify-content-between mb-3">' + stubType + '</div>'
+                    html += '<ol class="card pl-0">' +
+                        '    <p class="card-header">' +
+                        '        <span class="d-flex justify-content-between">' +
+                        '            <span>' + task.name + '</span>' +
+                        '            <span>' + stubType + '</span>' +
+                        '            <span>' + button + '</span>' +
+                        '        </span>' +
+                        '    </p>' +
+                        '    <div id="collapse-example-' + index + '" aria-labelledby="heading-example" class="collapse" style="">' +
+                        '    <div class="accordion stubs card-body" data-id="' + index + '">'
                     html += generateNestedStubs(JSON.parse(task.tree), true)
-                    html += button
-                    html += '</ol>'
+                    html += '</div>' + '</div>' + '</ol>'
                 });
 
                 $(target).html(html)
             }
-
 
             function getRandomInt(max) {
                 return Math.floor(Math.random() * max);
@@ -1245,7 +1294,7 @@
                     '            <option value="expired">Просрочено</option>' +
                     '            <option value="deactivated">Не активная</option>' +
                     '        </select>' +
-                    '        <input class="form form-control deactivated" style="display: none" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
+                    '        <input class="form form-control deactivated datetime-after" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
                     '        <div class="btn-group pl-2">' +
                     '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
                     '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
@@ -1379,6 +1428,25 @@
                         errorMessage(response.responseJSON.errors)
                     }
                 })
+            })
+
+
+            $('#tasks').on('click', 'li', function (event) {
+                if (!$(event.target).is('input, a, div, select')) {
+                    let taskId = $(this).attr('data-id');
+                    let subtasks = $(this).siblings('#subtasks-' + taskId);
+                    if (subtasks.length > 0) {
+                        if (subtasks.is(':visible')) {
+                            subtasks.slideUp();
+                        } else {
+                            subtasks.slideDown();
+                        }
+                    }
+                }
+            })
+
+            $('#tasks').on('click', '#tasks li input,#tasks li select, #tasks li a, #tasks li div', function (event) {
+                event.stopPropagation();
             })
         </script>
     @endslot

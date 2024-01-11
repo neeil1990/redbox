@@ -1,8 +1,6 @@
 @component('component.card', ['title' =>  __('SEO Checklist') ])
     @slot('css')
-
         <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
-
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
@@ -1543,6 +1541,7 @@
                         }
                     },
                     minHeight: 350,
+                    lang: "ru-RU"
                 })
 
                 refreshTooltips()
@@ -1585,6 +1584,7 @@
                         }
                     },
                     minHeight: 350,
+                    lang: "ru-RU"
                 });
                 $('.pre-description').summernote({
                     callbacks: {
@@ -1611,6 +1611,7 @@
                         }
                     },
                     minHeight: 350,
+                    lang: "ru-RU"
                 })
             })
 
@@ -1897,20 +1898,27 @@
                 let html = ''
 
                 $.each(tasks, function (index, task) {
-                    let button = ''
+                    let button = '<button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-example-' + index + '" aria-expanded="false" aria-controls="collapse-example-' + index + '" id="heading-example' + index + '"><i class="fa fa-eye"></i></button>'
                     let stubType = ''
                     if (task.type === 'personal') {
-                        stubType = '<span class="text-primary">' + task.name + '</span>(личный шаблон)'
-                        button = '<button class="btn btn-sm btn-default remove-stub mt-3" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
+                        stubType = '(личный шаблон)'
+                        button += '<button class="btn btn-sm btn-default remove-stub" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
                     } else {
-                        stubType = '<span class="text-primary">' + task.name + '</span>(базовый шаблон)'
+                        stubType = '(базовый шаблон)'
                     }
 
-                    html += '<ol class="accordion stubs card card-body" data-id="' + index + '">'
-                    html += '<div class="d-flex justify-content-between mb-3">' + stubType + '</div>'
+                    html += '<ol class="card pl-0">' +
+                        '    <p class="card-header">' +
+                        '        <span class="d-flex justify-content-between">' +
+                        '            <span>' + task.name + '</span>' +
+                        '            <span>' + stubType + '</span>' +
+                        '            <span>' + button + '</span>' +
+                        '        </span>' +
+                        '    </p>' +
+                        '    <div id="collapse-example-' + index + '" aria-labelledby="heading-example" class="collapse" style="">' +
+                        '    <div class="accordion stubs card-body" data-id="' + index + '">'
                     html += generateNestedStubs(JSON.parse(task.tree), true)
-                    html += button
-                    html += '</ol>'
+                    html += '</div>' + '</div>' + '</ol>'
                 });
 
                 $('#stubs-place').html(html)
