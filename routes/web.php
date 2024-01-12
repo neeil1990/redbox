@@ -299,7 +299,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('monitoring/creator/competitors', 'MonitoringProjectCreatorController@getCompetitors');
     Route::post('monitoring/creator/competitors', 'MonitoringProjectCreatorController@createCompetitors');
     Route::post('monitoring/creator/regions', 'MonitoringProjectCreatorController@actionRegion');
-    Route::get('monitoring/creator/groups', 'MonitoringProjectCreatorController@getGroups');
 
     // Monitoring query price
     Route::get('monitoring/{id}/prices', 'MonitoringKeywordPricesController@index')->name('prices.index');

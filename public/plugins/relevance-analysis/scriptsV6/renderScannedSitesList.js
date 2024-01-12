@@ -22,7 +22,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
     $.each(sites, function (key, value) {
         let site = value['site']
 
-        let btnGroup = "<div class='btn-group'>" + "        <button type='button' data-toggle='dropdown' aria-expanded='false' class='text-dark btn btn-tool dropdown-toggle'>" + "            <i class='fas fa-external-link-alt'></i>" + "        </button> " + "       <div role='menu' class='dropdown-menu dropdown-menu-left'>" + "            <a target='_blank' class='dropdown-item' href='" + value['site'] + "'>" + "                <i class='fas fa-external-link-alt first-action'></i>" + "           </a>" + "            <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" + "                <i class='fas fa-external-link-alt second-action'></i>" + "           </a>" + "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" + "                  data-target='" + value['site'] + "'>" + "                <i class='fas fa-external-link-alt third-action'></i>" + "                " + "            </span>" + "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" + "                 data-target='" + value['site'] + "'>" + "               <i class='fas fa-external-link-alt fourth-action'></i>" + "               " + "           </span>" + "        </div>" + "</div>";
+        let btnGroup = "<div class='btn-group'>" + " <button type='button' data-toggle='dropdown' aria-expanded='false' class='text-dark btn btn-tool dropdown-toggle'>" + "            <i class='fas fa-external-link-alt'></i>" + "        </button> " + "       <div role='menu' class='dropdown-menu dropdown-menu-left'>" + "            <a target='_blank' class='dropdown-item' href='" + value['site'] + "'>" + "                <i class='fas fa-external-link-alt first-action'></i>" + "           </a>" + "            <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" + "                <i class='fas fa-external-link-alt second-action'></i>" + "           </a>" + "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" + "                  data-target='" + value['site'] + "'>" + "                <i class='fas fa-external-link-alt third-action'></i>" + "                " + "            </span>" + "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" + "                 data-target='" + value['site'] + "'>" + "               <i class='fas fa-external-link-alt fourth-action'></i>" + "               " + "           </span>" + "        </div>" + "</div>";
 
         let noTop = ''
         let ignorBlock = ''
@@ -36,9 +36,9 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         }
 
         if (value['danger']) {
-            warning = "<td class='bg-warning'>" + "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'>" + words.notGetData + "</span>" + ignorBlock + "</td>";
+            warning = "<td class='bg-warning'>" + " <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'>" + words.notGetData + "</span>" + ignorBlock + "</td>";
         } else {
-            warning = "<td>" + "   <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> " + words.successAnalyse + " </span>" + ignorBlock + "</td>"
+            warning = "<td>" + " <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> " + words.successAnalyse + " </span>" + ignorBlock + "</td>"
         }
 
         let color = false
@@ -67,8 +67,8 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         rows += position
         rows += "<td data-target='" + iterator + "' style='max-width: 450px;' class='" + className + "'>"
         rows += "<span class='analyzed-site' id='site-" + value['position'] + "'>" + value['site'] + "</span>"
-        rows += +noTop + btnGroup
-        rows += +"</td>"
+        rows += noTop + btnGroup
+        rows += "</td>"
         if (color) {
             rows += "<td style='background-color:" + getColor(value.mainPoints, avg.points) + "' data-target='" + value['mainPoints'] + "'>" + value['mainPoints'] + " </td>"
             rows += "<td style='background-color:" + getColor(value.coverage, avg.coverage) + "' data-target='" + value['coverage'] + "'>" + value['coverage'] + "% </td>"
