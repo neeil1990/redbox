@@ -24,16 +24,7 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    $projects = \App\MonitoringProject::all();
-    foreach ($projects as $project){
-        $user = $project->admin;
-        if($user->count()){
-            $user = $user[0];
-            $user->monitoringProjects()->update([
-                'creator' => $user['id'],
-            ]);
-        }
-    }
+    dd('hallo!');
 });
 
 Auth::routes(['verify' => true]);
