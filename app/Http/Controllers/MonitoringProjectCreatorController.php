@@ -26,6 +26,7 @@ class MonitoringProjectCreatorController extends Controller
         /** @var User $user */
         $user = $this->user;
         $project = $user->monitoringProjects()->create([
+            'creator' => $user['id'],
             'status' => 1,
             'name' => $request->input('name'),
             'url' => $request->input('url'),

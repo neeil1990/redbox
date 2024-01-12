@@ -276,8 +276,6 @@ class UsersController extends Controller
             $user->delete();
             flash()->overlay(__('User deleted successfully'), __('Delete user'))->success();
         }
-
-        return redirect('users');
     }
 
     /**

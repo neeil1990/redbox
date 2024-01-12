@@ -23,12 +23,17 @@ Route::get('info', function () {
     phpinfo();
 });
 
-Route::get('jobs', function () {
-    set_time_limit(0);
-
-    $job = App\Jobs::find(7373087);
-
-    dd(unserialize($job->payload['data']['command'])->handle());
+Route::get('dev', function () {
+    $projects = \App\MonitoringProject::all();
+    foreach ($projects as $project){
+        $user = $project->admin;
+        if($user->count()){
+            $user = $user[0];
+            $user->monitoringProjects()->update([
+                'creator' => $user['id'],
+            ]);
+        }
+    }
 });
 
 Auth::routes(['verify' => true]);
