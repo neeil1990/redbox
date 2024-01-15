@@ -321,7 +321,62 @@
                     }
                 });
             });
+
+            $(document).ready(function () {
+                let words = {
+                    search: "{{ __('Search') }}",
+                    show: "{{ __('show') }}",
+                    records: "{{ __('records') }}",
+                    noRecords: "{{ __('No records') }}",
+                    showing: "{{ __('Showing') }}",
+                    from: "{{ __('from') }}",
+                    to: "{{ __('to') }}",
+                    of: "{{ __('of') }}",
+                    entries: "{{ __('entries') }}",
+                    notGetData: "{{ __('Could not get data from the page') }}",
+                    successAnalyse: "{{ __('The page has been successfully analyzed') }}",
+                    notTop: "{{ __('the site did not get into the top') }}",
+                    hideDomains: "{{ __('hide ignored domains') }}",
+                    success: "{{ __('Successfully') }}",
+                };
+
+                $('#table').DataTable({
+                    language: {
+                        lengthMenu: "_MENU_",
+                        search: "_INPUT_",
+                        searchPlaceholder: "{{ __('Search') }}",
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
+                    oLanguage: {
+                        "sSearch": words.search + ":",
+                        "sLengthMenu": words.show + " _MENU_ " + words.records,
+                        "sEmptyTable": words.noRecords,
+                        "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                    },
+                    columnDefs: [{
+                            orderable: false, targets: [0, 6]
+                    }],
+                });
+            });
+
+            setTimeout(() => {
+                var block = $('#example_length')
+                if (localStorage.getItem('entries-information-option') !== undefined) {
+                    block.children().children().children().each(function () {
+                        if (this.value === localStorage.getItem('entries-information-option')) {
+                            $(this).parent().val(this.value).change();
+                        }
+                    });
+                }
+                block.children().children().change(function () {
+                    localStorage.setItem('entries-information-option', $('#example_length').children().children().val())
+                });
+            }, 250)
         </script>
-        <script defer src="{{ asset('plugins/domain-information/js/domain-information.js') }}"></script>
     @endslot
 @endcomponent
