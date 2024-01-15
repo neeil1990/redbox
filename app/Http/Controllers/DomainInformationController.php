@@ -54,7 +54,6 @@ class DomainInformationController extends Controller
         if (isset($request->domains)) {
             DomainInformationController::multipleCreation($request->domains, $user);
         } else {
-
             $domain = DomainInformation::getDomain($request->domain);
 
             if (DomainInformation::isValidDomain($domain)) {
@@ -83,19 +82,19 @@ class DomainInformationController extends Controller
         $newRecord = [];
         $domains = explode("\r\n", $domains);
         $domains = array_diff($domains, array(''));
-        foreach ($domains as $item) {
 
-            $domain = DomainInformation::getDomain($item);
+        foreach ($domains as $item) {
             $obj = explode(':', $item);
+            $domain = $obj[0];
             $counter = count($obj);
             $checkRegistrationDate = explode('/', $obj[$counter - 1]);
 
-            if (count($obj) == 4 || count($obj) == 3 && DomainInformation::isValidDomain($domain)) {
+            if (DomainInformation::isValidDomain($domain)) {
                 $newRecord[] = [
                     'user_id' => $user->id,
                     'domain' => $domain,
-                    'check_dns' => (boolean)$obj[$counter - 2],
-                    'check_registration_date' => (boolean)$checkRegistrationDate[0],
+                    'check_dns' => (boolean)$obj[1] ?? false,
+                    'check_registration_date' => (boolean)$checkRegistrationDate[0] ?? false,
                 ];
             }
         }
