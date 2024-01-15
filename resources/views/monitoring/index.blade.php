@@ -243,27 +243,9 @@
                                     }
                                 }
 
-                                let status = '{{ __('EMPTY') }}';
-
-                                switch (item.pivot.status)
-                                {
-                                    case 1:
-                                        status = '{{ __('TL') }}';
-                                        break;
-                                    case 2:
-                                        status = '{{ __('SEO') }}';
-                                        break;
-                                    case 3:
-                                        status = '{{ __('PM') }}';
-                                        break;
-                                    case 4:
-                                        status = '{{ __('OWNER') }}';
-                                        break;
-                                }
-
                                 li.append($('<span />', {class : 'badge badge-success navbar-badge'})
                                     .css({'right' : 0, 'left' : 0, 'top' : 'unset', 'bottom' : '-15px', cursor : 'pointer', "z-index" : 1})
-                                    .text(status)
+                                    .text(item.status.code)
                                 );
 
                                 ul.append(li);
@@ -806,49 +788,50 @@
                 let self = $(this);
                 let id = self.data('id');
 
-                $('.modal').modal('show').BootstrapModalFormTemplates({
-                    title: '{{ __('Add user to project') }}',
-                    btnText: '{{ __('Invite') }}',
-                    fields: [
-                        {
-                            type: 'text',
-                            name: "email",
-                            label: '{{ __('Email user') }} (Если вы хотите добавить сразу несколько пользователей перечислите email через запятую)',
-                            params: [{
-                                val: "",
-                                placeholder: 'test@mail.ru, test2@mail.ru, test3@mail.ru',
-                            }]
-                        },
-                        {
-                            type: 'select',
-                            name: "status",
-                            label: '{{ __('User status') }}',
-                            params: [
-                                { text: '{{ __('Without status') }}', val: 'DEF' },
-                                { text: '{{ __('Team Lead') }}', val: 'TL' },
-                                { text: '{{ __('Seo') }}', val: 'SEO' },
-                                { text: '{{ __('Project manager') }}', val: 'PM' },
-                            ]
-                        }
-                    ],
-                    onAgree: function (m) {
-                        const formData = new FormData(m.find('form').get(0));
-                        let email = formData.getAll('email')[0];
-                        let status = formData.getAll('status')[0];
+                axios.get('/monitoring/get-user-status-options')
+                    .then(function(response){
+                        $('.modal').modal('show').BootstrapModalFormTemplates({
+                            title: '{{ __('Add user to project') }}',
+                            btnText: '{{ __('Invite') }}',
+                            fields: [
+                                {
+                                    type: 'text',
+                                    name: "email",
+                                    label: '{{ __('Email user') }} (Если вы хотите добавить сразу несколько пользователей перечислите email через запятую)',
+                                    params: [{
+                                        val: "",
+                                        placeholder: 'test@mail.ru, test2@mail.ru, test3@mail.ru',
+                                    }]
+                                },
+                                {
+                                    type: 'select',
+                                    name: "status",
+                                    label: '{{ __('User status') }}',
+                                    params: response.data,
+                                }
+                            ],
+                            onAgree: function (m) {
+                                const formData = new FormData(m.find('form').get(0));
+                                let email = formData.getAll('email')[0];
+                                let status = formData.getAll('status')[0];
 
-                        axios.post('{{ route('approve.attach') }}', {
-                            id: id,
-                            email: email,
-                            status: status,
-                        }).then(function (response) {
-                            toastr.success('{{ __('Request has been sent') }}');
-                            table.draw(false);
-                            m.modal('hide');
-                        }).catch(function (error) {
-                            toastr.error('{{ __('Wrong mail') }}');
+                                axios.post('{{ route('approve.attach') }}', {
+                                    id: id,
+                                    email: email,
+                                    status: status,
+                                }).then(function (response) {
+                                    toastr.success('{{ __('Request has been sent') }}');
+                                    table.draw(false);
+                                    m.modal('hide');
+                                }).catch(function (error) {
+                                    toastr.error('{{ __('Wrong mail') }}');
+                                });
+                            }
                         });
-                    }
-                });
+                    })
+                    .catch(function(error){
+                        console.log(error);
+                    });
             });
 
             $('#projects').on('click', '.detach-user', function(){
@@ -884,40 +867,40 @@
                 let user = self.attr('user-id');
                 let project = $(this).closest('tr').find('input[type="checkbox"]').val();
 
-                $('.modal').modal('show').BootstrapModalFormTemplates({
-                    title: '{{ __('Set user status') }}',
-                    btnText: '{{ __('Save') }}',
-                    fields: [
-                        {
-                            type: 'select',
-                            name: "status",
-                            label: '{{ __('User status') }}',
-                            params: [
-                                { text: '{{ __('Without status') }}', val: 'DEF' },
-                                { text: '{{ __('Owner') }}', val: 'OWNER' },
-                                { text: '{{ __('Team Lead') }}', val: 'TL' },
-                                { text: '{{ __('Seo') }}', val: 'SEO' },
-                                { text: '{{ __('Project manager') }}', val: 'PM' },
-                            ]
-                        }
-                    ],
-                    onAgree: function (m) {
-                        const formData = new FormData(m.find('form').get(0));
-                        let status = formData.getAll('status')[0];
+                axios.get('/monitoring/get-user-status-options')
+                    .then(function(response){
+                        $('.modal').modal('show').BootstrapModalFormTemplates({
+                            title: '{{ __('Set user status') }}',
+                            btnText: '{{ __('Save') }}',
+                            fields: [
+                                {
+                                    type: 'select',
+                                    name: "status",
+                                    label: '{{ __('User status') }}',
+                                    params: response.data,
+                                }
+                            ],
+                            onAgree: function (m) {
+                                const formData = new FormData(m.find('form').get(0));
+                                let status = formData.getAll('status')[0];
 
-                        axios.post('{{ route('monitoring.user.project.status') }}', {
-                            user: user,
-                            project: project,
-                            status: status,
-                        }).then(function (response) {
-                            toastr.success('{{ __('Saved') }}');
-                            table.draw(false);
-                            m.modal('hide');
-                        }).catch(function (error) {
-                            toastr.error('{{ __('You must be administrator project.') }}');
+                                axios.post('{{ route('monitoring.user.project.status') }}', {
+                                    user: user,
+                                    project: project,
+                                    status: status,
+                                }).then(function (response) {
+                                    toastr.success('{{ __('Saved') }}');
+                                    table.draw(false);
+                                    m.modal('hide');
+                                }).catch(function (error) {
+                                    toastr.error('{{ __('You must be administrator project.') }}');
+                                });
+                            }
                         });
-                    }
-                });
+                    })
+                    .catch(function(error){
+                        console.log(error);
+                    });
 
                 return false;
             });

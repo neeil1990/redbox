@@ -37,11 +37,9 @@
     <div class="btn-group">
         <select id="filter-user-status" class="custom-select custom-select-sm form-control form-control-sm">
             <option value="">{{ __('Show all users status') }}</option>
-            <option value="0">{{ __('EMPTY') }}</option>
-            <option value="4">{{ __('OWNER') }}</option>
-            <option value="1">{{ __('TL') }}</option>
-            <option value="2">{{ __('SEO') }}</option>
-            <option value="3">{{ __('PM') }}</option>
+            @foreach(\App\Http\Controllers\MonitoringProjectUserStatusController::getOptions() as $option)
+                <option value="{{ $option['id'] }}">{{ $option['text'] }}</option>
+            @endforeach
         </select>
     </div>
 
