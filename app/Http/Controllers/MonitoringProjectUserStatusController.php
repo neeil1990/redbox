@@ -3,26 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\MonitoringProject;
+use App\MonitoringUserStatus;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class MonitoringProjectUserStatusController extends Controller
 {
-    const STATUS_DEF = 0;
-    const STATUS_TL = 1;
-    const STATUS_SEO = 2;
-    const STATUS_PM = 3;
-    const STATUS_OWNER = 4;
+    const STATUS_EMPTY = 'EMPTY'; // Empty
+    const STATUS_OWNER = 'OWNER'; // Project owner
+    const STATUS_TL = 'TL'; // Team Lead
+    const STATUS_PM = 'PM'; // Project manager
+    const STATUS_SEO = 'SEO'; // SEO
 
     protected $auth;
-    protected $status = [
-        'DEF' => self::STATUS_DEF, // Default
-        'TL' => self::STATUS_TL, // Team Lead
-        'SEO' => self::STATUS_SEO, // SEO
-        'PM' => self::STATUS_PM, // Project manager
-        'OWNER' => self::STATUS_OWNER, // Project owner
-    ];
 
     public function __construct()
     {
@@ -47,14 +42,41 @@ class MonitoringProjectUserStatusController extends Controller
 
     public function setStatusUser(User $user, int $project, string $status): bool
     {
-        if(!isset($this->status[$status]))
-            abort(403, 'wrong user status code.');
-
-        return $user->monitoringProjects()->withTimestamps()->updateExistingPivot($project, ["status" => $this->status[$status]]);
+        return $user->monitoringProjects()->withTimestamps()->updateExistingPivot($project, ["status" => self::getIdStatusByCode($status)]);
     }
 
     public function isProjectAdmin(User $user, int $project)
     {
         return $user->monitoringProjects()->findOrFail($project)->pivot->admin >= 1;
+    }
+
+    static public function getOptions()
+    {
+        $options = MonitoringUserStatus::all();
+
+        $options->transform(function($item){
+            $item['val'] = $item['code'];
+            $item['text'] = $item['name'];
+
+            return $item;
+        });
+
+        return $options;
+    }
+
+    static public function getStatusByCode(string $code): MonitoringUserStatus
+    {
+        return MonitoringUserStatus::where('code', $code)->firstOrFail();
+    }
+
+    static public function getStatusById(int $id): MonitoringUserStatus
+    {
+        return MonitoringUserStatus::findOrFail($id);
+    }
+
+    static public function getIdStatusByCode(string $code): int
+    {
+        $status = self::getStatusByCode($code);
+        return $status['id'];
     }
 }

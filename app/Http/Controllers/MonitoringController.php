@@ -255,6 +255,12 @@ class MonitoringController extends Controller
                 return '<span class="badge badge-light"><i class="fab fa-' . $item . ' fa-sm"></i></span>';
             })->implode(' ');
 
+            $item->users->transform(function($user){
+                $statusId = $user['pivot']['status'];
+                $user['status'] = MonitoringProjectUserStatusController::getStatusById($statusId);
+                return $user;
+            });
+
             return $item;
         });
 
