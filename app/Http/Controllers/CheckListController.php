@@ -178,6 +178,7 @@ class CheckListController extends Controller
         return response()->json([]);
     }
 
+    // todo
     public function getChecklists(Request $request): JsonResponse
     {
         $userId = Auth::id();
@@ -376,24 +377,25 @@ class CheckListController extends Controller
 
     public function getTasks(Request $request): array
     {
-        $sql = ChecklistTasks::where('project_id', $request->input('id'))
-            ->whereDate('active_after', '<=', Carbon::now());
+        $sql = ChecklistTasks::where('project_id', $request->input('id'));
+
+        if ($request->sort !== 'deactivated') {
+            $sql->whereDate('active_after', '<=', Carbon::now());
+        }
 
         if (isset($request->search)) {
             $sql->where('name', 'like', "%$request->search%");
         }
 
-        if ($request->sort === 'new') {
-            $sql->orderBy('id');
-        } elseif ($request->sort === 'old') {
+        if ($request->sort === 'new-sort') {
             $sql->orderByDesc('id');
+        } elseif ($request->sort === 'old-sort') {
+            $sql->orderBy('id');
         } elseif ($request->sort != 'all') {
             $sql->where('status', $request->sort);
         }
 
-        $tasks = $sql
-            ->get()
-            ->toArray();
+        $tasks = $sql->get()->toArray();
 
         if (empty($request->search)) {
             $tasks = $this->buildTaskStructure($tasks);
@@ -716,8 +718,12 @@ class CheckListController extends Controller
             ];
 
             if ($task['status'] === 'deactivated') {
-                $object['status'] = 'in_work';
-                $object['active_after'] = $task['active_after'] ?? Carbon::now()->toDateTimeString();
+                $object['active_after'] = $task['active_after'];
+                $object['date_start'] = $task['active_after'];
+                $object['deadline'] = Carbon::parse($task['active_after'])->addDays($task['count_days']);
+                // todo вывести доп инфу о неактивных задачах
+            } else if ($task['status'] === 'repeat') {
+
             }
 
             if (isset($taskId)) {
@@ -776,32 +782,34 @@ class CheckListController extends Controller
     private function confirmArray($lists): array
     {
         foreach ($lists as $key => $list) {
-            $inWork = 0;
-            $new = 0;
-            $inactive = 0;
-            $ready = 0;
+            $deactivated = 0;
             $expired = 0;
+            $repeat = 0;
+            $inWork = 0;
+            $ready = 0;
+            $new = 0;
 
             foreach ($list['tasks'] as $task) {
                 if ($task['status'] === 'in_work') {
-                    if (Carbon::now() <= Carbon::parse($task['active_after'])) {
-                        $inactive++;
-                    } else {
-                        $inWork++;
-                    }
+                    $inWork++;
                 } else if ($task['status'] === 'ready') {
                     $ready++;
                 } else if ($task['status'] === 'new') {
                     $new++;
-                } else {
+                } else if ($task['status'] === 'deactivated') {
+                    $deactivated++;
+                } else if ($task['status'] === 'expired') {
                     $expired++;
+                } else if ($task['status'] === 'repeat') {
+                    $repeat++;
                 }
             }
 
-            $lists[$key]['work'] = $inWork;
-            $lists[$key]['inactive'] = $inactive;
-            $lists[$key]['ready'] = $ready;
+            $lists[$key]['inactive'] = $deactivated;
             $lists[$key]['expired'] = $expired;
+            $lists[$key]['repeat'] = $repeat;
+            $lists[$key]['ready'] = $ready;
+            $lists[$key]['work'] = $inWork;
             $lists[$key]['new'] = $new;
         }
 

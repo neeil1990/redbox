@@ -1,19 +1,16 @@
 <?php
 
-namespace App\Classes\Cron;
+namespace App\Classes\Cron\checklist;
 
 use App\ChecklistNotification;
 use App\ChecklistTasks;
 use Carbon\Carbon;
 
-class CheckListNotificationsCrone
+class CheckListNotifications
 {
     public function __invoke()
     {
-        $tasks = ChecklistTasks::where('deadline', '<', Carbon::now())
-            ->where('status', 'in_work')
-            ->orWhere('status', 'new')
-            ->get();
+        $tasks = ChecklistTasks::where('deadline', '<', Carbon::now())->where('status', '!=', 'expired')->get();
 
         foreach ($tasks as $task) {
             $task->update([

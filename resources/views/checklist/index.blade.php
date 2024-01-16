@@ -92,14 +92,14 @@
             }
 
             #tasks .custom.custom-select {
-                width: 100px;
+                width: 150px;
             }
 
             .hide-border {
                 border: none;
             }
 
-            .hide-border:active, .hide-border:focus {
+            g.hide-border:active, .hide-border:focus {
                 border: 1px solid #ced4da !important;
             }
         </style>
@@ -979,6 +979,7 @@
                     '                        <option value="in_work">В работе</option>' +
                     '                        <option value="ready">Готово</option>' +
                     '                        <option value="expired">Просрочена</option>' +
+                    '                        <option value="repeat">Повторяющаяся</option>' +
                     '                    </select>' +
                     '                </div>' +
                     '                <div class="form-group col-4">' +
@@ -1018,6 +1019,65 @@
                 )
 
                 subTaskCounter++
+            })
+
+            $(document).on('click', '#add-task', function () {
+                $('#tasks').append(
+                    '<li data-id="' + counter + '">' +
+                    '    <div class="card">' +
+                    '    <div class="card-header d-flex flex-row justify-content-between" id="heading' + counter + '">' +
+                    '        <div class="d-flex w-75">' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Название задачи</label>' +
+                    '                <input data-id="name-' + counter + '" type="text" class="form form-control"' +
+                    '                       placeholder="Название задачи">' +
+                    '            </div>' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Статус</label>' +
+                    '                <select data-id="status-' + counter + '" class="custom custom-select">' +
+                    '                    <option value="new">Новая</option>' +
+                    '                    <option value="in_work">В работе</option>' +
+                    '                    <option value="expired">Просрочено</option>' +
+                    '                    <option value="ready">Готово</option>' +
+                    '                    <option value="repeat">Повторяющаяся</option>' +
+                    '                </select>' +
+                    '            </div>' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Дедлайн</label>' +
+                    '                <input data-id="deadline-' + counter + '" type="datetime-local" class="form form-control">' +
+                    '            </div>' +
+                    '        </div>' +
+                    '        <div style="display: flex; justify-content: center; align-items: center; margin-top: 13px;">' +
+                    '            <button class="btn btn-sm btn-default" data-toggle="collapse"' +
+                    '                    data-target="#collapse' + counter + '"' +
+                    '                    aria-expanded="true" aria-controls="collapse' + counter + '">' +
+                    '                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top"' +
+                    '                   title="Скрыть - Показать"></i>' +
+                    '            </button>' +
+                    '            <button class="btn btn-sm btn-default remove-task"' +
+                    '                    data-toggle="tooltip"' +
+                    '                    data-placement="top" title="Удалить">' +
+                    '                <i class="fa fa-trash"></i>' +
+                    '            </button>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '    <div id="collapse' + counter + '" class="collapse" aria-labelledby="heading' + counter + '"' +
+                    '         data-parent="#accordionExample">' +
+                    '        <div class="card-body">' +
+                    '            <textarea id="description-' + counter + '" cols="30" rows="10" class="form-control" placeholder="Описание"></textarea>' +
+                    '        </div>' +
+                    '        <ol id="subtasks-' + counter + '"></ol>' +
+                    '        <div class="card-footer">' +
+                    '            <button class="btn btn-default add-subtask" data-id="' + counter + '">' +
+                    '                Добавить подзадачу' +
+                    '            </button>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>' +
+                    '</li>'
+                )
+
+                counter++
             })
 
             $(document).on('click', '#archived-checklists', function () {
@@ -1143,65 +1203,6 @@
                 })
             })
 
-            $('#add-task').on('click', function () {
-                $('#tasks').append(
-                    '<li data-id="' + counter + '">' +
-                    '    <div class="card">' +
-                    '    <div class="card-header d-flex flex-row justify-content-between"' +
-                    '         id="heading' + counter + '">' +
-                    '        <div class="d-flex w-75">' +
-                    '            <div class="form-group col-4">' +
-                    '                <label>Название задачи</label>' +
-                    '                <input data-id="name-' + counter + '" type="text" class="form form-control"' +
-                    '                       placeholder="Название задачи">' +
-                    '            </div>' +
-                    '            <div class="form-group col-4">' +
-                    '                <label>Статус</label>' +
-                    '                <select data-id="status-' + counter + '" class="custom custom-select">' +
-                    '                    <option value="new">Новая</option>' +
-                    '                    <option value="in_work">В работе</option>' +
-                    '                    <option value="expired">Просрочен</option>' +
-                    '                    <option value="ready">Готово</option>' +
-                    '                </select>' +
-                    '            </div>' +
-                    '            <div class="form-group col-4">' +
-                    '                <label>Дедлайн</label>' +
-                    '                <input data-id="deadline-' + counter + '" type="datetime-local" class="form form-control">' +
-                    '            </div>' +
-                    '        </div>' +
-                    '        <div style="display: flex; justify-content: center; align-items: center; margin-top: 13px;">' +
-                    '            <button class="btn btn-sm btn-default" data-toggle="collapse"' +
-                    '                    data-target="#collapse' + counter + '"' +
-                    '                    aria-expanded="true" aria-controls="collapse' + counter + '">' +
-                    '                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top"' +
-                    '                   title="Скрыть - Показать"></i>' +
-                    '            </button>' +
-                    '            <button class="btn btn-sm btn-default remove-task"' +
-                    '                    data-toggle="tooltip"' +
-                    '                    data-placement="top" title="Удалить">' +
-                    '                <i class="fa fa-trash"></i>' +
-                    '            </button>' +
-                    '        </div>' +
-                    '    </div>' +
-                    '    <div id="collapse' + counter + '" class="collapse" aria-labelledby="heading' + counter + '"' +
-                    '         data-parent="#accordionExample">' +
-                    '        <div class="card-body">' +
-                    '            <textarea id="description-' + counter + '" cols="30" rows="10" class="form-control" placeholder="Описание"></textarea>' +
-                    '        </div>' +
-                    '        <ol id="subtasks-' + counter + '"></ol>' +
-                    '        <div class="card-footer">' +
-                    '            <button class="btn btn-default add-subtask" data-id="' + counter + '">' +
-                    '                Добавить подзадачу' +
-                    '            </button>' +
-                    '        </div>' +
-                    '    </div>' +
-                    '</div>' +
-                    '</li>'
-                )
-
-                counter++
-            })
-
             $('#remove').on('click', function () {
                 $.ajax({
                     type: 'get',
@@ -1233,7 +1234,9 @@
                     description: $('.pre-description[data-id="' + $dataId + '"]').val(),
                     deadline: $('input[data-type="deadline"][data-target="' + $dataId + '"]').val(),
                     start: $('input[data-type="start"][data-target="' + $dataId + '"]').val(),
+                    count_days: $('.datetime-counter[data-target="' + $dataId + '"]').val(),
                     active_after: $('input[data-type="active_after"][data-target="' + $dataId + '"]').val(),
+                    repeat_after: $('input[data-type="repeat_after"][data-target="' + $dataId + '"]').val(),
                 }
 
                 if ($('#subtasks-' + $dataId).children('li').length > 0) {
@@ -1450,10 +1453,13 @@
                         '                    <span class="width">В работе:</span> <span>' + v.work + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
-                        '                    <span class="width">Не активные:</span> <span>' + v.inactive + '</span>' +
+                        '                    <span class="width">Готовые:</span> <span>' + v.ready + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
-                        '                    <span class="width">Готовые:</span> <span>' + v.ready + '</span>' +
+                        '                    <span class="width">Повторяющиеся:</span> <span>' + v.repeat + '</span>' +
+                        '                </div>' +
+                        '                <div class="d-flex row">' +
+                        '                    <span class="width">Отложенные:</span> <span>' + v.inactive + '</span>' +
                         '                </div>' +
                         '                <div class="d-flex row">' +
                         '                    <span class="width">Просроченые:</span> <span>' + v.expired + '</span>' +
@@ -1543,7 +1549,6 @@
                     minHeight: 350,
                     lang: "ru-RU"
                 })
-
                 refreshTooltips()
             })
 
@@ -1650,22 +1655,33 @@
             $(document).on('input', '.datetime-counter', function () {
                 let $id = $(this).attr('data-target')
                 let value = $(this).val()
-
                 let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
                 let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
-                let newDate = new Date(new Date($start.val()).getTime() + (value * count_ml_in_day)).toISOString().slice(0, 16)
+                let newDate = new Date(new Date($start.val()).getTime() + (value * count_ml_in_day) + 10800000).toISOString().slice(0, 16)
 
                 $deadline.val(newDate)
             })
 
             $(document).on('change', '.task-status', function () {
                 let $id = $(this).attr('data-target')
-
                 refreshTooltips()
+
                 if ($(this).val() === 'deactivated') {
-                    $('.deactivated[data-target="' + $id + '"]').show(300)
+                    $('.deactivated[data-target="' + $id + '"]').show()
+                    $('.datetime-counter[data-target="' + $id + '"]').show()
+                    $('.datetime[data-target="' + $id + '"][data-type="start"]').hide()
+                    $('.datetime[data-target="' + $id + '"][data-type="deadline"]').hide()
+                    $('.datetime-repeat-counter[data-target="' + $id + '"]').hide()
+                } else if ($(this).val() === 'repeat') {
+                    $('.datetime-counter[data-target="' + $id + '"]').hide()
+                    $('.datetime-repeat-counter[data-target="' + $id + '"]').show()
+                    $('.datetime[data-target="' + $id + '"][data-type="deadline"]').hide()
                 } else {
                     $('.deactivated[data-target="' + $id + '"]').hide()
+                    $('.datetime-counter[data-target="' + $id + '"]').show()
+                    $('.datetime[data-target="' + $id + '"][data-type="deadline"]').show()
+                    $('.datetime[data-target="' + $id + '"][data-type="start"]').show()
+                    $('.datetime-repeat-counter[data-target="' + $id + '"]').hide()
                 }
             })
 
@@ -1690,16 +1706,18 @@
                     return '<li data-id="' + id + '" class="default d-flex">' +
                         '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
                         '    <div class="tools d-flex" style="float: right">' +
-                        '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" value="0" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
-                        '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
-                        '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
                         '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
                         '            <option value="new" selected>Новая</option>' +
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
                         '            <option value="expired">Просрочено</option>' +
                         '            <option value="deactivated">Не активная</option>' +
+                        '            <option value="repeat">Повторяющаяся</option>' +
                         '        </select>' +
+                        '        <input class="form form-control datetime-repeat-counter" type="number" step="1" min="1" data-target="' + id + '" data-type="repeat_after" value="1" data-toggle="tooltip" data-placement="left" title="Повторять каждые N дней" style="display:none; width: 55px">' +
+                        '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
+                        '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
+                        '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
                         '        <input class="form form-control deactivated" style="display: none" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +

@@ -251,16 +251,20 @@
             <span id="checklist-work"></span>
         </div>
         <div>
-            Отложенные:
-            <span id="checklist-inactive"></span>
-        </div>
-        <div>
             Готовые:
             <span id="checklist-ready"></span>
         </div>
         <div>
             Просроченые:
             <span id="checklist-expired"></span>
+        </div>
+        <div>
+            Отложенные:
+            <span id="checklist-inactive"></span>
+        </div>
+        <div>
+            Повторяющиеся:
+            <span id="checklist-repeat"></span>
         </div>
         <div>
             <a href="{{ route('checklist') }}">Вернутся к списку проектов</a>
@@ -375,11 +379,13 @@
                     <label for="sort">Сортировка</label>
                     <select name="sort" id="sort" class="custom custom-select">
                         <option value="all" selected>Любые</option>
-                        <option value="new">Сначала новые</option>
-                        <option value="old">Сначала старые</option>
-                        <option value="ready">Готовые</option>
-                        <option value="in_work">В работе</option>
+                        <option value="new-sort">Сначала новые</option>
+                        <option value="old-sort">Сначала старые</option>
                         <option value="expired">Просроченные</option>
+                        <option value="in_work">В работе</option>
+                        <option value="ready">Готовые</option>
+                        <option value="new">Новые</option>
+                        <option value="deactivated">Отложенные</option>
                     </select>
                 </div>
             </div>
@@ -841,6 +847,8 @@
                 let work = '<option value="in_work">В работе</option>'
                 let ready = '<option value="ready">Готово</option>'
                 let expired = '<option value="expired">Просрочено</option>'
+                let deactivated = '<option value="deactivated">Отложенная</option>'
+                let repeat = '<option value="repeat">Повторяющаяся</option>'
 
                 if (task.status === 'new') {
                     newState = '<option value="new" selected>Новая</option>'
@@ -848,13 +856,16 @@
                     work = '<option value="in_work" selected>В работе</option>'
                 } else if (task.status === 'ready') {
                     ready = '<option value="ready" selected>Готово</option>'
-                } else {
+                } else if (task.status === 'expired') {
                     expired = '<option value="expired" selected>Просрочено</option>'
+                } else if (task.status === 'deactivated') {
+                    deactivated = '<option value="deactivated" selected>Отложенная</option>'
+                } else if (task.status === 'repeat') {
+                    repeat = '<option value="repeat" selected>Повторяющаяся</option>'
                 }
 
                 let start = new Date(task.date_start).toISOString().slice(0, 16);
                 let end = new Date(task.deadline).toISOString().slice(0, 16);
-
 
                 let button = ''
                 // if (task.subtasks && task.subtasks.length > 0) {
@@ -873,7 +884,9 @@
                     newState +
                     work +
                     ready +
+                    deactivated +
                     expired +
+                    repeat +
                     '       </select>' +
                     '       <div class="btn-group pl-2">' +
                     '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + task.id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + task.id + '"><i class="fa fa-eye"></i></button>' +
@@ -1209,6 +1222,7 @@
                         $("#checklist-inactive").html(checklist.inactive)
                         $("#checklist-expired").html(checklist.expired)
                         $("#checklist-ready").html(checklist.ready)
+                        $("#checklist-repeat").html(checklist.repeat)
 
                         $('#tasks-ready').html(checklist.ready)
                         $('#tasks-work').html(checklist.work)
