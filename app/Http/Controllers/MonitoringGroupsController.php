@@ -9,8 +9,10 @@ use Illuminate\Support\Collection;
 
 class MonitoringGroupsController extends Controller
 {
-    protected $user;
+    const OPTION_USERS = 'users_option';
+    const OPTION_GROUPS = 'groups_option';
 
+    protected $user;
     protected $project;
     protected $groups;
     protected $fieldErrors;
@@ -33,32 +35,37 @@ class MonitoringGroupsController extends Controller
         if($request->ajax())
             return $this->getDataTable();
 
+        $owner = $this->getOwner($this->project->users);
 
-        return view('monitoring.groups.index');
+        return view('monitoring.groups.index', compact('owner'));
     }
 
     public function action(Request $request, $id)
     {
         $this->fillFields($request, $id);
 
-        $data = collect($request->input('data'))->collapse();
+        foreach ($request->input('data') as $data) {
+            $collect = collect($data);
 
-        $this->validation($data);
+            $this->validation($collect);
 
-        if($error = $this->getFieldErrors())
-            return $error;
+            if($error = $this->getFieldErrors())
+                return $error;
 
-        switch ($request->input('action')) {
-            case 'create':
-                return $this->create($data);
-                break;
-            case 'edit':
-                return $this->edit($data);
-                break;
-            case 'remove':
-                return $this->remove($data);
-                break;
+            switch ($request->input('action')) {
+                case 'create':
+                    $this->create($collect);
+                    break;
+                case 'edit':
+                    $this->edit($collect);
+                    break;
+                case 'remove':
+                    $this->remove($collect);
+                    break;
+            }
         }
+
+        return $this->getDataTable();
     }
 
     public function getDataTable()
@@ -66,8 +73,8 @@ class MonitoringGroupsController extends Controller
         $collection = collect([]);
         $options = collect([]);
 
-        $options->put('groups', $this->getGroupsOptions($this->project->groups));
-        $options->put('users', $this->getUsersOptions());
+        $options->put(self::OPTION_GROUPS, $this->getGroupsOptions($this->project->groups));
+        $options->put(self::OPTION_USERS, $this->getUsersOptions());
 
         $collection->put('data', $this->groups);
         $collection->put('options', $options);
@@ -96,8 +103,13 @@ class MonitoringGroupsController extends Controller
             return false;
 
         $options = collect([]);
-        foreach($users->pluck('fullName', 'id') as $id => $name)
-            $options->push(collect(['label' => $name, 'value' => $id]));
+        foreach($users as $user){
+            $name = $user['fullName'];
+            $status = MonitoringProjectUserStatusController::getStatusById($user->pivot->status);
+            $name .= ' (' . $status['name'] . ')';
+
+            $options->push(collect(['label' => $name, 'value' => $user['id']]));
+        }
 
         return $options;
     }
@@ -142,8 +154,6 @@ class MonitoringGroupsController extends Controller
             'type' => 'keyword',
             'name' => $data['name'],
         ]);
-
-        return $this->getDataTable();
     }
 
     private function edit(Collection $data)
@@ -155,19 +165,17 @@ class MonitoringGroupsController extends Controller
         ]);
 
         $users = [];
-        if ($data->has('users'))
-            $users = $data['users'];
+        if ($data->has(self::OPTION_USERS))
+            $users = $data[self::OPTION_USERS];
 
         $model->users()->sync($users);
 
-        $group = (int) $data['groups'];
+        $group = (int) $data[self::OPTION_GROUPS];
         if($group > 0){
             $model->keywords->each(function($item) use ($group){
                 $item->update(['monitoring_group_id' => $group]);
             });
         }
-
-        return $this->getDataTable();
     }
 
     private function remove(Collection $data)
@@ -178,8 +186,6 @@ class MonitoringGroupsController extends Controller
             return collect(['error' => 'Перенесите запросы, чтобы удалить группу']);
 
         $group->delete();
-
-        return $this->getDataTable();
     }
 
     private function validation($data)
@@ -208,5 +214,16 @@ class MonitoringGroupsController extends Controller
     {
         $model = new MonitoringGroup();
         return $model->create($request->all());
+    }
+
+    private function getOwner(Collection $users)
+    {
+        foreach($users as $user){
+            $status = MonitoringProjectUserStatusController::getStatusById($user->pivot->status);
+            if($status['code'] == MonitoringProjectUserStatusController::STATUS_OWNER)
+                return $user;
+        }
+
+        return null;
     }
 }

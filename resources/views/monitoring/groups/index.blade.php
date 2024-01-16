@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-select/css/select.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-editor/css/editor.bootstrap4.min.css') }}">
         <!-- Select2 -->
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
@@ -15,6 +16,11 @@
         <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
 
         <style>
+            .DTE_Field div.multi-value,
+            .DTE_Field div.multi-restore {
+                border: 1px dotted #666;
+                border-radius: 3px;
+            }
             .dataTables_filter label {
                 margin-bottom: 0;
             }
@@ -72,6 +78,7 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-editor/js/datatables_editor.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-select/js/dataTables.select.min.js') }}"></script>
         <!-- Select2 -->
         <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
         <!-- InputMask -->
@@ -95,20 +102,22 @@
                 {
                     label: "Группа:",
                     name: "name",
-                    def: "Название группы",
+                    fieldInfo: 'Название группы',
+                    def: "",
                 },
             ];
 
             let dynamicHideFields = [
                 {
                     label: "Перенести запросы в раздел:",
-                    name: "groups",
+                    name: "groups_option",
                     type:  "select",
                 },
                 {
                     label: "Пользователи:",
-                    name: "users",
+                    name: "users_option",
                     type: "checkbox",
+                    def: "{{ $owner['id'] }}",
                 },
             ];
 
@@ -122,7 +131,13 @@
                     create: {
                         button: "+ Создать новую группу",
                         submit: "Создать",
-                    }
+                    },
+                    multi: {
+                        "title": "Несколько значений",
+                        "info": "Выбранные элементы содержат разные значения для этого входа. Чтобы отредактировать и установить для всех элементов этого ввода одинаковое значение, нажмите здесь, в противном случае они сохранят свои индивидуальные значения.",
+                        "restore": "Отменить изменения",
+                        "noMulti": "Этот вход можно редактировать индивидуально, но не как часть группы."
+                    },
                 },
             });
 
@@ -229,7 +244,20 @@
                         orderable: false
                     }
                 ],
+                select: {
+                    style: 'multi'
+                },
                 buttons: [
+                    {
+                        text: "Выбрать всё",
+                        className: "btn-default btn-sm",
+                        extend: "selectAll",
+                    },
+                    {
+                        text: "Отменить выбранные",
+                        className: "btn-default btn-sm",
+                        extend: "selectNone",
+                    },
                     {
                         extend: "create",
                         editor: editor,
@@ -241,6 +269,12 @@
                                 buttons: "Создать",
                             });
                         }
+                    },
+                    {
+                        text: "Редактировать выбранные",
+                        className: "btn-default btn-sm",
+                        extend: "edit",
+                        editor: editor
                     },
                 ],
                 headerCallback: function(thead, data, start, end, display) {
