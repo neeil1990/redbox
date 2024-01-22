@@ -381,11 +381,12 @@
                         <option value="all" selected>Любые</option>
                         <option value="new-sort">Сначала новые</option>
                         <option value="old-sort">Сначала старые</option>
+                        <option value="deactivated">Отложенные</option>
                         <option value="expired">Просроченные</option>
+                        <option value="repeat">Повторяющиеся</option>
                         <option value="in_work">В работе</option>
                         <option value="ready">Готовые</option>
                         <option value="new">Новые</option>
-                        <option value="deactivated">Отложенные</option>
                     </select>
                 </div>
             </div>

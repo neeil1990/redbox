@@ -178,7 +178,6 @@ class CheckListController extends Controller
         return response()->json([]);
     }
 
-    // todo
     public function getChecklists(Request $request): JsonResponse
     {
         $userId = Auth::id();
@@ -387,6 +386,7 @@ class CheckListController extends Controller
             $sql->where('name', 'like', "%$request->search%");
         }
 
+        Log::info($request->sort);
         if ($request->sort === 'new-sort') {
             $sql->orderByDesc('id');
         } elseif ($request->sort === 'old-sort') {
@@ -706,6 +706,7 @@ class CheckListController extends Controller
     {
         foreach ($tasks as $task) {
             $task = $task[0] ?? $task;
+            Log::debug('test', [$task]);
             $deadline = isset($task['deadline']) ? Carbon::parse($task['deadline'])->toDateTimeString() : Carbon::now()->toDateTimeString();
 
             $object = [
@@ -721,9 +722,18 @@ class CheckListController extends Controller
                 $object['active_after'] = $task['active_after'];
                 $object['date_start'] = $task['active_after'];
                 $object['deadline'] = Carbon::parse($task['active_after'])->addDays($task['count_days']);
-                // todo вывести доп инфу о неактивных задачах
             } else if ($task['status'] === 'repeat') {
 
+                // TODO Протестировать создание
+                // TODO описать метод в карбоне, который будет перезапускать задачу
+
+                $object['weekends'] = $task['weekends'];
+                if ($task['weekends']) {
+                    $object['active_after'] = Carbon::parse($task['active_after'])->addWeekdays($task['repeat_after']);
+                } else {
+                    $object['active_after'] = $task['active_after'];
+                }
+                $object['date_start'] = $object['active_after'];
             }
 
             if (isset($taskId)) {
