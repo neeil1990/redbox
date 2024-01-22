@@ -470,11 +470,3 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 });
-
-Route::get('/check-relevance', function (){
-    $first = RelevanceHistory::where('id', 47861)->first();
-    $second = RelevanceHistory::where('id', 47863)->first();
-
-    dump(\App\Common::uncompressArray($first->html_main_page));
-    dd(\App\Common::uncompressArray($second->html_main_page));
-});
