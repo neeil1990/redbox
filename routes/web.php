@@ -15,6 +15,7 @@ use App\ChecklistNotification;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\MainProject;
+use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -468,4 +469,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/checklist/delete-notification/{notification}', 'CheckListController@deleteNotification')->name('checklist.delete.notification');
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
+});
+
+Route::get('/check-relevance', function (){
+    dump(RelevanceHistory::where('id', 41861)->first());
+    dd(RelevanceHistory::where('id', 41863)->first());
 });
