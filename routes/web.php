@@ -472,6 +472,6 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/check-relevance', function (){
-    dump(RelevanceHistory::where('id', 41861)->first());
-    dd(RelevanceHistory::where('id', 41863)->first());
+    dump(RelevanceHistory::where('id', 47861)->first());
+    dd(RelevanceHistory::where('id', 47863)->first());
 });
