@@ -84,6 +84,14 @@ class SearchCompetitors extends Model
 
     public function getResult()
     {
+        Log::debug('competitors results', [
+            'analysedSites' => $this->tryConvertEncoding($this->analysedSites),
+            'pagesCounter' => $this->tryConvertEncoding($this->pagesCounter),
+            'totalMetaTags' => $this->tryConvertEncoding($this->totalMetaTags),
+            'domainsPosition' => $this->tryConvertEncoding($this->domainsPosition),
+            'urls' => $this->tryConvertEncoding($this->urls),
+        ]);
+
         return json_encode([
             'analysedSites' => $this->tryConvertEncoding($this->analysedSites),
             'pagesCounter' => $this->tryConvertEncoding($this->pagesCounter),
@@ -115,6 +123,7 @@ class SearchCompetitors extends Model
                 $xml->setQuery($phrase);
                 $xml->setAttempt();
                 $this->sites[$phrase] = $xml->getXMLResponse();
+                Log::debug($phrase, [$this->sites[$phrase]]);
             }
         }
 
