@@ -90,6 +90,7 @@ class SearchCompetitorsController extends Controller
 
         if (isset($progress) && $progress->percent === 100) {
             $progress->delete();
+            Log::debug('progress result', [$progress->result]);
             return response()->json([
                 'percent' => 100,
                 'result' => json_decode($progress->result, true),
