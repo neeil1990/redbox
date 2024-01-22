@@ -706,7 +706,6 @@ class CheckListController extends Controller
     {
         foreach ($tasks as $task) {
             $task = $task[0] ?? $task;
-            Log::debug('test', [$task]);
             $deadline = isset($task['deadline']) ? Carbon::parse($task['deadline'])->toDateTimeString() : Carbon::now()->toDateTimeString();
 
             $object = [
