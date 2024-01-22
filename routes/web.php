@@ -472,6 +472,9 @@ Route::middleware(['verified'])->group(function () {
 });
 
 Route::get('/check-relevance', function (){
-    dump(RelevanceHistory::where('id', 47861)->first());
-    dd(RelevanceHistory::where('id', 47863)->first());
+    $first = RelevanceHistory::where('id', 47861)->first();
+    $second = RelevanceHistory::where('id', 47863)->first();
+
+    dump(\App\Common::uncompressArray($first->html_main_page));
+    dd(\App\Common::uncompressArray($second->html_main_page));
 });
