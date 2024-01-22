@@ -1,7 +1,5 @@
-/**
- * @param nesting
- */
 function renderNestingTable(nesting) {
+    console.log(nesting)
     $('.mainPageCounter').html(nesting['mainPageCounter'])
     $('.mainPagePercent').html(nesting['mainPagePercent'] + '%')
     $('.nestedPageCounter').html(nesting['nestedPageCounter'])
