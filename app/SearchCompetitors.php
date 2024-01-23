@@ -179,9 +179,9 @@ class SearchCompetitors extends Model
                         $link
                     );
 
-
                     $this->analysedSites[$phrase][$link] = $result;
                     $this->duplicates[$link] = $result;
+                    Log::debug('result', $result);
                     Log::debug($link, $this->analysedSites);
                 }
 
