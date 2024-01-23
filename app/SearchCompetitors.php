@@ -165,6 +165,7 @@ class SearchCompetitors extends Model
     {
         $iterator = 0;
         $total = ($this->count * count($this->phrases)) / 100;
+
         foreach ($this->sites as $phrase => $items) {
             foreach ($items as $link) {
                 if (!filter_var($link, FILTER_VALIDATE_URL)) {
@@ -386,6 +387,9 @@ class SearchCompetitors extends Model
         foreach ($this->urls as $url => $info) {
             $this->urls[$url]['phrases'] = array_unique($this->urls[$url]['phrases']);
         }
+
+        Log::debug('this', [$this]);
+        Log::debug('results', [$this->getResult()]);
 
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 100,
