@@ -84,14 +84,6 @@ class SearchCompetitors extends Model
 
     public function getResult()
     {
-        Log::debug('competitors results', [
-            'analysedSites' => $this->tryConvertEncoding($this->analysedSites),
-            'pagesCounter' => $this->tryConvertEncoding($this->pagesCounter),
-            'totalMetaTags' => $this->tryConvertEncoding($this->totalMetaTags),
-            'domainsPosition' => $this->tryConvertEncoding($this->domainsPosition),
-            'urls' => $this->tryConvertEncoding($this->urls),
-        ]);
-
         return json_encode([
             'analysedSites' => $this->tryConvertEncoding($this->analysedSites),
             'pagesCounter' => $this->tryConvertEncoding($this->pagesCounter),
@@ -162,6 +154,8 @@ class SearchCompetitors extends Model
      */
     public function scanSites()
     {
+        $info = [];
+
         $iterator = 0;
         $total = ($this->count * count($this->phrases)) / 100;
 
@@ -172,17 +166,15 @@ class SearchCompetitors extends Model
                 }
 
                 if (isset($this->duplicates[$link])) {
-                    $this->analysedSites[$phrase][$link] = $this->duplicates[$link];
+                    $info[$phrase][$link] = $this->duplicates[$link];
                 } else {
                     $result = $this->analyseSite(
                         $this->encodingContent(SearchCompetitors::curlInit($link)),
                         $link
                     );
 
-                    $this->analysedSites[$phrase][$link] = $result;
+                    $info[$phrase][$link] = $result;
                     $this->duplicates[$link] = $result;
-                    Log::debug('result', $result);
-                    Log::debug($link, $this->analysedSites);
                 }
 
                 $iterator++;
@@ -195,6 +187,7 @@ class SearchCompetitors extends Model
             }
         }
 
+        $this->analysedSites = $info;
         Log::debug('--------------------', $this->analysedSites);
 
         $this->analysisNestingDomains();
