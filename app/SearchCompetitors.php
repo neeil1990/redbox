@@ -195,7 +195,7 @@ class SearchCompetitors extends Model
             }
         }
 
-        Log::debug('analysedSites', $this->analysedSites);
+        Log::debug('--------------------', $this->analysedSites);
 
         $this->analysisNestingDomains();
     }
