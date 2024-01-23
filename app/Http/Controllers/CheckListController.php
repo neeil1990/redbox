@@ -386,7 +386,6 @@ class CheckListController extends Controller
             $sql->where('name', 'like', "%$request->search%");
         }
 
-        Log::info($request->sort);
         if ($request->sort === 'new-sort') {
             $sql->orderByDesc('id');
         } elseif ($request->sort === 'old-sort') {

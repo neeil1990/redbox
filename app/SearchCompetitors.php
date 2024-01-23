@@ -123,7 +123,6 @@ class SearchCompetitors extends Model
                 $xml->setQuery($phrase);
                 $xml->setAttempt();
                 $this->sites[$phrase] = $xml->getXMLResponse();
-                Log::debug($phrase, [$this->sites[$phrase]]);
             }
         }
 
@@ -193,6 +192,8 @@ class SearchCompetitors extends Model
                 }
             }
         }
+
+        Log::debug('analysedSites', $this->analysedSites);
 
         $this->analysisNestingDomains();
     }
@@ -282,6 +283,7 @@ class SearchCompetitors extends Model
             'percent' => 93
         ]);
 
+        Log::debug('pagesCounter', $this->pagesCounter);
         $this->scanTags();
     }
 
@@ -305,6 +307,9 @@ class SearchCompetitors extends Model
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 95
         ]);
+
+        Log::debug('metaTags', $this->metaTags);
+
         $this->calculatePositions();
     }
 
@@ -363,6 +368,7 @@ class SearchCompetitors extends Model
             }
         }
 
+        Log::debug('domainsPosition', $this->domainsPosition);
         $this->analysisRepeatUrl();
     }
 
