@@ -166,12 +166,10 @@ class SearchCompetitors extends Model
         $total = ($this->count * count($this->phrases)) / 100;
 
         foreach ($this->sites as $phrase => $items) {
-            Log::info($phrase);
             foreach ($items as $link) {
                 if (!filter_var($link, FILTER_VALIDATE_URL)) {
                     continue;
                 }
-                Log::info($link);
 
                 if (isset($this->duplicates[$link])) {
                     $this->analysedSites[$phrase][$link] = $this->duplicates[$link];
@@ -181,9 +179,10 @@ class SearchCompetitors extends Model
                         $link
                     );
 
-                    Log::debug('stage result', [$result ?? []]);
+
                     $this->analysedSites[$phrase][$link] = $result;
                     $this->duplicates[$link] = $result;
+                    Log::debug($link, $this->analysedSites[$phrase][$link] ?? []);
                 }
 
                 $iterator++;
