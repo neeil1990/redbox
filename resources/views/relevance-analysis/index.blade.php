@@ -1089,7 +1089,7 @@
                             if (response.progress === 100) {
                                 stopProgressBar()
                                 endProgress()
-                                successRequest(response.result)
+                                successRequest(response)
                             } else {
                                 if (!stop) {
                                     setTimeout(() => {
@@ -1259,6 +1259,10 @@
 
             function successRequest(response) {
                 console.log(response)
+
+                let id = response.id
+                response = response.result
+
                 let localization = {
                     search: "{{ __('Search') }}",
                     show: "{{ __('show') }}",
@@ -1300,7 +1304,7 @@
                     false,
                     0,
                     response.sitesAVG,
-                    response.id
+                    id
                 );
 
                 renderClouds(response.clouds_competitors, response.clouds_main_page, response.tf_comp_clouds, response.hide_ignored_domains);
