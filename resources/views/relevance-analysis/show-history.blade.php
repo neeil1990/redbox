@@ -1304,7 +1304,8 @@
                     false,
                     config.boostPercent,
                     history.average_values,
-                    {{ $id }}
+                    {{ $id }},
+                    'project_id'
                 );
 
                 setTimeout(function () {

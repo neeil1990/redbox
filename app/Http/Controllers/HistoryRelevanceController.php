@@ -834,9 +834,9 @@ class HistoryRelevanceController extends Controller
         Common::fileExport($file, $type, 'relevance_statistics');
     }
 
-    public function showDetail($url, $id)
+    public function showDetail($url, $id, $search)
     {
-        $history = RelevanceHistoryResult::where('project_id', $id)->latest('updated_at')->first();
+        $history = RelevanceHistoryResult::where($search, $id)->latest('updated_at')->first();
         $url = str_replace('splittedSlashe', '/', $url);
         $sites = Common::uncompressArray($history->sites);
 

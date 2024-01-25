@@ -1304,7 +1304,7 @@
                     false,
                     0,
                     response.sitesAVG,
-                    id
+                    id,
                 );
 
                 renderClouds(response.clouds_competitors, response.clouds_main_page, response.tf_comp_clouds, response.hide_ignored_domains);

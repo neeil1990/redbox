@@ -15,7 +15,7 @@ function getColor(result, ideal) {
 }
 
 
-function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, boostPercent, avg = null, id = null) {
+function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, boostPercent, avg = null, id = null, search = 'id') {
     $('.sites').show(300)
     let iterator = 1;
     let rows = ''
@@ -62,7 +62,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
                 + ignorBlock
 
             if (id !== null) {
-                warning += "<a class='btn btn-sm btn-success' href='/relevance/show-detail-html/" + value['site'].replace(/\//g, 'splittedSlashe') + "/" + id + "' target='_blank'>Просмотр html</a>"
+                warning += "<a class='btn btn-sm btn-success' href='/relevance/show-detail-html/" + value['site'].replace(/\//g, 'splittedSlashe') + "/" + id + "/" + search + "' target='_blank'>Просмотр html</a>"
             }
 
             warning += "</td>"
