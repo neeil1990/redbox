@@ -1288,7 +1288,9 @@
                     response.history_id,
                     response.searchPassages
                 );
+
                 renderPhrasesTable(response.phrases, 50, localization)
+
                 renderScannedSitesList(
                     localization,
                     response.sites,
@@ -1297,8 +1299,11 @@
                     false,
                     0,
                     response.sitesAVG,
+                    response.id
                 );
+
                 renderClouds(response.clouds_competitors, response.clouds_main_page, response.tf_comp_clouds, response.hide_ignored_domains);
+
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);

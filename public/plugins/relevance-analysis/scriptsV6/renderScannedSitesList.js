@@ -15,14 +15,28 @@ function getColor(result, ideal) {
 }
 
 
-function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, boostPercent, avg = null) {
+function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, boostPercent, avg = null, id = null) {
     $('.sites').show(300)
     let iterator = 1;
     let rows = ''
     $.each(sites, function (key, value) {
         let site = value['site']
 
-        let btnGroup = "<div class='btn-group'>" + " <button type='button' data-toggle='dropdown' aria-expanded='false' class='text-dark btn btn-tool dropdown-toggle'>" + "            <i class='fas fa-external-link-alt'></i>" + "        </button> " + "       <div role='menu' class='dropdown-menu dropdown-menu-left'>" + "            <a target='_blank' class='dropdown-item' href='" + value['site'] + "'>" + "                <i class='fas fa-external-link-alt first-action'></i>" + "           </a>" + "            <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" + "                <i class='fas fa-external-link-alt second-action'></i>" + "           </a>" + "            <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer'" + "                  data-target='" + value['site'] + "'>" + "                <i class='fas fa-external-link-alt third-action'></i>" + "                " + "            </span>" + "           <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer'" + "                 data-target='" + value['site'] + "'>" + "               <i class='fas fa-external-link-alt fourth-action'></i>" + "               " + "           </span>" + "        </div>" + "</div>";
+        let btnGroup = "<div class='btn-group'>" + " <button type='button' data-toggle='dropdown' aria-expanded='false' class='text-dark btn btn-tool dropdown-toggle'>" +
+            " <i class='fas fa-external-link-alt'></i>" +
+            " </button> " +
+            " <div role='menu' class='dropdown-menu dropdown-menu-left'>" +
+            " <a target='_blank' class='dropdown-item' href='" + value['site'] + "'>" +
+            " <i class='fas fa-external-link-alt first-action'></i></a>" +
+            " <a target='_blank' class='dropdown-item' href='/redirect-to-text-analyzer/" + site.replaceAll('/', 'abc') + "'>" +
+            " <i class='fas fa-external-link-alt second-action'></i>" +
+            " </a>" +
+            " <span class='dropdown-item add-in-ignored-domains' style='cursor: pointer' data-target='" + value['site'] + "'>" +
+            " <i class='fas fa-external-link-alt third-action'></i>" +
+            " </span>" +
+            " <span class='dropdown-item remove-from-ignored-domains' style='cursor: pointer' data-target='" + value['site'] + "'>" +
+            " <i class='fas fa-external-link-alt fourth-action'></i>" +
+            " </span>" + " </div>" + "</div>";
 
         let noTop = ''
         let ignorBlock = ''
@@ -36,9 +50,22 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
         }
 
         if (value['danger']) {
-            warning = "<td class='bg-warning'>" + " <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'>" + words.notGetData + "</span>" + ignorBlock + "</td>";
+            warning = "<td class='bg-warning'>" +
+                " <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'>" + words.notGetData + "</span>"
+                + ignorBlock +
+                "</td>";
         } else {
-            warning = "<td>" + " <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> " + words.successAnalyse + " </span>" + ignorBlock + "</td>"
+            warning = "<td>" +
+                " <span data-scroll='#ignoredDomains' class='scroll-to-ignored-list pointer'> "
+                + words.successAnalyse +
+                " </span>"
+                + ignorBlock
+
+            if (id !== null) {
+                warning += "<a class='btn btn-sm btn-success' href='/relevance/show-detail-html/" + value['site'].replace(/\//g, 'splittedSlashe') + "/" + id + "' target='_blank'>Просмотр html</a>"
+            }
+
+            warning += "</td>"
         }
 
         let color = false
@@ -118,6 +145,13 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
                 "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
             }
         });
+
+        // $(document).on('click', '.show-detail-html', function () {
+        //     let id = $(this).attr('data-id')
+        //     let url = $(this).attr('data-target').replace(/\//g, 'splittedSlashe')
+        //
+        //     window.location.href = '/relevance/show-detail-html/' + url + '/' + id
+        // })
     });
 
     setTimeout(() => {

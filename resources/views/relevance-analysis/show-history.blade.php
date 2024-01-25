@@ -1153,7 +1153,6 @@
                 });
 
                 $('.copyInBuffer').click(function () {
-                    console.log('click')
                     let area = document.createElement('textarea');
                     area.style.opasity = 0
                     document.body.appendChild(area);
@@ -1171,7 +1170,6 @@
             });
 
             function getData() {
-
                 return {
                     id: $('#hiddenId').val(),
                     type: $('#type').val(),
@@ -1305,7 +1303,8 @@
                     config.scanned_sites_count,
                     false,
                     config.boostPercent,
-                    history.average_values
+                    history.average_values,
+                    {{ $id }}
                 );
 
                 setTimeout(function () {
