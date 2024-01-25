@@ -45,7 +45,8 @@ class RelevanceProgressController extends Controller
                 if (isset($history)) {
                     return response()->json([
                         'progress' => $progress->progress,
-                        'result' => Relevance::uncompress($history)
+                        'result' => Relevance::uncompress($history),
+                        'id' => $history,
                     ]);
                 } else {
                     return response()->json([
