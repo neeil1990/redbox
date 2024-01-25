@@ -1258,6 +1258,7 @@
             }
 
             function successRequest(response) {
+                console.log(response)
                 let localization = {
                     search: "{{ __('Search') }}",
                     show: "{{ __('show') }}",
