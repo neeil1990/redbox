@@ -311,6 +311,11 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/set-user-project-status', 'MonitoringProjectUserStatusController@set')->name('monitoring.user.project.status');
     Route::get('monitoring/get-user-status-options', 'MonitoringProjectUserStatusController@getOptions');
 
+    // Monitoring statistics
+    Route::get('/monitoring/statistics', 'MonitoringStatisticsController@index');
+    Route::post('/monitoring/statistics/active-widgets', 'MonitoringStatisticsController@activeWidgets');
+    Route::post('/monitoring/statistics/sort-widgets', 'MonitoringStatisticsController@sortWidgets');
+
     Route::resource('monitoring', 'MonitoringController');
 
     Route::get('/monitoring/{id}/count', 'MonitoringController@getCountProject');
