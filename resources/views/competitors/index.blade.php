@@ -583,6 +583,8 @@
                     },
                     success: async function (response) {
                         if (response.percent === 100) {
+                            console.log(response)
+
                             let localization = {
                                 'protected': "{{ __('The site is protected from information collection, we recommend analyzing it manually') }}",
                                 'domain': "{{ __('domain') }}",

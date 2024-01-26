@@ -92,7 +92,7 @@
             }
 
             #tasks .custom.custom-select {
-                width: 150px;
+                width: 160px;
             }
 
             .hide-border {
@@ -1237,6 +1237,7 @@
                     count_days: $('.datetime-counter[data-target="' + $dataId + '"]').val(),
                     active_after: $('input[data-type="active_after"][data-target="' + $dataId + '"]').val(),
                     repeat_after: $('input[data-type="repeat_after"][data-target="' + $dataId + '"]').val(),
+                    weekends: $('select[data-type="weekends"][data-target="' + $dataId + '"]').val(),
                 }
 
                 if ($('#subtasks-' + $dataId).children('li').length > 0) {
@@ -1672,16 +1673,20 @@
                     $('.datetime[data-target="' + $id + '"][data-type="start"]').hide()
                     $('.datetime[data-target="' + $id + '"][data-type="deadline"]').hide()
                     $('.datetime-repeat-counter[data-target="' + $id + '"]').hide()
+                    $('select[data-type="weekends"][data-target="' + $id + '"]').hide()
                 } else if ($(this).val() === 'repeat') {
                     $('.datetime-counter[data-target="' + $id + '"]').hide()
                     $('.datetime-repeat-counter[data-target="' + $id + '"]').show()
                     $('.datetime[data-target="' + $id + '"][data-type="deadline"]').hide()
+                    $('.datetime-repeat-counter[data-type="weekends"][data-target="' + $id + '"]').show()
+                    $('select[data-type="weekends"][data-target="' + $id + '"]').show()
                 } else {
                     $('.deactivated[data-target="' + $id + '"]').hide()
                     $('.datetime-counter[data-target="' + $id + '"]').show()
                     $('.datetime[data-target="' + $id + '"][data-type="deadline"]').show()
                     $('.datetime[data-target="' + $id + '"][data-type="start"]').show()
                     $('.datetime-repeat-counter[data-target="' + $id + '"]').hide()
+                    $('select[data-type="weekends"][data-target="' + $id + '"]').hide()
                 }
             })
 
@@ -1715,6 +1720,10 @@
                         '            <option value="repeat">Повторяющаяся</option>' +
                         '        </select>' +
                         '        <input class="form form-control datetime-repeat-counter" type="number" step="1" min="1" data-target="' + id + '" data-type="repeat_after" value="1" data-toggle="tooltip" data-placement="left" title="Повторять каждые N дней" style="display:none; width: 55px">' +
+                        '        <select class="custom custom-select" data-target="' + id + '" data-type="weekends" data-toggle="tooltip" data-placement="left" title="Учитывать выходные дни?" style="display: none">' +
+                        '               <option value="1">Да</option>' +
+                        '               <option value="0">Нет</option>' +
+                        '        </select>' +
                         '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
                         '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
                         '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +

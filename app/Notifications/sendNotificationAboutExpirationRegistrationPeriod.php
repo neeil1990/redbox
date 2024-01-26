@@ -46,12 +46,21 @@ class sendNotificationAboutExpirationRegistrationPeriod extends Notification
      */
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage)
-            ->line('This message is generated automatically and does not need to be answered.')
-            ->line('Domain ' . $this->project->domain)
-            ->line("Registration ends after $this->diffInDays days")
-            ->action('Check your projects', route('domain.information'))
-            ->line('Thank you for using our application!');
+        if($notifiable->lang === 'ru'){
+            return (new MailMessage)
+                ->line('Это сообщение сгенерированно автоматически, на него не нужно отвечать.')
+                ->line('Домен ' . $this->project->domain)
+                ->line("Регистрация заканчивается через $this->diffInDays дней")
+                ->action('Проверьте ваши проекты', route('domain.information'))
+                ->line('Спасибо за то что вы с нами!');
+        } else {
+            return (new MailMessage)
+                ->line('This message is generated automatically and does not need to be answered.')
+                ->line('Domain ' . $this->project->domain)
+                ->line("Registration ends after $this->diffInDays days")
+                ->action('Check your projects', route('domain.information'))
+                ->line('Thank you for using our application!');
+        }
     }
 
     /**

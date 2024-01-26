@@ -93,7 +93,6 @@ class UniqueWordsController extends Controller
         $countValues = array_count_values($words);
         $t = [];
         foreach ($words as $word) {
-            Log::debug($word, [substr_count($word, '	')]);
             foreach ($countValues as $key => $value) {
                 if ($word == $key) {
                     $matches = $this->searchMatches($phrases, $word);

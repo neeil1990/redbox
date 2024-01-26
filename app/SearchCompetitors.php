@@ -154,8 +154,11 @@ class SearchCompetitors extends Model
      */
     public function scanSites()
     {
+        $info = [];
+
         $iterator = 0;
         $total = ($this->count * count($this->phrases)) / 100;
+
         foreach ($this->sites as $phrase => $items) {
             foreach ($items as $link) {
                 if (!filter_var($link, FILTER_VALIDATE_URL)) {
@@ -163,14 +166,14 @@ class SearchCompetitors extends Model
                 }
 
                 if (isset($this->duplicates[$link])) {
-                    $this->analysedSites[$phrase][$link] = $this->duplicates[$link];
+                    $info[$phrase][$link] = $this->duplicates[$link];
                 } else {
                     $result = $this->analyseSite(
                         $this->encodingContent(SearchCompetitors::curlInit($link)),
                         $link
                     );
 
-                    $this->analysedSites[$phrase][$link] = $result;
+                    $info[$phrase][$link] = $result;
                     $this->duplicates[$link] = $result;
                 }
 
@@ -183,6 +186,9 @@ class SearchCompetitors extends Model
                 }
             }
         }
+
+        $this->analysedSites = $info;
+        Log::debug('--------------------', $this->analysedSites);
 
         $this->analysisNestingDomains();
     }
@@ -272,6 +278,7 @@ class SearchCompetitors extends Model
             'percent' => 93
         ]);
 
+        Log::debug('pagesCounter', $this->pagesCounter);
         $this->scanTags();
     }
 
@@ -295,6 +302,9 @@ class SearchCompetitors extends Model
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 95
         ]);
+
+        Log::debug('metaTags', $this->metaTags);
+
         $this->calculatePositions();
     }
 
@@ -353,6 +363,7 @@ class SearchCompetitors extends Model
             }
         }
 
+        Log::debug('domainsPosition', $this->domainsPosition);
         $this->analysisRepeatUrl();
     }
 
@@ -377,6 +388,9 @@ class SearchCompetitors extends Model
         foreach ($this->urls as $url => $info) {
             $this->urls[$url]['phrases'] = array_unique($this->urls[$url]['phrases']);
         }
+
+        Log::debug('this', [$this]);
+        Log::debug('results', [$this->getResult()]);
 
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 100,

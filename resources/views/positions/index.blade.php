@@ -1,11 +1,9 @@
 @component('component.card', ['title' =>  __('Setting the order of menu items') ])
     @slot('css')
-        <link rel="stylesheet" type="text/css"
-              href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
+        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/font-awesome-4.7.0/css/font-awesome.css') }}"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
-
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/keyword-generator/css/style.css') }}"/>
-        <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+
         <style>
             div.sortable {
                 width: 100px;
@@ -117,8 +115,8 @@
                                     <span class="__helper-link ui_tooltip_w">
                                         <i data-toggle="collapse"
                                            aria-expanded="true"
-                                           data-target="#{{ str_replace(' ', '_', $key) }}"
-                                           aria-controls="{{ str_replace(' ', '_', $key) }}"
+                                           data-target="#{{ preg_replace('/[^a-zA-Zа-яА-Я]/u', '', $key) }}"
+                                           aria-controls="{{ preg_replace('/[^a-zA-Zа-яА-Я]/u', '', $key) }}"
                                            class="fa fa-eye pr-2"
                                            data-action="{{ $item['configurationInfo']['show'] }}"
                                            style="color: white"></i>
@@ -149,7 +147,7 @@
                                 </div>
                             </div>
                             <ol class="for-nest @if($item['configurationInfo']['show'] === 'true') show @else collapse @endif"
-                                id="{{ str_replace(' ', '_', $key) }}">
+                                id="{{ preg_replace('/[^a-zA-Zа-яА-Я]/u', '', $key) }}">
                                 @foreach($item as $k => $elem)
                                     @if($k === 'configurationInfo')
                                         @continue

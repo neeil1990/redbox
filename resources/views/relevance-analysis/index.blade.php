@@ -1089,7 +1089,7 @@
                             if (response.progress === 100) {
                                 stopProgressBar()
                                 endProgress()
-                                successRequest(response.result)
+                                successRequest(response)
                             } else {
                                 if (!stop) {
                                     setTimeout(() => {
@@ -1258,6 +1258,11 @@
             }
 
             function successRequest(response) {
+                console.log(response)
+
+                let id = response.id
+                response = response.result
+
                 let localization = {
                     search: "{{ __('Search') }}",
                     show: "{{ __('show') }}",
@@ -1288,7 +1293,9 @@
                     response.history_id,
                     response.searchPassages
                 );
+
                 renderPhrasesTable(response.phrases, 50, localization)
+
                 renderScannedSitesList(
                     localization,
                     response.sites,
@@ -1297,8 +1304,11 @@
                     false,
                     0,
                     response.sitesAVG,
+                    id,
                 );
+
                 renderClouds(response.clouds_competitors, response.clouds_main_page, response.tf_comp_clouds, response.hide_ignored_domains);
+
                 $("#full-analyse").prop("disabled", false);
                 $("#repeat-main-page-analyse").prop("disabled", false);
                 $("#repeat-relevance-analyse").prop("disabled", false);

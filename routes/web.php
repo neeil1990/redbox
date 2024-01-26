@@ -15,6 +15,7 @@ use App\ChecklistNotification;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\MainProject;
+use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -225,6 +226,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/edit-history-comment', 'HistoryRelevanceController@editComment')->name('edit.history.comment');
     Route::post('/change-state', 'HistoryRelevanceController@changeCalculateState')->name('change.state');
     Route::get('/show-history/{id}', 'HistoryRelevanceController@show')->name('show.history');
+    Route::get('/relevance/show-detail-html/{url}/{id}/{search}', 'HistoryRelevanceController@showDetail')->name('show.detail');
     Route::post('/get-details-history', 'HistoryRelevanceController@getDetailsInfo')->name('get.details.info');
     Route::post('/get-stories', 'HistoryRelevanceController@getStories')->name('get.stories');
     Route::post('/get-stories-v2', 'HistoryRelevanceController@getHistoryInfoV2')->name('get.stories.v2');

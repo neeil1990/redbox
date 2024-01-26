@@ -833,4 +833,13 @@ class HistoryRelevanceController extends Controller
         $file = Excel::download(new RelevanceStatisticsExport($id), 'relevance_statistics.' . $type);
         Common::fileExport($file, $type, 'relevance_statistics');
     }
+
+    public function showDetail($url, $id, $search)
+    {
+        $history = RelevanceHistoryResult::where($search, $id)->latest('updated_at')->first();
+        $url = str_replace('splittedSlashe', '/', $url);
+        $sites = Common::uncompressArray($history->sites);
+
+        return gzuncompress(base64_decode($sites[$url]['defaultHtml']));
+    }
 }

@@ -40,12 +40,13 @@ class RelevanceProgressController extends Controller
                     'crash' => true,
                 ]);
             } else if ($progress->progress === 100) {
-                $history = RelevanceHistoryResult::where('hash', '=', $request->hash)->first();
+                $history = RelevanceHistoryResult::where('hash', $request->hash)->first();
 
                 if (isset($history)) {
                     return response()->json([
                         'progress' => $progress->progress,
-                        'result' => Relevance::uncompress($history)
+                        'result' => Relevance::uncompress($history),
+                        'id' => $history->id,
                     ]);
                 } else {
                     return response()->json([
