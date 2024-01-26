@@ -104,9 +104,8 @@
 
                 axios.post('/monitoring/statistics/active-widgets', {
                     fields: fields
-                }).then(function(response){
-                    if(response.statusText === 'OK')
-                        window.location.reload();
+                }).then(function(){
+                    window.location.reload();
                 });
             });
         </script>
