@@ -154,8 +154,6 @@ class SearchCompetitors extends Model
      */
     public function scanSites()
     {
-        $info = [];
-
         $iterator = 0;
         $total = ($this->count * count($this->phrases)) / 100;
 
@@ -166,15 +164,16 @@ class SearchCompetitors extends Model
                 }
 
                 if (isset($this->duplicates[$link])) {
-                    $info[$phrase][$link] = $this->duplicates[$link];
+                    $this->analysedSites[$phrase][$link] = $this->duplicates[$link];
                 } else {
                     $result = $this->analyseSite(
                         $this->encodingContent(SearchCompetitors::curlInit($link)),
                         $link
                     );
 
-                    $info[$phrase][$link] = $result;
+                    $this->analysedSites[$phrase][$link] = $result;
                     $this->duplicates[$link] = $result;
+
                 }
 
                 $iterator++;
@@ -187,17 +186,9 @@ class SearchCompetitors extends Model
             }
         }
 
-        $this->analysedSites = $info;
-        Log::debug('--------------------', $this->analysedSites);
-
         $this->analysisNestingDomains();
     }
 
-    /**
-     * @param $site
-     * @param $link
-     * @return array
-     */
     protected function analyseSite($site, $link): array
     {
         $object = [];
@@ -229,24 +220,22 @@ class SearchCompetitors extends Model
         return $object;
     }
 
-    /**
-     * @param array $site
-     * @return array|false|string|string[]|null
-     */
     protected function encodingContent(array $site)
     {
-        try {
-            $contentType = $site[1]['content_type'];
-            if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
-                $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
-                return mb_convert_encoding($site, 'utf8', str_replace('"', '', $contentType));
-            }
+        $contentType = $site[1]['content_type'];
 
-        } catch (Throwable $e) {
-            return $site;
+        if (preg_match('/<meta[^>]+charset=([\'"]?)([-a-zA-Z0-9]+)\1/i', $site[0], $matches)) {
+            $contentType = $matches[2];
+        } else if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
+            $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
+            $contentType = str_replace('"', '', $contentType);
         }
 
-        return $site;
+        return mb_convert_encoding(
+            $site,
+            'utf8',
+            $contentType
+        );
     }
 
     /**
@@ -278,7 +267,6 @@ class SearchCompetitors extends Model
             'percent' => 93
         ]);
 
-        Log::debug('pagesCounter', $this->pagesCounter);
         $this->scanTags();
     }
 
@@ -302,8 +290,6 @@ class SearchCompetitors extends Model
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 95
         ]);
-
-        Log::debug('metaTags', $this->metaTags);
 
         $this->calculatePositions();
     }
@@ -363,7 +349,6 @@ class SearchCompetitors extends Model
             }
         }
 
-        Log::debug('domainsPosition', $this->domainsPosition);
         $this->analysisRepeatUrl();
     }
 
@@ -389,9 +374,6 @@ class SearchCompetitors extends Model
             $this->urls[$url]['phrases'] = array_unique($this->urls[$url]['phrases']);
         }
 
-        Log::debug('this', [$this]);
-        Log::debug('results', [$this->getResult()]);
-
         CompetitorsProgressBar::where('page_hash', '=', $this->pageHash)->update([
             'percent' => 100,
             'result' => $this->getResult()
@@ -415,11 +397,7 @@ class SearchCompetitors extends Model
         return $hiddenText;
     }
 
-    /**
-     * @param $site
-     * @return array|null
-     */
-    public static function curlInit($site): ?array
+    public static function curlInit($site)
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $site);
@@ -466,6 +444,7 @@ class SearchCompetitors extends Model
             }
         }
         curl_close($curl);
+
         return [$html, $headers];
     }
 

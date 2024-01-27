@@ -17,6 +17,7 @@ use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\MainProject;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
+use App\SearchCompetitors;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -476,3 +477,89 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 });
+//
+//Route::get('/test', function () {
+////    $url = 'https://zdravmedinform.ru/classificator-vidov-meditcinskikh-izdeliy/kod-101400.html    ';
+////    $result = analyseSite(
+////        encodingContent(SearchCompetitors::curlInit($url)),
+////        $url
+////    );
+//////
+////    dd($result);
+//    $analysis = new SearchCompetitors();
+//    $analysis->setUserId(Auth::id());
+//    $analysis->setPhrases('аудиометр тональный ручной');
+//    $analysis->setRegion(1);
+//    $analysis->setCount(10);
+//    $analysis->setPageHash(md5(\Carbon\Carbon::now()));
+//    $analysis->analyseList();
+//});
+//
+//function encodingContent(array $site)
+//{
+////    $type = mb_detect_encoding($site[0], "UTF-8,ISO-8859-1");
+////
+////    $possible_encodings = ["UTF-8", "ISO-8859-1", "Windows-1251", "KOI8-R"];
+////
+////    foreach ($possible_encodings as $encoding) {
+////        $decoded_content = mb_convert_encoding($site[0], 'UTF-8', $encoding);
+////
+////        dump($decoded_content);
+////    }
+//////
+////    dd(1);
+////    dd(mb_convert_encoding(
+////        $site,
+////        'utf8',
+////        $type
+////    ));
+//    $contentType = $site[1]['content_type'];
+//
+//    if (preg_match('/<meta[^>]+charset=([\'"]?)([-a-zA-Z0-9]+)\1/i', $site[0], $matches)) {
+//        $contentType = $matches[2];
+//    } else if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
+//        $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
+//        $contentType = str_replace('"', '', $contentType);
+//    }
+//    try {
+//        return mb_convert_encoding(
+//            $site,
+//            'utf8',
+//            $contentType
+//        );
+//    } catch (Throwable $e) {
+//        return $site;
+//    }
+//
+//}
+//
+//function analyseSite($site, $link): array
+//{
+//    $object = [];
+//
+//    $description = SearchCompetitors::getText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
+/*    $title = SearchCompetitors::getText($site[0], "/<title.*?>(.*?)<\/title>/");*/
+/*    $h1 = SearchCompetitors::getText($site[0], "/<h1.*?>(.*?)<\/h1>/");*/
+/*    $h2 = SearchCompetitors::getText($site[0], "/<h2.*?>(.*?)<\/h2>/");*/
+/*    $h3 = SearchCompetitors::getText($site[0], "/<h3.*?>(.*?)<\/h3>/");*/
+/*    $h4 = SearchCompetitors::getText($site[0], "/<h4.*?>(.*?)<\/h4>/");*/
+/*    $h5 = SearchCompetitors::getText($site[0], "/<h5.*?>(.*?)<\/h5>/");*/
+/*    $h6 = SearchCompetitors::getText($site[0], "/<h6.*?>(.*?)<\/h6>/");*/
+//
+//    $object['meta'] = [
+//        'title' => $title,
+//        'h1' => $h1,
+//        'h2' => $h2,
+//        'h3' => $h3,
+//        'h4' => $h4,
+//        'h5' => $h5,
+//        'h6' => $h6,
+//        'description' => $description,
+//    ];
+//
+//    $object['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
+//
+//    $object['mainPage'] = SearchCompetitors::isLinkMainPage($link);
+//
+//    return $object;
+//}
