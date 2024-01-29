@@ -60,6 +60,35 @@
         @endforeach
     </div>
 
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card card-info">
+
+                <div class="card-header">
+                    <h3 class="card-title">Bar Chart</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="chart">
+                        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
     @slot('js')
         <!-- jQuery UI -->
         <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
@@ -67,6 +96,8 @@
         <script>
             $.widget.bridge('uibutton', $.ui.button)
         </script>
+        <!-- ChartJS -->
+        <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
 
         <script>
             // Make the dashboard widgets sortable Using jquery UI
@@ -108,6 +139,35 @@
                     window.location.reload();
                 });
             });
+
+            // BAR CHART
+            let areaChartData = {
+                labels  : ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [
+                    {
+                        label               : '{{ __('Budget') }}',
+                        backgroundColor     : '#00c0ef',
+                        data                : [28, 48, 40, 19, 86, 27]
+                    },
+                    {
+                        label               : '{{ __('Mastered') }}',
+                        backgroundColor     : '#00a65a',
+                        data                : [65, 59, 80, 81, 56, 120]
+                    },
+                ]
+            };
+
+            let barChartCanvas = $('#barChart').get(0).getContext('2d')
+
+            new Chart(barChartCanvas, {
+                type: 'bar',
+                data: areaChartData,
+                options: {
+                    responsive              : true,
+                    maintainAspectRatio     : false,
+                    datasetFill             : false
+                },
+            })
         </script>
 
     @endslot
