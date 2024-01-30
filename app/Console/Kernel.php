@@ -3,8 +3,9 @@
 namespace App\Console;
 
 use App\Classes\Cron\AutoUpdateMonitoringPositions;
-use App\Classes\Cron\checklist\CheckListCheckStatus;
-use App\Classes\Cron\checklist\CheckListNotifications;
+use App\Classes\Cron\checklist\ActivateTasks;
+use App\Classes\Cron\checklist\Notifications;
+use App\Classes\Cron\checklist\RepeatTasks;
 use App\Classes\Cron\ClusterCleaningResults;
 use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
@@ -56,10 +57,9 @@ class Kernel extends ConsoleKernel
             (new ProjectDataTableUpdateDB(MonitoringProject::all()))->save();
         })->dailyAt(MonitoringSettings::getValue('data_projects') ?: '00:00');
 
-        $schedule->call(new CheckListNotifications())->everyMinute();
-
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->call(new Notifications())->everyMinute();
+        $schedule->call(new RepeatTasks())->everyMinute();
+        $schedule->call(new ActivateTasks())->everyMinute();
     }
 
     private function autoUpdateMonitoringPositions($schedule)

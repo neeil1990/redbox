@@ -347,7 +347,7 @@
         </div>
     </div>
 
-    <div id="block-from-notifications"></div>
+    <div id="block-from-notifications" class="d-flex flex-row"></div>
 
     <div class="card">
         <div class="card-header">
@@ -395,7 +395,7 @@
                         data-target="#createNewProject"
                         style="height: 38px"
                         id="add-new-tasks">
-                    Добавление задач
+                    Добавление задач к текущему проекту
                 </button>
             </div>
         </div>
@@ -539,6 +539,7 @@
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/checklist/common.js') }}"></script>
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
@@ -570,7 +571,7 @@
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
 
-                        $('#save-new-tasks').attr('disabled', true)
+                        $('#save-new-tasks').attr('disabled', false)
                         $('#loader').hide(300)
                     }
                 })
@@ -649,7 +650,7 @@
                         '            <option value="in_work">В работе</option>' +
                         '            <option value="ready">Готово</option>' +
                         '            <option value="expired">Просрочено</option>' +
-                        '            <option value="deactivated">Не активная</option>' +
+                        '            <option value="deactivated">Отложенная</option>' +
                         '        </select>' +
                         '        <input class="form form-control deactivated" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
                         '        <div class="btn-group pl-2">' +
@@ -752,7 +753,6 @@
                 return decodeURIComponent(results[2].replace(/\+/g, " "));
             }
 
-            let notificationBlocks = 0
             $('#app > div > div > div.card-header').append($('#project-info'))
             $('#app > div > div > div.card-header > .card-title').remove()
 
@@ -773,25 +773,6 @@
                 let id = getRandomInt(99999)
                 $('#new-tasks').append(stub(id))
                 refreshTooltips()
-            })
-
-            $(document).on('click', '.remove-stub', function () {
-                let ID = $(this).attr('data-id')
-                let $parent = $(this).parent()
-
-                if (confirm('Вы действительно хотите удалить шаблон?')) {
-                    $.ajax({
-                        type: 'get',
-                        url: '/remove-checklist-stub/' + ID,
-                        success: function (message) {
-                            successMessage(message)
-                            $parent.remove()
-                        },
-                        error: function (response) {
-                            errorMessage(response.responseJSON.errors)
-                        }
-                    })
-                }
             })
 
             function generateNestedStubs(stubs, each = true) {
@@ -865,30 +846,47 @@
                     repeat = '<option value="repeat" selected>Повторяющаяся</option>'
                 }
 
+                let html
                 let start = new Date(task.date_start).toISOString().slice(0, 16);
                 let end = new Date(task.deadline).toISOString().slice(0, 16);
 
-                let button = ''
-                // if (task.subtasks && task.subtasks.length > 0) {
-                //     button = '<div class="hide-li"></div>'
-                // }
+                if (task.status === 'repeat') {
+                    if (task.weekends) {
+                        html = '<select class="custom custom-select" data-target="' + task.id + '" data-type="weekends" data-toggle="tooltip" data-placement="left" title="Учитывать выходные дни?">' +
+                            '       <option value="1" selected>Да</option>' +
+                            '       <option value="0">Нет</option>' +
+                            '</select>'
+                    } else {
+                        html = '<select class="custom custom-select" data-target="' + task.id + '" data-type="weekends" data-toggle="tooltip" data-placement="left" title="Учитывать выходные дни?">' +
+                            '       <option value="1">Да</option>' +
+                            '       <option value="0" selected>Нет</option>' +
+                            '</select>'
+                    }
 
+                    html += '<input class="form form-control datetime-repeat-counter" type="number" step="1" min="1" data-target="' + task.id + '" data-type="repeat_after" value="1" data-toggle="tooltip" data-placement="left" title="Повторять каждые N дней" style="width: 55px">'
+                    html += '<input class="form form-control datetime-counter" type="number" step="1" value="' + task.repeat_every + '" min="0" data-target="' + task.id + '" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение" style="width: 75px;">'
+                    html += '<input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + start + '" data-toggle="tooltip" data-placement="top" title="Дата следующего запуска задачи">'
+                } else {
+                    html = '<input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + start + '" ' +
+                        'data-toggle="tooltip" data-placement="top" title="Дата начала">' +
+                        '<input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + end + '" ' +
+                        'data-toggle="tooltip" data-placement="top" title="Дата окончания">'
+                }
+
+                let button = ''
                 let $listItem =
                     '<li data-id="' + task.id + '" class="' + task.status + '" class="d-flex">' + button +
                     '    <input type="text" class="form form-control hide-border d-inline edit-checklist w-auto" data-type="name" data-target="' + task.id + '" value="' + task.name + '">' +
                     '    <div class="tools d-flex" style="float: right">' +
-                    '       <input class="form form-control hide-border edit-checklist" data-type="date_start" type="datetime-local" data-target="' + task.id + '" value="' + start + '" ' +
-                    '       data-toggle="tooltip" data-placement="top" title="Дата начала">' +
-                    '       <input class="form form-control hide-border edit-checklist" data-type="deadline" type="datetime-local" data-target="' + task.id + '" value="' + end + '" ' +
-                    '       data-toggle="tooltip" data-placement="top" title="Дата окончания">' +
-                    '       <select data-id="status-' + task.id + '" data-target="' + task.id + '" class="custom custom-select edit-checklist" data-type="status" style="width: 135px">' +
+                    '       <select data-id="status-' + task.id + '" data-target="' + task.id + '" class="custom custom-select edit-checklist" data-type="status" style="width: 170px">' +
                     newState +
                     work +
                     ready +
-                    deactivated +
                     expired +
+                    deactivated +
                     repeat +
                     '       </select>' +
+                    html +
                     '       <div class="btn-group pl-2">' +
                     '           <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + task.id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + task.id + '"><i class="fa fa-eye"></i></button>' +
                     '           <button class="btn btn-sm btn-default add-new-subtasks" data-toggle="modal" data-target="#addNewSubtasks" data-id="' + task.id + '"><i class="fa fa-plus"></i></button>' +
@@ -951,67 +949,17 @@
                 })
             }
 
-            function errorMessage(errors) {
-                let messages = ''
-                $.each(errors, function (k, v) {
-                    messages += v + "<br>"
-                })
-
-                let margin = notificationBlocks * 70
-                notificationBlocks++
-
-                let $block =
-                    $(
-                        '<div id="toast-container" class="toast-top-right error-message" style="display:none; top: ' + margin + 'px">' +
-                        '    <div class="toast toast-error" aria-live="polite">' +
-                        '        <div class="toast-message" id="toast-error-message">' + messages + '</div>' +
-                        '    </div>' +
-                        '</div>'
-                    )
-
-
-                $('#block-from-notifications').append($block)
-
-                $block.show(300)
-
-                setTimeout(() => {
-                    $block.remove()
-                    notificationBlocks--
-                }, 5000)
-            }
-
-            function successMessage(message) {
-                let margin = notificationBlocks * 70
-                notificationBlocks++
-
-                let $block =
-                    $('<div id="toast-container" class="toast-top-right success-message" style="display: none; top: ' + margin + 'px">' +
-                        '    <div class="toast toast-success" aria-live="polite">' +
-                        '        <div class="toast-message" id="toast-success-message">' + message + '</div>' +
-                        '    </div>' +
-                        '</div>')
-
-                $('#block-from-notifications').append($block)
-
-                $block.show(300)
-
-                setTimeout(() => {
-                    $block.remove()
-                    notificationBlocks--
-                }, 5000)
-            }
-
             $(document).on('change', '.edit-checklist', function () {
                 let targetBlock = $(this)
                 let type = $(this).attr('data-type')
                 let val = $(this).val()
-                let ID = $(this).attr('data-target')
+                let $id = $(this).attr('data-target')
 
                 $.ajax({
                     type: 'post',
                     url: "{{ route('edit.checklist.task') }}",
                     data: {
-                        id: $(this).attr('data-target'),
+                        id: $id,
                         type: type,
                         value: val,
                     },
@@ -1020,14 +968,14 @@
                             let parent = targetBlock.parents().eq(1)
                             parent.removeClass()
                             parent.addClass(val)
+
+                            getTasks($('.page-item.active > a').attr('data-id'), false)
                         }
 
                         if (response.newStatus === 'expired') {
-                            $("select[data-target='" + ID + "']").find('option[value="expired"]').prop('selected', true);
+                            $("select[data-target='" + $id + "']").find('option[value="expired"]').prop('selected', true);
                         }
-
                         successMessage('Успешно')
-
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -1121,8 +1069,15 @@
 
             $(document).on('input', '.datetime', function () {
                 let $id = $(this).attr('data-target')
+                let status = $('select[data-id="status-' + $id + '"]').val()
+
+                if (status === 'repeat' || status === 'deactivated') {
+                    return;
+                }
+
                 let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
                 let $startDate = new Date($start.val());
+
                 let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
                 let $endDate = new Date($deadline.val())
 
@@ -1139,14 +1094,13 @@
                 }
             })
 
-
             $(document).on('input', '.datetime-counter', function () {
                 let $id = $(this).attr('data-target')
                 let value = $(this).val()
 
                 let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
                 let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
-                let newDate = new Date(new Date($start.val()).getTime() + (value * count_ml_in_day)).toISOString().slice(0, 16)
+                let newDate = new Date(new Date($start.val()).getTime() + (value * count_ml_in_day) + 10800000).toISOString().slice(0, 16)
 
                 $deadline.val(newDate)
             })
@@ -1159,40 +1113,11 @@
                 let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
                 let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
 
-                let newDate = new Date(value).toISOString().slice(0, 16)
-
                 $start.val(value)
 
-                newDate = new Date(new Date(value).getTime() + ($days.val() * count_ml_in_day)).toISOString().slice(0, 16)
+                let newDate = new Date(new Date(value).getTime() + ($days.val() * count_ml_in_day) + 10800000).toISOString().slice(0, 16)
                 $deadline.val(newDate)
-
             })
-
-            function parseTree($object) {
-                let $dataId = $object.attr('data-id')
-                let object = []
-                let $subtasks = []
-
-                let test = {
-                    name: $('input[data-target="' + $dataId + '"][data-type="name"]').val(),
-                    status: $('select[data-target="' + $dataId + '"][data-type="status"]').val(),
-                    description: $('.pre-description[data-id="' + $dataId + '"]').val(),
-                    start: $('input[data-type="start"][data-target="' + $dataId + '"]').val(),
-                    deadline: $('input[data-type="deadline"][data-target="' + $dataId + '"]').val(),
-                    active_after: $('input[data-type="active_after"][data-target="' + $dataId + '"]').val(),
-                }
-
-                if ($('#subtasks-' + $dataId).children('li').length > 0) {
-                    $.each($('#subtasks-' + $dataId).children('li'), function () {
-                        $subtasks.push(parseTree($(this)))
-                    })
-                }
-
-                test.subtasks = $subtasks
-                object.push(test)
-
-                return object
-            }
 
             function getTasks(page = 0, renderPaginate = false) {
                 $('#tasks').html(
@@ -1217,7 +1142,7 @@
 
                         $("#checklist-icon").html('<img src="/storage/' + checklist.icon + '" alt="' + checklist.icon + '" class="icon mr-2">')
                         $("#checklist-name").html('<a href="' + checklist.url + '" target="_blank" data-toggle="tooltip" data-placement="top" title="' + checklist.url + '">' + new URL(checklist.url)['host'] + '</a>')
-                        $("#checklist-counter").html(checklist.work + checklist.ready + checklist.expired + checklist.new + checklist.inactive)
+                        $("#checklist-counter").html(checklist.tasks.length)
                         $("#checklist-new").html(checklist.new)
                         $("#checklist-work").html(checklist.work)
                         $("#checklist-inactive").html(checklist.inactive)
@@ -1284,12 +1209,25 @@
 
             $(document).on('change', '.task-status', function () {
                 let $id = $(this).attr('data-target')
-
                 refreshTooltips()
+
                 if ($(this).val() === 'deactivated') {
-                    $('.deactivated[data-target="' + $id + '"]').show(300)
+                    $('.deactivated[data-target="' + $id + '"]').show()
+                    $('.datetime[data-target="' + $id + '"][data-type="start"]').hide()
+                    $('.datetime[data-target="' + $id + '"][data-type="deadline"]').hide()
+                    $('.datetime-repeat-counter[data-target="' + $id + '"]').hide()
+                    $('select[data-type="weekends"][data-target="' + $id + '"]').hide()
+                } else if ($(this).val() === 'repeat') {
+                    $('.datetime-repeat-counter[data-target="' + $id + '"]').show()
+                    $('.datetime[data-target="' + $id + '"][data-type="deadline"]').hide()
+                    $('.datetime-repeat-counter[data-type="weekends"][data-target="' + $id + '"]').show()
+                    $('select[data-type="weekends"][data-target="' + $id + '"]').show()
                 } else {
                     $('.deactivated[data-target="' + $id + '"]').hide()
+                    $('.datetime[data-target="' + $id + '"][data-type="deadline"]').show()
+                    $('.datetime[data-target="' + $id + '"][data-type="start"]').show()
+                    $('.datetime-repeat-counter[data-target="' + $id + '"]').hide()
+                    $('select[data-type="weekends"][data-target="' + $id + '"]').hide()
                 }
             })
 
@@ -1298,18 +1236,24 @@
 
                 return '<li data-id="' + id + '" class="default d-flex">' +
                     '    <input type="text" class="form form-control hide-border" data-type="name" placeholder="Без названия" data-target="' + id + '">' +
+                    '    <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" style="width: 160px" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
+                    '        <option value="new" selected>Новая</option>' +
+                    '        <option value="in_work">В работе</option>' +
+                    '        <option value="ready">Готово</option>' +
+                    '        <option value="expired">Просрочено</option>' +
+                    '        <option value="deactivated">Отложенная</option>' +
+                    '        <option value="repeat">Повторяющаяся</option>' +
+                    '    </select>' +
+                    '    <select class="custom custom-select" data-target="' + id + '" data-type="weekends" data-toggle="tooltip" data-placement="left" title="Учитывать выходные дни?" style="width: 61px; display: none">' +
+                    '           <option value="1">Да</option>' +
+                    '           <option value="0">Нет</option>' +
+                    '    </select>' +
                     '    <div class="tools d-flex" style="float: right">' +
+                    '        <input class="form form-control datetime-repeat-counter" type="number" step="1" min="1" data-target="' + id + '" data-type="repeat_after" value="1" data-toggle="tooltip" data-placement="left" title="Повторять каждые N дней" style="width: 55px; display: none">' +
                     '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" value="0" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
                     '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
                     '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
-                    '        <select data-id="status-' + id + '" data-target="' + id + '" class="custom custom-select task-status" data-type="status" style="width: 135px" data-toggle="tooltip" data-placement="left" title="Статус задачи">' +
-                    '            <option value="new" selected>Новая</option>' +
-                    '            <option value="in_work">В работе</option>' +
-                    '            <option value="ready">Готово</option>' +
-                    '            <option value="expired">Просрочено</option>' +
-                    '            <option value="deactivated">Не активная</option>' +
-                    '        </select>' +
-                    '        <input class="form form-control deactivated datetime-after" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
+                    '        <input class="form form-control deactivated datetime-after" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:" style="display: none">' +
                     '        <div class="btn-group pl-2">' +
                     '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
                     '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +

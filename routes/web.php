@@ -20,6 +20,8 @@ use App\RelevanceHistoryResult;
 use App\SearchCompetitors;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 Route::get('info', function () {
     phpinfo();
@@ -445,11 +447,16 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/store-stub', 'CheckListController@storeStub')->name('store.stub');
     Route::post('/edit-stub', 'CheckListController@editStub')->name('edit.stub');
     Route::post('/get-checklist', 'CheckListController@getChecklists')->name('get.checklists');
+    Route::get('/get-all-checklist', 'CheckListController@getAllChecklists')->name('get.all.checklists');
     Route::get('/move-checklist-to-archive/{project}', 'CheckListController@inArchive')->name('in.archive');
     Route::get('/restore-checklist/{project}', 'CheckListController@restore')->name('restore.checklist');
     Route::get('/get-checklist-archive', 'CheckListController@archive')->name('checklist.archive');
-    Route::post('/checklist-tasks/', 'CheckListController@getTasks')->name('checklist.tasks');
-    Route::post('/edit-checklist-task/', 'CheckListController@editTask')->name('edit.checklist.task');
+    Route::post('/checklist-tasks', 'CheckListController@getTasks')->name('checklist.tasks');
+    Route::post('/edit-checklist-task', 'CheckListController@editTask')->name('edit.checklist.task');
+    Route::get('/get-repeat-tasks', 'CheckListController@getRepeatTasks')->name('get.repeat.tasks');
+    Route::post('/edit-repeat-task', 'CheckListController@editRepeatTask')->name('edit.repeat.task');
+    Route::post('/remove-repeat-task', 'CheckListController@removeRepeatTask')->name('remove.repeat.task');
+    Route::post('/store-repeat-tasks', 'CheckListController@storeRepeatTasks')->name('store.repeat.tasks');
 
     Route::get('/remove-checklist/{project}', 'CheckListController@destroy')->name('destroy');
     Route::post('/create-label', 'CheckListController@createLabel')->name('create.label');
@@ -477,89 +484,3 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 });
-//
-//Route::get('/test', function () {
-////    $url = 'https://zdravmedinform.ru/classificator-vidov-meditcinskikh-izdeliy/kod-101400.html    ';
-////    $result = analyseSite(
-////        encodingContent(SearchCompetitors::curlInit($url)),
-////        $url
-////    );
-//////
-////    dd($result);
-//    $analysis = new SearchCompetitors();
-//    $analysis->setUserId(Auth::id());
-//    $analysis->setPhrases('аудиометр тональный ручной');
-//    $analysis->setRegion(1);
-//    $analysis->setCount(10);
-//    $analysis->setPageHash(md5(\Carbon\Carbon::now()));
-//    $analysis->analyseList();
-//});
-//
-//function encodingContent(array $site)
-//{
-////    $type = mb_detect_encoding($site[0], "UTF-8,ISO-8859-1");
-////
-////    $possible_encodings = ["UTF-8", "ISO-8859-1", "Windows-1251", "KOI8-R"];
-////
-////    foreach ($possible_encodings as $encoding) {
-////        $decoded_content = mb_convert_encoding($site[0], 'UTF-8', $encoding);
-////
-////        dump($decoded_content);
-////    }
-//////
-////    dd(1);
-////    dd(mb_convert_encoding(
-////        $site,
-////        'utf8',
-////        $type
-////    ));
-//    $contentType = $site[1]['content_type'];
-//
-//    if (preg_match('/<meta[^>]+charset=([\'"]?)([-a-zA-Z0-9]+)\1/i', $site[0], $matches)) {
-//        $contentType = $matches[2];
-//    } else if (preg_match('(.*?charset=(.*))', $contentType, $contentType, PREG_OFFSET_CAPTURE)) {
-//        $contentType = str_replace(["\r", "\n"], '', $contentType[1][0]);
-//        $contentType = str_replace('"', '', $contentType);
-//    }
-//    try {
-//        return mb_convert_encoding(
-//            $site,
-//            'utf8',
-//            $contentType
-//        );
-//    } catch (Throwable $e) {
-//        return $site;
-//    }
-//
-//}
-//
-//function analyseSite($site, $link): array
-//{
-//    $object = [];
-//
-//    $description = SearchCompetitors::getText($site[0], "/<meta name=\"description\" content=\"(.*?)\"/");
-/*    $title = SearchCompetitors::getText($site[0], "/<title.*?>(.*?)<\/title>/");*/
-/*    $h1 = SearchCompetitors::getText($site[0], "/<h1.*?>(.*?)<\/h1>/");*/
-/*    $h2 = SearchCompetitors::getText($site[0], "/<h2.*?>(.*?)<\/h2>/");*/
-/*    $h3 = SearchCompetitors::getText($site[0], "/<h3.*?>(.*?)<\/h3>/");*/
-/*    $h4 = SearchCompetitors::getText($site[0], "/<h4.*?>(.*?)<\/h4>/");*/
-/*    $h5 = SearchCompetitors::getText($site[0], "/<h5.*?>(.*?)<\/h5>/");*/
-/*    $h6 = SearchCompetitors::getText($site[0], "/<h6.*?>(.*?)<\/h6>/");*/
-//
-//    $object['meta'] = [
-//        'title' => $title,
-//        'h1' => $h1,
-//        'h2' => $h2,
-//        'h3' => $h3,
-//        'h4' => $h4,
-//        'h5' => $h5,
-//        'h6' => $h6,
-//        'description' => $description,
-//    ];
-//
-//    $object['danger'] = array_merge($title, $h1, $h2, $h3, $h4, $h5, $h6, $description) === [];
-//
-//    $object['mainPage'] = SearchCompetitors::isLinkMainPage($link);
-//
-//    return $object;
-//}
