@@ -3141,26 +3141,26 @@
                 getNotifications()
             })
 
-            $('#get-projects').on('click', function () {
-                $.ajax({
-                    type: 'get',
-                    url: "{{ route('get.all.checklists') }}",
-                    success: function (checklists) {
-                        let options = ''
-                        $.each(checklists, function (i, item) {
-                            options += '<option value="' + item.id + '" data-toggle="tooltip" data-placement="top" title="' + item.url + '">' +
-                                new URL(item.url)["host"] +
-                                '</option>'
-                        })
+            {{--$('#get-projects').on('click', function () {--}}
+            {{--    $.ajax({--}}
+            {{--        type: 'get',--}}
+            {{--        url: "{{ route('get.all.checklists') }}",--}}
+            {{--        success: function (checklists) {--}}
+            {{--            let options = ''--}}
+            {{--            $.each(checklists, function (i, item) {--}}
+            {{--                options += '<option value="' + item.id + '" data-toggle="tooltip" data-placement="top" title="' + item.url + '">' +--}}
+            {{--                    new URL(item.url)["host"] +--}}
+            {{--                    '</option>'--}}
+            {{--            })--}}
 
-                        $('#projects-for-repeat-tasks').html(options)
-                        $('#projects-for-repeat-tasks').select2({theme: 'bootstrap4'});
-                    },
-                    error: function (response) {
-                        errorMessage(response.responseJSON.errors)
-                    }
-                })
-            })
+            {{--            $('#projects-for-repeat-tasks').html(options)--}}
+            {{--            $('#projects-for-repeat-tasks').select2({theme: 'bootstrap4'});--}}
+            {{--        },--}}
+            {{--        error: function (response) {--}}
+            {{--            errorMessage(response.responseJSON.errors)--}}
+            {{--        }--}}
+            {{--    })--}}
+            {{--})--}}
 
             $('#save-new-repeat-task').on('click', function () {
                 $.ajax({
