@@ -125,13 +125,184 @@
                 border: none;
             }
 
-            g.hide-border:active, .hide-border:focus {
+            .hide-border:active, .hide-border:focus {
                 border: 1px solid #ced4da !important;
+            }
+        </style>
+
+        <style>
+            .board {
+                width: 100%;
+                height: 80vh;
+            }
+
+            /* ---- FORM ---- */
+            #todo-form {
+                padding: 32px 32px 0;
+            }
+
+            #todo-form input {
+                padding: 12px;
+                margin-right: 12px;
+                width: 225px;
+
+                border-radius: 4px;
+                border: none;
+
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+                background: white;
+
+                font-size: 14px;
+                outline: none;
+            }
+
+            #todo-form button {
+                padding: 12px 32px;
+
+                border-radius: 4px;
+                border: none;
+
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+                background: #ffffff;
+                color: black;
+
+                font-weight: bold;
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+            /* ---- BOARD ---- */
+            .lanes {
+                display: flex;
+                align-items: flex-start;
+                justify-content: start;
+                gap: 16px;
+
+                padding: 10px 32px;
+
+                overflow-x: scroll;
+                height: 100%;
+            }
+
+            .lanes::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            /* Оставляем только ползунок */
+            .lanes::-webkit-scrollbar-thumb {
+                background-color: #ccc;
+            }
+
+            .heading {
+                font-size: 18px;
+                margin-bottom: 0;
+                font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            }
+
+            .swim-lane {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+
+                box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+                border: 0 solid rgba(0, 0, 0, .125);
+
+                padding: 12px;
+                border-radius: 4px;
+                width: 275px;
+                height: 100%;
+                overflow-y: auto;
+
+                flex-shrink: 0;
+            }
+
+            .swim-lane p {
+                margin-bottom: 0 !important;
+            }
+
+            .swim-lane::-webkit-scrollbar {
+                width: 2px;
+                height: 0;
+            }
+
+            /* Оставляем только ползунок */
+            .swim-lane::-webkit-scrollbar-thumb {
+                background-color: #ccc;
+            }
+
+            .swim-lane-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .swim-lane-hide {
+                cursor: pointer;
+                -webkit-touch-callout: none; /* iOS Safari */
+                -webkit-user-select: none; /* Safari */
+                -khtml-user-select: none; /* Konqueror HTML */
+                -moz-user-select: none; /* Old versions of Firefox */
+                -ms-user-select: none; /* Internet Explorer/Edge */
+                user-select: none;
+
+                display: block;
+                width: 12px;
+                height: 12px;
+                background: url("/img/left_arrow.svg");
+                float: left;
+                transition: 0.5s ease;
+                transform: rotate(0deg);
+            }
+
+            .rotate {
+                transform: rotate(180deg);
+            }
+
+            .task {
+                background: white;
+                color: black;
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05);
+
+                padding: 12px;
+                border-radius: 10px;
+
+                font-size: 16px;
+                cursor: move;
+                transition: 0.3s;
+                border: 1px solid rgba(0, 0, 0, .125);
+            }
+
+            .task:hover {
+                background-color: #f7f7f7;
+            }
+
+            .is-dragging {
+                scale: 1.05;
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05);
+                background: rgb(50, 50, 50);
+                color: white;
+            }
+
+            .task-microcard-block-1 a {
+                font-size: 11px;
+                text-decoration: none;
+                color: #787878;
+            }
+
+            .task-microcard-label {
+                color: #787878;
+                font-size: 12px;
+                margin-right: 3px;
+            }
+
+            .task-microcard-date-start,
+            .task-microcard-date-end {
+                font-size: 13px;
             }
         </style>
     @endslot
 
-    <div id="block-from-notifications" class="d-flex flex-row"></div>
+    <div id="block-from-notifications"></div>
 
     <div class="col-12">
         <div class="card card-primary card-outline card-tabs">
@@ -141,6 +312,11 @@
                         <a class="nav-link active" id="custom-tabs-three-home-tab" data-toggle="pill"
                            href="#custom-tabs-three-home" role="tab" aria-controls="custom-tabs-three-home"
                            aria-selected="false">Активные</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-three-kanban-tab" data-toggle="pill"
+                           href="#custom-tabs-three-kanban" role="tab" aria-controls="custom-tabs-three-kanban"
+                           aria-selected="false">Канбан</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="archived-checklists" data-toggle="pill"
@@ -287,6 +463,9 @@
                         <p id="empty-message" style="display: none">У вас нет активных проектов с заданными
                             фильтрами</p>
                         <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
+                    </div>
+                    <div class="tab-pane fade row d-flex" id="custom-tabs-three-kanban" role="tabpanel"
+                         aria-labelledby="custom-tabs-three-kanban">
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-profile" role="tabpanel"
                          aria-labelledby="archived-checklists"></div>
@@ -1244,6 +1423,7 @@
             })
 
             $(document).on('click', '#archived-checklists', function () {
+                $('#custom-tabs-three-kanban').html('')
                 $('#custom-tabs-three-profile').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -1350,6 +1530,340 @@
                 loadChecklists()
             })
 
+            $('#custom-tabs-three-kanban').on('click', '.swim-lane-hide', function () {
+
+                $(this).toggleClass('rotate');
+
+                var swimLane = $(this).closest('.swim-lane');
+                var currentWidth = swimLane.data('width') || swimLane.css('width') || swimLane.width(); // получаем текущую ширину .swim-lane
+                var newWidth = currentWidth === '37px' ? '275px' : '37px';
+                swimLane.animate({
+                    'width': newWidth
+                }, 500);
+                swimLane.data('width', newWidth); // сохраняем новое значение ширины
+                if (newWidth === '37px') {
+                    swimLane.find('.task').slideUp();
+                    swimLane.find('.swim-lane-top').css('flex-flow', 'column-reverse');
+                    swimLane.find('.heading').animate({
+                        'width': '10px',
+                        'margin-top': '30px'
+                    }, 500);
+                } else {
+                    swimLane.find('.task').slideDown()
+                    swimLane.find('.swim-lane-top').css('flex-flow', '');
+                    swimLane.find('.heading').animate({
+                        'width': '90%',
+                        'margin-top': '0'
+                    }, 500);
+                }
+
+
+                var swimLaneId = swimLane.attr('id');
+                var swimLaneState = {
+                    width: newWidth,
+                    isHidden: (newWidth === '37px')
+                };
+                localStorage.setItem(swimLaneId, JSON.stringify(swimLaneState));
+            });
+
+            $(document).on('click', '#custom-tabs-three-kanban-tab', function () {
+                $('#custom-tabs-three-profile').html('')
+                $('#custom-tabs-three-kanban').html(
+                    '<div class="board">' +
+                    '   <div class="lanes">' +
+                    '       <div class="swim-lane" id="expired-todo">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Просроченные</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="today-todo">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Сегодня</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="nextday-todo">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Завтра</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="next-monday">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Понедельник</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="next-tuesday">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Вторник</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="next-wednesday">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Среда</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="next-thursday">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Четверг</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="next-friday">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Пятница</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="next-saturday">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Суббота</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="swim-lane" id="next-sunday">' +
+                    '           <div class="swim-lane-top">' +
+                    '               <h3 class="heading">Воскресенье</h3>' +
+                    '               <div class="swim-lane-hide"></div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</div>'
+                )
+
+
+                $('.swim-lane').each(function () {
+                    var swimLaneId = $(this).attr('id');
+                    var swimLaneState = JSON.parse(localStorage.getItem(swimLaneId));
+                    if (swimLaneState) {
+                        $(this).css('width', swimLaneState.width);
+                        if (swimLaneState.isHidden) {
+                            $(this).find('.swim-lane-hide').toggleClass('rotate');
+                            $(this).find('.swim-lane-top').css('flex-flow', 'column-reverse');
+                            $(this).find('.heading').animate({
+                                'width': '10px',
+                                'margin-top': '30px'
+                            }, 0);
+                        }
+                    }
+                });
+
+
+                function renderTask(value) {
+                    let dateObj = new Date(value.date_start);
+                    let day = dateObj.getDate();
+                    let month = dateObj.getMonth() + 1;
+                    let year = dateObj.getFullYear();
+                    let date_start = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+
+                    dateObj = new Date(value.deadline);
+                    day = dateObj.getDate();
+                    month = dateObj.getMonth() + 1;
+                    year = dateObj.getFullYear();
+                    let deadline = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+
+                    return '<div data-id="' + value.id + '" data-deadline="' + value.deadline + '" data-status="' + value.status + '" class="dl-task-info task" draggable="true">' +
+                        '<div class="b-task-microcard has-menu">' +
+                        '   <div class="task-microcard-block-1 task-microcard-project text-size-s text-style-stt" style="word-break: break-word;" fieldid="13">' +
+                        '       <a target="_blank" href="' + value.project.url + '">' + new URL(value.project.url)['origin'] + '</a>' +
+                        '   </div>' +
+                        '   <div class="task-microcard-title task-microcard-block-2  tr-taskstatus-color-3377C3 tr-taskstatus-style-0 text-size-l text-style-stb" fieldid="1">' +
+                        '       <a href="/checklist-tasks/' + value.project.id + '" target="_blank">' + value.name + '</a> ' +
+                        '   </div>' +
+                        '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt" fieldid="2">' +
+                        '           <span class="task-microcard-label">Сроки:</span>' +
+                        '           <span class="task-microcard-date-start task-microcard-interact">' + date_start + '</span>  —' +
+                        '           <span class="task-microcard-date-end task-microcard-interact">' + deadline + '</span>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>';
+                }
+
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('get.checklistsKanban') }}",
+                    success: function (response) {
+                        console.log(response)
+                        //
+                        // let today = new Date();
+                        // let tomorrow = new Date(today);
+                        // tomorrow.setDate(today.getDate() + 1);
+                        // if (tomorrow.getMonth() !== today.getMonth()) {
+                        //     tomorrow = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                        // }
+                        //
+                        // let nextMonday = new Date(today.getTime());
+                        // nextMonday.setDate(today.getDate() + (1 + 7 - today.getDay()) % 7);
+                        // let nextTuesday = new Date(today.getTime());
+                        // nextTuesday.setDate(today.getDate() + (2 + 7 - today.getDay()) % 7);
+                        // let nextWednesday = new Date(today.getTime());
+                        // nextWednesday.setDate(today.getDate() + (3 + 7 - today.getDay()) % 7);
+                        // let nextThursday = new Date(today.getTime());
+                        // nextThursday.setDate(today.getDate() + (4 + 7 - today.getDay()) % 7);
+                        // let nextFriday = new Date(today.getTime());
+                        // nextFriday.setDate(today.getDate() + (5 + 7 - today.getDay()) % 7);
+                        // let nextSaturday = new Date(today.getTime());
+                        // nextSaturday.setDate(today.getDate() + (6 + 7 - today.getDay()) % 7);
+                        // let nextSunday = new Date(today.getTime());
+                        // nextSunday.setDate(today.getDate() + (7 + 7 - today.getDay()) % 7);
+
+                        let expired = ''
+                        $.each(response.expired, function (item, value) {
+                            expired += renderTask(value);
+                        })
+                        $('#expired-todo').append(expired)
+
+                        let toDay = ''
+                        $.each(response.toDay, function (item, value) {
+                            toDay += renderTask(value);
+                        })
+                        $('#today-todo').append(toDay)
+
+                        let tomorrow = ''
+                        $.each(response.tomorrow, function (item, value) {
+                            tomorrow += renderTask(value);
+                        })
+                        $('#nextday-todo').append(tomorrow)
+
+                        // $.each(response.tasks, function (key, value) {
+                        //
+                        //     let dateToCheck = new Date(value.deadline);
+                        //
+                        //     if (value.status === 'expired') {
+                        //
+                        //         renderTask(value, '#expired-todo');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === today.getFullYear() && dateToCheck.getMonth() === today.getMonth() && dateToCheck.getDate() === today.getDate()) {
+                        //
+                        //         renderTask(value, '#today-todo');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === tomorrow.getFullYear() && dateToCheck.getMonth() === tomorrow.getMonth() && dateToCheck.getDate() === tomorrow.getDate()) {
+                        //
+                        //         renderTask(value, '#nextday-todo');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === nextMonday.getFullYear() && dateToCheck.getMonth() === nextMonday.getMonth() && dateToCheck.getDate() === nextMonday.getDate()) {
+                        //
+                        //         renderTask(value, '#next-monday');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === nextTuesday.getFullYear() && dateToCheck.getMonth() === nextTuesday.getMonth() && dateToCheck.getDate() === nextTuesday.getDate()) {
+                        //
+                        //         renderTask(value, '#next-tuesday');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === nextWednesday.getFullYear() && dateToCheck.getMonth() === nextWednesday.getMonth() && dateToCheck.getDate() === nextWednesday.getDate()) {
+                        //
+                        //         renderTask(value, '#next-wednesday');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === nextThursday.getFullYear() && dateToCheck.getMonth() === nextThursday.getMonth() && dateToCheck.getDate() === nextThursday.getDate()) {
+                        //
+                        //         renderTask(value, '#next-thursday');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === nextFriday.getFullYear() && dateToCheck.getMonth() === nextFriday.getMonth() && dateToCheck.getDate() === nextFriday.getDate()) {
+                        //
+                        //         renderTask(value, '#next-friday');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === nextSaturday.getFullYear() && dateToCheck.getMonth() === nextSaturday.getMonth() && dateToCheck.getDate() === nextSaturday.getDate()) {
+                        //
+                        //         renderTask(value, '#next-saturday');
+                        //
+                        //     } else if (dateToCheck.getFullYear() === nextSunday.getFullYear() && dateToCheck.getMonth() === nextSunday.getFullYear() && dateToCheck.getDate() === nextSunday.getDate()) {
+                        //
+                        //         renderTask(value, '#next-sunday');
+                        //
+                        //     }
+                        //
+                        // });
+
+                        $('.swim-lane').each(function () {
+                            var swimLaneId = $(this).attr('id');
+                            var swimLaneState = JSON.parse(localStorage.getItem(swimLaneId));
+                            if (swimLaneState) {
+                                $(this).css('width', swimLaneState.width);
+                                if (swimLaneState.isHidden) {
+                                    $(this).find('.task').slideUp(0);
+                                }
+                            }
+                        });
+
+                        let draggables = document.querySelectorAll(".task");
+                        let droppables = document.querySelectorAll(".swim-lane");
+
+                        draggables.forEach((task) => {
+                            task.addEventListener("dragstart", () => {
+                                task.classList.add("is-dragging");
+                            });
+                            task.addEventListener("dragend", () => {
+                                task.classList.remove("is-dragging");
+                                let id = event.target.getAttribute("data-id");
+                                let status = event.target.getAttribute("data-status");
+                                let parent = event.target.parentNode.id;
+
+                                if (status === 'expired') {
+                                    status = 'new'
+                                }
+                                if (parent === 'expired-todo') {
+                                    status = 'expired'
+                                }
+
+                                $.ajax({
+                                    type: 'post',
+                                    data: {
+                                        id: id,
+                                        day: parent,
+                                        status: status,
+                                    },
+                                    url: "{{ route('save.checklistsKanban') }}",
+                                    success: function (response) {},
+                                    error: function (response) {}
+                                })
+                            });
+                        });
+
+                        droppables.forEach((zone) => {
+                            zone.addEventListener("dragover", (e) => {
+                                e.preventDefault();
+
+                                let bottomTask = insertAboveTask(zone, e.clientY);
+                                let curTask = document.querySelector(".is-dragging");
+
+                                if (!bottomTask) {
+                                    zone.appendChild(curTask);
+                                } else {
+                                    zone.insertBefore(curTask, bottomTask);
+                                }
+                            });
+                        });
+
+                        let insertAboveTask = (zone, mouseY) => {
+                            let els = zone.querySelectorAll(".task:not(.is-dragging)");
+
+                            let closestTask = null;
+                            let closestOffset = Number.NEGATIVE_INFINITY;
+
+                            els.forEach((task) => {
+                                let {top} = task.getBoundingClientRect();
+
+                                let offset = mouseY - top;
+
+                                if (offset < 0 && offset > closestOffset) {
+                                    closestOffset = offset;
+                                    closestTask = task;
+                                }
+                            });
+
+                            return closestTask;
+                        };
+                    },
+                    error: function (response) {
+
+                    }
+                })
+            })
+
             $('#move-to-archive').on('click', function () {
                 $.ajax({
                     url: '/move-checklist-to-archive/' + removedButton.attr('data-id'),
@@ -1367,6 +1881,65 @@
                         errorMessage(response.responseJSON.errors)
                     }
                 })
+            })
+
+            $('#add-task').on('click', function () {
+                $('#tasks').append(
+                    '<li data-id="' + counter + '">' +
+                    '    <div class="card">' +
+                    '    <div class="card-header d-flex flex-row justify-content-between"' +
+                    '         id="heading' + counter + '">' +
+                    '        <div class="d-flex w-75">' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Название задачи</label>' +
+                    '                <input data-id="name-' + counter + '" type="text" class="form form-control"' +
+                    '                       placeholder="Название задачи">' +
+                    '            </div>' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Статус</label>' +
+                    '                <select data-id="status-' + counter + '" class="custom custom-select">' +
+                    '                    <option value="new">Новая</option>' +
+                    '                    <option value="in_work">В работе</option>' +
+                    '                    <option value="expired">Просрочен</option>' +
+                    '                    <option value="ready">Готово</option>' +
+                    '                </select>' +
+                    '            </div>' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Дедлайн</label>' +
+                    '                <input data-id="deadline-' + counter + '" type="datetime-local" class="form form-control">' +
+                    '            </div>' +
+                    '        </div>' +
+                    '        <div style="display: flex; justify-content: center; align-items: center; margin-top: 13px;">' +
+                    '            <button class="btn btn-sm btn-default" data-toggle="collapse"' +
+                    '                    data-target="#collapse' + counter + '"' +
+                    '                    aria-expanded="true" aria-controls="collapse' + counter + '">' +
+                    '                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top"' +
+                    '                   title="Скрыть - Показать"></i>' +
+                    '            </button>' +
+                    '            <button class="btn btn-sm btn-default remove-task"' +
+                    '                    data-toggle="tooltip"' +
+                    '                    data-placement="top" title="Удалить">' +
+                    '                <i class="fa fa-trash"></i>' +
+                    '            </button>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '    <div id="collapse' + counter + '" class="collapse" aria-labelledby="heading' + counter + '"' +
+                    '         data-parent="#accordionExample">' +
+                    '        <div class="card-body">' +
+                    '            <textarea id="description-' + counter + '" cols="30" rows="10" class="form-control" placeholder="Описание"></textarea>' +
+                    '        </div>' +
+                    '        <ol id="subtasks-' + counter + '"></ol>' +
+                    '        <div class="card-footer">' +
+                    '            <button class="btn btn-default add-subtask" data-id="' + counter + '">' +
+                    '                Добавить подзадачу' +
+                    '            </button>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>' +
+                    '</li>'
+                )
+
+                counter++
             })
 
             $('#remove').on('click', function () {
@@ -1428,6 +2001,7 @@
 
             function loadChecklists(page = 0, renderPaginate = false) {
                 $('#custom-tabs-three-profile').html('')
+                $('#custom-tabs-three-kanban').html('')
                 $('#lists').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -1635,6 +2209,7 @@
                     minHeight: 350,
                     lang: "ru-RU"
                 })
+
                 refreshTooltips()
             })
 
@@ -1741,6 +2316,7 @@
             $(document).on('input', '.datetime-counter', function () {
                 let $id = $(this).attr('data-target')
                 let value = $(this).val()
+
                 let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
                 let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
                 let newDate = new Date(new Date($start.val()).getTime() + (value * count_ml_in_day) + 10800000).toISOString().slice(0, 16)
@@ -1748,8 +2324,24 @@
                 $deadline.val(newDate)
             })
 
+            $(document).on('input', '.datetime-after', function () {
+                let $id = $(this).attr('data-target')
+                let value = $(this).val()
+
+                let $days = $('.datetime-counter[data-target="' + $id + '"]')
+                let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
+                let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
+
+                $start.val(value)
+
+                let newDate = new Date(new Date(value).getTime() + ($days.val() * count_ml_in_day)).toISOString().slice(0, 16)
+                $deadline.val(newDate)
+
+            })
+
             $(document).on('change', '.task-status', function () {
                 let $id = $(this).attr('data-target')
+
                 refreshTooltips()
 
                 if ($(this).val() === 'deactivated') {
@@ -2046,7 +2638,6 @@
                 $('#stubs-place').html(html)
             }
 
-
             $(document).on('click', '#classic-stubs', function () {
                 loadClassicStubs()
             })
@@ -2068,6 +2659,7 @@
             function loadClassicStubs(page = 0, pagination = true) {
                 $('#save-stub-action').val('classic')
                 $('#custom-tabs-three-profile').html('')
+                $('#custom-tabs-three-kanban').html('')
                 $('#classic-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -2096,6 +2688,7 @@
             function loadPersonalStubs(page = 0, pagination = true) {
                 $('#save-stub-action').val('personal')
                 $('#custom-tabs-three-profile').html('')
+                $('#custom-tabs-three-kanban').html('')
                 $('#personal-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -2594,6 +3187,8 @@
             })
 
             function getNotifications() {
+                $('#custom-tabs-three-profile').html('')
+                $('#custom-tabs-three-kanban').html('')
                 $('#notification-tab').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +

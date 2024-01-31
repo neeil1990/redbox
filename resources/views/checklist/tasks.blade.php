@@ -215,6 +215,12 @@
                 height: 15px;
                 background: url("/img/down_arrow.svg");
                 float: left;
+                transition: 0.5s ease;
+                transform: rotate(0deg);
+            }
+
+            .rotate {
+                transform: rotate(180deg);
             }
 
             div > div > div.modal.note-modal.show > div > div > div.modal-header > button,
@@ -347,7 +353,7 @@
         </div>
     </div>
 
-    <div id="block-from-notifications" class="d-flex flex-row"></div>
+    <div id="block-from-notifications"></div>
 
     <div class="card">
         <div class="card-header">
@@ -825,6 +831,7 @@
             }
 
             function generateNestedLists(task) {
+                console.log(task)
                 let newState = '<option value="new">Новая</option>'
                 let work = '<option value="in_work">В работе</option>'
                 let ready = '<option value="ready">Готово</option>'
@@ -1138,6 +1145,7 @@
                         skip: page * $('#count').val(),
                     },
                     success: function (response) {
+                        console.log(response)
                         let checklist = response.checklist[0]
 
                         $("#checklist-icon").html('<img src="/storage/' + checklist.icon + '" alt="' + checklist.icon + '" class="icon mr-2">')
@@ -1298,7 +1306,6 @@
                             pagination += '<li class="page-item"><a href="#" class="page-link" data-id="' + i + '">' + html + '</a></li>'
                         }
                     }
-                    $('#pagination').html(pagination)
                 }
 
                 $('#pagination').html(pagination)

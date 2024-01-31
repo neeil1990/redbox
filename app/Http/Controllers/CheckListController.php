@@ -14,6 +14,7 @@ use App\MetaTag;
 use App\MonitoringDataTableColumnsProject;
 use App\ProjectRelevanceHistory;
 use App\User;
+use Carbon\CarbonInterface;
 use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -239,9 +240,115 @@ class CheckListController extends Controller
         ]);
     }
 
-    public function getAllChecklists(Request $request)
+    public function getChecklistsKanban(Request $request): JsonResponse
     {
-        return CheckLists::where('user_id', Auth::id())->get()->toArray();
+        $ids = CheckLists::where('user_id', Auth::id())->pluck('id');
+
+        $tasks = ChecklistTasks::where('status', '!=', 'ready')
+            ->where('status', '!=', 'repeat')
+            ->whereIn('project_id', $ids)
+            ->whereHas('project', function ($query) {
+                $query->where('archive', 0);
+            })->with('project')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $expired = ChecklistTasks::where('status', 'expired')
+            ->whereIn('project_id', $ids)
+            ->whereHas('project', function ($query) {
+                $query->where('archive', 0);
+            })->with('project')
+            ->get();
+
+        $toDay = ChecklistTasks::where('status', '!=', 'ready')
+            ->where('status', '!=', 'repeat')
+            ->whereIn('project_id', $ids)
+            ->where('deadline', 'like', "%" . Carbon::now()->toDateString() . "%")
+            ->whereHas('project', function ($query) {
+                $query->where('archive', 0);
+            })->with('project')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $tomorrow = ChecklistTasks::where('status', '!=', 'ready')
+            ->where('status', '!=', 'repeat')
+            ->whereIn('project_id', $ids)
+            ->where('deadline', 'like', "%" . Carbon::now()->addDay()->toDateString() . "%")
+            ->whereHas('project', function ($query) {
+                $query->where('archive', 0);
+            })->with('project')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $today = Carbon::now();
+
+        $nextMonday = $today->next(CarbonInterface::MONDAY)->toDateString();
+        $nextTuesday = $today->next(CarbonInterface::TUESDAY)->toDateString();
+        $nextWednesday = $today->next(CarbonInterface::WEDNESDAY)->toDateString();
+        $nextThursday = $today->next(CarbonInterface::THURSDAY)->toDateString();
+        $nextFriday = $today->next(CarbonInterface::FRIDAY)->toDateString();
+        $nextSaturday = $today->next(CarbonInterface::SATURDAY)->toDateString();
+        $nextSunday = $today->next(CarbonInterface::SUNDAY)->toDateString();
+
+        $records = ChecklistTasks::where('status', '!=', 'ready')
+            ->where('status', '!=', 'repeat')
+            ->whereIn('project_id', $ids)
+            ->whereIn('deadline', [
+                $nextMonday,
+                $nextTuesday,
+                $nextWednesday,
+                $nextThursday,
+                $nextFriday,
+                $nextSaturday,
+                $nextSunday
+            ])->get();
+
+        return response()->json([
+            'tasks' => $tasks,
+            'expired' => $expired,
+            'toDay' => $toDay,
+            'tomorrow' => $tomorrow,
+            'monday' => $records->where('deadline', 'like', "%$nextMonday%")->first(),
+            'tuesday' => $records->where('deadline', 'like', "%$nextTuesday%")->first(),
+            'wednesday' => $records->where('deadline', 'like', "%$nextWednesday%")->first(),
+            'thursday' => $records->where('deadline', 'like', "%$nextThursday%")->first(),
+            'friday' => $records->where('deadline', 'like', "%$nextFriday%")->first(),
+            'saturday' => $records->where('deadline', 'like', "%$nextSaturday%")->first(),
+            'sunday' => $records->where('deadline', 'like', "%$nextSunday%")->first(),
+        ]);
+    }
+
+    public function saveChecklistsKanban(Request $request): JsonResponse
+    {
+        $today = Carbon::now();
+
+        if ($request->input('day') === 'today-todo') {
+            $deadline = $today;
+        } else if ($request->input('day') === 'nextday-todo') {
+            $deadline = $today->addDay();
+        } else if ($request->input('day') === 'next-monday') {
+            $deadline = $today->next(CarbonInterface::MONDAY);
+        } else if ($request->input('day') === 'next-tuesday') {
+            $deadline = $today->next(CarbonInterface::TUESDAY);
+        } else if ($request->input('day') === 'next-wednesday') {
+            $deadline = $today->next(CarbonInterface::WEDNESDAY);
+        } else if ($request->input('day') === 'next-thursday') {
+            $deadline = $today->next(CarbonInterface::THURSDAY);
+        } else if ($request->input('day') === 'next-friday') {
+            $deadline = $today->next(CarbonInterface::FRIDAY);
+        } else if ($request->input('day') === 'next-saturday') {
+            $deadline = $today->next(CarbonInterface::SATURDAY);
+        } else {
+            $deadline = $today->next(CarbonInterface::SUNDAY);
+        }
+
+        ChecklistTasks::where('id', $request->input('id'))
+            ->update([
+                'deadline' => $deadline,
+                'status' => $request->input('status')
+            ]);
+
+        return response()->json([]);
     }
 
     public function inArchive(CheckLists $project)
@@ -400,9 +507,9 @@ class CheckListController extends Controller
         }
 
         if ($request->sort === 'new-sort') {
-            $sql->orderByDesc('id');
+            $sql->orderBy('id', 'desc');
         } elseif ($request->sort === 'old-sort') {
-            $sql->orderBy('id');
+            $sql->orderBy('id', 'asc');
         } elseif ($request->sort != 'all') {
             $sql->where('status', $request->sort);
         }
@@ -413,7 +520,9 @@ class CheckListController extends Controller
             $tasks = $this->buildTaskStructure($tasks);
         }
 
-        $paginate = (int)ceil($sql->where('subtask', 0)->count() / $request->count);
+        $paginate = (int)ceil(
+            $sql->where('subtask', 0)->count() / $request->count
+        );
 
         return [
             'checklist' => $this->confirmArray([

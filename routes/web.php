@@ -447,7 +447,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/store-stub', 'CheckListController@storeStub')->name('store.stub');
     Route::post('/edit-stub', 'CheckListController@editStub')->name('edit.stub');
     Route::post('/get-checklist', 'CheckListController@getChecklists')->name('get.checklists');
-    Route::get('/get-all-checklist', 'CheckListController@getAllChecklists')->name('get.all.checklists');
+    Route::post('/get-checklist-kanban', 'CheckListController@getChecklistsKanban')->name('get.checklistsKanban');
+    Route::post('/save-checklist-kanban', 'CheckListController@saveChecklistsKanban')->name('save.checklistsKanban');
     Route::get('/move-checklist-to-archive/{project}', 'CheckListController@inArchive')->name('in.archive');
     Route::get('/restore-checklist/{project}', 'CheckListController@restore')->name('restore.checklist');
     Route::get('/get-checklist-archive', 'CheckListController@archive')->name('checklist.archive');
