@@ -249,7 +249,8 @@ class CheckListController extends Controller
             ->whereIn('project_id', $ids)
             ->whereHas('project', function ($query) {
                 $query->where('archive', 0);
-            })->with('project')
+            })
+            ->with('project')
             ->orderBy('id', 'desc')
             ->get();
 
@@ -257,11 +258,12 @@ class CheckListController extends Controller
             ->whereIn('project_id', $ids)
             ->whereHas('project', function ($query) {
                 $query->where('archive', 0);
-            })->with('project')
-            ->get();
+            })
+            ->with('project')->get();
 
-        $toDay = ChecklistTasks::where('status', '!=', 'ready')
+        $toDayTasks = ChecklistTasks::where('status', '!=', 'ready')
             ->where('status', '!=', 'repeat')
+            ->where('status', '!=', 'expired')
             ->whereIn('project_id', $ids)
             ->where('deadline', 'like', "%" . Carbon::now()->toDateString() . "%")
             ->whereHas('project', function ($query) {
@@ -270,8 +272,9 @@ class CheckListController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        $tomorrow = ChecklistTasks::where('status', '!=', 'ready')
+        $tomorrowTasks = ChecklistTasks::where('status', '!=', 'ready')
             ->where('status', '!=', 'repeat')
+            ->where('status', '!=', 'expired')
             ->whereIn('project_id', $ids)
             ->where('deadline', 'like', "%" . Carbon::now()->addDay()->toDateString() . "%")
             ->whereHas('project', function ($query) {
@@ -280,41 +283,54 @@ class CheckListController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        $today = Carbon::now();
+        $today = $todayDate = Carbon::now();
+        $tomorrowDate = $todayDate->addDay()->toDateString();
+        $todayDate = $todayDate->toDateString();
 
-        $nextMonday = $today->next(CarbonInterface::MONDAY)->toDateString();
-        $nextTuesday = $today->next(CarbonInterface::TUESDAY)->toDateString();
-        $nextWednesday = $today->next(CarbonInterface::WEDNESDAY)->toDateString();
-        $nextThursday = $today->next(CarbonInterface::THURSDAY)->toDateString();
-        $nextFriday = $today->next(CarbonInterface::FRIDAY)->toDateString();
-        $nextSaturday = $today->next(CarbonInterface::SATURDAY)->toDateString();
-        $nextSunday = $today->next(CarbonInterface::SUNDAY)->toDateString();
+        $dayOfWeek = strtolower($today->englishDayOfWeek);
+        $nextDays = [];
 
-        $records = ChecklistTasks::where('status', '!=', 'ready')
-            ->where('status', '!=', 'repeat')
-            ->whereIn('project_id', $ids)
-            ->whereIn('deadline', [
-                $nextMonday,
-                $nextTuesday,
-                $nextWednesday,
-                $nextThursday,
-                $nextFriday,
-                $nextSaturday,
-                $nextSunday
-            ])->get();
+        for ($i = 1; $i <= 7; $i++) {
+            $nextDay = $today->copy()->next($dayOfWeek);
+            $nextDays[$dayOfWeek] = ChecklistTasks::where('status', '!=', 'ready')
+                ->where('status', '!=', 'repeat')
+                ->where('status', '!=', 'expired')
+                ->whereIn('project_id', $ids)
+                ->where('deadline', 'like', "%{$nextDay->toDateString()}%")
+                ->whereHas('project', function ($query) {
+                    $query->where('archive', 0);
+                })
+                ->with('project')
+                ->orderBy('id', 'desc')
+                ->get();
+
+            $nextDays[$dayOfWeek . 'Date'] = $nextDay->toDateString();
+
+            $dayOfWeek = strtolower($nextDay->addDay()->englishDayOfWeek);
+        }
 
         return response()->json([
             'tasks' => $tasks,
             'expired' => $expired,
-            'toDay' => $toDay,
-            'tomorrow' => $tomorrow,
-            'monday' => $records->where('deadline', 'like', "%$nextMonday%")->first(),
-            'tuesday' => $records->where('deadline', 'like', "%$nextTuesday%")->first(),
-            'wednesday' => $records->where('deadline', 'like', "%$nextWednesday%")->first(),
-            'thursday' => $records->where('deadline', 'like', "%$nextThursday%")->first(),
-            'friday' => $records->where('deadline', 'like', "%$nextFriday%")->first(),
-            'saturday' => $records->where('deadline', 'like', "%$nextSaturday%")->first(),
-            'sunday' => $records->where('deadline', 'like', "%$nextSunday%")->first(),
+            'toDay' => $toDayTasks,
+            'todayDate' => $todayDate,
+            'tomorrow' => $tomorrowTasks,
+            'tomorrowDate' => $tomorrowDate,
+            'monday' => $nextDays['monday'],
+            'mondayDate' => $nextDays['mondayDate'],
+            'mondayDateDate' => $nextDays['mondayDate'],
+            'tuesday' => $nextDays['tuesday'],
+            'tuesdayDate' => $nextDays['tuesdayDate'],
+            'wednesday' => $nextDays['wednesday'],
+            'wednesdayDate' => $nextDays['wednesdayDate'],
+            'thursday' => $nextDays['thursday'],
+            'thursdayDate' => $nextDays['thursdayDate'],
+            'friday' => $nextDays['friday'],
+            'fridayDate' => $nextDays['fridayDate'],
+            'saturday' => $nextDays['saturday'],
+            'saturdayDate' => $nextDays['saturdayDate'],
+            'sunday' => $nextDays['sunday'],
+            'sundayDate' => $nextDays['sundayDate'],
         ]);
     }
 
@@ -342,13 +358,21 @@ class CheckListController extends Controller
             $deadline = $today->next(CarbonInterface::SUNDAY);
         }
 
-        ChecklistTasks::where('id', $request->input('id'))
-            ->update([
-                'deadline' => $deadline,
-                'status' => $request->input('status')
-            ]);
+        $update = [
+            'deadline' => $deadline,
+            'status' => $request->input('status')
+        ];
 
-        return response()->json([]);
+        if ($update['status'] === 'expired') {
+            $update['deadline'] = Carbon::now();
+        }
+
+        ChecklistTasks::where('id', $request->input('id'))->update($update);
+
+        return response()->json([
+            'deadline' => $update['deadline']->toDateString(),
+            'status' => $update['status']
+        ]);
     }
 
     public function inArchive(CheckLists $project)

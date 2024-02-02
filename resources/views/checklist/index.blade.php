@@ -6,19 +6,19 @@
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
         <style>
-            #projects-for-repeat-tasks {
-                width: 466px;
+            .fa.fa-eye:hover {
+                color: black;
             }
 
-            .note-editor.note-frame.card {
-                max-width: 560px;
+            #projects-for-repeat-tasks {
+                width: 466px;
             }
 
             #repeat-table_length > label > select {
                 width: 100px;
                 margin-left: 5px;
                 margin-right: 5px;
-            }
+            }f
 
             #repeat-table_length > label {
                 display: flex;
@@ -238,24 +238,8 @@
 
             .swim-lane-hide {
                 cursor: pointer;
-                -webkit-touch-callout: none; /* iOS Safari */
-                -webkit-user-select: none; /* Safari */
-                -khtml-user-select: none; /* Konqueror HTML */
-                -moz-user-select: none; /* Old versions of Firefox */
-                -ms-user-select: none; /* Internet Explorer/Edge */
-                user-select: none;
-
-                display: block;
-                width: 12px;
-                height: 12px;
-                background: url("/img/left_arrow.svg");
-                float: left;
                 transition: 0.5s ease;
                 transform: rotate(0deg);
-            }
-
-            .rotate {
-                transform: rotate(180deg);
             }
 
             .task {
@@ -1540,7 +1524,8 @@
                 swimLane.animate({
                     'width': newWidth
                 }, 500);
-                swimLane.data('width', newWidth); // сохраняем новое значение ширины
+
+                swimLane.data('width', newWidth);
                 if (newWidth === '37px') {
                     swimLane.find('.task').slideUp();
                     swimLane.find('.swim-lane-top').css('flex-flow', 'column-reverse');
@@ -1567,74 +1552,90 @@
             });
 
             $(document).on('click', '#custom-tabs-three-kanban-tab', function () {
-                $('#custom-tabs-three-profile').html('')
                 $('#custom-tabs-three-kanban').html(
                     '<div class="board">' +
                     '   <div class="lanes">' +
                     '       <div class="swim-lane" id="expired-todo">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Просроченные</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Просроченные (<span id="expired-count-tasks">0</span>)</h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="today-todo">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Сегодня</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Сегодня (<span id="toDay-count-tasks">0</span>)' +
+                    '                   <p id="todayDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="nextday-todo">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Завтра</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Завтра (<span id="tomorrow-count-tasks">0</span>)' +
+                    '                   <p id="tomorrowDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="next-monday">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Понедельник</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Понедельник (<span id="monday-count-tasks">0</span>)' +
+                    '                   <p id="mondayDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="next-tuesday">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Вторник</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Вторник (<span id="tuesday-count-tasks">0</span>)' +
+                    '                   <p id="tuesdayDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="next-wednesday">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Среда</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Среда (<span id="wednesday-count-tasks">0</span>)' +
+                    '                   <p id="wednesdayDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="next-thursday">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Четверг</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Четверг (<span id="thursday-count-tasks">0</span>)' +
+                    '                   <p id="thursdayDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="next-friday">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Пятница</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Пятница (<span id="friday-count-tasks">0</span>)' +
+                    '                   <p id="fridayDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="next-saturday">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Суббота</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Суббота (<span id="saturday-count-tasks">0</span>)' +
+                    '                   <p id="saturdayDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div class="swim-lane" id="next-sunday">' +
                     '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Воскресенье</h3>' +
-                    '               <div class="swim-lane-hide"></div>' +
+                    '               <h3 class="heading">Воскресенье (<span id="sunday-count-tasks">0</span>)' +
+                    '                    <p id="sundayDate" class="task-microcard-label"></p>' +
+                    '               </h3>' +
+                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
                     '           </div>' +
                     '       </div>' +
                     '   </div>' +
                     '</div>'
                 )
-
 
                 $('.swim-lane').each(function () {
                     var swimLaneId = $(this).attr('id');
@@ -1642,7 +1643,6 @@
                     if (swimLaneState) {
                         $(this).css('width', swimLaneState.width);
                         if (swimLaneState.isHidden) {
-                            $(this).find('.swim-lane-hide').toggleClass('rotate');
                             $(this).find('.swim-lane-top').css('flex-flow', 'column-reverse');
                             $(this).find('.heading').animate({
                                 'width': '10px',
@@ -1652,131 +1652,52 @@
                     }
                 });
 
-
-                function renderTask(value) {
-                    let dateObj = new Date(value.date_start);
-                    let day = dateObj.getDate();
-                    let month = dateObj.getMonth() + 1;
-                    let year = dateObj.getFullYear();
-                    let date_start = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
-
-                    dateObj = new Date(value.deadline);
-                    day = dateObj.getDate();
-                    month = dateObj.getMonth() + 1;
-                    year = dateObj.getFullYear();
-                    let deadline = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
-
-                    return '<div data-id="' + value.id + '" data-deadline="' + value.deadline + '" data-status="' + value.status + '" class="dl-task-info task" draggable="true">' +
-                        '<div class="b-task-microcard has-menu">' +
-                        '   <div class="task-microcard-block-1 task-microcard-project text-size-s text-style-stt" style="word-break: break-word;" fieldid="13">' +
-                        '       <a target="_blank" href="' + value.project.url + '">' + new URL(value.project.url)['origin'] + '</a>' +
-                        '   </div>' +
-                        '   <div class="task-microcard-title task-microcard-block-2  tr-taskstatus-color-3377C3 tr-taskstatus-style-0 text-size-l text-style-stb" fieldid="1">' +
-                        '       <a href="/checklist-tasks/' + value.project.id + '" target="_blank">' + value.name + '</a> ' +
-                        '   </div>' +
-                        '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt" fieldid="2">' +
-                        '           <span class="task-microcard-label">Сроки:</span>' +
-                        '           <span class="task-microcard-date-start task-microcard-interact">' + date_start + '</span>  —' +
-                        '           <span class="task-microcard-date-end task-microcard-interact">' + deadline + '</span>' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</div>';
-                }
-
-
                 $.ajax({
                     type: 'post',
                     url: "{{ route('get.checklistsKanban') }}",
                     success: function (response) {
-                        console.log(response)
-                        //
-                        // let today = new Date();
-                        // let tomorrow = new Date(today);
-                        // tomorrow.setDate(today.getDate() + 1);
-                        // if (tomorrow.getMonth() !== today.getMonth()) {
-                        //     tomorrow = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-                        // }
-                        //
-                        // let nextMonday = new Date(today.getTime());
-                        // nextMonday.setDate(today.getDate() + (1 + 7 - today.getDay()) % 7);
-                        // let nextTuesday = new Date(today.getTime());
-                        // nextTuesday.setDate(today.getDate() + (2 + 7 - today.getDay()) % 7);
-                        // let nextWednesday = new Date(today.getTime());
-                        // nextWednesday.setDate(today.getDate() + (3 + 7 - today.getDay()) % 7);
-                        // let nextThursday = new Date(today.getTime());
-                        // nextThursday.setDate(today.getDate() + (4 + 7 - today.getDay()) % 7);
-                        // let nextFriday = new Date(today.getTime());
-                        // nextFriday.setDate(today.getDate() + (5 + 7 - today.getDay()) % 7);
-                        // let nextSaturday = new Date(today.getTime());
-                        // nextSaturday.setDate(today.getDate() + (6 + 7 - today.getDay()) % 7);
-                        // let nextSunday = new Date(today.getTime());
-                        // nextSunday.setDate(today.getDate() + (7 + 7 - today.getDay()) % 7);
+                        $('#custom-tabs-three-profile').html('')
 
-                        let expired = ''
-                        $.each(response.expired, function (item, value) {
-                            expired += renderTask(value);
+                        let cards = {
+                            'expired': '#expired-todo',
+                            'toDay': '#today-todo',
+                            'tomorrow': '#nextday-todo',
+                            'monday': '#next-monday',
+                            'tuesday': '#next-tuesday',
+                            'wednesday': '#next-wednesday',
+                            'thursday': '#next-thursday',
+                            'friday': '#next-friday',
+                            'saturday': '#next-thursday',
+                            'sunday': '#next-sunday'
+                        }
+
+                        $.each(cards, function (day, element) {
+                            $('#' + day + '-count-tasks').html(response[day].length)
+
+                            let variable = ''
+
+                            $.each(response[day], function (item, value) {
+                                variable += renderTask(value);
+                            })
+                            $(element).append(variable)
+                            refreshTooltips()
                         })
-                        $('#expired-todo').append(expired)
 
-                        let toDay = ''
-                        $.each(response.toDay, function (item, value) {
-                            toDay += renderTask(value);
+                        let dayDates = [
+                            'todayDate',
+                            'tomorrowDate',
+                            'mondayDate',
+                            'tuesdayDate',
+                            'wednesdayDate',
+                            'thursdayDate',
+                            'fridayDate',
+                            'saturdayDate',
+                            'sundayDate',
+                        ]
+
+                        $.each(dayDates, function (i, prefix) {
+                            $('#' + prefix).html(response[prefix])
                         })
-                        $('#today-todo').append(toDay)
-
-                        let tomorrow = ''
-                        $.each(response.tomorrow, function (item, value) {
-                            tomorrow += renderTask(value);
-                        })
-                        $('#nextday-todo').append(tomorrow)
-
-                        // $.each(response.tasks, function (key, value) {
-                        //
-                        //     let dateToCheck = new Date(value.deadline);
-                        //
-                        //     if (value.status === 'expired') {
-                        //
-                        //         renderTask(value, '#expired-todo');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === today.getFullYear() && dateToCheck.getMonth() === today.getMonth() && dateToCheck.getDate() === today.getDate()) {
-                        //
-                        //         renderTask(value, '#today-todo');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === tomorrow.getFullYear() && dateToCheck.getMonth() === tomorrow.getMonth() && dateToCheck.getDate() === tomorrow.getDate()) {
-                        //
-                        //         renderTask(value, '#nextday-todo');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === nextMonday.getFullYear() && dateToCheck.getMonth() === nextMonday.getMonth() && dateToCheck.getDate() === nextMonday.getDate()) {
-                        //
-                        //         renderTask(value, '#next-monday');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === nextTuesday.getFullYear() && dateToCheck.getMonth() === nextTuesday.getMonth() && dateToCheck.getDate() === nextTuesday.getDate()) {
-                        //
-                        //         renderTask(value, '#next-tuesday');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === nextWednesday.getFullYear() && dateToCheck.getMonth() === nextWednesday.getMonth() && dateToCheck.getDate() === nextWednesday.getDate()) {
-                        //
-                        //         renderTask(value, '#next-wednesday');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === nextThursday.getFullYear() && dateToCheck.getMonth() === nextThursday.getMonth() && dateToCheck.getDate() === nextThursday.getDate()) {
-                        //
-                        //         renderTask(value, '#next-thursday');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === nextFriday.getFullYear() && dateToCheck.getMonth() === nextFriday.getMonth() && dateToCheck.getDate() === nextFriday.getDate()) {
-                        //
-                        //         renderTask(value, '#next-friday');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === nextSaturday.getFullYear() && dateToCheck.getMonth() === nextSaturday.getMonth() && dateToCheck.getDate() === nextSaturday.getDate()) {
-                        //
-                        //         renderTask(value, '#next-saturday');
-                        //
-                        //     } else if (dateToCheck.getFullYear() === nextSunday.getFullYear() && dateToCheck.getMonth() === nextSunday.getFullYear() && dateToCheck.getDate() === nextSunday.getDate()) {
-                        //
-                        //         renderTask(value, '#next-sunday');
-                        //
-                        //     }
-                        //
-                        // });
 
                         $('.swim-lane').each(function () {
                             var swimLaneId = $(this).attr('id');
@@ -1796,7 +1717,11 @@
                             task.addEventListener("dragstart", () => {
                                 task.classList.add("is-dragging");
                             });
+
                             task.addEventListener("dragend", () => {
+                                let deadline = $(task).find('.task-microcard-date-end.task-microcard-interact')
+                                let newStatus = $(task).find('.task-microcard-date-start.task-microcard-interact').eq(0)
+
                                 task.classList.remove("is-dragging");
                                 let id = event.target.getAttribute("data-id");
                                 let status = event.target.getAttribute("data-status");
@@ -1817,8 +1742,13 @@
                                         status: status,
                                     },
                                     url: "{{ route('save.checklistsKanban') }}",
-                                    success: function (response) {},
-                                    error: function (response) {}
+                                    success: function (response) {
+                                        recalculateCountTasks()
+                                        deadline.html(response.deadline)
+                                        newStatus.html(response.status)
+                                    },
+                                    error: function (response) {
+                                    }
                                 })
                             });
                         });
@@ -1857,11 +1787,58 @@
 
                             return closestTask;
                         };
+
+
                     },
                     error: function (response) {
 
                     }
                 })
+
+                function renderTask(value) {
+                    let dateObj = new Date(value.date_start);
+                    let day = dateObj.getDate();
+                    let month = dateObj.getMonth() + 1;
+                    let year = dateObj.getFullYear();
+                    let date_start = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+
+                    dateObj = new Date(value.deadline);
+                    day = dateObj.getDate();
+                    month = dateObj.getMonth() + 1;
+                    year = dateObj.getFullYear();
+                    let deadline = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+
+                    return '<div data-id="' + value.id + '" data-deadline="' + value.deadline + '" data-status="' + value.status + '" class="dl-task-info task" draggable="true">' +
+                        '<div class="b-task-microcard has-menu">' +
+                        '   <div class="task-microcard-project text-size-s text-style-stt" style="word-break: break-word;" fieldid="13">' +
+                        '       <a target="_blank" href="' + value.project.url + '" data-toggle="tooltip" data-placement="top" title="' + value.project.url + '">' +
+                        new URL(value.project.url)['origin'] +
+                        '</a>' +
+                        '   </div>' +
+                        '   <div class="task-microcard-title task-microcard-block-2 tr-taskstatus-color-3377C3 tr-taskstatus-style-0 text-size-l text-style-stb" fieldid="1">' +
+                        '       <a href="/checklist-tasks/' + value.project.id + '" target="_blank">' + value.name + '</a> ' +
+                        '   </div>' +
+                        '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt" fieldid="2">' +
+                        '           <span class="task-microcard-label">Статус:</span>' +
+                        '           <span class="task-microcard-date-start task-microcard-interact">' + value.status + '</span> ' +
+                        '       </div>' +
+                        '   </div>' +
+                        '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt" fieldid="2">' +
+                        '           <span class="task-microcard-label">Сроки:</span>' +
+                        '           <span class="task-microcard-date-start task-microcard-interact">' + date_start + '</span>  —' +
+                        '           <span class="task-microcard-date-end task-microcard-interact">' + deadline + '</span>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>';
+                }
+
+                function recalculateCountTasks() {
+                    $.each($('.swim-lane'), function (i, item) {
+                        let count = $(item).children('.dl-task-info.task').length
+
+                        $(item).find('.swim-lane-top > h3 > span').html(count)
+                    })
+                }
             })
 
             $('#move-to-archive').on('click', function () {
