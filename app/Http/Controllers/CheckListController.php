@@ -284,8 +284,7 @@ class CheckListController extends Controller
             ->get();
 
         $today = $todayDate = Carbon::now();
-        $tomorrowDate = $todayDate->addDay()->toDateString();
-        $todayDate = $todayDate->toDateString();
+        $tomorrowDate = $todayDate->addDay()->format('d.m.Y');
 
         $dayOfWeek = strtolower($today->englishDayOfWeek);
         $nextDays = [];
@@ -297,6 +296,7 @@ class CheckListController extends Controller
                 ->where('status', '!=', 'expired')
                 ->whereIn('project_id', $ids)
                 ->where('deadline', 'like', "%{$nextDay->toDateString()}%")
+                ->orWhere('date_start', 'like', "%{$nextDay->toDateString()}%")
                 ->whereHas('project', function ($query) {
                     $query->where('archive', 0);
                 })
@@ -304,7 +304,7 @@ class CheckListController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
 
-            $nextDays[$dayOfWeek . 'Date'] = $nextDay->toDateString();
+            $nextDays[$dayOfWeek . 'Date'] = $nextDay->format('d.m.Y');
 
             $dayOfWeek = strtolower($nextDay->addDay()->englishDayOfWeek);
         }
@@ -313,7 +313,7 @@ class CheckListController extends Controller
             'tasks' => $tasks,
             'expired' => $expired,
             'toDay' => $toDayTasks,
-            'todayDate' => $todayDate,
+            'todayDate' => Carbon::now()->format('d.m.Y'),
             'tomorrow' => $tomorrowTasks,
             'tomorrowDate' => $tomorrowDate,
             'monday' => $nextDays['monday'],
@@ -336,30 +336,8 @@ class CheckListController extends Controller
 
     public function saveChecklistsKanban(Request $request): JsonResponse
     {
-        $today = Carbon::now();
-
-        if ($request->input('day') === 'today-todo') {
-            $deadline = $today;
-        } else if ($request->input('day') === 'nextday-todo') {
-            $deadline = $today->addDay();
-        } else if ($request->input('day') === 'next-monday') {
-            $deadline = $today->next(CarbonInterface::MONDAY);
-        } else if ($request->input('day') === 'next-tuesday') {
-            $deadline = $today->next(CarbonInterface::TUESDAY);
-        } else if ($request->input('day') === 'next-wednesday') {
-            $deadline = $today->next(CarbonInterface::WEDNESDAY);
-        } else if ($request->input('day') === 'next-thursday') {
-            $deadline = $today->next(CarbonInterface::THURSDAY);
-        } else if ($request->input('day') === 'next-friday') {
-            $deadline = $today->next(CarbonInterface::FRIDAY);
-        } else if ($request->input('day') === 'next-saturday') {
-            $deadline = $today->next(CarbonInterface::SATURDAY);
-        } else {
-            $deadline = $today->next(CarbonInterface::SUNDAY);
-        }
-
         $update = [
-            'deadline' => $deadline,
+            'deadline' => Carbon::parse($request->input('deadline')),
             'status' => $request->input('status')
         ];
 
@@ -370,8 +348,8 @@ class CheckListController extends Controller
         ChecklistTasks::where('id', $request->input('id'))->update($update);
 
         return response()->json([
-            'deadline' => $update['deadline']->toDateString(),
-            'status' => $update['status']
+            'deadline' => $update['deadline']->format('d.m.Y'),
+            'status' => __(ucfirst($update['status']))
         ]);
     }
 
@@ -483,7 +461,7 @@ class CheckListController extends Controller
         return 'Метка успешно изменена';
     }
 
-    public function createRelation(Request $request)
+    public function createRelation(Request $request): JsonResponse
     {
         if (empty($request->checklistId) || empty($request->labelId)) {
             return response()->json([
@@ -555,6 +533,15 @@ class CheckListController extends Controller
             'tasks' => array_slice($tasks, $request->input('skip', 0), $request->input('count', 3)),
             'paginate' => $paginate
         ];
+    }
+
+    public function getTask(ChecklistTasks $task)
+    {
+        if ($task->project->user_id === Auth::id()) {
+            return $task;
+        } else {
+            return [];
+        }
     }
 
     public function removeRepeatTask(Request $request): JsonResponse
@@ -1153,5 +1140,10 @@ class CheckListController extends Controller
                 'message' => $e->getMessage()
             ], 422);
         }
+    }
+
+    public function getAllChecklists()
+    {
+        return CheckLists::where('user_id', Auth::id())->get();
     }
 }

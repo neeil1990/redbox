@@ -18,8 +18,9 @@
                 width: 100px;
                 margin-left: 5px;
                 margin-right: 5px;
-            }f
+            }
 
+            f
             #repeat-table_length > label {
                 display: flex;
             }
@@ -178,7 +179,7 @@
                 justify-content: start;
                 gap: 16px;
 
-                padding: 10px 32px;
+                padding: 10px 1px;
 
                 overflow-x: scroll;
                 height: 100%;
@@ -203,14 +204,12 @@
                 display: flex;
                 flex-direction: column;
                 gap: 12px;
-
                 box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
                 border: 0 solid rgba(0, 0, 0, .125);
-
                 padding: 12px;
                 border-radius: 4px;
                 width: 275px;
-                height: 100%;
+                max-height: 100%;
                 overflow-y: auto;
 
                 flex-shrink: 0;
@@ -245,14 +244,11 @@
             .task {
                 background: white;
                 color: black;
-                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05);
-
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
                 padding: 12px;
                 border-radius: 10px;
-
                 font-size: 16px;
                 cursor: move;
-                transition: 0.3s;
                 border: 1px solid rgba(0, 0, 0, .125);
             }
 
@@ -262,7 +258,7 @@
 
             .is-dragging {
                 scale: 1.05;
-                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
                 background: rgb(50, 50, 50);
                 color: white;
             }
@@ -337,7 +333,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="margin-bottom: 30px;">
                 <div class="tab-content" id="custom-tabs-three-tabContent">
                     <div class="tab-pane fade active show" id="custom-tabs-three-home" role="tabpanel"
                          aria-labelledby="custom-tabs-three-home-tab">
@@ -450,6 +446,132 @@
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-kanban" role="tabpanel"
                          aria-labelledby="custom-tabs-three-kanban">
+                        <div class="board">
+                            <div class="btn-group mb-3">
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="expired-todo">
+                                    Просроченные
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="today-todo">
+                                    Сегодня
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="nextday-todo">
+                                    Завтра
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-monday">
+                                    Понедельник
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-tuesday">
+                                    Вторник
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state"
+                                        data-target="next-wednesday">Среда
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-thursday">
+                                    Четверг
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-friday">
+                                    Пятница
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-saturday">
+                                    Суббота
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-sunday">
+                                    Воскресенье
+                                </button>
+                            </div>
+                            <div class="lanes">
+                                <div class="swim-lane" id="expired-todo">
+                                    <div class="swim-lane-top" style="height: 35.98px;">
+                                        <h3 class="heading" style="margin-top: -12px;">Просроченные
+                                            (<span id="expired-count-tasks">0</span>)</h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="today-todo">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Сегодня (<span id="toDay-count-tasks">0</span>)
+                                            <p id="todayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="nextday-todo">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Завтра (<span id="tomorrow-count-tasks">0</span>)
+                                            <p id="tomorrowDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-monday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Понедельник (<span id="monday-count-tasks">0</span>)
+                                            <p id="mondayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-tuesday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Вторник (<span id="tuesday-count-tasks">0</span>)
+                                            <p id="tuesdayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-wednesday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Среда (<span id="wednesday-count-tasks">0</span>)
+                                            <p id="wednesdayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-thursday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Четверг (<span id="thursday-count-tasks">0</span>)
+                                            <p id="thursdayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-friday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Пятница (<span id="friday-count-tasks">0</span>)
+                                            <p id="fridayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-saturday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Суббота (<span id="saturday-count-tasks">0</span>)
+                                            <p id="saturdayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-sunday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Воскресенье (<span id="sunday-count-tasks">0</span>)
+                                            <p id="sundayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-profile" role="tabpanel"
                          aria-labelledby="archived-checklists"></div>
@@ -562,11 +684,6 @@
                                             <input type="text" name="name" id="repeat-name" class="form form-control">
                                         </div>
                                         <div class="form-group">
-                                            <label for="description">Описание задачи</label>
-                                            <input type="text" name="description" id="repeat_description"
-                                                   class="form form-control">
-                                        </div>
-                                        <div class="form-group">
                                             <label for="date_start">Дата первого запуска</label>
                                             <input type="datetime-local" name="date_start" id="repeat_date_start"
                                                    class="form form-control">
@@ -589,7 +706,12 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="projects-for-repeat-tasks">Чеклисты</label>
+                                            <label for="description">Описание задачи</label>
+                                            <textarea name="description" id="repeat_description" cols="10" rows="10"
+                                                      class="form form-control"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="projects-for-repeat-tasks">Проекты</label>
                                             <select name="projects-for-repeat-tasks" id="projects-for-repeat-tasks"
                                                     multiple></select>
                                         </div>
@@ -641,7 +763,7 @@
                                            placeholder="Количество дней на выполнение"
                                            data-index="5">
                                 </th>
-                                <th></th>
+                                <th style="width: 150px"></th>
                             </tr>
                             <tr>
                                 <th>Название</th>
@@ -650,7 +772,7 @@
                                 <th>Повторяется каждые N дней</th>
                                 <th>Учитываются выходные</th>
                                 <th>Количество дней на выполнение</th>
-                                <th></th>
+                                <th style="width: 150px"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -659,8 +781,7 @@
                         </table>
 
                     </div>
-                    <div class="tab-pane fade" id="notification-tab" role="tabpanel">
-                    </div>
+                    <div class="tab-pane fade" id="notification-tab" role="tabpanel"></div>
                 </div>
             </div>
         </div>
@@ -985,6 +1106,58 @@
                             class="btn btn-primary" id="add-in-filter">{{ __('Search label') }}</button>
                     <button type="button" class="btn btn-danger"
                             id="removeRelation">{{ __('Remove label') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="updateTaskModal" tabindex="-1" aria-labelledby="updateTaskModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateTaskModalLabel">Изменение задачи</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="change-name-task">Название задачи</label>
+                        <input id="change-name-task" type="text" data-type="name" class="form form-control update-task">
+                    </div>
+                    <div class="form-group">
+                        <label for="change-task-state">Статус задачи</label>
+                        <select id="change-task-state" class="custom custom-select update-task" data-type="status">
+                            <option value="new">Новая</option>
+                            <option value="in_work">В работе</option>
+                            <option value="ready">Готово</option>
+                            <option value="expired">Просрочена</option>
+                            <option value="repeat">Повторяющаяся</option>
+                        </select>
+                    </div>
+                    <div class="form-group d-flex flex-row">
+                        <div class="w-50 mr-2">
+                            <label for="change-task-start-date">Дата начала</label>
+                            <input type="datetime-local" id="change-task-start-date" data-type="date_start"
+                                   class="form form-control update-task">
+                        </div>
+                        <div class="w-50">
+                            <label for="change-task-end-date">Дата окончания</label>
+                            <input type="datetime-local" id="change-task-end-date" data-type="deadline"
+                                   class="form form-control update-task">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="change-description-task">Описание задачи</label>
+                        <textarea name="change-description-task"
+                                  id="change-description-task"
+                                  cols="10" rows="10"
+                                  class="form form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
                 </div>
             </div>
         </div>
@@ -1407,7 +1580,6 @@
             })
 
             $(document).on('click', '#archived-checklists', function () {
-                $('#custom-tabs-three-kanban').html('')
                 $('#custom-tabs-three-profile').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -1515,7 +1687,15 @@
             })
 
             $('#custom-tabs-three-kanban').on('click', '.swim-lane-hide', function () {
-
+                let $this = $(this)
+                if ($this.attr('hide-blocks') == 'true') {
+                    $this.attr('hide-blocks', false)
+                    $this.parents().eq(1).find('.dl-task-info.task').fadeIn(500)
+                } else {
+                    $this.attr('hide-blocks', true)
+                    $this.parents().eq(1).find('.dl-task-info.task').fadeOut(500)
+                }
+                return;
                 $(this).toggleClass('rotate');
 
                 var swimLane = $(this).closest('.swim-lane');
@@ -1548,115 +1728,20 @@
                     width: newWidth,
                     isHidden: (newWidth === '37px')
                 };
+
                 localStorage.setItem(swimLaneId, JSON.stringify(swimLaneState));
             });
 
             $(document).on('click', '#custom-tabs-three-kanban-tab', function () {
-                $('#custom-tabs-three-kanban').html(
-                    '<div class="board">' +
-                    '   <div class="lanes">' +
-                    '       <div class="swim-lane" id="expired-todo">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Просроченные (<span id="expired-count-tasks">0</span>)</h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="today-todo">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Сегодня (<span id="toDay-count-tasks">0</span>)' +
-                    '                   <p id="todayDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="nextday-todo">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Завтра (<span id="tomorrow-count-tasks">0</span>)' +
-                    '                   <p id="tomorrowDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="next-monday">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Понедельник (<span id="monday-count-tasks">0</span>)' +
-                    '                   <p id="mondayDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="next-tuesday">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Вторник (<span id="tuesday-count-tasks">0</span>)' +
-                    '                   <p id="tuesdayDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="next-wednesday">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Среда (<span id="wednesday-count-tasks">0</span>)' +
-                    '                   <p id="wednesdayDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="next-thursday">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Четверг (<span id="thursday-count-tasks">0</span>)' +
-                    '                   <p id="thursdayDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="next-friday">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Пятница (<span id="friday-count-tasks">0</span>)' +
-                    '                   <p id="fridayDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="next-saturday">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Суббота (<span id="saturday-count-tasks">0</span>)' +
-                    '                   <p id="saturdayDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="swim-lane" id="next-sunday">' +
-                    '           <div class="swim-lane-top">' +
-                    '               <h3 class="heading">Воскресенье (<span id="sunday-count-tasks">0</span>)' +
-                    '                    <p id="sundayDate" class="task-microcard-label"></p>' +
-                    '               </h3>' +
-                    '               <div class="swim-lane-hide"><i class="fa fa-eye"></i></div>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '   </div>' +
-                    '</div>'
-                )
+                renderKanban()
+            })
 
-                $('.swim-lane').each(function () {
-                    var swimLaneId = $(this).attr('id');
-                    var swimLaneState = JSON.parse(localStorage.getItem(swimLaneId));
-                    if (swimLaneState) {
-                        $(this).css('width', swimLaneState.width);
-                        if (swimLaneState.isHidden) {
-                            $(this).find('.swim-lane-top').css('flex-flow', 'column-reverse');
-                            $(this).find('.heading').animate({
-                                'width': '10px',
-                                'margin-top': '30px'
-                            }, 0);
-                        }
-                    }
-                });
-
+            function renderKanban() {
                 $.ajax({
                     type: 'post',
                     url: "{{ route('get.checklistsKanban') }}",
                     success: function (response) {
-                        $('#custom-tabs-three-profile').html('')
+                        $('.dl-task-info.task').remove()
 
                         let cards = {
                             'expired': '#expired-todo',
@@ -1667,7 +1752,7 @@
                             'wednesday': '#next-wednesday',
                             'thursday': '#next-thursday',
                             'friday': '#next-friday',
-                            'saturday': '#next-thursday',
+                            'saturday': '#next-saturday',
                             'sunday': '#next-sunday'
                         }
 
@@ -1680,8 +1765,9 @@
                                 variable += renderTask(value);
                             })
                             $(element).append(variable)
-                            refreshTooltips()
                         })
+
+                        refreshTooltips()
 
                         let dayDates = [
                             'todayDate',
@@ -1727,6 +1813,12 @@
                                 let status = event.target.getAttribute("data-status");
                                 let parent = event.target.parentNode.id;
 
+                                let deadlineDate = undefined
+                                try {
+                                    deadlineDate = $(task).parent().find('p.task-microcard-label').html().trim()
+                                } catch (e) {
+                                }
+
                                 if (status === 'expired') {
                                     status = 'new'
                                 }
@@ -1738,7 +1830,7 @@
                                     type: 'post',
                                     data: {
                                         id: id,
-                                        day: parent,
+                                        deadline: deadlineDate,
                                         status: status,
                                     },
                                     url: "{{ route('save.checklistsKanban') }}",
@@ -1787,59 +1879,162 @@
 
                             return closestTask;
                         };
-
-
                     },
                     error: function (response) {
 
                     }
                 })
+            }
 
-                function renderTask(value) {
-                    let dateObj = new Date(value.date_start);
-                    let day = dateObj.getDate();
-                    let month = dateObj.getMonth() + 1;
-                    let year = dateObj.getFullYear();
-                    let date_start = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+            $(document).on('click', '.change-visible-state', function () {
+                let $this = $(this)
+                let target = $this.attr('data-target')
 
-                    dateObj = new Date(value.deadline);
-                    day = dateObj.getDate();
-                    month = dateObj.getMonth() + 1;
-                    year = dateObj.getFullYear();
-                    let deadline = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+                if ($this.hasClass('hover')) {
+                    localStorage.removeItem(target + '_localstorage_item')
 
-                    return '<div data-id="' + value.id + '" data-deadline="' + value.deadline + '" data-status="' + value.status + '" class="dl-task-info task" draggable="true">' +
-                        '<div class="b-task-microcard has-menu">' +
-                        '   <div class="task-microcard-project text-size-s text-style-stt" style="word-break: break-word;" fieldid="13">' +
-                        '       <a target="_blank" href="' + value.project.url + '" data-toggle="tooltip" data-placement="top" title="' + value.project.url + '">' +
-                        new URL(value.project.url)['origin'] +
-                        '</a>' +
-                        '   </div>' +
-                        '   <div class="task-microcard-title task-microcard-block-2 tr-taskstatus-color-3377C3 tr-taskstatus-style-0 text-size-l text-style-stb" fieldid="1">' +
-                        '       <a href="/checklist-tasks/' + value.project.id + '" target="_blank">' + value.name + '</a> ' +
-                        '   </div>' +
-                        '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt" fieldid="2">' +
-                        '           <span class="task-microcard-label">Статус:</span>' +
-                        '           <span class="task-microcard-date-start task-microcard-interact">' + value.status + '</span> ' +
-                        '       </div>' +
-                        '   </div>' +
-                        '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt" fieldid="2">' +
-                        '           <span class="task-microcard-label">Сроки:</span>' +
-                        '           <span class="task-microcard-date-start task-microcard-interact">' + date_start + '</span>  —' +
-                        '           <span class="task-microcard-date-end task-microcard-interact">' + deadline + '</span>' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</div>';
-                }
+                    $this.removeClass('hover')
+                    $('#' + target).show(300)
+                } else {
+                    localStorage.setItem(target + '_localstorage_item', true)
 
-                function recalculateCountTasks() {
-                    $.each($('.swim-lane'), function (i, item) {
-                        let count = $(item).children('.dl-task-info.task').length
-
-                        $(item).find('.swim-lane-top > h3 > span').html(count)
-                    })
+                    $this.addClass('hover')
+                    $('#' + target).hide(300)
                 }
             })
+
+            $.each($('.change-visible-state'), function (k, item) {
+                if (localStorage.getItem($(this).attr('data-target') + '_localstorage_item')) {
+                    $(this).trigger('click')
+                }
+            })
+
+            function renderTask(value) {
+                let dateObj = new Date(value.date_start);
+                let day = dateObj.getDate();
+                let month = dateObj.getMonth() + 1;
+                let year = dateObj.getFullYear();
+                let date_start = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+
+                dateObj = new Date(value.deadline);
+                day = dateObj.getDate();
+                month = dateObj.getMonth() + 1;
+                year = dateObj.getFullYear();
+                let deadline = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+
+                let status
+
+                if (value.status === 'new') {
+                    status = 'Новая'
+                } else if (value.status === 'expired') {
+                    status = 'Просроченая'
+                } else if (value.status === 'in_work') {
+                    status = 'В работе'
+                } else {
+                    status = 'Готовая'
+                }
+
+                return '<div data-id="' + value.id + '" data-deadline="' + value.deadline + '" data-status="' + value.status + '" class="dl-task-info task" draggable="true">' +
+                    '<div class="b-task-microcard has-menu">' +
+                    '   <div class="task-microcard-project text-size-s text-style-stt d-flex justify-content-between" style="word-break: break-word;">' +
+                    '       <a target="_blank" href="' + value.project.url + '" data-toggle="tooltip" data-placement="top" title="' + value.project.url + '">' +
+                    new URL(value.project.url)['origin'] + '</a>' +
+                    '   <button class="btn btn-default btn-sm get-task-info" data-id="' + value.id + '" type="button" data-toggle="modal" data-target="#updateTaskModal"><i class="fa fa-edit"></i></button>' +
+                    '   </div>' +
+                    '   <div class="task-microcard-title task-microcard-block-2 tr-taskstatus-color-3377C3 tr-taskstatus-style-0 text-size-l text-style-stb">' +
+                    '       <a href="/checklist-tasks/' + value.project.id + '" target="_blank">' + value.name + '</a> ' +
+                    '   </div>' +
+                    '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt">' +
+                    '           <span class="task-microcard-label">Статус:</span>' +
+                    '           <span class="task-microcard-date-start task-microcard-interact">' + status + '</span> ' +
+                    '       </div>' +
+                    '   </div>' +
+                    '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt">' +
+                    '           <span class="task-microcard-label">Сроки:</span>' +
+                    '           <span class="task-microcard-date-start task-microcard-interact">' + date_start + '</span>  —' +
+                    '           <span class="task-microcard-date-end task-microcard-interact">' + deadline + '</span>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</div>';
+            }
+
+            function recalculateCountTasks() {
+                $.each($('.swim-lane'), function (i, item) {
+                    let count = $(item).children('.dl-task-info.task').length
+
+                    $(item).find('.swim-lane-top > h3 > span').html(count)
+                })
+            }
+
+            let $targetTaskId
+
+            $(document).on('click', '.get-task-info', function () {
+                $targetTaskId = $(this).attr('data-id')
+                $.ajax({
+                    type: 'get',
+                    url: `/checklist-task/${$targetTaskId}`,
+                    success: function (response) {
+                        $('#change-description-task').summernote('destroy');
+
+                        $('#change-name-task').val(response.name)
+                        $('#change-task-state').val(response.status)
+                        $('#change-task-start-date').val(response.date_start)
+                        $('#change-task-end-date').val(response.deadline)
+                        $('#change-description-task').val(response.description)
+
+                        $('#change-description-task').summernote({
+                            minHeight: 350,
+                            lang: "ru-RU",
+                            onChange: function (contents, $editable) {
+                                editedID = $editable.parents().eq(2).find('textarea:first-child').attr('data-id')
+                                clearTimeout(editedTimeout)
+                                editedTimeout = setTimeout(() => {
+                                    $.ajax({
+                                        type: 'post',
+                                        url: "{{ route('edit.checklist.task') }}",
+                                        data: {
+                                            id: $targetTaskId,
+                                            type: 'description',
+                                            value: contents,
+                                        },
+                                        success: function (response) {
+                                            successMessage('Успешно')
+                                        },
+                                        error: function (response) {
+                                            errorMessage(response.responseJSON.errors)
+                                        }
+                                    })
+                                }, 1000)
+                            }
+                        })
+                    }
+                })
+            })
+
+            $(document).on('change', '.update-task ', function () {
+                let type = $(this).attr('data-type')
+                let value = $(this).val()
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('edit.checklist.task') }}",
+                    data: {
+                        id: $targetTaskId,
+                        type: type,
+                        value: value,
+                    },
+                    success: function (response) {
+                        successMessage('Успешно')
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
+            })
+
+            $('#updateTaskModal').on('hidden.bs.modal', function () {
+                renderKanban()
+            });
 
             $('#move-to-archive').on('click', function () {
                 $.ajax({
@@ -1877,7 +2072,7 @@
                     '                <select data-id="status-' + counter + '" class="custom custom-select">' +
                     '                    <option value="new">Новая</option>' +
                     '                    <option value="in_work">В работе</option>' +
-                    '                    <option value="expired">Просрочен</option>' +
+                    '                    <option value="expired">Просроченая</option>' +
                     '                    <option value="ready">Готово</option>' +
                     '                </select>' +
                     '            </div>' +
@@ -1978,7 +2173,6 @@
 
             function loadChecklists(page = 0, renderPaginate = false) {
                 $('#custom-tabs-three-profile').html('')
-                $('#custom-tabs-three-kanban').html('')
                 $('#lists').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -2636,7 +2830,6 @@
             function loadClassicStubs(page = 0, pagination = true) {
                 $('#save-stub-action').val('classic')
                 $('#custom-tabs-three-profile').html('')
-                $('#custom-tabs-three-kanban').html('')
                 $('#classic-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -2665,7 +2858,6 @@
             function loadPersonalStubs(page = 0, pagination = true) {
                 $('#save-stub-action').val('personal')
                 $('#custom-tabs-three-profile').html('')
-                $('#custom-tabs-three-kanban').html('')
                 $('#personal-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -2957,12 +3149,20 @@
                     {
                         name: 'description',
                         data: function (row) {
+                            let description
+
+                            if (row.description == null) {
+                                description = ''
+                            } else {
+                                description = row.description
+                            }
+
                             return '<button class="btn btn-default btn-sm mb-3" type="button" data-toggle="collapse" data-target="#collapseExample' + row.id + '" aria-expanded="false" aria-controls="collapseExample">' +
                                 '<i class="fa fa-eye"></i>' +
                                 '</button>' +
                                 '<div class="collapse" id="collapseExample' + row.id + '"> ' +
                                 '    <div class="card card-body">' +
-                                '        <textarea class="form form-control change-value textarea-summernote" data-target="' + row.id + '" data-name="description">' + row.description + '</textarea>' +
+                                '        <textarea class="form form-control change-value textarea-summernote" data-target="' + row.id + '" data-name="description">' + description + '</textarea>' +
                                 '    </div>' +
                                 '</div>'
                         },
@@ -3056,7 +3256,6 @@
                                 value: value,
                             },
                             success: function () {
-                                // todo поменять ширину колонок и добавить привязку к проектам
                                 successMessage('Изменения применены')
                             }
                         })
@@ -3118,26 +3317,31 @@
                 getNotifications()
             })
 
-            {{--$('#get-projects').on('click', function () {--}}
-            {{--    $.ajax({--}}
-            {{--        type: 'get',--}}
-            {{--        url: "{{ route('get.all.checklists') }}",--}}
-            {{--        success: function (checklists) {--}}
-            {{--            let options = ''--}}
-            {{--            $.each(checklists, function (i, item) {--}}
-            {{--                options += '<option value="' + item.id + '" data-toggle="tooltip" data-placement="top" title="' + item.url + '">' +--}}
-            {{--                    new URL(item.url)["host"] +--}}
-            {{--                    '</option>'--}}
-            {{--            })--}}
+            $('#repeat_description').summernote({
+                minHeight: 350,
+                lang: "ru-RU",
+            })
 
-            {{--            $('#projects-for-repeat-tasks').html(options)--}}
-            {{--            $('#projects-for-repeat-tasks').select2({theme: 'bootstrap4'});--}}
-            {{--        },--}}
-            {{--        error: function (response) {--}}
-            {{--            errorMessage(response.responseJSON.errors)--}}
-            {{--        }--}}
-            {{--    })--}}
-            {{--})--}}
+            $('#get-projects').on('click', function () {
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('get.all.checklists') }}",
+                    success: function (checklists) {
+                        let options = ''
+                        $.each(checklists, function (i, item) {
+                            options += '<option value="' + item.id + '" data-toggle="tooltip" data-placement="top" title="' + item.url + '">' +
+                                new URL(item.url)["host"] +
+                                '</option>'
+                        })
+
+                        $('#projects-for-repeat-tasks').html(options)
+                        $('#projects-for-repeat-tasks').select2({theme: 'bootstrap4'});
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
+            })
 
             $('#save-new-repeat-task').on('click', function () {
                 $.ajax({
@@ -3165,7 +3369,6 @@
 
             function getNotifications() {
                 $('#custom-tabs-three-profile').html('')
-                $('#custom-tabs-three-kanban').html('')
                 $('#notification-tab').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +

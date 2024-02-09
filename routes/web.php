@@ -441,6 +441,7 @@ Route::middleware(['verified'])->group(function () {
 
     Route::get('/checklist', 'CheckListController@index')->name('checklist');
     Route::get('/checklist-tasks/{checklist}', 'CheckListController@tasks')->name('checklist.tasks');
+    Route::get('/get-all-checklist/', 'CheckListController@getAllChecklists')->name('get.all.checklists');
     Route::post('/store-checklist', 'CheckListController@store')->name('store.checklist');
     Route::post('/update-checklist', 'CheckListController@update')->name('update.checklist');
     Route::post('/add-subtasks', 'CheckListController@addSubtasks')->name('add.new.subtasks');
@@ -453,6 +454,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/restore-checklist/{project}', 'CheckListController@restore')->name('restore.checklist');
     Route::get('/get-checklist-archive', 'CheckListController@archive')->name('checklist.archive');
     Route::post('/checklist-tasks', 'CheckListController@getTasks')->name('checklist.tasks');
+    Route::get('/checklist-task/{task}', 'CheckListController@getTask')->name('checklist.task');
     Route::post('/edit-checklist-task', 'CheckListController@editTask')->name('edit.checklist.task');
     Route::get('/get-repeat-tasks', 'CheckListController@getRepeatTasks')->name('get.repeat.tasks');
     Route::post('/edit-repeat-task', 'CheckListController@editRepeatTask')->name('edit.repeat.task');
