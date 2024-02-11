@@ -14,7 +14,6 @@ use App\MetaTag;
 use App\MonitoringDataTableColumnsProject;
 use App\ProjectRelevanceHistory;
 use App\User;
-use Carbon\CarbonInterface;
 use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -77,7 +76,13 @@ class CheckListController extends Controller
                     'url' => $fullUrl,
                 ]);
 
-                $this->createSubTasks($request->input('tasks'), $project->id);
+                $this->createSubTasks(
+                    $request->input('tasks'),
+                    $project->id,
+                    null,
+                    $request->input('projectStartDate'),
+                    $request->input('waitDays'),
+                );
 
                 if ($request->input('saveStub') === 'all') {
                     $tree = $this->configureStubs($project->id);
@@ -859,7 +864,7 @@ class CheckListController extends Controller
         return response()->json();
     }
 
-    private function createSubTasks($tasks, $projectId, $taskId = null)
+    private function createSubTasks($tasks, $projectId, $taskId = null, $projectStartDate = null, $waitDays = null): void
     {
         foreach ($tasks as $task) {
             $task = $task[0] ?? $task;
@@ -896,6 +901,14 @@ class CheckListController extends Controller
                 $object['task_id'] = $taskId;
             }
 
+            if ($projectStartDate === 'wait') {
+                $object['date_start'] = Carbon::parse($object['date_start'])->addDays($waitDays);
+                $object['deadline'] = Carbon::parse($object['deadline'])->addDays($waitDays);
+                if (isset($object['active_after'])) {
+                    $object['active_after'] = Carbon::parse($object['active_after'])->addDays($waitDays);
+                }
+            }
+
             $newRecord = ChecklistTasks::create($object);
 
             ChecklistNotification::create([
@@ -905,7 +918,13 @@ class CheckListController extends Controller
             ]);
 
             if (isset($task['subtasks'])) {
-                $this->createSubTasks($task['subtasks'], $projectId, $newRecord->id);
+                $this->createSubTasks(
+                    $task['subtasks'],
+                    $projectId,
+                    $newRecord->id,
+                    $projectStartDate,
+                    $waitDays
+                );
             }
         }
     }

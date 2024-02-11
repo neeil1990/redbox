@@ -134,10 +134,8 @@
         <style>
             .board {
                 width: 100%;
-                height: 80vh;
             }
 
-            /* ---- FORM ---- */
             #todo-form {
                 padding: 32px 32px 0;
             }
@@ -369,15 +367,15 @@
                                            title="Добавить проекты из мониторинга сайтов"></i>
                                     </button>
 
-                                    <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
-                                            data-target="#modalLabel">
-                                        Управление метками
-                                    </button>
-
                                     <button class="btn btn-secondary mr-1" data-toggle="modal"
                                             data-target="#createNewProject"
                                             id="add-new-checklist">
                                         Добавить проект
+                                    </button>
+
+                                    <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
+                                            data-target="#modalLabel">
+                                        Управление метками
                                     </button>
 
                                     <button id="create-new-stub" class="btn btn-secondary" data-toggle="modal"
@@ -879,6 +877,20 @@
                                 <option value="all">Базовый и личный шаблон</option>
                             @endif
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-start-date">Запуск проекта</label>
+                        <select name="project-start-date" id="project-start-date" class="custom custom-select">
+                            <option value="now">Сейчас</option>
+                            <option value="wait">Отложенный запуск</option>
+                        </select>
+                    </div>
+                    <div class="form form-group">
+                        <label for="count-wait-days">Сделать активным через</label>
+                        <input type="number" step="1" min="0" value="0"
+                               class="form form-control ml-1 mr-1"
+                               id="count-wait-days"
+                               name="count-wait-days" disabled>
                     </div>
                     <div>
                         <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
@@ -2605,6 +2617,11 @@
             })
 
             $(document).on('click', '#save-new-checklist', function () {
+                if ($('#project-start-date').val() === 'wait' && $('#count-wait-days').val() === '0') {
+                    errorMessage(['Укажите количество дней, через которые проект будет активен'], 5000)
+                    return;
+                }
+
                 $(this).attr('disabled', true)
                 $('#loader').show(300)
 
@@ -2622,14 +2639,16 @@
                         url: $('#url').val(),
                         tasks: tasks,
                         saveStub: $('#save-stub').val(),
-                        dynamicStub: $('#dynamic-stub').val()
+                        dynamicStub: $('#dynamic-stub').val(),
+                        projectStartDate: $('#project-start-date').val(),
+                        waitDays: $('#count-wait-days').val()
                     },
                     success: function (response) {
                         successMessage(response.message)
                         $('#loader').hide(300)
                         $('#save-new-checklist').attr('disabled', false)
 
-                        $('#createNewProject > div > div > div.modal-footer.d-flex.justify-content-between > div:nth-child(2) > button.btn.btn-default').trigger('click')
+                        $('#createNewProject > div > div.modal-content.col-9.mr-2 > div.modal-footer.d-flex.justify-content-between > div:nth-child(4) > button.btn.btn-default').trigger('click')
                         $('#url').val('')
                         $('#tasks').html('')
 
@@ -3436,6 +3455,10 @@
 
             $(document).on('click', '.localstorage-item', function () {
                 localStorage.setItem('redbox_localstorage_item', $(this).attr('data-target'))
+            })
+
+            $(document).on('change', '#project-start-date', function () {
+                $('#count-wait-days').attr('disabled', $(this).val() === 'now')
             })
         </script>
     @endslot
