@@ -9,6 +9,7 @@ use App\Classes\Cron\ClusterCleaningResults;
 use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
 use App\Classes\Cron\RelevanceCleaningResults;
+use App\Classes\Cron\UserMonitoringProjectSave;
 use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
@@ -57,6 +58,8 @@ class Kernel extends ConsoleKernel
         })->dailyAt(MonitoringSettings::getValue('data_projects') ?: '00:00');
 
         $schedule->call(new CheckListNotifications())->everyMinute();
+
+        $schedule->call(new UserMonitoringProjectSave())->monthlyOn(UserMonitoringProjectSave::DAY, UserMonitoringProjectSave::TIME);
 
         // $schedule->command('inspire')
         //          ->hourly();
