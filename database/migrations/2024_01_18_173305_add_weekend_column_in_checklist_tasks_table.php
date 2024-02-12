@@ -14,8 +14,10 @@ class AddWeekendColumnInChecklistTasksTable extends Migration
     public function up()
     {
         Schema::table('checklist_tasks', function (Blueprint $table) {
-            $table->boolean('weekends')->default(0)->after('active_after');
-            $table->dateTime('next_activate')->after('weekends')->nullable();
+            $table->boolean('weekends')->default(null)->after('active_after');
+            $table->integer('repeat_every')->after('weekends')->nullable();
+            $table->integer('deadline_every')->after('repeat_every')->nullable();
+            $table->dateTime('end_date')->after('deadline')->nullable();
         });
     }
 
@@ -28,7 +30,9 @@ class AddWeekendColumnInChecklistTasksTable extends Migration
     {
         Schema::table('checklist_tasks', function (Blueprint $table) {
             $table->dropColumn('weekends');
-            $table->dropColumn('next_activate');
+            $table->dropColumn('repeat_every');
+            $table->dropColumn('deadline_every');
+            $table->dropColumn('end_date');
         });
     }
 }

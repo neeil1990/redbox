@@ -6,7 +6,7 @@ use App\ChecklistNotification;
 use App\ChecklistTasks;
 use Carbon\Carbon;
 
-class CheckListNotifications
+class Notifications
 {
     public function __invoke()
     {

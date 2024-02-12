@@ -3,7 +3,34 @@
         <link rel="stylesheet" href="{{ asset('plugins/keyword-generator/css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
         <style>
+            .fa.fa-eye:hover {
+                color: black;
+            }
+
+            #projects-for-repeat-tasks {
+                width: 466px;
+            }
+
+            #repeat-table_length > label > select {
+                width: 100px;
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+
+            f
+            #repeat-table_length > label {
+                display: flex;
+            }
+
+            #repeat-table_wrapper > div:nth-child(3) > div.col-sm-12.col-md-7,
+            #repeat-table_wrapper > div:nth-child(1) > div:nth-child(2) {
+                display: flex;
+                justify-content: flex-end;
+            }
+
             .callout a:hover {
                 color: #007bff !important;
             }
@@ -99,8 +126,156 @@
                 border: none;
             }
 
-            g.hide-border:active, .hide-border:focus {
+            .hide-border:active, .hide-border:focus {
                 border: 1px solid #ced4da !important;
+            }
+        </style>
+
+        <style>
+            .board {
+                width: 100%;
+            }
+
+            #todo-form {
+                padding: 32px 32px 0;
+            }
+
+            #todo-form input {
+                padding: 12px;
+                margin-right: 12px;
+                width: 225px;
+
+                border-radius: 4px;
+                border: none;
+
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+                background: white;
+
+                font-size: 14px;
+                outline: none;
+            }
+
+            #todo-form button {
+                padding: 12px 32px;
+
+                border-radius: 4px;
+                border: none;
+
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+                background: #ffffff;
+                color: black;
+
+                font-weight: bold;
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+            /* ---- BOARD ---- */
+            .lanes {
+                display: flex;
+                align-items: flex-start;
+                justify-content: start;
+                gap: 16px;
+
+                padding: 10px 1px;
+
+                overflow-x: scroll;
+                height: 100%;
+            }
+
+            .lanes::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            /* Оставляем только ползунок */
+            .lanes::-webkit-scrollbar-thumb {
+                background-color: #ccc;
+            }
+
+            .heading {
+                font-size: 18px;
+                margin-bottom: 0;
+                font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            }
+
+            .swim-lane {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+                border: 0 solid rgba(0, 0, 0, .125);
+                padding: 12px;
+                border-radius: 4px;
+                width: 275px;
+                max-height: 100%;
+                overflow-y: auto;
+
+                flex-shrink: 0;
+            }
+
+            .swim-lane p {
+                margin-bottom: 0 !important;
+            }
+
+            .swim-lane::-webkit-scrollbar {
+                width: 2px;
+                height: 0;
+            }
+
+            /* Оставляем только ползунок */
+            .swim-lane::-webkit-scrollbar-thumb {
+                background-color: #ccc;
+            }
+
+            .swim-lane-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .swim-lane-hide {
+                cursor: pointer;
+                transition: 0.5s ease;
+                transform: rotate(0deg);
+            }
+
+            .task {
+                background: white;
+                color: black;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                padding: 12px;
+                border-radius: 10px;
+                font-size: 16px;
+                cursor: move;
+                border: 1px solid rgba(0, 0, 0, .125);
+            }
+
+            .task:hover {
+                background-color: #f7f7f7;
+            }
+
+            .is-dragging {
+                scale: 1.05;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                background: rgb(50, 50, 50);
+                color: white;
+            }
+
+            .task-microcard-block-1 a {
+                font-size: 11px;
+                text-decoration: none;
+                color: #787878;
+            }
+
+            .task-microcard-label {
+                color: #787878;
+                font-size: 12px;
+                margin-right: 3px;
+            }
+
+            .task-microcard-date-start,
+            .task-microcard-date-end {
+                font-size: 13px;
             }
         </style>
     @endslot
@@ -115,6 +290,11 @@
                         <a class="nav-link active" id="custom-tabs-three-home-tab" data-toggle="pill"
                            href="#custom-tabs-three-home" role="tab" aria-controls="custom-tabs-three-home"
                            aria-selected="false">Активные</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-three-kanban-tab" data-toggle="pill"
+                           href="#custom-tabs-three-kanban" role="tab" aria-controls="custom-tabs-three-kanban"
+                           aria-selected="false">Канбан</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="archived-checklists" data-toggle="pill"
@@ -134,6 +314,13 @@
                            aria-selected="false">Личные шаблоны</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center" id="repeat-tasks" data-toggle="pill"
+                           href="#repeat-tasks-tab" role="tab" aria-controls="repeat-tasks-tab"
+                           aria-selected="false">
+                            Повторяющиеся задачи
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link d-flex align-items-center" id="notification" data-toggle="pill"
                            href="#notification-tab" role="tab" aria-controls="notification-tab"
                            aria-selected="false">
@@ -144,7 +331,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="margin-bottom: 30px;">
                 <div class="tab-content" id="custom-tabs-three-tabContent">
                     <div class="tab-pane fade active show" id="custom-tabs-three-home" role="tabpanel"
                          aria-labelledby="custom-tabs-three-home-tab">
@@ -180,15 +367,15 @@
                                            title="Добавить проекты из мониторинга сайтов"></i>
                                     </button>
 
-                                    <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
-                                            data-target="#modalLabel">
-                                        Управление метками
-                                    </button>
-
                                     <button class="btn btn-secondary mr-1" data-toggle="modal"
                                             data-target="#createNewProject"
                                             id="add-new-checklist">
                                         Добавить проект
+                                    </button>
+
+                                    <button type="button" class="btn btn-secondary mr-1" data-toggle="modal"
+                                            data-target="#modalLabel">
+                                        Управление метками
                                     </button>
 
                                     <button id="create-new-stub" class="btn btn-secondary" data-toggle="modal"
@@ -254,6 +441,135 @@
                         <p id="empty-message" style="display: none">У вас нет активных проектов с заданными
                             фильтрами</p>
                         <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
+                    </div>
+                    <div class="tab-pane fade row d-flex" id="custom-tabs-three-kanban" role="tabpanel"
+                         aria-labelledby="custom-tabs-three-kanban">
+                        <div class="board">
+                            <div class="btn-group mb-3">
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="expired-todo">
+                                    Просроченные
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="today-todo">
+                                    Сегодня
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="nextday-todo">
+                                    Завтра
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-monday">
+                                    Понедельник
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-tuesday">
+                                    Вторник
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state"
+                                        data-target="next-wednesday">Среда
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-thursday">
+                                    Четверг
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-friday">
+                                    Пятница
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-saturday">
+                                    Суббота
+                                </button>
+                                <button class="btn btn-sm btn-default change-visible-state" data-target="next-sunday">
+                                    Воскресенье
+                                </button>
+                            </div>
+                            <div class="lanes">
+                                <div class="swim-lane" id="expired-todo">
+                                    <div class="swim-lane-top" style="height: 35.98px;">
+                                        <h3 class="heading" style="margin-top: -12px;">Просроченные
+                                            (<span id="expired-count-tasks">0</span>)</h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="today-todo">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Сегодня (<span id="toDay-count-tasks">0</span>)
+                                            <p id="todayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="nextday-todo">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Завтра (<span id="tomorrow-count-tasks">0</span>)
+                                            <p id="tomorrowDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-monday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Понедельник (<span id="monday-count-tasks">0</span>)
+                                            <p id="mondayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-tuesday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Вторник (<span id="tuesday-count-tasks">0</span>)
+                                            <p id="tuesdayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-wednesday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Среда (<span id="wednesday-count-tasks">0</span>)
+                                            <p id="wednesdayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-thursday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Четверг (<span id="thursday-count-tasks">0</span>)
+                                            <p id="thursdayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-friday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Пятница (<span id="friday-count-tasks">0</span>)
+                                            <p id="fridayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-saturday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Суббота (<span id="saturday-count-tasks">0</span>)
+                                            <p id="saturdayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swim-lane" id="next-sunday">
+                                    <div class="swim-lane-top">
+                                        <h3 class="heading">Воскресенье (<span id="sunday-count-tasks">0</span>)
+                                            <p id="sundayDate" class="task-microcard-label"></p>
+                                        </h3>
+                                        <div class="swim-lane-hide"><i class="btn btn-default btn-sm fa fa-eye"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-profile" role="tabpanel"
                          aria-labelledby="archived-checklists"></div>
@@ -345,8 +661,125 @@
                         <div id="personal-stubs-place" class="d-flex row"></div>
                         <ul class="pagination d-flex justify-content-end w-100" id="personal-pagination"></ul>
                     </div>
-                    <div class="tab-pane fade" id="notification-tab" role="tabpanel">
+                    <div class="tab-pane fade" id="repeat-tasks-tab" role="tabpanel"
+                         aria-labelledby="personal-stubs">
+                        <button id="get-projects" type="button" class="btn btn-secondary mb-3" data-toggle="modal"
+                                data-target="#myModal">Добавить повторяющиеся задачи
+                        </button>
+
+                        <div class="modal" id="myModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Добавление повторяющихся задач</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="name">Название задачи</label>
+                                            <input type="text" name="name" id="repeat-name" class="form form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="date_start">Дата первого запуска</label>
+                                            <input type="datetime-local" name="date_start" id="repeat_date_start"
+                                                   class="form form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="repeat_every">Повторять каждые N дней</label>
+                                            <input type="number" name="repeat_every" id="repeat_repeat_every"
+                                                   class="form form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="deadline_every">Количество дней на выполнение</label>
+                                            <input type="number" name="deadline_every" id="repeat_deadline_every"
+                                                   class="form form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="weekends">Учитывать выходные?</label>
+                                            <select name="weekends" id="repeat_weekends" class="custom-select">
+                                                <option value="1">Да</option>
+                                                <option value="0">Нет</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="description">Описание задачи</label>
+                                            <textarea name="description" id="repeat_description" cols="10" rows="10"
+                                                      class="form form-control"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="projects-for-repeat-tasks">Проекты</label>
+                                            <select name="projects-for-repeat-tasks" id="projects-for-repeat-tasks"
+                                                    multiple></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-success"
+                                                id="save-new-repeat-task">{{ __('Save') }}</button>
+                                        <button type="button" class="btn btn-default" id="close-repeat-modal"
+                                                data-dismiss="modal">{{ __('Close') }}</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <table id="repeat-table" class="table table-bordered table-hover dataTable dtr-inline">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <input type="text" class="form-control filter-input"
+                                           style="width: 250px"
+                                           placeholder="Название"
+                                           data-index="0">
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control filter-input"
+                                           placeholder="Описание"
+                                           data-index="1">
+                                </th>
+                                <th style="width: 200px;">
+                                    <input type="date" class="form-control filter-input"
+                                           style="width: 200px;"
+                                           placeholder="Дата запуска"
+                                           data-index="2">
+                                </th>
+                                <th>
+                                    <input type="text" class="form form-control filter-input"
+                                           placeholder="Повторять каждые N дней" data-index="3">
+                                </th>
+                                <th>
+                                    <select name="weekends"
+                                            class="filter-input custom-select" data-index="4">
+                                        <option value="1">Да</option>
+                                        <option value="0">Нет</option>
+                                    </select>
+                                </th>
+                                <th>
+                                    <input type="text" class="form-control filter-input"
+                                           placeholder="Количество дней на выполнение"
+                                           data-index="5">
+                                </th>
+                                <th style="width: 150px"></th>
+                            </tr>
+                            <tr>
+                                <th>Название</th>
+                                <th style="width: 200px;">Описание</th>
+                                <th>Дата следующего запуска</th>
+                                <th>Повторяется каждые N дней</th>
+                                <th>Учитываются выходные</th>
+                                <th>Количество дней на выполнение</th>
+                                <th style="width: 150px"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+
                     </div>
+                    <div class="tab-pane fade" id="notification-tab" role="tabpanel"></div>
                 </div>
             </div>
         </div>
@@ -444,6 +877,20 @@
                                 <option value="all">Базовый и личный шаблон</option>
                             @endif
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-start-date">Запуск проекта</label>
+                        <select name="project-start-date" id="project-start-date" class="custom custom-select">
+                            <option value="now">Сейчас</option>
+                            <option value="wait">Отложенный запуск</option>
+                        </select>
+                    </div>
+                    <div class="form form-group">
+                        <label for="count-wait-days">Сделать активным через</label>
+                        <input type="number" step="1" min="0" value="0"
+                               class="form form-control ml-1 mr-1"
+                               id="count-wait-days"
+                               name="count-wait-days" disabled>
                     </div>
                     <div>
                         <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
@@ -676,7 +1123,72 @@
         </div>
     </div>
 
+    <div class="modal fade" id="updateTaskModal" tabindex="-1" aria-labelledby="updateTaskModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateTaskModalLabel">Изменение задачи</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="change-name-task">Название задачи</label>
+                        <input id="change-name-task" type="text" data-type="name" class="form form-control update-task">
+                    </div>
+                    <div class="form-group">
+                        <label for="change-task-state">Статус задачи</label>
+                        <select id="change-task-state" class="custom custom-select update-task" data-type="status">
+                            <option value="new">Новая</option>
+                            <option value="in_work">В работе</option>
+                            <option value="ready">Готово</option>
+                            <option value="expired">Просрочена</option>
+                            <option value="repeat">Повторяющаяся</option>
+                        </select>
+                    </div>
+                    <div class="form-group d-flex flex-row">
+                        <div class="w-50 mr-2">
+                            <label for="change-task-start-date">Дата начала</label>
+                            <input type="datetime-local" id="change-task-start-date" data-type="date_start"
+                                   class="form form-control update-task">
+                        </div>
+                        <div class="w-50">
+                            <label for="change-task-end-date">Дата окончания</label>
+                            <input type="datetime-local" id="change-task-end-date" data-type="deadline"
+                                   class="form form-control update-task">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="change-description-task">Описание задачи</label>
+                        <textarea name="change-description-task"
+                                  id="change-description-task"
+                                  cols="10" rows="10"
+                                  class="form form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @slot('js')
+        <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
+
+        <script src="{{ asset('plugins/checklist/common.js') }}"></script>
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
         <script>
@@ -695,7 +1207,6 @@
 
             let editedID
             let editedTimeout
-            let notificationBlocks = 0
             let labelID;
             let checkListID;
             let removedLI;
@@ -1110,7 +1621,7 @@
 
                                 labels += '</ul></div>'
 
-                                let totalTasks = v.ready + v.work + v.expired
+                                let totalTasks = v.tasks.length
 
                                 cards +=
                                     '<div class="col-4"><div class="card">' +
@@ -1137,19 +1648,22 @@
                                     '                    <span class="width">Всего задач:</span> <span>' + totalTasks + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
-                                    '                    <span class="width">Новые</span> <span>' + v.new + '</span>' +
+                                    '                    <span class="width">Новые:</span> <span>' + v.new + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
                                     '                    <span class="width">В работе:</span> <span>' + v.work + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
-                                    '                    <span class="width">Не активные:</span> <span>' + v.inactive + '</span>' +
-                                    '                </div>' +
-                                    '                <div class="d-flex row">' +
                                     '                    <span class="width">Готовые:</span> <span>' + v.ready + '</span>' +
                                     '                </div>' +
                                     '                <div class="d-flex row">' +
-                                    '                    <span class="width">Просрочены:</span> <span>' + v.expired + '</span>' +
+                                    '                    <span class="width">Повторяющиеся:</span> <span>' + v.repeat + '</span>' +
+                                    '                </div>' +
+                                    '                <div class="d-flex row">' +
+                                    '                    <span class="width">Отложенные:</span> <span>' + v.inactive + '</span>' +
+                                    '                </div>' +
+                                    '                <div class="d-flex row">' +
+                                    '                    <span class="width">Просроченые:</span> <span>' + v.expired + '</span>' +
                                     '                </div>' +
                                     '            </div>' +
                                     '        </div>' +
@@ -1184,6 +1698,356 @@
                 loadChecklists()
             })
 
+            $('#custom-tabs-three-kanban').on('click', '.swim-lane-hide', function () {
+                let $this = $(this)
+                if ($this.attr('hide-blocks') == 'true') {
+                    $this.attr('hide-blocks', false)
+                    $this.parents().eq(1).find('.dl-task-info.task').fadeIn(500)
+                } else {
+                    $this.attr('hide-blocks', true)
+                    $this.parents().eq(1).find('.dl-task-info.task').fadeOut(500)
+                }
+                return;
+                $(this).toggleClass('rotate');
+
+                var swimLane = $(this).closest('.swim-lane');
+                var currentWidth = swimLane.data('width') || swimLane.css('width') || swimLane.width(); // получаем текущую ширину .swim-lane
+                var newWidth = currentWidth === '37px' ? '275px' : '37px';
+                swimLane.animate({
+                    'width': newWidth
+                }, 500);
+
+                swimLane.data('width', newWidth);
+                if (newWidth === '37px') {
+                    swimLane.find('.task').slideUp();
+                    swimLane.find('.swim-lane-top').css('flex-flow', 'column-reverse');
+                    swimLane.find('.heading').animate({
+                        'width': '10px',
+                        'margin-top': '30px'
+                    }, 500);
+                } else {
+                    swimLane.find('.task').slideDown()
+                    swimLane.find('.swim-lane-top').css('flex-flow', '');
+                    swimLane.find('.heading').animate({
+                        'width': '90%',
+                        'margin-top': '0'
+                    }, 500);
+                }
+
+
+                var swimLaneId = swimLane.attr('id');
+                var swimLaneState = {
+                    width: newWidth,
+                    isHidden: (newWidth === '37px')
+                };
+
+                localStorage.setItem(swimLaneId, JSON.stringify(swimLaneState));
+            });
+
+            $(document).on('click', '#custom-tabs-three-kanban-tab', function () {
+                renderKanban()
+            })
+
+            function renderKanban() {
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('get.checklistsKanban') }}",
+                    success: function (response) {
+                        $('.dl-task-info.task').remove()
+
+                        let cards = {
+                            'expired': '#expired-todo',
+                            'toDay': '#today-todo',
+                            'tomorrow': '#nextday-todo',
+                            'monday': '#next-monday',
+                            'tuesday': '#next-tuesday',
+                            'wednesday': '#next-wednesday',
+                            'thursday': '#next-thursday',
+                            'friday': '#next-friday',
+                            'saturday': '#next-saturday',
+                            'sunday': '#next-sunday'
+                        }
+
+                        $.each(cards, function (day, element) {
+                            $('#' + day + '-count-tasks').html(response[day].length)
+
+                            let variable = ''
+
+                            $.each(response[day], function (item, value) {
+                                variable += renderTask(value);
+                            })
+                            $(element).append(variable)
+                        })
+
+                        refreshTooltips()
+
+                        let dayDates = [
+                            'todayDate',
+                            'tomorrowDate',
+                            'mondayDate',
+                            'tuesdayDate',
+                            'wednesdayDate',
+                            'thursdayDate',
+                            'fridayDate',
+                            'saturdayDate',
+                            'sundayDate',
+                        ]
+
+                        $.each(dayDates, function (i, prefix) {
+                            $('#' + prefix).html(response[prefix])
+                        })
+
+                        $('.swim-lane').each(function () {
+                            var swimLaneId = $(this).attr('id');
+                            var swimLaneState = JSON.parse(localStorage.getItem(swimLaneId));
+                            if (swimLaneState) {
+                                $(this).css('width', swimLaneState.width);
+                                if (swimLaneState.isHidden) {
+                                    $(this).find('.task').slideUp(0);
+                                }
+                            }
+                        });
+
+                        let draggables = document.querySelectorAll(".task");
+                        let droppables = document.querySelectorAll(".swim-lane");
+
+                        draggables.forEach((task) => {
+                            task.addEventListener("dragstart", () => {
+                                task.classList.add("is-dragging");
+                            });
+
+                            task.addEventListener("dragend", () => {
+                                let deadline = $(task).find('.task-microcard-date-end.task-microcard-interact')
+                                let newStatus = $(task).find('.task-microcard-date-start.task-microcard-interact').eq(0)
+
+                                task.classList.remove("is-dragging");
+                                let id = event.target.getAttribute("data-id");
+                                let status = event.target.getAttribute("data-status");
+                                let parent = event.target.parentNode.id;
+
+                                let deadlineDate = undefined
+                                try {
+                                    deadlineDate = $(task).parent().find('p.task-microcard-label').html().trim()
+                                } catch (e) {
+                                }
+
+                                if (status === 'expired') {
+                                    status = 'new'
+                                }
+                                if (parent === 'expired-todo') {
+                                    status = 'expired'
+                                }
+
+                                $.ajax({
+                                    type: 'post',
+                                    data: {
+                                        id: id,
+                                        deadline: deadlineDate,
+                                        status: status,
+                                    },
+                                    url: "{{ route('save.checklistsKanban') }}",
+                                    success: function (response) {
+                                        recalculateCountTasks()
+                                        deadline.html(response.deadline)
+                                        newStatus.html(response.status)
+                                    },
+                                    error: function (response) {
+                                    }
+                                })
+                            });
+                        });
+
+                        droppables.forEach((zone) => {
+                            zone.addEventListener("dragover", (e) => {
+                                e.preventDefault();
+
+                                let bottomTask = insertAboveTask(zone, e.clientY);
+                                let curTask = document.querySelector(".is-dragging");
+
+                                if (!bottomTask) {
+                                    zone.appendChild(curTask);
+                                } else {
+                                    zone.insertBefore(curTask, bottomTask);
+                                }
+                            });
+                        });
+
+                        let insertAboveTask = (zone, mouseY) => {
+                            let els = zone.querySelectorAll(".task:not(.is-dragging)");
+
+                            let closestTask = null;
+                            let closestOffset = Number.NEGATIVE_INFINITY;
+
+                            els.forEach((task) => {
+                                let {top} = task.getBoundingClientRect();
+
+                                let offset = mouseY - top;
+
+                                if (offset < 0 && offset > closestOffset) {
+                                    closestOffset = offset;
+                                    closestTask = task;
+                                }
+                            });
+
+                            return closestTask;
+                        };
+                    },
+                    error: function (response) {
+
+                    }
+                })
+            }
+
+            $(document).on('click', '.change-visible-state', function () {
+                let $this = $(this)
+                let target = $this.attr('data-target')
+
+                if ($this.hasClass('hover')) {
+                    localStorage.removeItem(target + '_localstorage_item')
+
+                    $this.removeClass('hover')
+                    $('#' + target).show(300)
+                } else {
+                    localStorage.setItem(target + '_localstorage_item', true)
+
+                    $this.addClass('hover')
+                    $('#' + target).hide(300)
+                }
+            })
+
+            $.each($('.change-visible-state'), function (k, item) {
+                if (localStorage.getItem($(this).attr('data-target') + '_localstorage_item')) {
+                    $(this).trigger('click')
+                }
+            })
+
+            function renderTask(value) {
+                let dateObj = new Date(value.date_start);
+                let day = dateObj.getDate();
+                let month = dateObj.getMonth() + 1;
+                let year = dateObj.getFullYear();
+                let date_start = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+
+                dateObj = new Date(value.deadline);
+                day = dateObj.getDate();
+                month = dateObj.getMonth() + 1;
+                year = dateObj.getFullYear();
+                let deadline = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month + '.' + year;
+
+                let status
+
+                if (value.status === 'new') {
+                    status = 'Новая'
+                } else if (value.status === 'expired') {
+                    status = 'Просроченая'
+                } else if (value.status === 'in_work') {
+                    status = 'В работе'
+                } else {
+                    status = 'Готовая'
+                }
+
+                return '<div data-id="' + value.id + '" data-deadline="' + value.deadline + '" data-status="' + value.status + '" class="dl-task-info task" draggable="true">' +
+                    '<div class="b-task-microcard has-menu">' +
+                    '   <div class="task-microcard-project text-size-s text-style-stt d-flex justify-content-between" style="word-break: break-word;">' +
+                    '       <a target="_blank" href="' + value.project.url + '" data-toggle="tooltip" data-placement="top" title="' + value.project.url + '">' +
+                    new URL(value.project.url)['origin'] + '</a>' +
+                    '   <button class="btn btn-default btn-sm get-task-info" data-id="' + value.id + '" type="button" data-toggle="modal" data-target="#updateTaskModal"><i class="fa fa-edit"></i></button>' +
+                    '   </div>' +
+                    '   <div class="task-microcard-title task-microcard-block-2 tr-taskstatus-color-3377C3 tr-taskstatus-style-0 text-size-l text-style-stb">' +
+                    '       <a href="/checklist-tasks/' + value.project.id + '" target="_blank">' + value.name + '</a> ' +
+                    '   </div>' +
+                    '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt">' +
+                    '           <span class="task-microcard-label">Статус:</span>' +
+                    '           <span class="task-microcard-date-start task-microcard-interact">' + status + '</span> ' +
+                    '       </div>' +
+                    '   </div>' +
+                    '   <div class="task-microcard-block-3 task-microcard-row label-enable text-size-m text-style-stt">' +
+                    '           <span class="task-microcard-label">Сроки:</span>' +
+                    '           <span class="task-microcard-date-start task-microcard-interact">' + date_start + '</span>  —' +
+                    '           <span class="task-microcard-date-end task-microcard-interact">' + deadline + '</span>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</div>';
+            }
+
+            function recalculateCountTasks() {
+                $.each($('.swim-lane'), function (i, item) {
+                    let count = $(item).children('.dl-task-info.task').length
+
+                    $(item).find('.swim-lane-top > h3 > span').html(count)
+                })
+            }
+
+            let $targetTaskId
+
+            $(document).on('click', '.get-task-info', function () {
+                $targetTaskId = $(this).attr('data-id')
+                $.ajax({
+                    type: 'get',
+                    url: `/checklist-task/${$targetTaskId}`,
+                    success: function (response) {
+                        $('#change-description-task').summernote('destroy');
+
+                        $('#change-name-task').val(response.name)
+                        $('#change-task-state').val(response.status)
+                        $('#change-task-start-date').val(response.date_start)
+                        $('#change-task-end-date').val(response.deadline)
+                        $('#change-description-task').val(response.description)
+
+                        $('#change-description-task').summernote({
+                            minHeight: 350,
+                            lang: "ru-RU",
+                            onChange: function (contents, $editable) {
+                                editedID = $editable.parents().eq(2).find('textarea:first-child').attr('data-id')
+                                clearTimeout(editedTimeout)
+                                editedTimeout = setTimeout(() => {
+                                    $.ajax({
+                                        type: 'post',
+                                        url: "{{ route('edit.checklist.task') }}",
+                                        data: {
+                                            id: $targetTaskId,
+                                            type: 'description',
+                                            value: contents,
+                                        },
+                                        success: function (response) {
+                                            successMessage('Успешно')
+                                        },
+                                        error: function (response) {
+                                            errorMessage(response.responseJSON.errors)
+                                        }
+                                    })
+                                }, 1000)
+                            }
+                        })
+                    }
+                })
+            })
+
+            $(document).on('change', '.update-task ', function () {
+                let type = $(this).attr('data-type')
+                let value = $(this).val()
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('edit.checklist.task') }}",
+                    data: {
+                        id: $targetTaskId,
+                        type: type,
+                        value: value,
+                    },
+                    success: function (response) {
+                        successMessage('Успешно')
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
+            })
+
+            $('#updateTaskModal').on('hidden.bs.modal', function () {
+                renderKanban()
+            });
+
             $('#move-to-archive').on('click', function () {
                 $.ajax({
                     url: '/move-checklist-to-archive/' + removedButton.attr('data-id'),
@@ -1201,6 +2065,65 @@
                         errorMessage(response.responseJSON.errors)
                     }
                 })
+            })
+
+            $('#add-task').on('click', function () {
+                $('#tasks').append(
+                    '<li data-id="' + counter + '">' +
+                    '    <div class="card">' +
+                    '    <div class="card-header d-flex flex-row justify-content-between"' +
+                    '         id="heading' + counter + '">' +
+                    '        <div class="d-flex w-75">' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Название задачи</label>' +
+                    '                <input data-id="name-' + counter + '" type="text" class="form form-control"' +
+                    '                       placeholder="Название задачи">' +
+                    '            </div>' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Статус</label>' +
+                    '                <select data-id="status-' + counter + '" class="custom custom-select">' +
+                    '                    <option value="new">Новая</option>' +
+                    '                    <option value="in_work">В работе</option>' +
+                    '                    <option value="expired">Просроченая</option>' +
+                    '                    <option value="ready">Готово</option>' +
+                    '                </select>' +
+                    '            </div>' +
+                    '            <div class="form-group col-4">' +
+                    '                <label>Дедлайн</label>' +
+                    '                <input data-id="deadline-' + counter + '" type="datetime-local" class="form form-control">' +
+                    '            </div>' +
+                    '        </div>' +
+                    '        <div style="display: flex; justify-content: center; align-items: center; margin-top: 13px;">' +
+                    '            <button class="btn btn-sm btn-default" data-toggle="collapse"' +
+                    '                    data-target="#collapse' + counter + '"' +
+                    '                    aria-expanded="true" aria-controls="collapse' + counter + '">' +
+                    '                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top"' +
+                    '                   title="Скрыть - Показать"></i>' +
+                    '            </button>' +
+                    '            <button class="btn btn-sm btn-default remove-task"' +
+                    '                    data-toggle="tooltip"' +
+                    '                    data-placement="top" title="Удалить">' +
+                    '                <i class="fa fa-trash"></i>' +
+                    '            </button>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '    <div id="collapse' + counter + '" class="collapse" aria-labelledby="heading' + counter + '"' +
+                    '         data-parent="#accordionExample">' +
+                    '        <div class="card-body">' +
+                    '            <textarea id="description-' + counter + '" cols="30" rows="10" class="form-control" placeholder="Описание"></textarea>' +
+                    '        </div>' +
+                    '        <ol id="subtasks-' + counter + '"></ol>' +
+                    '        <div class="card-footer">' +
+                    '            <button class="btn btn-default add-subtask" data-id="' + counter + '">' +
+                    '                Добавить подзадачу' +
+                    '            </button>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>' +
+                    '</li>'
+                )
+
+                counter++
             })
 
             $('#remove').on('click', function () {
@@ -1222,85 +2145,6 @@
                     }
                 })
             })
-
-            function parseTree($object) {
-                let $dataId = $object.attr('data-id')
-                let objects = []
-                let $subtasks = []
-
-                let object = {
-                    name: $('input[data-target="' + $dataId + '"][data-type="name"]').val(),
-                    status: $('select[data-target="' + $dataId + '"][data-type="status"]').val(),
-                    description: $('.pre-description[data-id="' + $dataId + '"]').val(),
-                    deadline: $('input[data-type="deadline"][data-target="' + $dataId + '"]').val(),
-                    start: $('input[data-type="start"][data-target="' + $dataId + '"]').val(),
-                    count_days: $('.datetime-counter[data-target="' + $dataId + '"]').val(),
-                    active_after: $('input[data-type="active_after"][data-target="' + $dataId + '"]').val(),
-                    repeat_after: $('input[data-type="repeat_after"][data-target="' + $dataId + '"]').val(),
-                    weekends: $('select[data-type="weekends"][data-target="' + $dataId + '"]').val(),
-                }
-
-                if ($('#subtasks-' + $dataId).children('li').length > 0) {
-                    $.each($('#subtasks-' + $dataId).children('li'), function () {
-                        $subtasks.push(parseTree($(this)))
-                    })
-                }
-
-                object.subtasks = $subtasks
-                objects.push(object)
-
-                return objects
-            }
-
-            function errorMessage(errors, time = 5000) {
-                let messages = ''
-                $.each(errors, function (k, v) {
-                    messages += v + "<br>"
-                })
-
-                let margin = notificationBlocks * 70
-                notificationBlocks++
-
-                let $block =
-                    $(
-                        '<div id="toast-container" class="toast-top-right error-message" style="display:none; top: ' + margin + 'px">' +
-                        '    <div class="toast toast-error" aria-live="polite">' +
-                        '        <div class="toast-message" id="toast-error-message">' + messages + '</div>' +
-                        '    </div>' +
-                        '</div>'
-                    )
-
-
-                $('#block-from-notifications').append($block)
-
-                $block.show(300)
-
-                setTimeout(() => {
-                    $block.remove()
-                    notificationBlocks--
-                }, time)
-            }
-
-            function successMessage(message) {
-                let margin = notificationBlocks * 70
-                notificationBlocks++
-
-                let $block =
-                    $('<div id="toast-container" class="toast-top-right success-message" style="display: none; top: ' + margin + 'px">' +
-                        '    <div class="toast toast-success" aria-live="polite">' +
-                        '        <div class="toast-message" id="toast-success-message">' + message + '</div>' +
-                        '    </div>' +
-                        '</div>')
-
-                $('#block-from-notifications').append($block)
-
-                $block.show(300)
-
-                setTimeout(() => {
-                    $block.remove()
-                    notificationBlocks--
-                }, 5000)
-            }
 
             $(document).on('change', '#count', function () {
                 localStorage.setItem('SEO_CHECKLIST_COUNT', $(this).val())
@@ -1397,10 +2241,12 @@
                 }
 
                 $.each(lists, function (k, v) {
-                    let totalTasks = v.ready + v.work + v.expired + v.inactive + v.new
+                    let totalTasks = v.tasks.length
+
                     let labels =
                         '<div class="col-8" data-action="labels" data-id="' + v.id + '">' +
                         '    <ul class="fc-color-picker">'
+
                     let statistics = ''
 
                     $.each(v.labels, function (index, label) {
@@ -1509,10 +2355,6 @@
                 $('[data-toggle="tooltip"]').tooltip()
             }
 
-            function getRandomInt(max) {
-                return Math.floor(Math.random() * max);
-            }
-
             $('#add-new-stub').on('click', function () {
                 $('.add-new-subtask').hide(300)
                 $('#stubs').append(stub(getRandomInt(999999999), true))
@@ -1550,6 +2392,7 @@
                     minHeight: 350,
                     lang: "ru-RU"
                 })
+
                 refreshTooltips()
             })
 
@@ -1656,6 +2499,7 @@
             $(document).on('input', '.datetime-counter', function () {
                 let $id = $(this).attr('data-target')
                 let value = $(this).val()
+
                 let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
                 let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
                 let newDate = new Date(new Date($start.val()).getTime() + (value * count_ml_in_day) + 10800000).toISOString().slice(0, 16)
@@ -1663,26 +2507,39 @@
                 $deadline.val(newDate)
             })
 
+            $(document).on('input', '.datetime-after', function () {
+                let $id = $(this).attr('data-target')
+                let value = $(this).val()
+
+                let $days = $('.datetime-counter[data-target="' + $id + '"]')
+                let $start = $('.datetime[data-type="start"][data-target="' + $id + '"]')
+                let $deadline = $('.datetime[data-type="deadline"][data-target="' + $id + '"]')
+
+                $start.val(value)
+
+                let newDate = new Date(new Date(value).getTime() + ($days.val() * count_ml_in_day)).toISOString().slice(0, 16)
+                $deadline.val(newDate)
+
+            })
+
             $(document).on('change', '.task-status', function () {
                 let $id = $(this).attr('data-target')
+
                 refreshTooltips()
 
                 if ($(this).val() === 'deactivated') {
                     $('.deactivated[data-target="' + $id + '"]').show()
-                    $('.datetime-counter[data-target="' + $id + '"]').show()
                     $('.datetime[data-target="' + $id + '"][data-type="start"]').hide()
                     $('.datetime[data-target="' + $id + '"][data-type="deadline"]').hide()
                     $('.datetime-repeat-counter[data-target="' + $id + '"]').hide()
                     $('select[data-type="weekends"][data-target="' + $id + '"]').hide()
                 } else if ($(this).val() === 'repeat') {
-                    $('.datetime-counter[data-target="' + $id + '"]').hide()
                     $('.datetime-repeat-counter[data-target="' + $id + '"]').show()
                     $('.datetime[data-target="' + $id + '"][data-type="deadline"]').hide()
                     $('.datetime-repeat-counter[data-type="weekends"][data-target="' + $id + '"]').show()
                     $('select[data-type="weekends"][data-target="' + $id + '"]').show()
                 } else {
                     $('.deactivated[data-target="' + $id + '"]').hide()
-                    $('.datetime-counter[data-target="' + $id + '"]').show()
                     $('.datetime[data-target="' + $id + '"][data-type="deadline"]').show()
                     $('.datetime[data-target="' + $id + '"][data-type="start"]').show()
                     $('.datetime-repeat-counter[data-target="' + $id + '"]').hide()
@@ -1719,15 +2576,15 @@
                         '            <option value="deactivated">Не активная</option>' +
                         '            <option value="repeat">Повторяющаяся</option>' +
                         '        </select>' +
-                        '        <input class="form form-control datetime-repeat-counter" type="number" step="1" min="1" data-target="' + id + '" data-type="repeat_after" value="1" data-toggle="tooltip" data-placement="left" title="Повторять каждые N дней" style="display:none; width: 55px">' +
                         '        <select class="custom custom-select" data-target="' + id + '" data-type="weekends" data-toggle="tooltip" data-placement="left" title="Учитывать выходные дни?" style="display: none">' +
                         '               <option value="1">Да</option>' +
                         '               <option value="0">Нет</option>' +
                         '        </select>' +
+                        '        <input class="form form-control datetime-repeat-counter" type="number" step="1" min="1" data-target="' + id + '" data-type="repeat_after" value="1" data-toggle="tooltip" data-placement="left" title="Повторять каждые N дней" style="display:none; width: 55px">' +
                         '        <input class="form form-control datetime-counter" type="number" step="1" value="0" min="0" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Количество дней на выполнение">' +
                         '        <input class="form form-control datetime" value="' + date + '" data-type="start" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата начала">' +
                         '        <input class="form form-control datetime" value="' + date + '" data-type="deadline" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Дата окончания">' +
-                        '        <input class="form form-control deactivated" style="display: none" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:">' +
+                        '        <input class="form form-control deactivated" data-type="active_after" type="datetime-local" data-target="' + id + '" data-toggle="tooltip" data-placement="left" title="Сделать задачу активной после:" style="display: none">' +
                         '        <div class="btn-group pl-2">' +
                         '            <button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-description-' + id + '" role="button" aria-expanded="false" aria-controls="collapse-description-' + id + '"><i class="fa fa-eye"></i></button>' +
                         '            <button class="btn btn-sm btn-default add-new-pre-subtask" data-id="' + id + '"><i class="fa fa-plus"></i></button>' +
@@ -1760,6 +2617,11 @@
             })
 
             $(document).on('click', '#save-new-checklist', function () {
+                if ($('#project-start-date').val() === 'wait' && $('#count-wait-days').val() === '0') {
+                    errorMessage(['Укажите количество дней, через которые проект будет активен'], 5000)
+                    return;
+                }
+
                 $(this).attr('disabled', true)
                 $('#loader').show(300)
 
@@ -1777,14 +2639,16 @@
                         url: $('#url').val(),
                         tasks: tasks,
                         saveStub: $('#save-stub').val(),
-                        dynamicStub: $('#dynamic-stub').val()
+                        dynamicStub: $('#dynamic-stub').val(),
+                        projectStartDate: $('#project-start-date').val(),
+                        waitDays: $('#count-wait-days').val()
                     },
-                    success: function (message) {
-                        successMessage(message)
+                    success: function (response) {
+                        successMessage(response.message)
                         $('#loader').hide(300)
                         $('#save-new-checklist').attr('disabled', false)
 
-                        $('#createNewProject > div > div > div.modal-footer.d-flex.justify-content-between > div:nth-child(2) > button.btn.btn-default').trigger('click')
+                        $('#createNewProject > div > div.modal-content.col-9.mr-2 > div.modal-footer.d-flex.justify-content-between > div:nth-child(4) > button.btn.btn-default').trigger('click')
                         $('#url').val('')
                         $('#tasks').html('')
 
@@ -1813,6 +2677,13 @@
                     stubs.push(parseTree(($(this))))
                 })
 
+                if (stubs.length === 0) {
+                    errorMessage(['Шаблон должен содержать структуру задач'])
+                    $('#loader-stubs').hide(300)
+                    $('#save-new-stubs').attr('disabled', false)
+                    return;
+                }
+
                 $.ajax({
                     type: 'post',
                     url: "{{ route('store.stub') }}",
@@ -1827,6 +2698,12 @@
                         $('#save-new-stubs').attr('disabled', false)
                         successMessage(message)
                         $('#createNewSTub > div > div > div.modal-footer.d-flex.justify-content-between > div:nth-child(2) > button.btn.btn-default').trigger('click')
+
+                        if ($('#save-stub-action').val() === 'classic') {
+                            loadClassicStubs()
+                        } else {
+                            loadPersonalStubs()
+                        }
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -1951,25 +2828,6 @@
                 $('#stubs-place').html(html)
             }
 
-            $(document).on('click', '.remove-stub', function () {
-                let ID = $(this).attr('data-id')
-                let $parent = $(this).parent()
-
-                if (confirm('Вы действительно хотите удалить шаблон?')) {
-                    $.ajax({
-                        type: 'get',
-                        url: '/remove-checklist-stub/' + ID,
-                        success: function (message) {
-                            successMessage(message)
-                            $parent.remove()
-                        },
-                        error: function (response) {
-                            errorMessage(response.responseJSON.errors)
-                        }
-                    })
-                }
-            })
-
             $(document).on('click', '#classic-stubs', function () {
                 loadClassicStubs()
             })
@@ -1989,6 +2847,7 @@
             })
 
             function loadClassicStubs(page = 0, pagination = true) {
+                $('#save-stub-action').val('classic')
                 $('#custom-tabs-three-profile').html('')
                 $('#classic-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
@@ -2016,6 +2875,7 @@
             }
 
             function loadPersonalStubs(page = 0, pagination = true) {
+                $('#save-stub-action').val('personal')
                 $('#custom-tabs-three-profile').html('')
                 $('#personal-stubs-place').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
@@ -2055,7 +2915,6 @@
 
                 loadTimeout = setTimeout(() => {
                     loadPersonalStubs()
-
                 }, 300)
             })
 
@@ -2067,7 +2926,7 @@
                         html += '<div class="col-xl-3 col-xs-6"><div class="card">'
                         html += '<div class="card-header d-flex justify-content-between">'
                             + '<input type="text" value="' + stub.name + '" data-id="' + stub.id + '" class="form form-control hide-border stub-name col-10">' +
-                            '<button class="btn btn-default remove-stub" data-id="' + stub.id + '"><i class="fa fa-trash"></i></button></div>'
+                            '<button class="btn btn-default remove-stub-card" data-id="' + stub.id + '"><i class="fa fa-trash"></i></button></div>'
                         html += '<ol class="stubs card-body" data-id="' + index + '">'
                         html += generateNestedStubs(JSON.parse(stub.tree), true)
                         html += '</ol></div></div>'
@@ -2286,12 +3145,249 @@
                 }
             })
 
+            let repeatTable = $('#repeat-table').DataTable({
+                processing: true,
+                serverSide: true,
+                lengthMenu: [10, 25, 50, 100],
+                pageLength: 50,
+                order: [[0, 'desc']],
+                aoColumnDefs: [
+                    {
+                        bSortable: false,
+                        aTargets: [6]
+                    }
+                ],
+                ajax: "{{ route('get.repeat.tasks') }}",
+                columns: [
+                    {
+                        name: 'name',
+                        data: function (row) {
+                            return '<input class="form form-control change-value" data-target="' + row.id + '" data-name="name" value="' + row.name + '">'
+                        },
+                    },
+                    {
+                        name: 'description',
+                        data: function (row) {
+                            let description
+
+                            if (row.description == null) {
+                                description = ''
+                            } else {
+                                description = row.description
+                            }
+
+                            return '<button class="btn btn-default btn-sm mb-3" type="button" data-toggle="collapse" data-target="#collapseExample' + row.id + '" aria-expanded="false" aria-controls="collapseExample">' +
+                                '<i class="fa fa-eye"></i>' +
+                                '</button>' +
+                                '<div class="collapse" id="collapseExample' + row.id + '"> ' +
+                                '    <div class="card card-body">' +
+                                '        <textarea class="form form-control change-value textarea-summernote" data-target="' + row.id + '" data-name="description">' + description + '</textarea>' +
+                                '    </div>' +
+                                '</div>'
+                        },
+                    },
+                    {
+                        name: 'date_start',
+                        data: function (row) {
+                            return '<input class="form form-control change-value" type="datetime-local" data-target="' + row.id + '" data-name="date_start" value="' + row.date_start + '">'
+                        },
+                    },
+                    {
+                        name: 'repeat_every',
+                        data: function (row) {
+                            return '<input class="form form-control change-value" data-target="' + row.id + '" data-name="repeat_every" value="' + row.repeat_every + '">'
+                        },
+                    },
+                    {
+                        name: 'weekends',
+                        data: function (row) {
+                            if (row.weekends) {
+                                return '<select class="custom custom-select change-value" data-target="' + row.id + '" data-name="weekends">' +
+                                    '    <option value="1" selected>Да</option>' +
+                                    '    <option value="0">Нет</option>' +
+                                    '</select>'
+                            } else {
+                                return '<select class="custom custom-select change-value" data-target="' + row.id + '" data-name="weekends">' +
+                                    '    <option value="1">Да</option>' +
+                                    '    <option value="0" selected>Нет</option>' +
+                                    '</select>'
+                            }
+                        },
+                    },
+                    {
+                        name: 'deadline_every',
+                        data: function (row) {
+                            return '<input class="form form-control change-value" data-target="' + row.id + '" data-name="weekends" value="' + row.deadline_every + '">'
+                        },
+                    },
+                    {
+                        name: 'projects',
+                        data: function (row) {
+                            return '<div class="btn-group">' +
+                                '<a class="btn btn-sm btn-secondary" href="' + row.project.url + '" target="_blank">Сайт</a>' +
+                                '<a class="btn btn-sm btn-secondary" href="/checklist-tasks/' + row.project.id + '" target="_blank">Задачи</a>' +
+                                '<button class="btn btn-sm btn-danger remove-repeat-task" data-target="' + row.id + '">Удалить</button>' +
+                                '</div>'
+                        },
+                    },
+                ],
+                language: {
+                    sEmptyTable: "Нет данных для отображения",
+                    sInfo: "Показано с _START_ по _END_ из _TOTAL_ записей",
+                    sInfoEmpty: "Показано 0 записей",
+                    sInfoFiltered: "(отфильтровано из _MAX_ записей)",
+                    sLengthMenu: "Показывать _MENU_ записей на странице",
+                    sSearch: "Поиск:",
+                    sZeroRecords: "Нет соответствующих записей",
+                    searchPlaceholder: 'Поиск',
+                    paginate: {
+                        "first": "«",
+                        "last": "»",
+                        "next": "»",
+                        "previous": "«"
+                    },
+                },
+                drawCallback: function () {
+                    $('#repeat-table').wrap('<div style="width: 100%; overflow: auto"></div>')
+                    $('#repeat-table').css({
+                        width: '100%'
+                    })
+
+                    let timeout
+                    $('.filter-input').unbind().on('input', function () {
+                        clearTimeout(timeout)
+                        timeout = setTimeout(() => {
+                            repeatTable.column($(this).attr('data-index')).search($(this).val()).draw();
+                        }, 500)
+                    });
+
+                    $(document).on('change', '.change-value', function () {
+                        let id = $(this).attr('data-target')
+                        let name = $(this).attr('data-name')
+                        let value = $(this).val()
+
+                        $.ajax({
+                            type: 'post',
+                            url: "{{ route('edit.repeat.task') }}",
+                            data: {
+                                id: id,
+                                name: name,
+                                value: value,
+                            },
+                            success: function () {
+                                successMessage('Изменения применены')
+                            }
+                        })
+                    })
+
+                    $('.textarea-summernote').summernote({
+                        minHeight: 350,
+                        callbacks: {
+                            onChange: function (contents, $editable) {
+                                editedID = $editable.parents().eq(2).find('textarea:first-child').attr('data-target')
+                                clearTimeout(editedTimeout)
+                                editedTimeout = setTimeout(() => {
+                                    $.ajax({
+                                        type: 'post',
+                                        url: "{{ route('edit.checklist.task') }}",
+                                        data: {
+                                            id: editedID,
+                                            type: 'description',
+                                            value: contents,
+                                        },
+                                        success: function (response) {
+                                            successMessage('Успешно')
+                                        },
+                                        error: function (response) {
+                                            errorMessage(response.responseJSON.errors)
+                                        }
+                                    })
+                                }, 1000)
+                            },
+                        },
+                        lang: "ru-RU"
+                    })
+
+                    $(document).on('click', '.remove-repeat-task', function () {
+                        let id = $(this).attr('data-target')
+
+                        if (confirm('Удалить задачу?')) {
+                            $.ajax({
+                                type: 'post',
+                                url: "{{ route('remove.repeat.task') }}",
+                                data: {
+                                    id: id,
+                                },
+                                success: function (response) {
+                                    successMessage('Задача была удалена')
+                                    repeatTable.draw()
+                                },
+                                error: function (response) {
+                                    errorMessage(response.responseJSON.errors)
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+
             getNotifications()
             $('#notification').on('click', function () {
                 getNotifications()
             })
 
+            $('#repeat_description').summernote({
+                minHeight: 350,
+                lang: "ru-RU",
+            })
+
+            $('#get-projects').on('click', function () {
+                $.ajax({
+                    type: 'get',
+                    url: "{{ route('get.all.checklists') }}",
+                    success: function (checklists) {
+                        let options = ''
+                        $.each(checklists, function (i, item) {
+                            options += '<option value="' + item.id + '" data-toggle="tooltip" data-placement="top" title="' + item.url + '">' +
+                                new URL(item.url)["host"] +
+                                '</option>'
+                        })
+
+                        $('#projects-for-repeat-tasks').html(options)
+                        $('#projects-for-repeat-tasks').select2({theme: 'bootstrap4'});
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors)
+                    }
+                })
+            })
+
+            $('#save-new-repeat-task').on('click', function () {
+                $.ajax({
+                    type: 'post',
+                    data: {
+                        name: $('#repeat-name').val(),
+                        description: $('#repeat_description').val(),
+                        date_start: $('#repeat_date_start').val(),
+                        repeat_every: $('#repeat_repeat_every').val(),
+                        deadline_every: $('#repeat_deadline_every').val(),
+                        weekends: $('#repeat_weekends').val(),
+                        ids: $('#projects-for-repeat-tasks').val()
+                    },
+                    url: "{{ route('store.repeat.tasks') }}",
+                    success: function (response) {
+                        successMessage(response.message)
+                        repeatTable.draw()
+                        $('#close-repeat-modal').trigger('click')
+                    },
+                    error: function (response) {
+                        errorMessage(response.responseJSON.errors, 10000)
+                    }
+                })
+            })
+
             function getNotifications() {
+                $('#custom-tabs-three-profile').html('')
                 $('#notification-tab').html(
                     '<div class="d-flex justify-content-center align-items-center w-100 mt-5">' +
                     '    <img src="/img/1485.gif">' +
@@ -2359,6 +3455,10 @@
 
             $(document).on('click', '.localstorage-item', function () {
                 localStorage.setItem('redbox_localstorage_item', $(this).attr('data-target'))
+            })
+
+            $(document).on('change', '#project-start-date', function () {
+                $('#count-wait-days').attr('disabled', $(this).val() === 'now')
             })
         </script>
     @endslot

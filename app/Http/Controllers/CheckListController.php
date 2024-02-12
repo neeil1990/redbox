@@ -76,7 +76,13 @@ class CheckListController extends Controller
                     'url' => $fullUrl,
                 ]);
 
-                $this->createSubTasks($request->input('tasks'), $project->id);
+                $this->createSubTasks(
+                    $request->input('tasks'),
+                    $project->id,
+                    null,
+                    $request->input('projectStartDate'),
+                    $request->input('waitDays'),
+                );
 
                 if ($request->input('saveStub') === 'all') {
                     $tree = $this->configureStubs($project->id);
@@ -123,9 +129,17 @@ class CheckListController extends Controller
                 'line' => $e->getLine()
             ]);
             DB::rollback();
+
+            return response()->json([
+                'errors' => [
+                    $e->getMessage()
+                ]
+            ], 422);
         }
 
-        return 'Успешно';
+        return response()->json([
+            'message' => __('Success')
+        ], 201);
     }
 
     public function update(Request $request): string
@@ -228,6 +242,119 @@ class CheckListController extends Controller
         return response()->json([
             'lists' => $this->confirmArray($lists),
             'paginate' => $paginate
+        ]);
+    }
+
+    public function getChecklistsKanban(Request $request): JsonResponse
+    {
+        $ids = CheckLists::where('user_id', Auth::id())->pluck('id');
+
+        $tasks = ChecklistTasks::where('status', '!=', 'ready')
+            ->where('status', '!=', 'repeat')
+            ->whereIn('project_id', $ids)
+            ->whereHas('project', function ($query) {
+                $query->where('archive', 0);
+            })
+            ->with('project')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $expired = ChecklistTasks::where('status', 'expired')
+            ->whereIn('project_id', $ids)
+            ->whereHas('project', function ($query) {
+                $query->where('archive', 0);
+            })
+            ->with('project')->get();
+
+        $toDayTasks = ChecklistTasks::where('status', '!=', 'ready')
+            ->where('status', '!=', 'repeat')
+            ->where('status', '!=', 'expired')
+            ->whereIn('project_id', $ids)
+            ->where('deadline', 'like', "%" . Carbon::now()->toDateString() . "%")
+            ->whereHas('project', function ($query) {
+                $query->where('archive', 0);
+            })->with('project')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $tomorrowTasks = ChecklistTasks::where('status', '!=', 'ready')
+            ->where('status', '!=', 'repeat')
+            ->where('status', '!=', 'expired')
+            ->whereIn('project_id', $ids)
+            ->where('deadline', 'like', "%" . Carbon::now()->addDay()->toDateString() . "%")
+            ->whereHas('project', function ($query) {
+                $query->where('archive', 0);
+            })->with('project')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $today = $todayDate = Carbon::now();
+        $tomorrowDate = $todayDate->addDay()->format('d.m.Y');
+
+        $dayOfWeek = strtolower($today->englishDayOfWeek);
+        $nextDays = [];
+
+        for ($i = 1; $i <= 7; $i++) {
+            $nextDay = $today->copy()->next($dayOfWeek);
+            $nextDays[$dayOfWeek] = ChecklistTasks::where('status', '!=', 'ready')
+                ->where('status', '!=', 'repeat')
+                ->where('status', '!=', 'expired')
+                ->whereIn('project_id', $ids)
+                ->where('deadline', 'like', "%{$nextDay->toDateString()}%")
+                ->orWhere('date_start', 'like', "%{$nextDay->toDateString()}%")
+                ->whereHas('project', function ($query) {
+                    $query->where('archive', 0);
+                })
+                ->with('project')
+                ->orderBy('id', 'desc')
+                ->get();
+
+            $nextDays[$dayOfWeek . 'Date'] = $nextDay->format('d.m.Y');
+
+            $dayOfWeek = strtolower($nextDay->addDay()->englishDayOfWeek);
+        }
+
+        return response()->json([
+            'tasks' => $tasks,
+            'expired' => $expired,
+            'toDay' => $toDayTasks,
+            'todayDate' => Carbon::now()->format('d.m.Y'),
+            'tomorrow' => $tomorrowTasks,
+            'tomorrowDate' => $tomorrowDate,
+            'monday' => $nextDays['monday'],
+            'mondayDate' => $nextDays['mondayDate'],
+            'mondayDateDate' => $nextDays['mondayDate'],
+            'tuesday' => $nextDays['tuesday'],
+            'tuesdayDate' => $nextDays['tuesdayDate'],
+            'wednesday' => $nextDays['wednesday'],
+            'wednesdayDate' => $nextDays['wednesdayDate'],
+            'thursday' => $nextDays['thursday'],
+            'thursdayDate' => $nextDays['thursdayDate'],
+            'friday' => $nextDays['friday'],
+            'fridayDate' => $nextDays['fridayDate'],
+            'saturday' => $nextDays['saturday'],
+            'saturdayDate' => $nextDays['saturdayDate'],
+            'sunday' => $nextDays['sunday'],
+            'sundayDate' => $nextDays['sundayDate'],
+        ]);
+    }
+
+    public function saveChecklistsKanban(Request $request): JsonResponse
+    {
+        $update = [
+            'deadline' => Carbon::parse($request->input('deadline')),
+            'status' => $request->input('status')
+        ];
+
+        if ($update['status'] === 'expired') {
+            $update['deadline'] = Carbon::now();
+        }
+
+        ChecklistTasks::where('id', $request->input('id'))->update($update);
+
+        return response()->json([
+            'deadline' => $update['deadline']->format('d.m.Y'),
+            'status' => __(ucfirst($update['status']))
         ]);
     }
 
@@ -339,7 +466,7 @@ class CheckListController extends Controller
         return 'Метка успешно изменена';
     }
 
-    public function createRelation(Request $request)
+    public function createRelation(Request $request): JsonResponse
     {
         if (empty($request->checklistId) || empty($request->labelId)) {
             return response()->json([
@@ -378,7 +505,7 @@ class CheckListController extends Controller
     {
         $sql = ChecklistTasks::where('project_id', $request->input('id'));
 
-        if ($request->sort !== 'deactivated') {
+        if ($request->sort === 'deactivated') {
             $sql->whereDate('active_after', '<=', Carbon::now());
         }
 
@@ -387,9 +514,9 @@ class CheckListController extends Controller
         }
 
         if ($request->sort === 'new-sort') {
-            $sql->orderByDesc('id');
+            $sql->orderBy('id', 'desc');
         } elseif ($request->sort === 'old-sort') {
-            $sql->orderBy('id');
+            $sql->orderBy('id', 'asc');
         } elseif ($request->sort != 'all') {
             $sql->where('status', $request->sort);
         }
@@ -400,7 +527,9 @@ class CheckListController extends Controller
             $tasks = $this->buildTaskStructure($tasks);
         }
 
-        $paginate = (int)ceil($sql->where('subtask', 0)->count() / $request->count);
+        $paginate = (int)ceil(
+            $sql->where('subtask', 0)->count() / $request->count
+        );
 
         return [
             'checklist' => $this->confirmArray([
@@ -409,6 +538,24 @@ class CheckListController extends Controller
             'tasks' => array_slice($tasks, $request->input('skip', 0), $request->input('count', 3)),
             'paginate' => $paginate
         ];
+    }
+
+    public function getTask(ChecklistTasks $task)
+    {
+        if ($task->project->user_id === Auth::id()) {
+            return $task;
+        } else {
+            return [];
+        }
+    }
+
+    public function removeRepeatTask(Request $request): JsonResponse
+    {
+        ChecklistTasks::where('status', 'repeat')
+            ->where('id', $request->id)
+            ->delete();
+
+        return response()->json([], 200);
     }
 
     public function removeTask(Request $request): string
@@ -510,7 +657,23 @@ class CheckListController extends Controller
                 ]);
         }
 
+        if ($request->type === 'status' && $request->value === 'ready') {
+            ChecklistTasks::where('id', $request->id)
+                ->update([
+                    'end_date' => Carbon::now()
+                ]);
+        }
+
         return response()->json();
+    }
+
+    public function editRepeatTask(Request $request)
+    {
+        ChecklistTasks::where('id', $request->id)
+            ->where('status', 'repeat')
+            ->update([
+                $request->name => $request->value
+            ]);
     }
 
     public function addNewTasks(Request $request): string
@@ -701,7 +864,7 @@ class CheckListController extends Controller
         return response()->json();
     }
 
-    private function createSubTasks($tasks, $projectId, $taskId = null)
+    private function createSubTasks($tasks, $projectId, $taskId = null, $projectStartDate = null, $waitDays = null): void
     {
         foreach ($tasks as $task) {
             $task = $task[0] ?? $task;
@@ -721,22 +884,29 @@ class CheckListController extends Controller
                 $object['date_start'] = $task['active_after'];
                 $object['deadline'] = Carbon::parse($task['active_after'])->addDays($task['count_days']);
             } else if ($task['status'] === 'repeat') {
-
-                // TODO Протестировать создание
-                // TODO описать метод в карбоне, который будет перезапускать задачу
-
                 $object['weekends'] = $task['weekends'];
+
                 if ($task['weekends']) {
-                    $object['active_after'] = Carbon::parse($task['active_after'])->addWeekdays($task['repeat_after']);
+                    $object['date_start'] = Carbon::parse($task['active_after'])->addWeekdays($task['repeat_after']);
                 } else {
-                    $object['active_after'] = $task['active_after'];
+                    $object['date_start'] = Carbon::parse($task['active_after'])->addDays($task['repeat_after']);
                 }
-                $object['date_start'] = $object['active_after'];
+
+                $object['deadline_every'] = $task['count_days'];
+                $object['repeat_every'] = $task['repeat_after'];
             }
 
             if (isset($taskId)) {
                 $object['subtask'] = 1;
                 $object['task_id'] = $taskId;
+            }
+
+            if ($projectStartDate === 'wait') {
+                $object['date_start'] = Carbon::parse($object['date_start'])->addDays($waitDays);
+                $object['deadline'] = Carbon::parse($object['deadline'])->addDays($waitDays);
+                if (isset($object['active_after'])) {
+                    $object['active_after'] = Carbon::parse($object['active_after'])->addDays($waitDays);
+                }
             }
 
             $newRecord = ChecklistTasks::create($object);
@@ -748,7 +918,13 @@ class CheckListController extends Controller
             ]);
 
             if (isset($task['subtasks'])) {
-                $this->createSubTasks($task['subtasks'], $projectId, $newRecord->id);
+                $this->createSubTasks(
+                    $task['subtasks'],
+                    $projectId,
+                    $newRecord->id,
+                    $projectStartDate,
+                    $waitDays
+                );
             }
         }
     }
@@ -837,7 +1013,10 @@ class CheckListController extends Controller
                     'status' => $item['status'],
                     'description' => $item['description'],
                     'subtask' => $item['subtask'],
+                    'weekends' => $item['weekends'],
                     'task_id' => $item['task_id'],
+                    'repeat_every' => $item['repeat_every'],
+                    'deadline_every' => $item['deadline_every'],
                     'date_start' => $item['date_start'],
                     'deadline' => $item['deadline'],
                     'created_at' => $item['created_at'],
@@ -865,5 +1044,125 @@ class CheckListController extends Controller
             ->toArray();
 
         return json_encode($this->buildTaskStructure($tasks));
+    }
+
+    public function getRepeatTasks(Request $request)
+    {
+        $columnIndex = $request->input('order.0.column');
+        $columnSortOrder = $request->input('order.0.dir');
+        $columnName = $request['columns'][$columnIndex]['name'];
+
+        $id = CheckLists::where('user_id', Auth::id())->pluck('id');
+
+        $totalRecords = ChecklistTasks::whereIn('project_id', $id)
+            ->where('status', 'repeat')
+            ->count();
+
+        $records = ChecklistTasks::whereIn('project_id', $id)
+            ->orderBy($columnName, $columnSortOrder)
+            ->where('status', 'repeat')
+            ->with('project');
+
+        foreach ($request['columns'] as $column) {
+            $search = $column['search']['value'];
+            if (isset($search)) {
+                $columnSearch = $column['name'];
+
+                switch ($columnSearch) {
+                    case 'name':
+                    case 'description':
+                    case 'date_start':
+                    case 'deadline_every':
+                    case 'repeat_every':
+                    case 'weekends':
+                        $records->where($columnSearch, 'like', "%$search%");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        $start = $request->input('start');
+        $pageNumber = floor($start / $request->input('length')) + 1;
+        $records = $records->paginate($request->input('length'), ['*'], 'page', $pageNumber);
+
+        $aaData = [];
+        foreach ($records as $record) {
+            $aaData[] = [
+                'id' => $record->id,
+                'name' => $record->name,
+                'description' => $record->description,
+                'date_start' => $record->date_start,
+                'deadline_every' => $record->deadline_every,
+                'repeat_every' => $record->repeat_every,
+                'weekends' => $record->weekends,
+                'project' => $record->project,
+            ];
+        }
+
+        return json_encode([
+            'draw' => (int)$request['draw'],
+            'iTotalRecords' => $totalRecords,
+            'iTotalDisplayRecords' => $totalRecords,
+            'aaData' => $aaData
+        ]);
+    }
+
+    public function storeRepeatTasks(Request $request): JsonResponse
+    {
+        $request->validate([
+            'name' => 'required',
+            'date_start' => 'required',
+            'repeat_every' => 'required',
+            'deadline_every' => 'required',
+            'ids' => 'array|required',
+        ], [
+            'name.required' => 'Название задачи не может быть пустым',
+            'date_start.required' => 'Вы забыли указать дату первого запуска',
+            'repeat_every.required' => 'Вы забыли указать промежуток повторения задачи',
+            'deadline_every.required' => 'Вы забыли указать количество дней на выполнение',
+            'ids.required' => 'Вам нужно указать список ваших чеклистов',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $insert = [];
+
+            foreach ($request->ids as $id) {
+                $insert[] = [
+                    'project_id' => $id,
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'repeat_every' => $request->repeat_every,
+                    'deadline_every' => $request->deadline_every,
+                    'weekends' => $request->weekends,
+                    'date_start' => $request->date_start,
+                    'status' => 'repeat',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            }
+
+            ChecklistTasks::insert($insert);
+            DB::commit();
+
+            return response()->json([
+                'message' => __('Success')
+            ], 201);
+
+        } catch (Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    public function getAllChecklists()
+    {
+        return CheckLists::where('user_id', Auth::id())->get();
     }
 }
