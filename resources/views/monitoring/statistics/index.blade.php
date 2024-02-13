@@ -1,6 +1,12 @@
 @component('component.card', ['title' => __('Monitoring statistics')])
 
     @slot('css')
+        <!-- DataTables -->
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-select/css/select.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-editor/css/editor.bootstrap4.min.css') }}">
 
     @endslot
 
@@ -89,6 +95,24 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <table class="table table-hover table-sm" id="project-manager"></table>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <table class="table table-hover table-sm" id="project-seo"></table>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+
     @slot('js')
         <!-- jQuery UI -->
         <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
@@ -98,6 +122,15 @@
         </script>
         <!-- ChartJS -->
         <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
+        <!-- DataTables  & Plugins -->
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-editor/js/datatables_editor.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-select/js/dataTables.select.min.js') }}"></script>
 
         <script>
             // Make the dashboard widgets sortable Using jquery UI
@@ -171,7 +204,53 @@
                     maintainAspectRatio     : false,
                     datasetFill             : false
                 },
-            })
+            });
+
+            let managerTable = $('#project-manager').DataTable({
+                dom: '<"card-header"<"card-title">><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                paging: false,
+                serverSide: true,
+                ajax: {
+                    url: "/monitoring/statistics/manager-table",
+                    type: 'GET',
+                },
+                columns: [
+                    { title: 'ФИО', data: 'name' },
+                    { title: 'Кол-во проектов', data: 'count' },
+                    { title: 'TOP 10', data: 'top10' },
+                    { title: 'TOP 30', data: 'top30' },
+                    { title: 'TOP 100', data: 'top100' },
+                    { title: 'Бюджет', data: 'budget' },
+                ],
+                initComplete: function(settings, json) {
+                    let card = $(this).closest('.card');
+                    card.find('.card-title').text('{{ __('manager projects') }}');
+                },
+            });
+
+            let seoTable = $('#project-seo').DataTable({
+                dom: '<"card-header"<"card-title">><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                paging: false,
+                serverSide: true,
+                ajax: {
+                    url: "/monitoring/statistics/seo-table",
+                    type: 'GET',
+                },
+                columns: [
+                    { title: 'ФИО', data: 'name' },
+                    { title: 'Кол-во проектов', data: 'count' },
+                    { title: 'TOP 10', data: 'top10' },
+                    { title: 'TOP 30', data: 'top30' },
+                    { title: 'TOP 100', data: 'top100' },
+                    { title: 'Бюджет', data: 'budget' },
+                ],
+                initComplete: function(settings, json) {
+                    let card = $(this).closest('.card');
+                    card.find('.card-title').text('{{ __('Seo projects') }}');
+                },
+            });
+
+
         </script>
 
     @endslot
