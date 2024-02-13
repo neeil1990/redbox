@@ -25,9 +25,13 @@ abstract class Buttons
         return $button->display();
     }
 
-    protected function wrapTag(string $str, string $tag): string
+    protected function wrapTag(string $str, string $tag, $attributes = null): string
     {
-        return '<'. $tag .'>'. $str .'</'. $tag .'>';
+        if (isset($attributes)) {
+            return "<$tag $attributes>$str</$tag>";
+        } else {
+            return '<' . $tag . '>' . $str . '</' . $tag . '>';
+        }
     }
 
     abstract protected function createButton(): ButtonTemplate;

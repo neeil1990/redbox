@@ -119,3 +119,47 @@ $(document).on('click', '.remove-stub-card', function () {
         })
     }
 })
+
+function renderStubs(tasks, target) {
+    let html = ''
+
+    $.each(tasks, function (index, task) {
+        let button = '<button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-example-' + index + '" aria-expanded="false" aria-controls="collapse-example-' + index + '" id="heading-example' + index + '"><i class="fa fa-eye"></i></button>'
+        let stubType = ''
+        if (task.type === 'personal') {
+            stubType = '(личный шаблон)'
+            button += '<button class="btn btn-sm btn-default remove-stub" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
+        } else {
+            stubType = '(базовый шаблон)'
+        }
+
+        html += '<ol class="card pl-0" data-id="' + index + '">' +
+            '    <p class="card-header">' +
+            '        <span class="d-flex justify-content-between">' +
+            '            <span>' + task.name + '</span>' +
+            '            <span>' + stubType + '</span>' +
+            '            <span>' + button + '</span>' +
+            '        </span>' +
+            '    </p>' +
+            '    <div id="collapse-example-' + index + '" aria-labelledby="heading-example" class="collapse" style="">' +
+            '    <div class="accordion stubs card-body" data-id="' + index + '">'
+        html += generateNestedStubs(JSON.parse(task.tree), true)
+        html += '</div>' + '</div>' + '</ol>'
+    });
+
+    $(target).html(html)
+}
+
+$(document).on('click', '#stubs-place > ol', function (e) {
+    if (!$(e.target).hasClass('btn-default')) {
+        $('.ribbon-wrapper.ribbon-lg').remove();
+
+        $(this).append(
+            '<div class="ribbon-wrapper ribbon-lg">' +
+            '    <div class="ribbon bg-primary">' +
+            '        Выбрано' +
+            '    </div>' +
+            '</div>'
+        );
+    }
+});

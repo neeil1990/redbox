@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\ChecklistNotification;
-use App\CheckListProjectLabels;
-use App\CheckLists;
+use App\ChecklistProjectLabels;
+use App\Checklist;
 use App\CheckListsLabels;
 use App\ChecklistStubs;
 use App\ChecklistTasks;
@@ -33,7 +33,7 @@ class CheckListController extends Controller
         return view('checklist.index', compact('labels'));
     }
 
-    public function tasks(CheckLists $checklist)
+    public function tasks(Checklist $checklist)
     {
         $host = parse_url($checklist->url)['host'];
         $labels = $checklist->labels->toArray();
@@ -57,7 +57,7 @@ class CheckListController extends Controller
             $fullUrl = $request->input('url');
         }
 
-        if (CheckLists::where('user_id', Auth::id())->where('url', $fullUrl)->count() > 0) {
+        if (Checklist::where('user_id', Auth::id())->where('url', $fullUrl)->count() > 0) {
             return response()->json([
                 'errors' => ['URL' => 'У вас уже есть проект с таким URL']
             ], 422);
@@ -70,7 +70,7 @@ class CheckListController extends Controller
             if ($response->getStatusCode() === 200) {
                 $icon = $this->findIcon($response->getBody()->getContents());
 
-                $project = CheckLists::create([
+                $project = Checklist::create([
                     'user_id' => Auth::id(),
                     'icon' => $this->saveIcon($icon, $fullUrl),
                     'url' => $fullUrl,
@@ -195,7 +195,7 @@ class CheckListController extends Controller
     public function getChecklists(Request $request): JsonResponse
     {
         $userId = Auth::id();
-        $sql = CheckLists::where('user_id', $userId)
+        $sql = Checklist::where('user_id', $userId)
             ->where('archive', 0);
 
         $labelName = $request->input('label_name');
@@ -247,7 +247,7 @@ class CheckListController extends Controller
 
     public function getChecklistsKanban(Request $request): JsonResponse
     {
-        $ids = CheckLists::where('user_id', Auth::id())->pluck('id');
+        $ids = Checklist::where('user_id', Auth::id())->pluck('id');
 
         $tasks = ChecklistTasks::where('status', '!=', 'ready')
             ->where('status', '!=', 'repeat')
@@ -358,7 +358,7 @@ class CheckListController extends Controller
         ]);
     }
 
-    public function inArchive(CheckLists $project)
+    public function inArchive(Checklist $project)
     {
         if (!User::isUserAdmin() && $project->user_id != Auth::id()) {
             return response()->json([
@@ -373,7 +373,7 @@ class CheckListController extends Controller
 
     public function archive(): array
     {
-        $lists = CheckLists::where('user_id', Auth::id())
+        $lists = Checklist::where('user_id', Auth::id())
             ->with('tasks:project_id,status,active_after')
             ->with('labels')
             ->where('archive', 1)
@@ -383,7 +383,7 @@ class CheckListController extends Controller
         return $this->confirmArray($lists);
     }
 
-    public function destroy(CheckLists $project)
+    public function destroy(Checklist $project)
     {
         if (!User::isUserAdmin() && $project->user_id != Auth::id()) {
             return response()->json([
@@ -403,7 +403,7 @@ class CheckListController extends Controller
         return 'Чеклист был удалён';
     }
 
-    public function restore(CheckLists $project)
+    public function restore(Checklist $project)
     {
         if (!User::isUserAdmin() && $project->user_id != Auth::id()) {
             return response()->json([
@@ -474,12 +474,12 @@ class CheckListController extends Controller
             ], 422);
         }
 
-        $link = CheckListProjectLabels::where('checklist_project_id', $request->checklistId)
+        $link = ChecklistProjectLabels::where('checklist_project_id', $request->checklistId)
             ->where('checklist_label_id', $request->labelId)
             ->first();
 
         if ($link === null) {
-            CheckListProjectLabels::create([
+            ChecklistProjectLabels::create([
                 'checklist_project_id' => $request->checklistId,
                 'checklist_label_id' => $request->labelId,
             ]);
@@ -494,7 +494,7 @@ class CheckListController extends Controller
 
     public function removeRelation(Request $request): string
     {
-        CheckListProjectLabels::where('checklist_project_id', $request->checkListID)
+        ChecklistProjectLabels::where('checklist_project_id', $request->checkListID)
             ->where('checklist_label_id', $request->labelID)
             ->delete();
 
@@ -533,7 +533,7 @@ class CheckListController extends Controller
 
         return [
             'checklist' => $this->confirmArray([
-                CheckLists::where('id', $request->id)->where('user_id', Auth::id())->with('tasks')->first()
+                Checklist::where('id', $request->id)->where('user_id', Auth::id())->with('tasks')->first()
             ]),
             'tasks' => array_slice($tasks, $request->input('skip', 0), $request->input('count', 3)),
             'paginate' => $paginate
@@ -760,7 +760,7 @@ class CheckListController extends Controller
         $projects = ProjectRelevanceHistory::where('user_id', Auth::id())->get()->pluck('name');
 
         foreach ($projects as $key => $project) {
-            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+            if (Checklist::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
                 unset($projects[$key]);
             }
         }
@@ -773,7 +773,7 @@ class CheckListController extends Controller
         $projects = MetaTag::where('user_id', Auth::id())->get()->pluck('links');
 
         foreach ($projects as $key => $project) {
-            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+            if (Checklist::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
                 unset($projects[$key]);
             }
         }
@@ -786,7 +786,7 @@ class CheckListController extends Controller
         $projects = Auth::user()->monitoringProjects->pluck('url');
 
         foreach ($projects as $key => $project) {
-            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+            if (Checklist::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
                 unset($projects[$key]);
             }
         }
@@ -799,7 +799,7 @@ class CheckListController extends Controller
         $projects = DomainMonitoring::where('user_id', Auth::id())->get()->pluck('project_name');
 
         foreach ($projects as $key => $project) {
-            if (CheckLists::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
+            if (Checklist::where('user_id', Auth::id())->where('url', "https://$project")->count() > 0) {
                 unset($projects[$key]);
             }
         }
@@ -822,7 +822,7 @@ class CheckListController extends Controller
                 $response = $client->get($fullUrl);
                 if ($response->getStatusCode() === 200) {
                     $icon = $this->findIcon($response->getBody()->getContents());
-                    CheckLists::create([
+                    Checklist::create([
                         'user_id' => Auth::id(),
                         'icon' => $this->saveIcon($icon, $fullUrl),
                         'url' => $fullUrl,
@@ -1052,7 +1052,7 @@ class CheckListController extends Controller
         $columnSortOrder = $request->input('order.0.dir');
         $columnName = $request['columns'][$columnIndex]['name'];
 
-        $id = CheckLists::where('user_id', Auth::id())->pluck('id');
+        $id = Checklist::where('user_id', Auth::id())->pluck('id');
 
         $totalRecords = ChecklistTasks::whereIn('project_id', $id)
             ->where('status', 'repeat')
@@ -1163,6 +1163,6 @@ class CheckListController extends Controller
 
     public function getAllChecklists()
     {
-        return CheckLists::where('user_id', Auth::id())->get();
+        return Checklist::where('user_id', Auth::id())->get();
     }
 }

@@ -171,6 +171,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('edit-site-monitoring', 'MonitoringDomainController@edit')->name('edit.domain');
     Route::post('delete-domains-monitoring', 'MonitoringDomainController@removeDomains')->name('delete.sites.monitoring');
 
+
     Route::get('verification-token/{token}', 'TelegramBotController@verificationToken')->name('verification.token');
     Route::get('reset-notification/{token}', 'TelegramBotController@resetNotification')->name('reset.notification');
 
@@ -329,13 +330,14 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/add-competitor', 'MonitoringController@addCompetitor')->name('monitoring.add.competitor');
     Route::post('/monitoring/add-competitors', 'MonitoringController@addCompetitors')->name('monitoring.add.competitors');
     Route::post('/monitoring/remove-competitor', 'MonitoringController@removeCompetitor')->name('monitoring.remove.competitor');
-    Route::get('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get/{group_id?}', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');
     Route::post('/monitoring/competitors/history/positions/', 'MonitoringController@competitorsHistoryPositions')->name('monitoring.competitors.history.positions');
     Route::post('/monitoring/competitors/check-analyse-state', 'MonitoringController@checkChangesDatesState')->name('monitoring.changes.dates.check');
     Route::post('/monitoring/competitors/remove-analyse', 'MonitoringController@removeChangesDatesState')->name('monitoring.changes.dates.remove');
     Route::get('/monitoring/competitors/result-analyse/{project}', 'MonitoringController@resultChangesDatesState')->name('monitoring.changes.dates.result');
+    Route::post('/checklist-monitoring-relation', 'MonitoringController@checklistMonitoringRelation')->name('checklist.monitoring.relation');
+
 
     Route::get('/monitoring/top-100/{project}', 'MonitoringTopController@index')->name('monitoring.top100');
     Route::post('/monitoring/get-top/sites', 'MonitoringTopController@getTopSites')->name('monitoring.get.top.sites');

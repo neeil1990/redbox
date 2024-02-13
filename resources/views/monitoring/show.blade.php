@@ -45,6 +45,7 @@
                 top: 50px;
                 right: 30px;
             }
+
             .dataTables_scrollHead {
                 position: sticky !important;
                 top: 0px;
@@ -66,7 +67,11 @@
                         {!! $navigation['content'] !!}
 
                         @isset($navigation['small'])
-                            <small>{{ $navigation['small'] }}</small>
+                            <small>{!! $navigation['small'] !!}</small>
+                        @endisset
+
+                        @isset($navigation['actions'])
+                            <small>{!! $navigation['actions'] !!}</small>
                         @endisset
                     </div>
                     <div class="icon">
@@ -86,13 +91,13 @@
     </div>
 
     @if($project->pivot->admin)
-    <div class="row">
-        <div class="col-12 mb-3">
-            <a href="{{ route('groups.index', $project->id) }}" class="btn btn-default">Управление группами проекта</a>
-            <a href="javascript:void(0)" id="occurrence-update" class="btn btn-default">Обновить частотность проекта</a>
-            <a href="{{ route('prices.index', $project->id) }}" id="" class="btn btn-default">Цена запросов</a>
+        <div class="row">
+            <div class="col-12 mb-3">
+                <a href="{{ route('groups.index', $project->id) }}" class="btn btn-default">Управление группами проекта</a>
+                <a href="javascript:void(0)" id="occurrence-update" class="btn btn-default">Обновить частотность проекта</a>
+                <a href="{{ route('prices.index', $project->id) }}" id="" class="btn btn-default">Цена запросов</a>
+            </div>
         </div>
-    </div>
     @endif
 
     <div class="row">
@@ -101,7 +106,8 @@
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
             </div>
             <div class="card dTable">
-                <table class="table table-hover table-responsive table-bordered text-center" id="monitoringTable"></table>
+                <table class="table table-hover table-responsive table-bordered text-center"
+                       id="monitoringTable"></table>
             </div>
             <!-- /.card -->
         </div>
@@ -110,6 +116,38 @@
     {{--@include('monitoring.testing')--}}
 
     @include('monitoring.keywords.modal.main')
+
+    <div class="modal fade" id="setRelation" tabindex="-1" aria-labelledby="setRelationLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="setRelationLabel">Свзязать проекты</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="this">Текущий проект</label>
+                        <input type="text" class="form form-control" value="{{ $project->url }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="checklists">Чеклист</label>
+                        <select name="checklists" id="checklists" class="custom-select">
+                            @foreach(\App\Checklist::where('user_id', \Illuminate\Support\Facades\Auth::id())->get() as $checklist)
+                                <option value="{{ $checklist->id }}">{{ $checklist->url }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="set-relation">{{ __('Save') }}</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @slot('js')
         <!-- Toastr -->
@@ -140,6 +178,41 @@
         <script src="{{ asset('plugins/chart.js/3.9.1/plugins/chartjs-plugin-datalabels.js') }}"></script>
 
         <script>
+            $(document).on('click', '#set-relation', function () {
+                if ($('#checklists').val() == null) {
+                    alert('Вам нужно указать чеклист')
+                    return;
+                }
+
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('checklist.monitoring.relation') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        checklistId: $('#checklists').val(),
+                        monitoringId: {{ $project->id }}
+                    },
+                    success: function () {
+                        window.location.reload()
+                    },
+                    error: function (response) {
+
+                    }
+                })
+            })
+
+            $(document).ready(function () {
+                let $buttonElement = $('button.change-tag');
+                let $aElement = $('<a></a>');
+                $aElement.attr('href', $buttonElement.attr('href'));
+                $aElement.attr('target', $buttonElement.attr('target'));
+                $aElement.addClass($buttonElement.attr('class'));
+                $aElement.text($buttonElement.text());
+                $buttonElement.replaceWith($aElement);
+            })
+        </script>
+
+        <script>
             const PROJECT_ADMIN = '{{ $project->pivot->admin }}';
             const PROJECT_ID = '{{ $project->id }}';
             const REGION_ID = '{{ request('region', null) }}';
@@ -165,12 +238,12 @@
 
                 let columns = [];
                 $.each(response.data.columns, function (i, item) {
-                    if(PROJECT_ADMIN == '0' && (i == 'checkbox' || i == 'btn'))
+                    if (PROJECT_ADMIN == '0' && (i == 'checkbox' || i == 'btn'))
                         return;
 
                     let width = null;
 
-                    if(i == 'query')
+                    if (i == 'query')
                         width = '300px';
 
                     columns.push({
@@ -232,7 +305,7 @@
 
                             container.html(content);
 
-                            if(PROJECT_ADMIN == '0'){
+                            if (PROJECT_ADMIN == '0') {
                                 container.find('.checkbox-toggle').remove();
                                 container.find('.queries-controls').remove();
                                 container.find('.positions-controls').remove();
@@ -354,7 +427,7 @@
                                     if (response.data.status) {
                                         toastr.success(response.data.msg + " -" + response.data.count);
                                         keys.prop('checked', false);
-                                    }else
+                                    } else
                                         toastr.error(response.data.error);
                                 });
                             });
@@ -699,13 +772,13 @@
                                     $.extend(data, {[item.name]: item.value});
                                 });
 
-                                if(data.hasOwnProperty('monitoring_group_id') === false || data.monitoring_group_id.length < 1){
+                                if (data.hasOwnProperty('monitoring_group_id') === false || data.monitoring_group_id.length < 1) {
                                     e.preventDefault();
                                     form.find('.invalid-feedback.monitoring_group_id').fadeIn().delay(3000).fadeOut();
                                     return false;
                                 }
 
-                                if(data.hasOwnProperty('query') && data.query.length < 1){
+                                if (data.hasOwnProperty('query') && data.query.length < 1) {
                                     e.preventDefault();
                                     form.find('.invalid-feedback.query').fadeIn().delay(3000).fadeOut();
                                     return false;
@@ -1268,9 +1341,9 @@
                         action: action,
                         id: PROJECT_ID,
                     }).then(function (response) {
-                        if(response.data.status){
+                        if (response.data.status) {
                             toastr.success(response.data.msg + " -" + response.data.count);
-                        }else
+                        } else
                             toastr.error(response.data.error);
                     });
                 });
