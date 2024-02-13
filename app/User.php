@@ -224,6 +224,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(MonitoringWidget::class);
     }
 
+    public function statistics()
+    {
+        return $this->hasMany(UsersStatistic::class);
+    }
+
     public function monitoringGroups()
     {
         return $this->belongsToMany(MonitoringGroup::class)->withTimestamps();

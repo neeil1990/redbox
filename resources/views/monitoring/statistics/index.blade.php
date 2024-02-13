@@ -141,23 +141,27 @@
             });
 
             // BAR CHART
+            let dates = JSON.parse('{!! $chartData["dates"] !!}');
+            let budget = JSON.parse('{!! $chartData["budget"] !!}');
+            let mastered = JSON.parse('{!! $chartData["mastered"] !!}');
+
             let areaChartData = {
-                labels  : ['January', 'February', 'March', 'April', 'May', 'June'],
+                labels  : dates,
                 datasets: [
                     {
                         label               : '{{ __('Budget') }}',
                         backgroundColor     : '#00c0ef',
-                        data                : [28, 48, 40, 19, 86, 27]
+                        data                :  budget,
                     },
                     {
                         label               : '{{ __('Mastered') }}',
                         backgroundColor     : '#00a65a',
-                        data                : [65, 59, 80, 81, 56, 120]
+                        data                :  mastered,
                     },
                 ]
             };
 
-            let barChartCanvas = $('#barChart').get(0).getContext('2d')
+            let barChartCanvas = $('#barChart').get(0).getContext('2d');
 
             new Chart(barChartCanvas, {
                 type: 'bar',

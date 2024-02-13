@@ -29,6 +29,7 @@ Route::get('info', function () {
 
 Route::get('dev', function () {
     //
+
 });
 
 Auth::routes(['verify' => true]);
