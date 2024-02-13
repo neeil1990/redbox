@@ -6,6 +6,24 @@
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
         <style>
+            .tab-pane.fade.row.d-flex#custom-tabs-three-kanban {
+                height: 0 !important;
+            }
+
+            .tab-pane.fade.row.d-flex.active.show#custom-tabs-three-kanban {
+                height: auto !important;
+            }
+
+            .ribbon-wrapper.ribbon-lg {
+                height: 59px !important;
+                width: 124px !important;
+                left: 1px !important;
+            }
+
+            .ribbon-wrapper .ribbon {
+                padding: .375rem 16px .375rem 0 !important;
+            }
+
             .fa.fa-eye:hover {
                 color: black;
             }
@@ -20,7 +38,6 @@
                 margin-right: 5px;
             }
 
-            f
             #repeat-table_length > label {
                 display: flex;
             }
@@ -101,8 +118,7 @@
                 border-color: #5a6268 !important;
             }
 
-            #tasks li:hover
-            #stubs li:hover {
+            #tasks li:hover, #stubs li:hover {
                 cursor: pointer;
                 box-shadow: 0 0 10px grey;
             }
@@ -170,7 +186,6 @@
                 cursor: pointer;
             }
 
-            /* ---- BOARD ---- */
             .lanes {
                 display: flex;
                 align-items: flex-start;
@@ -187,7 +202,6 @@
                 height: 6px;
             }
 
-            /* Оставляем только ползунок */
             .lanes::-webkit-scrollbar-thumb {
                 background-color: #ccc;
             }
@@ -222,7 +236,6 @@
                 height: 0;
             }
 
-            /* Оставляем только ползунок */
             .swim-lane::-webkit-scrollbar-thumb {
                 background-color: #ccc;
             }
@@ -443,7 +456,7 @@
                         <ul class="pagination d-flex justify-content-end w-100" id="pagination"></ul>
                     </div>
                     <div class="tab-pane fade row d-flex" id="custom-tabs-three-kanban" role="tabpanel"
-                         aria-labelledby="custom-tabs-three-kanban">
+                         aria-labelledby="custom-tabs-three-kanban" style="height: 0;">
                         <div class="board">
                             <div class="btn-group mb-3">
                                 <button class="btn btn-sm btn-default change-visible-state" data-target="expired-todo">
@@ -1318,7 +1331,7 @@
             })
 
             $(document).on('click', '.remove-label', function () {
-                if (confirm('Вы собираетесь удалить метку, она будет автоматически удалена у ваших чеклистов. Подтвердите действие.')) {
+                if (confirm('Вы собираетесь удалить метку, она будет автоматически удалена у ваших чеклистов.')) {
                     let $element = $(this)
 
                     $.ajax({
@@ -1417,7 +1430,7 @@
                     },
                     success: function (response) {
                         basicTasks = response
-                        renderStubs(response)
+                        renderStubs(response, '#stubs-place')
                     },
                     error: function (response) {
                         errorMessage(response.responseJSON.errors)
@@ -2726,20 +2739,6 @@
                 $parent.remove()
             })
 
-            $(document).on('click', '.accordion.stubs.card.card-body', function (e) {
-                if (!$(e.target).hasClass('remove-stub')) {
-                    $('.ribbon-wrapper.ribbon-lg').remove();
-
-                    $(this).append(
-                        '<div class="ribbon-wrapper ribbon-lg">' +
-                        '    <div class="ribbon bg-primary">' +
-                        '        Выбрано' +
-                        '    </div>' +
-                        '</div>'
-                    );
-                }
-            });
-
             $(document).on('click', '#set-stub', function () {
                 let basicID = $('.ribbon-wrapper.ribbon-lg').parent().attr('data-id')
 
@@ -2797,36 +2796,6 @@
             }
 
             let basicTasks
-
-            function renderStubs(tasks) {
-                let html = ''
-
-                $.each(tasks, function (index, task) {
-                    let button = '<button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-example-' + index + '" aria-expanded="false" aria-controls="collapse-example-' + index + '" id="heading-example' + index + '"><i class="fa fa-eye"></i></button>'
-                    let stubType = ''
-                    if (task.type === 'personal') {
-                        stubType = '(личный шаблон)'
-                        button += '<button class="btn btn-sm btn-default remove-stub" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
-                    } else {
-                        stubType = '(базовый шаблон)'
-                    }
-
-                    html += '<ol class="card pl-0">' +
-                        '    <p class="card-header">' +
-                        '        <span class="d-flex justify-content-between">' +
-                        '            <span>' + task.name + '</span>' +
-                        '            <span>' + stubType + '</span>' +
-                        '            <span>' + button + '</span>' +
-                        '        </span>' +
-                        '    </p>' +
-                        '    <div id="collapse-example-' + index + '" aria-labelledby="heading-example" class="collapse" style="">' +
-                        '    <div class="accordion stubs card-body" data-id="' + index + '">'
-                    html += generateNestedStubs(JSON.parse(task.tree), true)
-                    html += '</div>' + '</div>' + '</ol>'
-                });
-
-                $('#stubs-place').html(html)
-            }
 
             $(document).on('click', '#classic-stubs', function () {
                 loadClassicStubs()

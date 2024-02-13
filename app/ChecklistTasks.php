@@ -13,6 +13,6 @@ class ChecklistTasks extends Model
 
     public function project(): HasOne
     {
-        return $this->hasOne(CheckLists::class, 'id', 'project_id');
+        return $this->hasOne(Checklist::class, 'id', 'project_id');
     }
 }

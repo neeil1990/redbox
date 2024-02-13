@@ -4,6 +4,19 @@
         <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('plugins/toastr/toastr.css') }}"/>
         <style>
+            .ribbon-wrapper.ribbon-lg {
+                height: 59px !important;
+                width: 124px !important;
+                left: 1px !important;
+            }
+
+
+            .ribbon-wrapper.ribbon-lg .ribbon {
+                right: 0;
+                top: 26px;
+                width: 160px;
+            }
+
             .datetime-counter {
                 width: 75px;
             }
@@ -682,20 +695,6 @@
                 return html
             }
 
-            $(document).on('click', '.accordion.stubs.card.card-body', function (e) {
-                if (!$(e.target).hasClass('remove-stub')) {
-                    $('.ribbon-wrapper.ribbon-lg').remove();
-
-                    $(this).append(
-                        '<div class="ribbon-wrapper ribbon-lg">' +
-                        '    <div class="ribbon bg-primary">' +
-                        '        Выбрано' +
-                        '    </div>' +
-                        '</div>'
-                    );
-                }
-            });
-
             $('#add-new-tasks').on('click', function () {
                 if ($('#new-tasks').html() === '') {
                     $('#add-new-task').trigger('click')
@@ -1179,36 +1178,6 @@
                         errorMessage(response.responseJSON.errors)
                     }
                 })
-            }
-
-            function renderStubs(tasks, target) {
-                let html = ''
-
-                $.each(tasks, function (index, task) {
-                    let button = '<button class="btn btn-sm btn-default" data-toggle="collapse" href="#collapse-example-' + index + '" aria-expanded="false" aria-controls="collapse-example-' + index + '" id="heading-example' + index + '"><i class="fa fa-eye"></i></button>'
-                    let stubType = ''
-                    if (task.type === 'personal') {
-                        stubType = '(личный шаблон)'
-                        button += '<button class="btn btn-sm btn-default remove-stub" data-id="' + task.id + '"><i class="fa fa-trash"></i></button>'
-                    } else {
-                        stubType = '(базовый шаблон)'
-                    }
-
-                    html += '<ol class="card pl-0">' +
-                        '    <p class="card-header">' +
-                        '        <span class="d-flex justify-content-between">' +
-                        '            <span>' + task.name + '</span>' +
-                        '            <span>' + stubType + '</span>' +
-                        '            <span>' + button + '</span>' +
-                        '        </span>' +
-                        '    </p>' +
-                        '    <div id="collapse-example-' + index + '" aria-labelledby="heading-example" class="collapse" style="">' +
-                        '    <div class="accordion stubs card-body" data-id="' + index + '">'
-                    html += generateNestedStubs(JSON.parse(task.tree), true)
-                    html += '</div>' + '</div>' + '</ol>'
-                });
-
-                $(target).html(html)
             }
 
             function getRandomInt(max) {

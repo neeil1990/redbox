@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ChecklistMonitoringRelation;
 use App\Classes\Monitoring\Helper;
 use App\Classes\Monitoring\MasteredPositions;
 use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
@@ -77,14 +78,14 @@ class MonitoringController extends Controller
         $emails = explode(",", str_replace(" ", "", $request->input('email')));
         $users = User::whereIn('email', $emails)->get()->whereNotIn('id', [$currentUser['id']]);
 
-        if($users->isEmpty())
+        if ($users->isEmpty())
             return abort('403');
 
-        foreach ($users as $user){
+        foreach ($users as $user) {
             $id = $request->input('id');
-            if($user->monitoringProjects()->find($id) === null){
+            if ($user->monitoringProjects()->find($id) === null) {
                 $result = $user->monitoringProjects()->syncWithoutDetaching([$id => ['approved' => 0]]);
-                if(count($result['attached']) > 0){
+                if (count($result['attached']) > 0) {
                     Mail::to($user)->send(new MonitoringShareProjectMail(MonitoringProject::find($id)));
                     (new MonitoringProjectUserStatusController())->setStatusUser($user, $id, $request->input('status'));
                 }
@@ -102,7 +103,7 @@ class MonitoringController extends Controller
         /** @var User $user */
         $user = $this->user;
 
-        if($approve){
+        if ($approve) {
             $project = $user->monitoringProjects()->find($id);
             $userAdmin = $project->admin->first();
 
@@ -203,7 +204,7 @@ class MonitoringController extends Controller
     {
         $name = 'users';
         $column = $this->searchColumnByName($name, $columns);
-        if($column && strlen($column['search']['value']) > 0){
+        if ($column && strlen($column['search']['value']) > 0) {
             $value = $column['search']['value'];
 
             return $model->whereHas($name, function ($query) use ($value) {
@@ -216,8 +217,8 @@ class MonitoringController extends Controller
 
     public function searchColumnByName(string $name, array $columns)
     {
-        foreach($columns as $key => $col)
-            if($col['name'] === $name)
+        foreach ($columns as $key => $col)
+            if ($col['name'] === $name)
                 return $columns[$key];
 
         return null;
@@ -255,7 +256,7 @@ class MonitoringController extends Controller
                 return '<span class="badge badge-light"><i class="fab fa-' . $item . ' fa-sm"></i></span>';
             })->implode(' ');
 
-            $item->users->transform(function($user){
+            $item->users->transform(function ($user) {
                 $statusId = $user['pivot']['status'];
                 $user['status'] = MonitoringProjectUserStatusController::getStatusById($statusId);
                 return $user;
@@ -272,11 +273,11 @@ class MonitoringController extends Controller
         /** @var User $user */
         $user = $this->user;
 
-        if(empty($id)){
+        if (empty($id)) {
             $projects = $user->monitoringProjects()->get();
-            foreach($projects as $project)
+            foreach ($projects as $project)
                 (new ProjectDataTableUpdateDB($project))->save();
-        }else{
+        } else {
             /** @var MonitoringProject $project */
             $project = $user->monitoringProjects()->find($id);
             (new ProjectDataTableUpdateDB($project))->save();
@@ -369,7 +370,7 @@ class MonitoringController extends Controller
         $date = explode('-', Carbon::now()->subMonths($subMonth)->format('Y-m'));
         $collection = $positions->whereYear('created_at', $date[0])->whereMonth('created_at', $date[1])->get();
 
-        if($collection->isEmpty())
+        if ($collection->isEmpty())
             return null;
 
         return $collection;
@@ -518,12 +519,12 @@ class MonitoringController extends Controller
         $user = $this->user;
         $project = $user->monitoringProjects()->find($id);
         // If current user admin project
-        if($project->pivot->admin){
-            foreach($project->users as $u)
+        if ($project->pivot->admin) {
+            foreach ($project->users as $u)
                 $u->monitoringProjects()->detach($project['id']);
 
             $project->delete();
-        }else{
+        } else {
             $user->monitoringProjects()->detach($project['id']);
         }
     }
@@ -821,5 +822,16 @@ class MonitoringController extends Controller
     public function getProjectCompetitors(MonitoringProject $project): array
     {
         return array_column($project->competitors->toArray(), 'url');
+    }
+
+    public function checklistMonitoringRelation(Request $request)
+    {
+        ChecklistMonitoringRelation::where('monitoring_id', $request->monitoringId)
+            ->delete();
+
+        return ChecklistMonitoringRelation::create([
+            'monitoring_id' => $request->monitoringId,
+            'checklist_id' => $request->checklistId,
+        ]);
     }
 }

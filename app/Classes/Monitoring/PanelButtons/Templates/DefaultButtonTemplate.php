@@ -12,6 +12,7 @@ class DefaultButtonTemplate implements ButtonTemplate
     public $href = '#';
     public $bg = 'bg-info';
     public $small = '';
+    public $actions = '';
 
     public function display(): array
     {
@@ -22,6 +23,7 @@ class DefaultButtonTemplate implements ButtonTemplate
             'href' => $this->href,
             'bg' => $this->bg,
             'small' => $this->small,
+            'actions' => $this->actions,
         ];
     }
 }
