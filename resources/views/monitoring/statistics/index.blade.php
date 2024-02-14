@@ -236,13 +236,27 @@
                     url: "/monitoring/statistics/seo-table",
                     type: 'GET',
                 },
+                order: [
+                    [1, 'asc'],
+                ],
+                columnDefs: [
+                    { orderable: false, targets: [0] },
+                ],
                 columns: [
+                    {
+                        className: 'dt-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>'
+                    },
+                    { data: 'id', visible: false },
                     { title: 'ФИО', data: 'name' },
                     { title: 'Кол-во проектов', data: 'count' },
                     { title: 'TOP 10', data: 'top10' },
                     { title: 'TOP 30', data: 'top30' },
                     { title: 'TOP 100', data: 'top100' },
                     { title: 'Бюджет', data: 'budget' },
+                    { title: 'Освоено', data: 'mastered' },
                 ],
                 initComplete: function(settings, json) {
                     let card = $(this).closest('.card');
@@ -250,6 +264,21 @@
                 },
             });
 
+            seoTable.on('click', 'td.dt-control', function (e) {
+                let tr = e.target.closest('tr');
+                let row = seoTable.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                } else {
+                    let data = row.data();
+                    axios.get(`/monitoring/statistics/project-table/${data.id}`)
+                        .then(function(response){
+                            row.child(response.data).show();
+                        });
+                }
+                return false;
+            });
 
         </script>
 

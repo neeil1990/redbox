@@ -324,6 +324,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/statistics/sort-widgets', 'MonitoringStatisticsController@sortWidgets');
     Route::get('/monitoring/statistics/manager-table', 'MonitoringStatisticsController@managerTable');
     Route::get('/monitoring/statistics/seo-table', 'MonitoringStatisticsController@seoTable');
+    Route::get('/monitoring/statistics/project-table/{id}', 'MonitoringStatisticsController@projectTable');
 
     Route::resource('monitoring', 'MonitoringController');
 

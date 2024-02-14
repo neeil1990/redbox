@@ -68,7 +68,7 @@ class MonitoringStatisticsController extends Controller
 
     public function managerTable(Request $request)
     {
-        $users = $this->getPMUsers();
+        $users = $this->getUsersWithProjectsByStatus(MonitoringProjectUserStatusController::STATUS_PM);
         $data = collect([]);
 
         foreach($users as $key => $user)
@@ -100,23 +100,94 @@ class MonitoringStatisticsController extends Controller
         ]);
     }
 
-    public function seoTable()
+    public function seoTable(Request $request)
     {
+        $users = $this->getUsersWithProjectsByStatus(MonitoringProjectUserStatusController::STATUS_SEO);
+        $data = collect([]);
+
+        foreach($users as $key => $user)
+        {
+            $projects = $this->projects->whereIn('id', $user['projects']);
+
+            $collect = collect([
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'count' => $projects->count(),
+                'top10' => $projects->pluck('top10')->sum(),
+                'top30' => $projects->pluck('top30')->sum(),
+                'top100' => $projects->pluck('top100')->sum(),
+                'budget' => $projects->pluck('budget')->sum(),
+                'mastered' => $projects->pluck('mastered')->sum(),
+            ]);
+
+            $data->push($collect);
+        }
+
+        $columns = $request->input('columns');
+        $order = $request->input('order');
+
+        $sorted = $data->sortBy($columns[$order[0]['column']]['data'], SORT_REGULAR, $order[0]['dir'] == 'asc' ? false : true);
+
         return collect([
-            'draw' => 1,
-            'recordsTotal' => 3,
-            'recordsFiltered' => 3,
-            'data' => collect([
-                collect([
-                    'name' => '1',
-                    'count' => '1',
-                    'top10' => '1',
-                    'top30' => '1',
-                    'top100' => '1',
-                    'budget' => '1',
-                ]),
-            ]),
+            'draw' => $request->input('draw'),
+            'recordsTotal' => $data->count(),
+            'recordsFiltered' => $data->count(),
+            'data' => $sorted->values(),
         ]);
+    }
+
+    public function projectTable($id)
+    {
+        $data = collect([]);
+
+        $users = $this->getUsersWithProjectsByStatus(MonitoringProjectUserStatusController::STATUS_SEO);
+
+        $user = $users[$id];
+
+        $projects = $this->projects->whereIn('id', $user['projects']);
+
+        $colMonth = 6;
+        $periods = array_reverse($this->periodOfMonth($colMonth - 1)->toArray());
+
+        foreach($projects as $project)
+        {
+            $collect = collect([
+                'name' => $project['url'],
+                'data' => collect([
+                    collect([
+                        'month' => Carbon::now()->monthName,
+                        'top10' => $project['top10'],
+                        'mastered' => $project['mastered'],
+                        'words' => $project['words']
+                    ]),
+                ]),
+            ]);
+
+            foreach ($periods as $date)
+            {
+                $statistics = collect([
+                    'month' => $date->monthName,
+                    'top10' => 0,
+                    'mastered' => 0,
+                    'words' => 0,
+                ]);
+
+                $statProject = $this->getStatisticsProject(User::find($user['id']), $date->month)->where('id', $project['id'])->first();
+
+                if(!is_null($statProject))
+                {
+                    $statistics['top10'] = $statProject['top10'];
+                    $statistics['mastered'] = $statProject['mastered'];
+                    $statistics['words'] = $statProject['words'];
+                }
+
+                $collect['data']->push($statistics);
+            }
+
+            $data->push($collect);
+        }
+
+        return view('monitoring.statistics.projects', compact('data', 'periods'));
     }
 
     protected function chartData()
@@ -130,12 +201,7 @@ class MonitoringStatisticsController extends Controller
 
         foreach ($period as $date)
         {
-            $statistics = $user->statistics()
-                ->whereDay('created_at', UserMonitoringProjectSave::DAY)
-                ->whereMonth('created_at', $date->month)
-                ->get();
-
-            $projects = $statistics->pluck('monitoring_project')->unique('id');
+            $projects = $this->getStatisticsProject($user, $date->month);
 
             $budget = $projects->pluck('budget')->sum();
             $mastered = $projects->pluck('mastered')->sum();
@@ -146,6 +212,18 @@ class MonitoringStatisticsController extends Controller
         }
 
         return $chartData;
+    }
+
+    private function getStatisticsProject(User $user, $month, $day = UserMonitoringProjectSave::DAY)
+    {
+        $statistics = $user->statistics()
+            ->whereDay('created_at', $day)
+            ->whereMonth('created_at', $month)
+            ->get();
+
+        $projects = $statistics->pluck('monitoring_project')->unique('id');
+
+        return $projects;
     }
 
     private function periodOfMonth(int $month): CarbonPeriod
@@ -160,14 +238,9 @@ class MonitoringStatisticsController extends Controller
         return $this->projects->pluck('users')->flatten();
     }
 
-    private function getPMUsers(): array
+    private function getUsersWithProjectsByStatus(string $code): array
     {
-        $status = MonitoringProjectUserStatusController::getIdStatusByCode(MonitoringProjectUserStatusController::STATUS_PM);
-        $users = $this->getUsers();
-
-        $filtered = $users->filter(function($val) use ($status){
-            return $val['pivot']['status'] === $status;
-        });
+        $filtered = $this->filterUsersByStatus($code);
 
         $users = [];
         foreach($filtered as $user)
@@ -180,14 +253,16 @@ class MonitoringStatisticsController extends Controller
         return $users;
     }
 
-    private function getSEOUsers(): Collection
+    private function filterUsersByStatus(string $code): Collection
     {
-        $status = MonitoringProjectUserStatusController::getIdStatusByCode(MonitoringProjectUserStatusController::STATUS_SEO);
         $users = $this->getUsers();
+        $status = MonitoringProjectUserStatusController::getIdStatusByCode($code);
 
-        return $users->filter(function($val) use ($status){
+        $filtered = $users->filter(function($val) use ($status){
             return $val['pivot']['status'] === $status;
         });
+
+        return $filtered;
     }
 
 }
