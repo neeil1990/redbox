@@ -18,6 +18,7 @@ class MonitoringStatisticsController extends Controller
     protected $widgets;
     protected $user;
     protected $projects;
+    protected $period = 6;
 
     public function __construct()
     {
@@ -31,13 +32,25 @@ class MonitoringStatisticsController extends Controller
         $this->widgets = new WidgetsFactory();
     }
 
+    public function getPeriod(): int
+    {
+        return $this->period;
+    }
+
+    public function setPeriod(int $period): MonitoringStatisticsController
+    {
+        $this->period = $period;
+        return $this;
+    }
+
     public function index()
     {
         $menu = $this->widgets->getMenu();
         $widgets = $this->widgets->getCollection()->where('active', true)->sortBy('sort');
         $chartData = $this->chartData();
+        $period = array_reverse($this->periodOfMonth($this->getPeriod())->toArray());
 
-        return view('monitoring.statistics.index', compact('widgets', 'menu', 'chartData'));
+        return view('monitoring.statistics.index', compact('widgets', 'menu', 'chartData', 'period'));
     }
 
     public function activeWidgets(Request $request)
@@ -87,10 +100,7 @@ class MonitoringStatisticsController extends Controller
             $data->push($collect);
         }
 
-        $columns = $request->input('columns');
-        $order = $request->input('order');
-
-        $sorted = $data->sortBy($columns[$order[0]['column']]['data'], SORT_REGULAR, $order[0]['dir'] == 'asc' ? false : true);
+        $sorted = $this->sortDataTable($data, $request->input('columns'), $request->input('order'));
 
         return collect([
             'draw' => $request->input('draw'),
@@ -188,6 +198,43 @@ class MonitoringStatisticsController extends Controller
         }
 
         return view('monitoring.statistics.projects', compact('data', 'periods'));
+    }
+
+    public function attentionTable(Request $request)
+    {
+        $month = $request->input('month');
+
+        $data = collect([]);
+
+        /** @var User $user */
+        $user = $this->user;
+        $projects = $this->getStatisticsProject($user, $month);
+
+        foreach($projects as $project)
+        {
+            $nameUsers = [];
+            foreach($project['users'] as $user)
+                $nameUsers[] = implode(' ', [$user['name'], $user['last_name']]);
+
+            $collect = collect([
+                'name' => $project['url'],
+                'users' => implode(', ', $nameUsers),
+                'top10' => $project['top10'],
+                'mastered' => $project['mastered'],
+                'words' => $project['words'],
+            ]);
+
+            $data->push($collect);
+        }
+
+        return collect([
+            'data' => $data,
+        ]);
+    }
+
+    private function sortDataTable(Collection $data, array $columns, array $order): Collection
+    {
+        return $data->sortBy($columns[$order[0]['column']]['data'], SORT_REGULAR, $order[0]['dir'] == 'asc' ? false : true);
     }
 
     protected function chartData()

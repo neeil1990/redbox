@@ -1,7 +1,7 @@
-<table class="table table-bordered table-hover table-sm" border="1">
+<table class="table table-bordered table-hover table-sm">
     <thead>
     <tr>
-        <th>{{ __('Project') }}</th>
+        <th rowspan="2" class="align-middle">{{ __('Project') }}</th>
 
         <th colspan="3" class="text-center">{{ \Carbon\Carbon::now()->monthName }}</th>
 
@@ -10,8 +10,6 @@
         @endforeach
     </tr>
     <tr>
-        <th></th>
-
         <th>{{ __('TOP 10') }}</th>
         <th>{{ __('Mastered') }}</th>
         <th>{{ __('Words') }}</th>

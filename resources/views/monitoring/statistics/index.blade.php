@@ -113,6 +113,53 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card card-info">
+
+                <div class="card-header">
+                    <h3 class="card-title">{{ __('Attention projects') }}</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div>
+                        <ul class="nav nav-tabs" role="tablist">
+                            @foreach($period as $key => $date)
+                            <li class="nav-item">
+                                <a class="nav-link @if(!$key) active @endif" href="#tab-table{{ $key }}" data-bs-toggle="tab" data-bs-target="#tab-table{{ $key }}">
+                                    {{ $date->monthName }}
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
+                        <div class="tab-content">
+                            @foreach($period as $key => $date)
+                            <div class="tab-pane @if(!$key) active @endif" id="tab-table{{ $key }}">
+                                <table data-month="{{ $date->month }}" class="table table-striped table-bordered attention-table" cellspacing="0" width="100%"></table>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+    </div>
+
     @slot('js')
         <!-- jQuery UI -->
         <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
@@ -131,6 +178,8 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-editor/js/datatables_editor.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-select/js/dataTables.select.min.js') }}"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
         <script>
             // Make the dashboard widgets sortable Using jquery UI
@@ -224,7 +273,7 @@
                 ],
                 initComplete: function(settings, json) {
                     let card = $(this).closest('.card');
-                    card.find('.card-title').text('{{ __('manager projects') }}');
+                    card.find('.card-title').text('{{ __('Manager projects') }}');
                 },
             });
 
@@ -278,6 +327,40 @@
                         });
                 }
                 return false;
+            });
+
+            let attentionTable = $('.attention-table').DataTable({
+                ajax: function(data, callback, settings) {
+                    let month = this.data('month');
+
+                    axios.get('/monitoring/statistics/attention-table', {
+                        params: {
+                            month: month
+                        }
+                    })
+                    .then(function (response) {
+                        // handle success
+                        callback(response.data);
+                    });
+                },
+                info: false,
+                paging: false,
+                searching: false,
+                scrollCollapse: true,
+                scrollY: 200,
+                columns: [
+                    { title: '{{ __('Project') }}', data: 'name' },
+                    { title: '{{ __('Users') }}', data: 'users' },
+                    { title: '{{ __('TOP 10') }}', data: 'top10' },
+                    { title: '{{ __('Mastered') }}', data: 'mastered' },
+                    { title: '{{ __('Words') }}', data: 'words' },
+                ],
+            });
+
+            document.querySelectorAll('a[data-bs-toggle="tab"]').forEach((el) => {
+                el.addEventListener('shown.bs.tab', () => {
+                    attentionTable.tables().columns.adjust();
+                });
             });
 
         </script>
