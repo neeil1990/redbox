@@ -117,7 +117,6 @@
                     label: "Пользователи:",
                     name: "users_option",
                     type: "checkbox",
-                    def: "{{ $owner['id'] }}",
                 },
             ];
 
@@ -164,7 +163,7 @@
                 serverSide: true,
                 ajax: {
                     url: "{{ route('groups.index', request('id')) }}",
-                    type: 'GET',
+                    type: 'POST',
                 },
                 order: [
                     [2, 'asc'],

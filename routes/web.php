@@ -312,6 +312,7 @@ Route::middleware(['verified'])->group(function () {
     // Monitoring query groups
     Route::post('monitoring/groups', 'MonitoringGroupsController@store');
     Route::get('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');
+    Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
 
     // Monitoring user status
