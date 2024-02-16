@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Cron\UserMonitoringProjectSave;
 use App\Classes\Monitoring\Widgets\WidgetsAbstract;
 use App\Classes\Monitoring\Widgets\WidgetsFactory;
 use App\User;
 use Carbon\Carbon;
-use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -182,7 +180,7 @@ class MonitoringStatisticsController extends Controller
                     'words' => 0,
                 ]);
 
-                $statProject = $this->getStatisticsProject(User::find($user['id']), $date->month)->where('id', $project['id'])->first();
+                $statProject = $this->getStatisticsProjectLastOfMonth(User::find($user['id']), $date)->where('id', $project['id'])->first();
 
                 if(!is_null($statProject))
                 {
@@ -202,13 +200,13 @@ class MonitoringStatisticsController extends Controller
 
     public function attentionTable(Request $request)
     {
-        $month = $request->input('month');
+        $date = $request->input('date');
 
         $data = collect([]);
 
         /** @var User $user */
         $user = $this->user;
-        $projects = $this->getStatisticsProject($user, $month);
+        $projects = $this->getStatisticsProjectLastOfMonth($user, Carbon::create($date));
 
         foreach($projects as $project)
         {
@@ -248,7 +246,7 @@ class MonitoringStatisticsController extends Controller
 
         foreach ($period as $date)
         {
-            $projects = $this->getStatisticsProject($user, $date->month);
+            $projects = $this->getStatisticsProjectLastOfMonth($user, $date);
 
             $budget = $projects->pluck('budget')->sum();
             $mastered = $projects->pluck('mastered')->sum();
@@ -261,11 +259,10 @@ class MonitoringStatisticsController extends Controller
         return $chartData;
     }
 
-    private function getStatisticsProject(User $user, $month, $day = UserMonitoringProjectSave::DAY)
+    private function getStatisticsProjectLastOfMonth(User $user, Carbon $date)
     {
         $statistics = $user->statistics()
-            ->whereDay('created_at', $day)
-            ->whereMonth('created_at', $month)
+            ->whereDate('created_at', $date->lastOfMonth())
             ->get();
 
         $projects = $statistics->pluck('monitoring_project')->unique('id');

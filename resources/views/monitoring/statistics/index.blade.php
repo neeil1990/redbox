@@ -12,24 +12,6 @@
 
     @slot('tools')
         <div class="btn-group">
-            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                {{ __('Widget settings') }}
-            </button>
-            <div class="dropdown-menu dropdown-menu-right" role="menu">
-                <h6 class="dropdown-header text-left">{{ __('Widgets') }}</h6>
-                <form class="px-3 widget-form">
-                    @foreach($menu as $item)
-                    <div class="form-group">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" name="{{ $item['code'] }}" class="custom-control-input widgets-menu" id="customSwitch{{ $item['code'] }}" @if($item['active']) checked="checked" @endif>
-                            <label class="custom-control-label text-nowrap" for="customSwitch{{ $item['code'] }}" style="cursor: pointer">{{ $item['name'] }}</label>
-                        </div>
-                    </div>
-                    @endforeach
-                </form>
-            </div>
-        </div>
-        <div class="btn-group">
             <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
                 <i class="fas fa-wrench"></i>
             </button>
@@ -45,6 +27,45 @@
             </div>
         </div>
     @endslot
+
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card card-info">
+
+                <div class="card-header">
+                    <h3 class="card-title">{{ __('Control panel') }}</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <!-- checkbox -->
+                        <form class="px-3 widget-form" style="display:contents">
+                            @foreach($menu as $item)
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" name="{{ $item['code'] }}" class="custom-control-input widgets-menu" id="customSwitch{{ $item['code'] }}" @if($item['active']) checked="checked" @endif>
+                                        <label class="custom-control-label text-nowrap" for="customSwitch{{ $item['code'] }}" style="cursor: pointer">{{ $item['name'] }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row connectedSortable">
         @foreach($widgets as $widget)
@@ -131,33 +152,33 @@
                 </div>
 
                 <div class="card-body">
-                    <div>
-                        <ul class="nav nav-tabs" role="tablist">
-                            @foreach($period as $key => $date)
-                            <li class="nav-item">
-                                <a class="nav-link @if(!$key) active @endif" href="#tab-table{{ $key }}" data-bs-toggle="tab" data-bs-target="#tab-table{{ $key }}">
-                                    {{ $date->monthName }}
-                                </a>
-                            </li>
-                            @endforeach
-                        </ul>
-                        <div class="tab-content">
-                            @foreach($period as $key => $date)
-                            <div class="tab-pane @if(!$key) active @endif" id="tab-table{{ $key }}">
-                                <table data-month="{{ $date->month }}" class="table table-striped table-bordered attention-table" cellspacing="0" width="100%"></table>
-                            </div>
-                            @endforeach
+                    <div class="card card-primary card-outline card-outline-tabs">
+                        <div class="card-header p-0 border-bottom-0">
+                            <ul class="nav nav-tabs" role="tablist">
+                                @foreach($period as $key => $date)
+                                    <li class="nav-item">
+                                        <a class="nav-link @if(!$key) active @endif" data-toggle="pill" href="#custom-tabs-{{ $key }}" role="tab">
+                                            {{ $date->monthName }} {{ $date->year }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
                         </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                @foreach($period as $key => $date)
+                                    <div class="tab-pane fade @if(!$key) show active @endif" id="custom-tabs-{{ $key }}" role="tabpanel">
+                                        <table data-date="{{ $date->toDateString() }}" class="table table-striped table-bordered attention-table" cellspacing="0" width="100%"></table>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <!-- /.card -->
                     </div>
                 </div>
 
             </div>
-
         </div>
-
-
-
-
     </div>
 
     @slot('js')
@@ -178,8 +199,6 @@
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-editor/js/datatables_editor.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-select/js/dataTables.select.min.js') }}"></script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
         <script>
             // Make the dashboard widgets sortable Using jquery UI
@@ -331,11 +350,11 @@
 
             let attentionTable = $('.attention-table').DataTable({
                 ajax: function(data, callback, settings) {
-                    let month = this.data('month');
+                    let date = this.data('date');
 
                     axios.get('/monitoring/statistics/attention-table', {
                         params: {
-                            month: month
+                            date: date
                         }
                     })
                     .then(function (response) {
@@ -357,10 +376,8 @@
                 ],
             });
 
-            document.querySelectorAll('a[data-bs-toggle="tab"]').forEach((el) => {
-                el.addEventListener('shown.bs.tab', () => {
-                    attentionTable.tables().columns.adjust();
-                });
+            $('a[data-toggle="pill"]').on('shown.bs.tab', function (event) {
+                attentionTable.tables().columns.adjust();
             });
 
         </script>

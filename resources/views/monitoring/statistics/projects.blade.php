@@ -3,10 +3,10 @@
     <tr>
         <th rowspan="2" class="align-middle">{{ __('Project') }}</th>
 
-        <th colspan="3" class="text-center">{{ \Carbon\Carbon::now()->monthName }}</th>
+        <th colspan="3" class="text-center">{{ __('Now') }}</th>
 
         @foreach($periods as $date)
-            <th colspan="3" class="text-center">{{ $date->monthName }}</th>
+            <th colspan="3" class="text-center">{{ $date->diffForHumans() }}</th>
         @endforeach
     </tr>
     <tr>

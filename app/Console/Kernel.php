@@ -15,6 +15,7 @@ use App\Classes\Monitoring\ProjectDataTableUpdateDB;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
 use App\MonitoringSettings;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -62,7 +63,9 @@ class Kernel extends ConsoleKernel
         $schedule->call(new RepeatTasks())->everyMinute();
         $schedule->call(new ActivateTasks())->everyMinute();
 
-        $schedule->call(new UserMonitoringProjectSave())->monthlyOn(UserMonitoringProjectSave::DAY, UserMonitoringProjectSave::TIME);
+        /** @var Carbon $carbon */
+        $carbon = UserMonitoringProjectSave::storeDate();
+        $schedule->call(new UserMonitoringProjectSave())->monthlyOn($carbon->day, UserMonitoringProjectSave::TIME);
 
         // $schedule->command('inspire')
         //          ->hourly();
