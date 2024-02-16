@@ -15,6 +15,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
 
         <style>
+            .table-card .card-body {
+                min-height: 270px;
+            }
             .add-user {
                 display: none;
             }
