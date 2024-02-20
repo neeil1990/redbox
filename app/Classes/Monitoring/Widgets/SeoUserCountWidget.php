@@ -25,9 +25,9 @@ class SeoUserCountWidget extends WidgetsAbstract
 
         $status = MonitoringProjectUserStatusController::getIdStatusByCode(MonitoringProjectUserStatusController::STATUS_SEO);
 
-        $filtered = $projects->pluck('users')->flatten()->unique('id')->filter(function ($val) use ($status) {
+        $filtered = $projects->pluck('users')->flatten()->filter(function ($val) use ($status) {
             return $val['pivot']['status'] === $status;
-        });
+        })->unique('id');
 
         return $filtered->count();
     }

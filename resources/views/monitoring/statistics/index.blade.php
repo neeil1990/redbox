@@ -1,28 +1,16 @@
 @component('component.card', ['title' => __('Monitoring statistics')])
 
     @slot('css')
+        <!-- DataTables -->
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-select/css/select.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-editor/css/editor.bootstrap4.min.css') }}">
 
     @endslot
 
     @slot('tools')
-        <div class="btn-group">
-            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                {{ __('Widget settings') }}
-            </button>
-            <div class="dropdown-menu dropdown-menu-right" role="menu">
-                <h6 class="dropdown-header text-left">{{ __('Widgets') }}</h6>
-                <form class="px-3 widget-form">
-                    @foreach($menu as $item)
-                    <div class="form-group">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" name="{{ $item['code'] }}" class="custom-control-input widgets-menu" id="customSwitch{{ $item['code'] }}" @if($item['active']) checked="checked" @endif>
-                            <label class="custom-control-label text-nowrap" for="customSwitch{{ $item['code'] }}" style="cursor: pointer">{{ $item['name'] }}</label>
-                        </div>
-                    </div>
-                    @endforeach
-                </form>
-            </div>
-        </div>
         <div class="btn-group">
             <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
                 <i class="fas fa-wrench"></i>
@@ -39,6 +27,45 @@
             </div>
         </div>
     @endslot
+
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card card-info">
+
+                <div class="card-header">
+                    <h3 class="card-title">{{ __('Control panel') }}</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <!-- checkbox -->
+                        <form class="px-3 widget-form" style="display:contents">
+                            @foreach($menu as $item)
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" name="{{ $item['code'] }}" class="custom-control-input widgets-menu" id="customSwitch{{ $item['code'] }}" @if($item['active']) checked="checked" @endif>
+                                        <label class="custom-control-label text-nowrap" for="customSwitch{{ $item['code'] }}" style="cursor: pointer">{{ $item['name'] }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row connectedSortable">
         @foreach($widgets as $widget)
@@ -89,6 +116,71 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <table class="table table-hover table-sm" id="project-manager"></table>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <table class="table table-hover table-sm" id="project-seo"></table>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card card-info">
+
+                <div class="card-header">
+                    <h3 class="card-title">{{ __('Attention projects') }}</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="card card-primary card-outline card-outline-tabs">
+                        <div class="card-header p-0 border-bottom-0">
+                            <ul class="nav nav-tabs" role="tablist">
+                                @foreach($period as $key => $date)
+                                    <li class="nav-item">
+                                        <a class="nav-link @if(!$key) active @endif" data-toggle="pill" href="#custom-tabs-{{ $key }}" role="tab">
+                                            {{ $date->monthName }} {{ $date->year }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                @foreach($period as $key => $date)
+                                    <div class="tab-pane fade @if(!$key) show active @endif" id="custom-tabs-{{ $key }}" role="tabpanel">
+                                        <table data-date="{{ $date->toDateString() }}" class="table table-striped table-bordered attention-table" cellspacing="0" width="100%"></table>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     @slot('js')
         <!-- jQuery UI -->
         <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
@@ -98,6 +190,15 @@
         </script>
         <!-- ChartJS -->
         <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
+        <!-- DataTables  & Plugins -->
+        <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-editor/js/datatables_editor.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-select/js/dataTables.select.min.js') }}"></script>
 
         <script>
             // Make the dashboard widgets sortable Using jquery UI
@@ -171,7 +272,114 @@
                     maintainAspectRatio     : false,
                     datasetFill             : false
                 },
-            })
+            });
+
+            let managerTable = $('#project-manager').DataTable({
+                dom: '<"card-header"<"card-title">><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                paging: false,
+                serverSide: true,
+                ajax: {
+                    url: "/monitoring/statistics/manager-table",
+                    type: 'GET',
+                },
+                columns: [
+                    { title: 'ФИО', data: 'name' },
+                    { title: 'Кол-во проектов', data: 'count' },
+                    { title: 'TOP 10', data: 'top10' },
+                    { title: 'TOP 30', data: 'top30' },
+                    { title: 'TOP 100', data: 'top100' },
+                    { title: 'Бюджет', data: 'budget' },
+                ],
+                initComplete: function(settings, json) {
+                    let card = $(this).closest('.card');
+                    card.find('.card-title').text('{{ __('Manager projects') }}');
+                },
+            });
+
+            let seoTable = $('#project-seo').DataTable({
+                dom: '<"card-header"<"card-title">><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                paging: false,
+                serverSide: true,
+                ajax: {
+                    url: "/monitoring/statistics/seo-table",
+                    type: 'GET',
+                },
+                order: [
+                    [1, 'asc'],
+                ],
+                columnDefs: [
+                    { orderable: false, targets: [0] },
+                ],
+                columns: [
+                    {
+                        className: 'dt-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: '<a href="#" class="dt-control text-muted"><i class="fas fa-plus-circle"></i></a>'
+                    },
+                    { data: 'id', visible: false },
+                    { title: 'ФИО', data: 'name' },
+                    { title: 'Кол-во проектов', data: 'count' },
+                    { title: 'TOP 10', data: 'top10' },
+                    { title: 'TOP 30', data: 'top30' },
+                    { title: 'TOP 100', data: 'top100' },
+                    { title: 'Бюджет', data: 'budget' },
+                    { title: 'Освоено', data: 'mastered' },
+                ],
+                initComplete: function(settings, json) {
+                    let card = $(this).closest('.card');
+                    card.find('.card-title').text('{{ __('Seo projects') }}');
+                },
+            });
+
+            seoTable.on('click', 'td.dt-control', function (e) {
+                let tr = e.target.closest('tr');
+                let row = seoTable.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                } else {
+                    let data = row.data();
+                    axios.get(`/monitoring/statistics/project-table/${data.id}`)
+                        .then(function(response){
+                            row.child(response.data).show();
+                        });
+                }
+                return false;
+            });
+
+            let attentionTable = $('.attention-table').DataTable({
+                ajax: function(data, callback, settings) {
+                    let date = this.data('date');
+
+                    axios.get('/monitoring/statistics/attention-table', {
+                        params: {
+                            date: date
+                        }
+                    })
+                    .then(function (response) {
+                        // handle success
+                        callback(response.data);
+                    });
+                },
+                info: false,
+                paging: false,
+                searching: false,
+                scrollCollapse: true,
+                scrollY: 200,
+                columns: [
+                    { title: '{{ __('Project') }}', data: 'name' },
+                    { title: '{{ __('Users') }}', data: 'users' },
+                    { title: '{{ __('TOP 10') }}', data: 'top10' },
+                    { title: '{{ __('Mastered') }}', data: 'mastered' },
+                    { title: '{{ __('Words') }}', data: 'words' },
+                ],
+            });
+
+            $('a[data-toggle="pill"]').on('shown.bs.tab', function (event) {
+                attentionTable.tables().columns.adjust();
+            });
+
         </script>
 
     @endslot

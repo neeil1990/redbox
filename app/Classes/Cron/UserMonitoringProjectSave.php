@@ -4,10 +4,10 @@
 namespace App\Classes\Cron;
 
 use App\User;
+use Carbon\Carbon;
 
 class UserMonitoringProjectSave
 {
-    const DAY = 28;
     const TIME = '13:00';
 
     public function __invoke()
@@ -24,5 +24,11 @@ class UserMonitoringProjectSave
             foreach($projects as $project)
                 $user->statistics()->create(['monitoring_project' => $project]);
         }
+    }
+
+    static public function storeDate()
+    {
+        $carbon = Carbon::now()->lastOfMonth();
+        return $carbon;
     }
 }

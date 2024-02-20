@@ -312,6 +312,7 @@ Route::middleware(['verified'])->group(function () {
     // Monitoring query groups
     Route::post('monitoring/groups', 'MonitoringGroupsController@store');
     Route::get('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');
+    Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@index')->name('groups.index');
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
 
     // Monitoring user status
@@ -322,6 +323,10 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/statistics', 'MonitoringStatisticsController@index');
     Route::post('/monitoring/statistics/active-widgets', 'MonitoringStatisticsController@activeWidgets');
     Route::post('/monitoring/statistics/sort-widgets', 'MonitoringStatisticsController@sortWidgets');
+    Route::get('/monitoring/statistics/manager-table', 'MonitoringStatisticsController@managerTable');
+    Route::get('/monitoring/statistics/seo-table', 'MonitoringStatisticsController@seoTable');
+    Route::get('/monitoring/statistics/project-table/{id}', 'MonitoringStatisticsController@projectTable');
+    Route::get('/monitoring/statistics/attention-table', 'MonitoringStatisticsController@attentionTable');
 
     Route::resource('monitoring', 'MonitoringController');
 

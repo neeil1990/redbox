@@ -34,17 +34,16 @@ class MonitoringGroupsController extends Controller
 
         if($request->ajax())
             return $this->getDataTable();
-
-        $owner = $this->getOwner($this->project->users);
-
-        return view('monitoring.groups.index', compact('owner'));
+		
+        return view('monitoring.groups.index');
     }
 
     public function action(Request $request, $id)
     {
         $this->fillFields($request, $id);
+		$dataRequest = $request->input('data', []);
 
-        foreach ($request->input('data') as $data) {
+        foreach ($dataRequest as $data) {
             $collect = collect($data);
 
             $this->validation($collect);
@@ -214,16 +213,5 @@ class MonitoringGroupsController extends Controller
     {
         $model = new MonitoringGroup();
         return $model->create($request->all());
-    }
-
-    private function getOwner(Collection $users)
-    {
-        foreach($users as $user){
-            $status = MonitoringProjectUserStatusController::getStatusById($user->pivot->status);
-            if($status['code'] == MonitoringProjectUserStatusController::STATUS_OWNER)
-                return $user;
-        }
-
-        return null;
     }
 }
