@@ -18,16 +18,16 @@ class UpdateChecklistTasksTable extends Migration
                 $table->dropColumn('next_activate');
             }
 
-            if (Schema::hasColumn('checklist_tasks', 'repeat_every')) {
-                $table->dropColumn('repeat_every');
+            if (!Schema::hasColumn('checklist_tasks', 'end_date')) {
+                $table->dateTime('end_date')->after('weekends')->nullable();
             }
 
-            if (Schema::hasColumn('checklist_tasks', 'deadline_every')) {
-                $table->dropColumn('deadline_every');
+            if (!Schema::hasColumn('checklist_tasks', 'deadline_every')) {
+                $table->integer('deadline_every')->after('weekends')->nullable();
             }
 
-            if (Schema::hasColumn('checklist_tasks', 'end_date')) {
-                $table->dropColumn('end_date');
+            if (!Schema::hasColumn('checklist_tasks', 'repeat_every')) {
+                $table->integer('repeat_every')->after('weekends')->nullable();
             }
         });
 
@@ -41,16 +41,16 @@ class UpdateChecklistTasksTable extends Migration
     public function down()
     {
         Schema::table('checklist_tasks', function (Blueprint $table) {
-            if (!Schema::hasColumn('checklist_tasks', 'end_date')) {
-                $table->dateTime('end_date')->after('weekends')->nullable();
+            if (Schema::hasColumn('checklist_tasks', 'end_date')) {
+                $table->dropColumn('end_date');
             }
 
-            if (!Schema::hasColumn('checklist_tasks', 'deadline_every')) {
-                $table->integer('deadline_every')->after('weekends')->nullable();
+            if (Schema::hasColumn('checklist_tasks', 'deadline_every')) {
+                $table->dropColumn('deadline_every');
             }
 
-            if (!Schema::hasColumn('checklist_tasks', 'repeat_every')) {
-                $table->integer('repeat_every')->after('weekends')->nullable();
+            if (Schema::hasColumn('checklist_tasks', 'repeat_every')) {
+                $table->dropColumn('repeat_every');
             }
         });
     }
