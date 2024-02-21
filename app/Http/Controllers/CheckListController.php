@@ -466,7 +466,7 @@ class CheckListController extends Controller
         return 'Метка успешно изменена';
     }
 
-    public function createRelation(Request $request): JsonResponse
+    public function createRelation(Request $request)
     {
         if (empty($request->checklistId) || empty($request->labelId)) {
             return response()->json([
