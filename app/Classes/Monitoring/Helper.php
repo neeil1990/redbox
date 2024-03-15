@@ -8,13 +8,13 @@ use Illuminate\Support\Collection;
 
 class Helper
 {
-
     static public function calculateTopPercentByPositions(Collection $positions, int $desired)
     {
         if($positions->isEmpty())
             return 0;
 
         foreach ($positions as $position)
+
             if(!$position)
                 return 0;
 

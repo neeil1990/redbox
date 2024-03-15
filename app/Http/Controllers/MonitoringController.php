@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\ChecklistMonitoringRelation;
 use App\Classes\Monitoring\Helper;
-use App\Classes\Monitoring\MasteredPositions;
+use App\Classes\Monitoring\Mastered;
 use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
-use App\Classes\Monitoring\ProjectDataTableUpdateDB;
+use App\Classes\Monitoring\ProjectData;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
 use App\Jobs\Monitoring\MonitoringChangesDateQueue;
@@ -63,12 +63,12 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
-        $foreignProject = $user->monitoringProjects()->wherePivot('approved', 0)->get();
+        $projects = $user->monitoringProjects();
 
-        $lengthMenu = $this->getPaginationMenu();
-        $length = (new MonitoringSettings())->getValue('pagination_project');
+        $countApprovedProject = $projects->wherePivot('approved', 1)->count();
+        $foreignProject = $projects->wherePivot('approved', 0)->get();
 
-        return view('monitoring.index', compact('lengthMenu', 'length', 'foreignProject'));
+        return view('monitoring.index', compact('foreignProject', 'countApprovedProject'));
     }
 
     public function attachUser(Request $request)
@@ -165,54 +165,20 @@ class MonitoringController extends Controller
 
     public function getProjects(Request $request)
     {
-        $page = $request->input('start', 0) + 1;
+        $page = ($request->input('start') / $request->input('length')) + 1;
+
         /** @var User $user */
         $user = $this->user;
-
-        $dataTable = MonitoringDataTableColumnsProject::whereIn('monitoring_project_id', $user->monitoringProjects()->get()->pluck('id'));
-        if (!$dataTable->count())
-            $this->updateDataTableProjects();
-
-        $model = $user->monitoringProjectsWithDataTable();
-
-        if ($search = $request->input('search.value'))
-            $model = $model->where('name', 'like', $search . '%');
-
-        $model = $this->filterByUserStatus($model, $request->input('columns'));
-
-        if ($order = Arr::first($request->input('order'))) {
-            $columns = $request->input('columns');
-            $model->orderBy($columns[$order['column']]['name'], $order['dir']);
-        }
+        $model = $user->monitoringProjectsDataTable();
 
         $projects = $this->extendFields($model->paginate($request->input('length', 1), ['*'], 'page', $page));
 
-        $lastUpdated = $dataTable->orderBy('updated_at', 'desc')->first();
-
-        $data = collect([
-            'data' => collect($projects->items()),
-            'updatedDate' => ($lastUpdated && $lastUpdated->updated_at) ? $lastUpdated->updated_at->format('d.m.Y H:i') : null,
-            'draw' => $request->input('draw'),
-            'recordsFiltered' => $projects->total(),
-            'recordsTotal' => $projects->total(),
-        ]);
-
-        return $data;
-    }
-
-    private function filterByUserStatus($model, $columns)
-    {
-        $name = 'users';
-        $column = $this->searchColumnByName($name, $columns);
-        if ($column && strlen($column['search']['value']) > 0) {
-            $value = $column['search']['value'];
-
-            return $model->whereHas($name, function ($query) use ($value) {
-                $query->where('status', $value);
-            });
+        if($projects->isNotEmpty()) {
+            $PD = new ProjectData($projects->first());
+            $PD->extension();
         }
 
-        return $model;
+        return $projects->items();
     }
 
     public function searchColumnByName(string $name, array $columns)
@@ -268,24 +234,6 @@ class MonitoringController extends Controller
         return $projects;
     }
 
-    public function updateDataTableProjects($id = 0)
-    {
-        /** @var User $user */
-        $user = $this->user;
-
-        if (empty($id)) {
-            $projects = $user->monitoringProjects()->get();
-            foreach ($projects as $project)
-                (new ProjectDataTableUpdateDB($project))->save();
-        } else {
-            /** @var MonitoringProject $project */
-            $project = $user->monitoringProjects()->find($id);
-            (new ProjectDataTableUpdateDB($project))->save();
-        }
-
-        return response(200);
-    }
-
     public function getChildRowsPageByProject(int $project_id, $group_id = null)
     {
         /** @var User $user */
@@ -339,7 +287,7 @@ class MonitoringController extends Controller
         $engine->middle_position = round($pos->pluck('first')->sum('position') / $pos->pluck('first')->count(), 2);
         $engine->latest_created = $pos->pluck('first')->last()->created_at;
 
-        $mastered = new MasteredPositions($pos->pluck('first'));
+        $mastered = new Mastered($pos->pluck('first'));
         $engine->mastered = $mastered->total();
         $engine->mastered_percent = $mastered->percentOf($engine->project['budget']);
         $engine->mastered_percent_day = $mastered->percentOfDay($engine->project['budget']);

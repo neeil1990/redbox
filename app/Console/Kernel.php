@@ -11,7 +11,7 @@ use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
 use App\Classes\Cron\RelevanceCleaningResults;
 use App\Classes\Cron\UserMonitoringProjectSave;
-use App\Classes\Monitoring\ProjectDataTableUpdateDB;
+use App\Classes\Monitoring\ProjectData;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
 use App\MonitoringSettings;
@@ -56,7 +56,7 @@ class Kernel extends ConsoleKernel
         $this->autoUpdateMonitoringPositions($schedule);
 
         $schedule->call(function () {
-            (new ProjectDataTableUpdateDB(MonitoringProject::all()))->save();
+            (new ProjectData(MonitoringProject::all()))->save();
         })->dailyAt(MonitoringSettings::getValue('data_projects') ?: '00:00');
 
         $schedule->call(new Notifications())->everyMinute();

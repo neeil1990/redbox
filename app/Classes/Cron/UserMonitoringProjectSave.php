@@ -3,6 +3,7 @@
 
 namespace App\Classes\Cron;
 
+use App\Classes\Monitoring\ProjectData;
 use App\User;
 use Carbon\Carbon;
 
@@ -16,13 +17,18 @@ class UserMonitoringProjectSave
 
         foreach($users as $user){
 
-            $projects = $user->monitoringProjectsWithDataTable()->get();
+            $projects = $user->monitoringProjectsDataTable()->get();
 
             if($projects->isEmpty())
                 continue;
 
             foreach($projects as $project)
+            {
+                $projectData = new ProjectData($project);
+                $projectData->extension();
+
                 $user->statistics()->create(['monitoring_project' => $project]);
+            }
         }
     }
 

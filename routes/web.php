@@ -15,6 +15,7 @@ use App\ChecklistNotification;
 use App\ChecklistTasks;
 use App\Classes\SimpleHtmlDom\HtmlDocument;
 use App\MainProject;
+use App\MonitoringKeyword;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
 use App\SearchCompetitors;
@@ -22,6 +23,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Query\Builder;
 
 Route::get('info', function () {
     phpinfo();
@@ -29,6 +31,8 @@ Route::get('info', function () {
 
 Route::get('dev', function () {
     //
+
+    $pro = new \App\Classes\Monitoring\ProjectDependencies(\App\MonitoringProject::find(226));
 
 });
 
@@ -336,7 +340,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/add-competitor', 'MonitoringController@addCompetitor')->name('monitoring.add.competitor');
     Route::post('/monitoring/add-competitors', 'MonitoringController@addCompetitors')->name('monitoring.add.competitors');
     Route::post('/monitoring/remove-competitor', 'MonitoringController@removeCompetitor')->name('monitoring.remove.competitor');
-    Route::post('/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
+    Route::match(['get', 'post'], '/monitoring/projects/get', 'MonitoringController@getProjects')->name('monitoring.projects.get');
     Route::get('/monitoring/{project_id}/child-rows/get/{group_id?}', 'MonitoringController@getChildRowsPageByProject')->name('monitoring.child.rows.get');
     Route::post('/monitoring/competitors/history/positions/', 'MonitoringController@competitorsHistoryPositions')->name('monitoring.competitors.history.positions');
     Route::post('/monitoring/competitors/check-analyse-state', 'MonitoringController@checkChangesDatesState')->name('monitoring.changes.dates.check');
@@ -358,7 +362,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/monitoring/project/set/column/settings', 'MonitoringController@setColumnSettingsForProject');
     Route::post('/monitoring/project/get/column/settings', 'MonitoringController@getColumnSettingsForProject');
 
-    Route::get('/monitoring/project/update-data-table/{id}', 'MonitoringController@updateDataTableProjects');
     Route::post('/monitoring/parse/positions/project', 'MonitoringController@parsePositionsInProject');
     Route::post('/monitoring/parse/positions/project/keys', 'MonitoringController@parsePositionsInProjectKeys');
 

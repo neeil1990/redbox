@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-fixedheader/css/fixedHeader.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-select/css/select.bootstrap4.css') }}">
         <!-- Select2 -->
         <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
@@ -63,6 +64,26 @@
             .user-list li:hover .badge-success {
                 display: block;
             }
+
+            .loader {
+                border: 3px solid #f3f3f3; /* Light grey */
+                border-top: 3px solid #3498db; /* Blue */
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                animation: spin 2s linear infinite;
+                float: left;
+                margin: 10px;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            div.dataTables_wrapper div.dataTables_info {
+                padding-top: .45em;
+            }
         </style>
 
         @hasanyrole('Super Admin|admin')
@@ -111,6 +132,8 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-select/js/dataTables.select.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-select/js/select.bootstrap4.js') }}"></script>
         <script src="{{ asset('plugins/datatables/search.js') }}"></script>
         <!-- Moment js -->
         <script src="{{ asset('plugins/moment/moment-with-locales.min.js') }}"></script>
@@ -122,104 +145,44 @@
         <script src="{{ asset('plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
 
         <script>
-            const LENGTH_MENU = JSON.parse('{{ $lengthMenu }}');
-            const PAGE_LENGTH = '{{ $length }}';
+            const PROJECTS_COUNT = '{{ $countApprovedProject }}';
 
             toastr.options = {
                 "preventDuplicates": true,
                 "timeOut": "5000"
             };
 
-            const HIGHLIGHT_TR_CLASS = "table-success";
-
-            $('.checkbox-toggle').click(function () {
-                var clicks = $(this).data('clicks');
-                if (clicks) {
-                    //Uncheck all checkboxes
-                    $('.table tbody tr.main').removeClass(HIGHLIGHT_TR_CLASS);
-                    $('.table tbody tr.main').find('.icheck-primary input[type="checkbox"]').prop('checked', false);
-                    $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square');
-                } else {
-                    //Check all checkboxes
-                    $('.table tbody tr.main').addClass(HIGHLIGHT_TR_CLASS);
-                    $('.table tbody tr.main').find('.icheck-primary input[type="checkbox"]').prop('checked', true);
-                    $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square');
-                }
-                $(this).data('clicks', !clicks)
-            });
-
-            $('[data-toggle="tooltip"]').tooltip({
-                animation: false,
-                trigger: 'hover',
-            });
-
-            window.loading();
-
             let table = $('#projects').DataTable({
-                dom: '<"card-header"<"card-title"><"float-right"f><"float-right"l>><"card-body p-0 overflow-auto"rt><"card-footer clearfix"p><"clear">',
+                dom: '<"card-header"<"card-title"i><"loader"><"float-right"f><"float-right"l>><"card-body p-0 overflow-auto"rt><"clear">',
                 fixedHeader: true,
-                lengthMenu: LENGTH_MENU,
-                pageLength: PAGE_LENGTH,
-                pagingType: "simple_numbers",
+                paging: false,
+                info: true,
+                select: {
+                    style: 'multi',
+                    selector: 'td:not(:last-child)',
+                },
                 language: {
                     lengthMenu: "_MENU_",
                     search: "_INPUT_",
-                    searchPlaceholder: "{{ __('Search project') }}",
-                    paginate: {
-                        "first": "«",
-                        "last": "»",
-                        "next": "»",
-                        "previous": "«"
-                    },
+                    searchPlaceholder: "{{ __('Search project') }}"
                 },
                 processing: false,
-                serverSide: true,
-                ajax: {
-                    url: '/monitoring/projects/get',
-                    type: 'POST',
-                },
                 order: [
-                    [2, 'asc'],
-                ],
-                columnDefs: [
-                    {orderable: true, "width": "150px", targets: 'name'},
+                    [1, 'asc'],
                 ],
                 columns: [
                     {
                         orderable: false,
-                        data: function (row, type, val, meta) {
-
-                            let form = $('<div />', {
-                                class: 'icheck-primary'
-                            });
-
-                            let input = $('<input />');
-
-                            input.attr({
-                                type: 'checkbox',
-                                value: row.id,
-                            });
-
-                            return form.append(input)[0].outerHTML;
-                        },
-                    },
-                    {
-                        orderable: false,
-                        data: null,
-                        defaultContent: '<a href="#" class="dt-control text-muted click_tracking" data-click="Show project positions"><i class="fas fa-plus-circle"></i></a>',
-                    },
-                    {
-                        title: '{{ __('Project') }}',
-                        name: 'name',
-                        data: function (row) {
-                            return `<a href="/monitoring/${row.id}" class="text-bold">${row.name}</a>`;
-                        },
+                        data: function(){
+                            return '<a href="#" class="dt-control text-muted click_tracking" data-click="Show project positions"><i class="fas fa-plus-circle"></i></a>';
+                        }
                     },
                     {
                         title: '{{ __('Domain') }}',
                         name: 'url',
+                        className: 'text-nowrap',
                         data: function (row) {
-                            return `<a href="https://${row.url}" target="_blank" class="text-muted">${row.url} <i class="fas fa-external-link-square"></i></a>`;
+                            return `<a class="text-muted" href="https://${row.url}" target="_blank">${row.url}</a>`;
                         },
                     },
                     {
@@ -259,7 +222,8 @@
                     },
                     {
                         orderable: false,
-                        title: '{{ __('System') }}',
+                        className: 'text-nowrap',
+                        title: '<i class="fab fa-yandex fa-sm"></i> <i class="fab fa-google fa-sm"></i>',
                         name: 'engines',
                         data: 'engines',
                     },
@@ -269,54 +233,33 @@
                         data: 'words',
                     },
                     {
-                        title: '{{ __('Mid-position') }}',
                         name: 'middle',
                         data: 'middle',
                     },
                     {
                         title: '3 %',
                         name: 'top3',
-                        data: function (row) {
-                            let sup = subColorTag(row.diff_top3);
-
-                            return row.top3 + sup;
-                        },
+                        data: 'top3',
                     },
                     {
                         title: '5 %',
                         name: 'top5',
-                        data: function (row) {
-                            let sup = subColorTag(row.diff_top5);
-
-                            return row.top5 + sup;
-                        },
+                        data: 'top5',
                     },
                     {
                         title: '10 %',
                         name: 'top10',
-                        data: function (row) {
-                            let sup = subColorTag(row.diff_top10);
-
-                            return row.top10 + sup;
-                        },
+                        data: 'top10',
                     },
                     {
                         title: '30 %',
                         name: 'top30',
-                        data: function (row) {
-                            let sup = subColorTag(row.diff_top30);
-
-                            return row.top30 + sup;
-                        },
+                        data: 'top30',
                     },
                     {
                         title: '100 %',
                         name: 'top100',
-                        data: function (row) {
-                            let sup = subColorTag(row.diff_top100);
-
-                            return row.top100 + sup;
-                        },
+                        data: 'top100',
                     },
                     {
                         title: '{{ __('Budget') }}',
@@ -333,7 +276,7 @@
                         title: '{{ __('Mastered') }}',
                         name: 'mastered',
                         data: function (row) {
-                            let tops = JSON.parse(row.mastered_info);
+                            let tops = row.mastered_info;
 
                             if(tops && tops.total){
                                 let small = $('<small />').css('color', 'green');
@@ -395,16 +338,13 @@
                                 title: '',
                             }).html('{{ __('Project groups') }}').prepend($('<i/>').addClass('far fa-folder mr-2'));
 
-                            let trash = $('<a />', {class: 'dropdown-item bg-danger'}).html('{{ __('Delete project') }}').prepend($('<i/>').addClass('fas fa-trash-alt mr-2'));
-                            trash.attr('onclick', `onClickDeleteProject(${row.id})`);
-
-                            let update = $('<a />', {
-                                class: 'dropdown-item update-project',
-                                "data-id": row.id,
-                            }).html('{{ __('Update data') }}').prepend($('<i/>').addClass('fas fa-sync-alt mr-2'));
+                            let open = $('<a />', {
+                                class: 'dropdown-item',
+                                href: `/monitoring/${row.id}`,
+                            }).html('{{ __('Open project') }}').prepend($('<i/>').addClass('far fa-folder-open mr-2'));
 
                             group.append([dropdown, menu]);
-                            menu.append([update, addUser, exports, create, edit, folder, $('<div />', {class: 'dropdown-divider'}), trash]);
+                            menu.append([open, $('<div />', {class: 'dropdown-divider'}), addUser, exports, create, edit, folder]);
 
                             return group[0].outerHTML;
                         },
@@ -418,29 +358,19 @@
                     $.each(columns, function(i, col){
                         let column = $(col);
                         column.addClass('text-nowrap');
-                        column.html(column.text() + ' <i class="far fa-question-circle tooltip-on" title="{{ __('Percentage of keys in the top') }}"></i>');
+                        column.html(column.text() + ' <i class="far fa-question-circle" data-toggle="tooltip" title="{{ __('Percentage of keys in the top') }}"></i>');
                     });
 
                     let mastered = api.column( 'mastered:name' ).header();
-                    $(mastered).addClass('text-nowrap').html('{{__('Mastered')}}  <i class="far fa-question-circle tooltip-on" title="В этом столбце показывается освоенный бюджет за один календарный день на момент снятия последней позиции. Ниже показывается процент освоенности в расчете на 30 каледнарных дней."></i>');
+                    $(mastered).addClass('text-nowrap').html('{{__('Mastered')}}  <i class="far fa-question-circle" data-toggle="tooltip" title="В этом столбце показывается освоенный бюджет за один календарный день на момент снятия последней позиции. Ниже показывается процент освоенности в расчете на 30 каледнарных дней."></i>');
+
+                    $(api.column( 'middle:name' ).header()).addClass('text-nowrap').html('{{ __('Position') }} <i class="far fa-question-circle" data-toggle="tooltip" title="{{ __('Mid-position') }}"></i>');
                 },
                 initComplete: function () {
                     let api = this.api();
-                    let json = api.ajax.json();
 
-                    // filter
                     $('#filter-user-status').change(function(){
                         api.column('users:name').search($(this).val()).draw();
-                    });
-
-                    this.find('tbody').on('click', 'tr.main', function () {
-                        $(this).toggleClass(HIGHLIGHT_TR_CLASS);
-
-                        if ($(this).hasClass(HIGHLIGHT_TR_CLASS)) {
-                            $(this).find('.icheck-primary input[type="checkbox"]').prop('checked', true);
-                        } else {
-                            $(this).find('.icheck-primary input[type="checkbox"]').prop('checked', false);
-                        }
                     });
 
                     this.find('tbody').on('click', 'td .dt-control', function () {
@@ -493,37 +423,7 @@
                         return false;
                     });
 
-                    // header card
-                    this.closest('.card').find('.card-header .card-title').html("");
-                    this.closest('.card').find('.card-header label').css('margin-bottom', 0);
-
-                    let updatedDateText = json.updatedDate;
-                    let dataTimeCache = $('<span />', {class: "data-time-cache"}).html(updatedDateText);
-                    let CacheText = `{{ __('The summary data in the table is current as of the date:') }}${dataTimeCache[0].outerHTML} `;
-                    let updateCacheIcon = $('<i />', {class: "fas fa-sync-alt"});
-                    let updateCacheButton = $('<a />', {
-                        class: "text-muted",
-                        href: "javascript:void(0)"
-                    }).html(updateCacheIcon);
-
-                    updateCacheButton.click(function () {
-                        $(this).hide();
-                        window.loading();
-                        axios.get('/monitoring/project/update-data-table/0')
-                            .then(function () {
-                                table.draw(false);
-                                $('.data-time-cache').text(moment().format("DD.MM.YYYY H:mm"));
-                            });
-                        return false;
-                    });
-
-                    let updateCacheText = $('<div />', {class: "card-title ml-2"}).html(CacheText);
-                    updateCacheText.append(updateCacheButton);
-                    let updateCacheContainer = $('<div />', {class: "float-left"}).html(updateCacheText);
-                    this.closest('.card').find('.card-header .card-title').after(updateCacheContainer);
-
                     axios.post('/monitoring/get/column/settings').then(function (response) {
-
                         $.each(response.data, function (i, col) {
                             if (col.state) {
                                 table.column(col.column + ':name').visible(!col.state);
@@ -531,34 +431,37 @@
                             }
                         });
                     });
-
-                    this.find('.tooltip-on').tooltip({
-                        animation: false,
-                        trigger: 'hover',
-                        html: true,
-                    });
-
-                    this.on( 'processing.dt', function ( e, settings, processing ) {
-                        let card = $(this).closest('#projects_wrapper');
-                        let filter = card.find('.card-header .dataTables_filter .form-control');
-
-                        if(filter.val().length > 0)
-                            return;
-
-                        if(processing) {
-                            if(window.pleaseWait === undefined || window.pleaseWait.finishing)
-                                window.loading();
-                        } else{
-                            if(window.pleaseWait)
-                                window.pleaseWait.finish();
-                        }
-                    });
                 },
-                drawCallback: function () {
-                    this.find('tbody tr').addClass('main');
-                    $('.pagination').addClass('pagination-sm');
-                },
+                infoCallback: function (settings, start, end) {
+                    if(end == PROJECTS_COUNT)
+                    {
+                        allProjectsUploaded();
+
+                        return '{{ __('Projects count') }} ' + PROJECTS_COUNT;
+                    }
+
+                    return '{{ __('Loading projects') }}: ' + end;
+                }
             });
+
+            for(let i = 0; i < PROJECTS_COUNT; i++)
+            {
+                $.ajax({
+                    type: 'POST',
+                    url: '/monitoring/projects/get',
+                    data:  {
+                        length: 1,
+                        start: i,
+                    },
+                    success: (response) =>
+                    {
+                        if(!response.length)
+                            return false;
+
+                        table.row.add(response[0]).draw(false);
+                    },
+                });
+            }
 
             search(table);
 
@@ -581,7 +484,7 @@
 
             $('.checkbox-delete').click(function () {
 
-                let rows = table.rows('.' + HIGHLIGHT_TR_CLASS);
+                let rows = table.rows({ selected: true });
                 let data = rows.data();
 
                 if (!data.length) {
@@ -593,27 +496,11 @@
                     return false;
 
                 $.each(data, function (index, row) {
-                    deleteProject(row.id);
+                    axios.delete(`monitoring/${row.id}`)
                 });
+
+                rows.remove().draw();
             });
-
-            function onClickDeleteProject(id) {
-
-                if (!window.confirm("{{__('Do you really want to delete?')}}"))
-                    return false;
-
-                deleteProject(id);
-            }
-
-            function deleteProject(id) {
-                if (id)
-                    axios.delete(`monitoring/${id}`)
-                        .then(function () {
-                            table.draw(false);
-                        });
-                else
-                    alert('Delete error');
-            }
 
             $('.modal').on('show.bs.modal', function (event) {
 
@@ -752,16 +639,6 @@
                 }
             });
 
-            function subColorTag(content) {
-                if (!content)
-                    return '';
-
-                let color = (content.indexOf('+') > -1) ? 'green' : 'red';
-                let sup = $('<sup />').css('color', color).text(content);
-
-                return sup.prop('outerHTML');
-            }
-
             $('.approve-project').click(function(){
                 let self = $(this);
                 let id = self.closest('tr').data('id');
@@ -857,14 +734,6 @@
                 return false;
             });
 
-            $('#projects').on('click', '.update-project', function(){
-                window.loading();
-                let id = $(this).data('id');
-                axios.get( '/monitoring/project/update-data-table/' + id ).then(function () {
-                    table.draw(false);
-                });
-            });
-
             $('#projects').on('click', '.user-list li', function(){
                 let self = $(this);
                 let user = self.attr('user-id');
@@ -907,6 +776,29 @@
 
                 return false;
             });
+
+            $('.checkbox-toggle').click(function(){
+
+                let el = $(this);
+
+                el.find('.far').toggleClass('fa-square');
+                el.find('.far').toggleClass('fa-check-square');
+
+                if(el.find('.far').hasClass('fa-check-square'))
+                    table.rows().select();
+                else
+                    table.rows().deselect();
+            });
+
+            function allProjectsUploaded()
+            {
+                $('.loader').remove();
+
+                $('[data-toggle="tooltip"]').tooltip({
+                    animation: false,
+                    trigger: 'hover',
+                });
+            }
         </script>
     @endslot
 

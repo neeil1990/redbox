@@ -8,7 +8,18 @@ use Illuminate\Support\Facades\Log;
 
 class MonitoringProject extends Model
 {
-    protected $fillable = ['name', 'url', 'status', 'budget', 'creator'];
+    protected $guarded = [];
+
+    protected $top3;
+    protected $top5;
+    protected $top10;
+    protected $top30;
+    protected $top100;
+    protected $middle;
+    protected $mastered;
+    protected $mastered_percent;
+    protected $mastered_info;
+    protected $words;
 
     public function users()
     {

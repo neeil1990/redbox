@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Monitoring\MasteredPositions;
+use App\Classes\Monitoring\Mastered;
 use App\Classes\Position\PositionStore;
 use App\Jobs\PositionQueue;
 use App\Location;
@@ -199,7 +199,7 @@ class MonitoringKeywordsController extends Controller
         $row = collect([]);
         $collectionPositions = $keyword->positions_view;
         if($this->mode == 'finance')
-            $mastered = new MasteredPositions($collectionPositions);
+            $mastered = new Mastered($collectionPositions);
 
         $columns = $this->columns;
 

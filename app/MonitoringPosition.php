@@ -48,4 +48,9 @@ class MonitoringPosition extends Model
         return $query->where(DB::raw('DATE(created_at)'), '=', $start)
             ->orWhere(DB::raw('DATE(created_at)'), '=', $end);
     }
+
+    public function scopeWhereEngine($query, int $id)
+    {
+        return $query->where('monitoring_searchengine_id', $id);
+    }
 }

@@ -239,28 +239,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(MonitoringProject::class)->withPivot('admin', 'approved', 'status');
     }
 
-    public function monitoringProjectsWithDataTable()
+    public function monitoringProjectsDataTable()
     {
-        return $this->monitoringProjects()->wherePivot('approved', 1)->with('users')
-            ->leftJoin(DB::raw('monitoring_data_table_columns_projects as m_dt'), 'monitoring_projects.id', '=', 'm_dt.monitoring_project_id')
-            ->select('monitoring_projects.*',
-                'm_dt.words',
-                'm_dt.middle',
-                'm_dt.top3',
-                'm_dt.diff_top3',
-                'm_dt.top5',
-                'm_dt.diff_top5',
-                'm_dt.top10',
-                'm_dt.diff_top10',
-                'm_dt.top30',
-                'm_dt.diff_top30',
-                'm_dt.top100',
-                'm_dt.diff_top100',
-                'm_dt.mastered',
-                'm_dt.mastered_percent',
-                'm_dt.mastered_info',
-                'm_dt.updated_at'
-            );
+        return $this->monitoringProjects()->wherePivot('approved', 1)->with('users');
     }
 
     public function behaviors()

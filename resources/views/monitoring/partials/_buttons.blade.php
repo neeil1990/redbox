@@ -38,7 +38,7 @@
         <select id="filter-user-status" class="custom-select custom-select-sm form-control form-control-sm">
             <option value="">{{ __('Show all users status') }}</option>
             @foreach(\App\Http\Controllers\MonitoringProjectUserStatusController::getOptions() as $option)
-                <option value="{{ $option['id'] }}">{{ $option['text'] }}</option>
+                <option value="{{ $option['val'] }}">{{ $option['text'] }}</option>
             @endforeach
         </select>
     </div>
