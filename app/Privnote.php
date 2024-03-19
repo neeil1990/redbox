@@ -44,7 +44,7 @@ class Privnote
 
         $json = curl_exec($curl);
 
-        echo $json;
+        dump($json);
 
         $json = json_decode($json, true);
 
