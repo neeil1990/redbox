@@ -498,3 +498,9 @@ Route::middleware(['verified'])->group(function () {
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 });
+
+Route::get('/privnote', function () {
+    $privnote = new \App\Privnote();
+
+    $privnote->note('test');
+});
