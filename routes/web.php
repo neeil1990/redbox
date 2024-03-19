@@ -19,6 +19,7 @@ use App\MonitoringKeyword;
 use App\RelevanceHistory;
 use App\RelevanceHistoryResult;
 use App\SearchCompetitors;
+use App\TextAnalyzer;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

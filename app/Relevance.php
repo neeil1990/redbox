@@ -555,8 +555,9 @@ class Relevance
             return ($first < $second) ? -1 : 1;
         });
 
-
+        Log::debug('wf before', $this->wordForms);
         $this->wordForms = array_slice($this->wordForms, 0, 1000);
+        Log::debug('wf after', $this->wordForms);
     }
 
     public function processingOfGeneralInformation()
