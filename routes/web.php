@@ -502,5 +502,12 @@ Route::middleware(['verified'])->group(function () {
 Route::get('/privnote', function () {
     $privnote = new \App\Privnote();
 
-    $privnote->note('test');
+    try {
+        $privnote->note('test');
+    } catch (Throwable $e){
+        dump($e->getMessage());
+        dump($e->getLine());
+        dump($e->getFile());
+        dd($e->getTrace());
+    }
 });
