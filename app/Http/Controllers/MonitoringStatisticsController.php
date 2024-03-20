@@ -24,8 +24,8 @@ class MonitoringStatisticsController extends Controller
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
 
-            $statistic = $this->user->statistics()->monitoringProjectsNow()->first();
-            $this->projects = $statistic['monitoring_project'];
+            if($statistic = $this->user->statistics()->monitoringProjectsNow()->first())
+                $this->projects = $statistic['monitoring_project'];
 
             return $next($request);
         });
