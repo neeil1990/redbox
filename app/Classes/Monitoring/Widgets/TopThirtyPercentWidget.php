@@ -19,10 +19,10 @@ class TopThirtyPercentWidget extends WidgetsAbstract
 
     public function generateTitle(): string
     {
-        $statistics = $this->user->statistics()->monitoringProjectsNow()->first();
-        $projects = $statistics['monitoring_project'];
+        if(!$statistics = $this->user->statistics()->monitoringProjectsNow()->first())
+            return '0';
 
-        return $projects->pluck('top30')->sum();
+        return $statistics['monitoring_project']->pluck('top30')->sum();
     }
 
     public function generateDesc(): string
