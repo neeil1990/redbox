@@ -13,7 +13,7 @@ class MasteredBudgetPercentWidget extends WidgetsAbstract
     {
         $this->code = 'MASTERED_BUDGET_PERCENT';
         $this->name = __('Mastered budget percent');
-        $this->link = route('monitoring.index');
+        $this->icon = 'fas fa-chart-pie';
     }
 
     public function generateTitle(): string
@@ -21,7 +21,7 @@ class MasteredBudgetPercentWidget extends WidgetsAbstract
 
         /** @var User $user */
         $user = Auth::user();
-        $projects = $user->monitoringProjectsWithDataTable()->get();
+        $projects = $user->monitoringProjectsDataTable()->get();
 
         $projects->transform(function($item){
             $item->master_budget_percent = 0;

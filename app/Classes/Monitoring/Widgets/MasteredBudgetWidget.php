@@ -13,15 +13,13 @@ class MasteredBudgetWidget extends WidgetsAbstract
     {
         $this->code = 'MASTERED_BUDGET';
         $this->name = __('Mastered budget');
-        $this->link = route('monitoring.index');
+        $this->icon = 'fas fa-wallet';
     }
 
     public function generateTitle(): string
     {
-
-        /** @var User $user */
-        $user = Auth::user();
-        $projects = $user->monitoringProjectsWithDataTable()->get();
+        $statistics = $this->user->statistics()->monitoringProjectsNow()->first();
+        $projects = $statistics['monitoring_project'];
 
         return $projects->pluck('mastered')->sum();
     }

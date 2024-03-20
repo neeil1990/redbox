@@ -4,6 +4,7 @@
 namespace App\Classes\Monitoring\Widgets;
 
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class TopTenPercentWidget extends WidgetsAbstract
@@ -12,15 +13,13 @@ class TopTenPercentWidget extends WidgetsAbstract
     {
         $this->code = 'TOP_TEN_PERCENT';
         $this->name = __('Top 10%');
-        $this->link = route('monitoring.index');
+        $this->icon = 'fas fa-percent';
     }
 
     public function generateTitle(): string
     {
-
-        /** @var User $user */
-        $user = Auth::user();
-        $projects = $user->monitoringProjectsWithDataTable()->get();
+        $statistics = $this->user->statistics()->monitoringProjectsNow()->first();
+        $projects = $statistics['monitoring_project'];
 
         return $projects->pluck('top10')->sum();
     }

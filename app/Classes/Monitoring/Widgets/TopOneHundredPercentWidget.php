@@ -13,15 +13,13 @@ class TopOneHundredPercentWidget extends WidgetsAbstract
     {
         $this->code = 'TOP_ONE_HUNDRED_PERCENT';
         $this->name = __('Top 100%');
-        $this->link = route('monitoring.index');
+        $this->icon = 'fas fa-percent';
     }
 
     public function generateTitle(): string
     {
-
-        /** @var User $user */
-        $user = Auth::user();
-        $projects = $user->monitoringProjectsWithDataTable()->get();
+        $statistics = $this->user->statistics()->monitoringProjectsNow()->first();
+        $projects = $statistics['monitoring_project'];
 
         return $projects->pluck('top100')->sum();
     }

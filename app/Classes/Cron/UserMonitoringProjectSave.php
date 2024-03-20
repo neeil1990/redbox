@@ -3,13 +3,13 @@
 
 namespace App\Classes\Cron;
 
-use App\Classes\Monitoring\ProjectData;
+use App\Classes\Monitoring\ProjectDataFacade;
 use App\User;
 use Carbon\Carbon;
 
 class UserMonitoringProjectSave
 {
-    const TIME = '13:00';
+    const TIME = '00:00';
 
     public function __invoke()
     {
@@ -22,13 +22,9 @@ class UserMonitoringProjectSave
             if($projects->isEmpty())
                 continue;
 
-            foreach($projects as $project)
-            {
-                $projectData = new ProjectData($project);
-                $projectData->extension();
+            ProjectDataFacade::projectsExtension($projects);
 
-                $user->statistics()->create(['monitoring_project' => $project]);
-            }
+            $user->statistics()->create(['monitoring_project' => $projects]);
         }
     }
 

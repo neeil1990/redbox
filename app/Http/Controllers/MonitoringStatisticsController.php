@@ -8,6 +8,7 @@ use App\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +23,9 @@ class MonitoringStatisticsController extends Controller
     {
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
-            $this->projects = $this->user->monitoringProjectsWithDataTable()->get();
+
+            $statistic = $this->user->statistics()->monitoringProjectsNow()->first();
+            $this->projects = $statistic['monitoring_project'];
 
             return $next($request);
         });
@@ -198,38 +201,6 @@ class MonitoringStatisticsController extends Controller
         return view('monitoring.statistics.projects', compact('data', 'periods'));
     }
 
-    public function attentionTable(Request $request)
-    {
-        $date = $request->input('date');
-
-        $data = collect([]);
-
-        /** @var User $user */
-        $user = $this->user;
-        $projects = $this->getStatisticsProjectLastOfMonth($user, Carbon::create($date));
-
-        foreach($projects as $project)
-        {
-            $nameUsers = [];
-            foreach($project['users'] as $user)
-                $nameUsers[] = implode(' ', [$user['name'], $user['last_name']]);
-
-            $collect = collect([
-                'name' => $project['url'],
-                'users' => implode(', ', $nameUsers),
-                'top10' => $project['top10'],
-                'mastered' => $project['mastered'],
-                'words' => $project['words'],
-            ]);
-
-            $data->push($collect);
-        }
-
-        return collect([
-            'data' => $data,
-        ]);
-    }
-
     private function sortDataTable(Collection $data, array $columns, array $order): Collection
     {
         return $data->sortBy($columns[$order[0]['column']]['data'], SORT_REGULAR, $order[0]['dir'] == 'asc' ? false : true);
@@ -242,16 +213,14 @@ class MonitoringStatisticsController extends Controller
         /** @var User $user */
         $user = $this->user;
 
-        $period = $this->periodOfMonth(6);
-
-        foreach ($period as $date)
+        foreach ($user->statistics as $statistic)
         {
-            $projects = $this->getStatisticsProjectLastOfMonth($user, $date);
+            $projects = $statistic['monitoring_project'];
 
             $budget = $projects->pluck('budget')->sum();
             $mastered = $projects->pluck('mastered')->sum();
 
-            $chartData['dates']->push($date->monthName);
+            $chartData['dates']->push($statistic['created_at']->toDateString());
             $chartData['budget']->push($budget);
             $chartData['mastered']->push($mastered);
         }
@@ -279,7 +248,12 @@ class MonitoringStatisticsController extends Controller
 
     private function getUsers(): Collection
     {
-        return $this->projects->pluck('users')->flatten();
+        $usersCollect = collect([]);
+        foreach ($this->projects->pluck('users') as $users)
+            foreach ($users as $user)
+                $usersCollect->push($user);
+
+        return $usersCollect;
     }
 
     private function getUsersWithProjectsByStatus(string $code): array
@@ -290,7 +264,7 @@ class MonitoringStatisticsController extends Controller
         foreach($filtered as $user)
         {
             $users[$user['id']]['id'] = $user['id'];
-            $users[$user['id']]['name'] = $user['fullName'];
+            $users[$user['id']]['name'] = $user['name'] . ' ' .$user['last_name'];
             $users[$user['id']]['projects'][] = $user['pivot']['monitoring_project_id'];
         }
 
@@ -300,6 +274,7 @@ class MonitoringStatisticsController extends Controller
     private function filterUsersByStatus(string $code): Collection
     {
         $users = $this->getUsers();
+
         $status = MonitoringProjectUserStatusController::getIdStatusByCode($code);
 
         $filtered = $users->filter(function($val) use ($status){

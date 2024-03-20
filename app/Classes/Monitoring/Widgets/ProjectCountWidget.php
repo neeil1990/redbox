@@ -13,6 +13,7 @@ class ProjectCountWidget extends WidgetsAbstract
         $this->code = 'PROJECT_COUNT';
         $this->name = __('Project count');
         $this->link = route('monitoring.index');
+        $this->icon = 'fas fa-tasks';
     }
 
     public function generateTitle(): string
