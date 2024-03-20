@@ -18,10 +18,10 @@ class MasteredBudgetWidget extends WidgetsAbstract
 
     public function generateTitle(): string
     {
-        $statistics = $this->user->statistics()->monitoringProjectsNow()->first();
-        $projects = $statistics['monitoring_project'];
+        if(!$statistics = $this->user->statistics()->monitoringProjectsNow()->first())
+            return '0';
 
-        return $projects->pluck('mastered')->sum();
+        return $statistics['monitoring_project']->pluck('mastered')->sum();
     }
 
     public function generateDesc(): string
