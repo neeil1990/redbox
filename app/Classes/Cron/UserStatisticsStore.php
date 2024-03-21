@@ -5,13 +5,15 @@ namespace App\Classes\Cron;
 
 use App\Classes\Monitoring\ProjectDataFacade;
 use App\User;
-use Carbon\Carbon;
 
-class UserMonitoringProjectSave
+class UserStatisticsStore
 {
-    const TIME = '00:00';
-
     public function __invoke()
+    {
+        $this->monitoringProjectsStore();
+    }
+
+    protected function monitoringProjectsStore()
     {
         $users = User::all();
 
@@ -26,11 +28,5 @@ class UserMonitoringProjectSave
 
             $user->statistics()->create(['monitoring_project' => $projects]);
         }
-    }
-
-    static public function storeDate()
-    {
-        $carbon = Carbon::now()->lastOfMonth();
-        return $carbon;
     }
 }

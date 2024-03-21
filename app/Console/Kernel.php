@@ -10,7 +10,7 @@ use App\Classes\Cron\ClusterCleaningResults;
 use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
 use App\Classes\Cron\RelevanceCleaningResults;
-use App\Classes\Cron\UserMonitoringProjectSave;
+use App\Classes\Cron\UserStatisticsStore;
 use App\Classes\Monitoring\ProjectData;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
@@ -63,7 +63,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new RepeatTasks())->everyMinute();
         $schedule->call(new ActivateTasks())->everyMinute();
 
-        $schedule->call(new UserMonitoringProjectSave())->daily();
+        $schedule->call(new UserStatisticsStore())->everyMinute();
 
         // $schedule->command('inspire')
         //          ->hourly();
