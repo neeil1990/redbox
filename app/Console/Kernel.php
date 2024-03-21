@@ -55,6 +55,8 @@ class Kernel extends ConsoleKernel
         // auto update positions in monitoring module
         $this->autoUpdateMonitoringPositions($schedule);
 
+        $schedule->call(new UserStatisticsStore())->daily();
+
         $schedule->call(function () {
             (new ProjectData(MonitoringProject::all()))->save();
         })->dailyAt(MonitoringSettings::getValue('data_projects') ?: '00:00');
@@ -62,8 +64,6 @@ class Kernel extends ConsoleKernel
         $schedule->call(new Notifications())->everyMinute();
         $schedule->call(new RepeatTasks())->everyMinute();
         $schedule->call(new ActivateTasks())->everyMinute();
-
-        $schedule->call(new UserStatisticsStore())->dailyAt('6:00');
 
         // $schedule->command('inspire')
         //          ->hourly();
