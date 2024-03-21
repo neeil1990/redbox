@@ -3,9 +3,7 @@
 
 namespace App\Classes\Monitoring\Widgets;
 
-use App\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use App\Classes\Monitoring\ProjectsStatisticFacade;
 
 class TopTenPercentWidget extends WidgetsAbstract
 {
@@ -18,10 +16,7 @@ class TopTenPercentWidget extends WidgetsAbstract
 
     public function generateTitle(): string
     {
-        if(!$statistics = $this->user->statistics()->monitoringProjectsNow()->first())
-            return '0';
-
-        return $statistics['monitoring_project']->pluck('top10')->sum();
+        return ProjectsStatisticFacade::getMidTopPct('top10');
     }
 
     public function generateDesc(): string

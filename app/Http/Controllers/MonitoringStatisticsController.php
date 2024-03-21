@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Monitoring\ProjectsStatisticFacade;
 use App\Classes\Monitoring\Widgets\WidgetsAbstract;
 use App\Classes\Monitoring\Widgets\WidgetsFactory;
 use App\User;
@@ -23,9 +24,7 @@ class MonitoringStatisticsController extends Controller
     {
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
-
-            if($statistic = $this->user->statistics()->monitoringProjectsNow()->first())
-                $this->projects = $statistic['monitoring_project'];
+            $this->projects = ProjectsStatisticFacade::getTodayProjects();
 
             return $next($request);
         });

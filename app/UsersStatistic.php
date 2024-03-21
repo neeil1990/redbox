@@ -13,7 +13,7 @@ class UsersStatistic extends Model
         'monitoring_project' => 'collection',
     ];
 
-    public function scopeMonitoringProjectsNow($query)
+    public function scopeSelectMonitoringProjectsToday($query)
     {
         $query->select('monitoring_project')->whereDate('created_at', Carbon::now());
     }

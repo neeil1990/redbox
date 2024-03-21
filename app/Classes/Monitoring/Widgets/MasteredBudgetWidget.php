@@ -4,6 +4,7 @@
 namespace App\Classes\Monitoring\Widgets;
 
 
+use App\Classes\Monitoring\ProjectsStatisticFacade;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,10 +19,9 @@ class MasteredBudgetWidget extends WidgetsAbstract
 
     public function generateTitle(): string
     {
-        if(!$statistics = $this->user->statistics()->monitoringProjectsNow()->first())
-            return '0';
+        $projects = ProjectsStatisticFacade::getTodayProjects();
 
-        return $statistics['monitoring_project']->pluck('mastered')->sum();
+        return $projects->pluck('mastered')->sum();
     }
 
     public function generateDesc(): string

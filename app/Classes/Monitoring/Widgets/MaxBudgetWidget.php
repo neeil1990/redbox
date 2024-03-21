@@ -4,8 +4,7 @@
 namespace App\Classes\Monitoring\Widgets;
 
 
-use App\User;
-use Illuminate\Support\Facades\Auth;
+use App\Classes\Monitoring\ProjectsStatisticFacade;
 
 class MaxBudgetWidget extends WidgetsAbstract
 {
@@ -18,10 +17,9 @@ class MaxBudgetWidget extends WidgetsAbstract
 
     public function generateTitle(): string
     {
-        if(!$statistics = $this->user->statistics()->monitoringProjectsNow()->first())
-            return '0';
+        $projects = ProjectsStatisticFacade::getTodayProjects();
 
-        return $statistics['monitoring_project']->pluck('budget')->sum();
+        return $projects->pluck('budget')->sum();
     }
 
     public function generateDesc(): string

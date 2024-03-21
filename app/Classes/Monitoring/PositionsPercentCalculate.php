@@ -6,7 +6,7 @@ namespace App\Classes\Monitoring;
 
 use Illuminate\Support\Collection;
 
-class PercentCalculate
+class PositionsPercentCalculate
 {
     protected $positions;
 
