@@ -5,6 +5,8 @@ namespace App\Classes\Cron;
 
 use App\Classes\Monitoring\ProjectDataFacade;
 use App\User;
+use App\UsersStatistic;
+use Carbon\Carbon;
 
 class UserStatisticsStore
 {
@@ -15,6 +17,7 @@ class UserStatisticsStore
 
     protected function monitoringProjectsStore()
     {
+        $data = [];
         $users = User::all();
 
         foreach($users as $user){
@@ -26,7 +29,19 @@ class UserStatisticsStore
 
             ProjectDataFacade::projectsExtension($projects);
 
-            $user->statistics()->create(['monitoring_project' => $projects]);
+            $data[] = [
+                'user_id' => $user['id'],
+                'monitoring_project' => $projects,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ];
         }
+
+        $this->store($data);
+    }
+
+    protected function store($data = []): void
+    {
+        UsersStatistic::insert($data);
     }
 }
