@@ -11,7 +11,7 @@ class ProjectCountWidget extends WidgetsAbstract
     public function __construct()
     {
         $this->code = 'PROJECT_COUNT';
-        $this->name = __('Project count');
+        $this->name = __('Projects count');
         $this->link = route('monitoring.index');
         $this->icon = 'fas fa-tasks';
     }
@@ -25,7 +25,7 @@ class ProjectCountWidget extends WidgetsAbstract
 
     public function generateDesc(): string
     {
-        return __('Project count');
+        return __('Projects count');
     }
 
 }
