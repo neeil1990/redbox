@@ -555,9 +555,7 @@ class Relevance
             return ($first < $second) ? -1 : 1;
         });
 
-        Log::debug('wf before', $this->wordForms);
         $this->wordForms = array_slice($this->wordForms, 0, 1000);
-        Log::debug('wf after', $this->wordForms);
     }
 
     public function processingOfGeneralInformation()
@@ -605,6 +603,14 @@ class Relevance
                         $passagesCount = substr_count(' ' . $this->sites[$key]['passages'] . ' ', " $word ");
                         if ($passagesCount > 0) {
                             $numberPassageOccurrences += $passagesCount;
+                        }
+
+                        if (stripos($word, 'труб') !== false) {
+                            Log::debug($word, [
+                                'html' => $htmlCount,
+                                'hiddenText' => $hiddenTextCount,
+                                'linkText' => $linkTextCount,
+                            ]);
                         }
 
                         if ($htmlCount > 0 || $hiddenTextCount > 0 || $linkTextCount > 0) {
