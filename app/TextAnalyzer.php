@@ -426,6 +426,7 @@ class TextAnalyzer extends Model
     public static function getLinkText($html)
     {
         $linkText = '';
+        $html = str_replace("article", "div", $html);
         $html = preg_replace('| +|', ' ', $html);
         $html = str_replace("\n", " ", $html);
         preg_match_all('(<a.*?href=["\']?(.*?)([\'"].*?>(.*?)</a>))', $html, $matches, PREG_SET_ORDER);
@@ -460,6 +461,7 @@ class TextAnalyzer extends Model
 
     public static function clearHTMLFromLinks($html): string
     {
+        $html = str_replace("article", "div", $html);
         $html = str_replace(["\n", "\r", "\t"], " ", $html);
         $html = preg_replace("| +|", ' ', $html);
 
