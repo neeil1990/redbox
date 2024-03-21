@@ -578,12 +578,18 @@ class Relevance
         $myPassages = explode(" ", $this->mainPage['passages']);
         $myPassages = array_count_values($myPassages);
 
+        $test = false;
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = $numberPassageOccurrences = 0;
                 $occurrences = [];
                 foreach ($this->sites as $key => $page) {
+                    if ($this->sites[$key]['mainPage'] && $test === false) {
+                        Log::debug('info', $this->sites[$key]);
+                        $test = true;
+                    }
+
                     if (!$page['ignored']) {
                         $htmlCount = substr_count(' ' . $this->sites[$key]['html'] . ' ', " $word ");
                         if ($htmlCount > 0) {
