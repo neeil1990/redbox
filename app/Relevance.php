@@ -228,8 +228,13 @@ class Relevance
     {
         foreach ($this->sites as $key => $page) {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
+            if ($this->sites[$key]['mainPage']) {
+                Log::debug(1, [$this->sites[$key]['html']]);
+            }
             $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));
-
+            if ($this->sites[$key]['mainPage']) {
+                Log::debug(2, [$this->sites[$key]['html']]);
+            }
             if ($this->request['searchPassages']) {
 
                 $this->sites[$key]['passages'] = Relevance::searchPassages($this->sites[$key]['defaultHtml']);
@@ -568,7 +573,6 @@ class Relevance
             }
         }
 
-        Log::info($this->mainPage['html']);
         $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
         $myText = explode(" ", $myText);
         $myText = array_count_values($myText);
