@@ -570,7 +570,8 @@ class Relevance
 
         $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
         Log::debug('just text', [$myText]);
-        $myText = strip_tags($myText);
+        $myText = str_replace('>', '> ', $myText);
+        $myText = str_replace('<', '< ', $myText);
         $myText = explode(" ", $myText);
         $myText = array_count_values($myText);
         Log::debug('$myText', [$myText]);
@@ -578,23 +579,22 @@ class Relevance
         $myLink = strip_tags($this->mainPage['linkText']);
         $myLink = explode(" ", $myLink);
         $myLink = array_count_values($myLink);
-        Log::debug('$myLink', [$myLink]);
 
         $myPassages = strip_tags($this->mainPage['passages']);
         $myPassages = explode(" ", $myPassages);
         $myPassages = array_count_values($myPassages);
 
-        $test = false;
+//        $test = false;
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = $numberPassageOccurrences = 0;
                 $occurrences = [];
                 foreach ($this->sites as $key => $page) {
-                    if ($this->sites[$key]['mainPage'] && $test === false) {
-                        Log::debug('info', $this->sites[$key]);
-                        $test = true;
-                    }
+//                    if ($this->sites[$key]['mainPage'] && $test === false) {
+//                        Log::debug('info', $this->sites[$key]);
+//                        $test = true;
+//                    }
 
                     if (!$page['ignored']) {
                         $htmlCount = substr_count(' ' . $this->sites[$key]['html'] . ' ', " $word ");
@@ -616,14 +616,14 @@ class Relevance
                         if ($passagesCount > 0) {
                             $numberPassageOccurrences += $passagesCount;
                         }
-
-                        if (stripos($word, 'труб') !== false && $this->sites[$key]['mainPage']) {
-                            Log::debug($word, [
-                                'html' => $htmlCount,
-                                'hiddenText' => $hiddenTextCount,
-                                'linkText' => $linkTextCount,
-                            ]);
-                        }
+//
+//                        if (stripos($word, 'труб') !== false && $this->sites[$key]['mainPage']) {
+//                            Log::debug($word, [
+//                                'html' => $htmlCount,
+//                                'hiddenText' => $hiddenTextCount,
+//                                'linkText' => $linkTextCount,
+//                            ]);
+//                        }
 
                         if ($htmlCount > 0 || $hiddenTextCount > 0 || $linkTextCount > 0) {
                             $countRepeat = $htmlCount + $hiddenTextCount + $linkTextCount;
