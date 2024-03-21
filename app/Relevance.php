@@ -571,9 +571,11 @@ class Relevance
         $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
         $myText = explode(" ", $myText);
         $myText = array_count_values($myText);
+        Log::debug('test', $myText);
 
         $myLink = explode(" ", $this->mainPage['linkText']);
         $myLink = array_count_values($myLink);
+        Log::debug('test', $myLink);
 
         $myPassages = explode(" ", $this->mainPage['passages']);
         $myPassages = array_count_values($myPassages);
