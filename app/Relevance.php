@@ -605,7 +605,7 @@ class Relevance
                             $numberPassageOccurrences += $passagesCount;
                         }
 
-                        if (stripos($word, 'труб') !== false) {
+                        if (stripos($word, 'труб') !== false && $this->sites[$key]['mainPage']) {
                             Log::debug($word, [
                                 'html' => $htmlCount,
                                 'hiddenText' => $hiddenTextCount,
