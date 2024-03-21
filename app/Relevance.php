@@ -570,17 +570,16 @@ class Relevance
 
         $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
         $myText = strip_tags($myText);
-        Log::debug('test', [$myText]);
         $myText = explode(" ", $myText);
         $myText = array_count_values($myText);
+        Log::debug('$myText', [$myText]);
 
         $myLink = strip_tags($this->mainPage['linkText']);
-        Log::debug('test', [$myLink]);
         $myLink = explode(" ", $myLink);
         $myLink = array_count_values($myLink);
+        Log::debug('$myLink', [$myLink]);
 
         $myPassages = strip_tags($this->mainPage['passages']);
-        Log::debug('test', [$myPassages]);
         $myPassages = explode(" ", $myPassages);
         $myPassages = array_count_values($myPassages);
 
