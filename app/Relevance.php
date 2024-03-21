@@ -568,14 +568,10 @@ class Relevance
             }
         }
 
+        Log::info($this->mainPage['html']);
         $myText = $this->mainPage['html'] . ' ' . $this->mainPage['hiddenText'];
-        Log::debug('just text', [$myText]);
-        Log::debug('just text', [strip_tags($myText)]);
-        $myText = str_replace('>', '> ', $myText);
-        $myText = str_replace('<', ' <', $myText);
         $myText = explode(" ", $myText);
         $myText = array_count_values($myText);
-        Log::debug('$myText', [$myText]);
 
         $myLink = strip_tags($this->mainPage['linkText']);
         $myLink = explode(" ", $myLink);
