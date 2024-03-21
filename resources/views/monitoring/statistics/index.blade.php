@@ -8,6 +8,11 @@
         <link rel="stylesheet" href="{{ asset('plugins/datatables-select/css/select.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/datatables-editor/css/editor.bootstrap4.min.css') }}">
 
+        <style>
+            .small-box {
+                min-height: 143px;
+            }
+        </style>
     @endslot
 
     @slot('tools')
@@ -134,53 +139,6 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-
-            <div class="card card-info">
-
-                <div class="card-header">
-                    <h3 class="card-title">{{ __('Attention projects') }}</h3>
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <button type="button" class="btn btn-tool" data-card-widget="remove">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="card card-primary card-outline card-outline-tabs">
-                        <div class="card-header p-0 border-bottom-0">
-                            <ul class="nav nav-tabs" role="tablist">
-                                @foreach($period as $key => $date)
-                                    <li class="nav-item">
-                                        <a class="nav-link @if(!$key) active @endif" data-toggle="pill" href="#custom-tabs-{{ $key }}" role="tab">
-                                            {{ $date->monthName }} {{ $date->year }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        <div class="card-body">
-                            <div class="tab-content">
-                                @foreach($period as $key => $date)
-                                    <div class="tab-pane fade @if(!$key) show active @endif" id="custom-tabs-{{ $key }}" role="tabpanel">
-                                        <table data-date="{{ $date->toDateString() }}" class="table table-striped table-bordered attention-table" cellspacing="0" width="100%"></table>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <!-- /.card -->
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
     @slot('js')
         <!-- jQuery UI -->
         <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
@@ -275,7 +233,7 @@
             });
 
             let managerTable = $('#project-manager').DataTable({
-                dom: '<"card-header"<"card-title">><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                dom: '<"card-header"<"card-title">><"card-body p-0"rt><"clear">',
                 paging: false,
                 serverSide: true,
                 ajax: {
@@ -297,7 +255,7 @@
             });
 
             let seoTable = $('#project-seo').DataTable({
-                dom: '<"card-header"<"card-title">><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
+                dom: '<"card-header"<"card-title">><"card-body p-0"rt><"clear">',
                 paging: false,
                 serverSide: true,
                 ajax: {
@@ -346,38 +304,6 @@
                         });
                 }
                 return false;
-            });
-
-            let attentionTable = $('.attention-table').DataTable({
-                ajax: function(data, callback, settings) {
-                    let date = this.data('date');
-
-                    axios.get('/monitoring/statistics/attention-table', {
-                        params: {
-                            date: date
-                        }
-                    })
-                    .then(function (response) {
-                        // handle success
-                        callback(response.data);
-                    });
-                },
-                info: false,
-                paging: false,
-                searching: false,
-                scrollCollapse: true,
-                scrollY: 200,
-                columns: [
-                    { title: '{{ __('Project') }}', data: 'name' },
-                    { title: '{{ __('Users') }}', data: 'users' },
-                    { title: '{{ __('TOP 10') }}', data: 'top10' },
-                    { title: '{{ __('Mastered') }}', data: 'mastered' },
-                    { title: '{{ __('Words') }}', data: 'words' },
-                ],
-            });
-
-            $('a[data-toggle="pill"]').on('shown.bs.tab', function (event) {
-                attentionTable.tables().columns.adjust();
             });
 
         </script>

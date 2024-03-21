@@ -13,17 +13,15 @@ class MaxBudgetWidget extends WidgetsAbstract
     {
         $this->code = 'MAX_BUDGET';
         $this->name = __('Max budget');
-        $this->link = route('monitoring.index');
+        $this->icon = 'fas fa-ruble-sign';
     }
 
     public function generateTitle(): string
     {
+        if(!$statistics = $this->user->statistics()->monitoringProjectsNow()->first())
+            return '0';
 
-        /** @var User $user */
-        $user = Auth::user();
-        $projects = $user->monitoringProjectsWithDataTable()->get();
-
-        return $projects->pluck('budget')->sum();
+        return $statistics['monitoring_project']->pluck('budget')->sum();
     }
 
     public function generateDesc(): string

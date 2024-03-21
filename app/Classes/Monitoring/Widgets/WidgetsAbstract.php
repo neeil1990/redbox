@@ -10,14 +10,19 @@ use Illuminate\Support\Facades\Auth;
 
 abstract class WidgetsAbstract implements WidgetInterface
 {
+    protected $user;
     protected $code = 'CODE';
     protected $name = 'element';
     protected $icon = 'fas fa-home';
     protected $bg = 'bg-info';
-    protected $link = '#';
+    protected $link = '';
+
 
     public function widget(): Collection
     {
+        /** @var User $user */
+        $this->user = Auth::user();
+
         if(!$widget = $this->getWidgetModel()->where('code', $this->code)->first())
             return collect([]);
 

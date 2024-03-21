@@ -14,7 +14,7 @@ class SeoUserCountWidget extends WidgetsAbstract
     {
         $this->code = 'SEO_USER_COUNT';
         $this->name = __('Seo user count');
-        $this->link = route('monitoring.index');
+        $this->icon = 'fas fa-laptop-code';
     }
 
     public function generateTitle(): string

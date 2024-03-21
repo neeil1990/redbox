@@ -63,9 +63,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new RepeatTasks())->everyMinute();
         $schedule->call(new ActivateTasks())->everyMinute();
 
-        /** @var Carbon $carbon */
-        $carbon = UserMonitoringProjectSave::storeDate();
-        $schedule->call(new UserMonitoringProjectSave())->monthlyOn($carbon->day, UserMonitoringProjectSave::TIME);
+        $schedule->call(new UserMonitoringProjectSave())->daily();
 
         // $schedule->command('inspire')
         //          ->hourly();

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class UsersStatistic extends Model
@@ -11,4 +12,9 @@ class UsersStatistic extends Model
     protected $casts = [
         'monitoring_project' => 'collection',
     ];
+
+    public function scopeMonitoringProjectsNow($query)
+    {
+        $query->select('monitoring_project')->whereDate('created_at', Carbon::now());
+    }
 }

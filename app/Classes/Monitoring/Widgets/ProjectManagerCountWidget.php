@@ -14,7 +14,7 @@ class ProjectManagerCountWidget extends WidgetsAbstract
     {
         $this->code = 'PROJECT_MANAGER_COUNT';
         $this->name = __('Project manager count');
-        $this->link = route('monitoring.index');
+        $this->icon = 'fas fa-user';
     }
 
     public function generateTitle(): string

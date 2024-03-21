@@ -31,9 +31,8 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    //
+    // test uri
 
-    $pro = new \App\Classes\Monitoring\ProjectDependencies(\App\MonitoringProject::find(226));
 
 });
 
@@ -331,7 +330,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/statistics/manager-table', 'MonitoringStatisticsController@managerTable');
     Route::get('/monitoring/statistics/seo-table', 'MonitoringStatisticsController@seoTable');
     Route::get('/monitoring/statistics/project-table/{id}', 'MonitoringStatisticsController@projectTable');
-    Route::get('/monitoring/statistics/attention-table', 'MonitoringStatisticsController@attentionTable');
 
     Route::resource('monitoring', 'MonitoringController');
 
