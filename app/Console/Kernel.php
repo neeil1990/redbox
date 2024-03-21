@@ -63,7 +63,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new RepeatTasks())->everyMinute();
         $schedule->call(new ActivateTasks())->everyMinute();
 
-        $schedule->call(new UserStatisticsStore())->everyMinute();
+        $schedule->call(new UserStatisticsStore())->dailyAt('6:00');
 
         // $schedule->command('inspire')
         //          ->hourly();
