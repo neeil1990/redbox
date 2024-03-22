@@ -55,7 +55,7 @@ class Kernel extends ConsoleKernel
         // auto update positions in monitoring module
         $this->autoUpdateMonitoringPositions($schedule);
 
-        $schedule->call(new UserStatisticsStore())->daily();
+        $schedule->call(new UserStatisticsStore())->dailyAt('13:50');
 
         $schedule->call(function () {
             (new ProjectData(MonitoringProject::all()))->save();
