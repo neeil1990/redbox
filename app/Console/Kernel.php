@@ -10,7 +10,7 @@ use App\Classes\Cron\ClusterCleaningResults;
 use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
 use App\Classes\Cron\RelevanceCleaningResults;
-use App\Classes\Cron\UserMonitoringProjectSave;
+use App\Classes\Cron\UserStatisticsStore;
 use App\Classes\Monitoring\ProjectData;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
@@ -55,6 +55,8 @@ class Kernel extends ConsoleKernel
         // auto update positions in monitoring module
         $this->autoUpdateMonitoringPositions($schedule);
 
+        $schedule->call(new UserStatisticsStore())->daily();
+
         $schedule->call(function () {
             (new ProjectData(MonitoringProject::all()))->save();
         })->dailyAt(MonitoringSettings::getValue('data_projects') ?: '00:00');
@@ -62,8 +64,6 @@ class Kernel extends ConsoleKernel
         $schedule->call(new Notifications())->everyMinute();
         $schedule->call(new RepeatTasks())->everyMinute();
         $schedule->call(new ActivateTasks())->everyMinute();
-
-        $schedule->call(new UserMonitoringProjectSave())->daily();
 
         // $schedule->command('inspire')
         //          ->hourly();

@@ -4,8 +4,7 @@
 namespace App\Classes\Monitoring\Widgets;
 
 
-use App\User;
-use Illuminate\Support\Facades\Auth;
+use App\Classes\Monitoring\ProjectsStatisticFacade;
 
 class MasteredBudgetPercentWidget extends WidgetsAbstract
 {
@@ -18,21 +17,7 @@ class MasteredBudgetPercentWidget extends WidgetsAbstract
 
     public function generateTitle(): string
     {
-
-        /** @var User $user */
-        $user = Auth::user();
-        $projects = $user->monitoringProjectsDataTable()->get();
-
-        $projects->transform(function($item){
-            $item->master_budget_percent = 0;
-
-            if($item->mastered && $item->budget)
-                $item->master_budget_percent = floor($item->mastered / ($item->budget / 30) * 100);
-
-            return $item;
-        });
-
-        return $projects->pluck('master_budget_percent')->sum();
+        return ProjectsStatisticFacade::getMidMasteredBudgetPct();
     }
 
     public function generateDesc(): string

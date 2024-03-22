@@ -32,9 +32,6 @@ Route::get('info', function () {
 
 Route::get('dev', function () {
     //
-
-    $pro = new \App\Classes\Monitoring\ProjectDependencies(\App\MonitoringProject::find(226));
-
 });
 
 Auth::routes(['verify' => true]);

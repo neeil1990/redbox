@@ -276,11 +276,9 @@
                         title: '{{ __('Mastered') }}',
                         name: 'mastered',
                         data: function (row) {
-                            let tops = row.mastered_info;
-
-                            if(tops && tops.total){
+                            if(row.mastered > 0){
                                 let small = $('<small />').css('color', 'green');
-                                small.text(Math.floor(tops.total / (row.budget / 30) * 100) + '%');
+                                small.text(Math.floor(row.mastered / (row.budget / 30) * 100) + '%');
 
                                 return currencyFormatRu(row.mastered) + "<br />" + small[0].outerHTML;
                             }

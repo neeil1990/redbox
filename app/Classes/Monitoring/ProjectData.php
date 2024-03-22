@@ -10,7 +10,6 @@ use App\MonitoringProject;
 class ProjectData
 {
     protected $project;
-    protected $budget = null;
     protected $queries;
     protected $positions;
     protected $result = [];
@@ -49,7 +48,7 @@ class ProjectData
         $mastered = new Mastered($this->positions);
 
         $this->result['mastered'] = $mastered->total();
-        $this->result['mastered_percent'] = $mastered->percentOf($this->budget);
+        $this->result['mastered_percent'] = $mastered->percentOf($this->project['budget']);
         $this->result['mastered_info'] = collect([
             'top1' => $mastered->top1(),
             'top3' => $mastered->top3(),
@@ -64,7 +63,7 @@ class ProjectData
 
     private function percentCalc()
     {
-        $percentOfTop = new PercentCalculate($this->positions->pluck('position'));
+        $percentOfTop = new PositionsPercentCalculate($this->positions->pluck('position'));
 
         $this->result['top3'] = $percentOfTop->top3();
         $this->result['top5'] = $percentOfTop->top5();
