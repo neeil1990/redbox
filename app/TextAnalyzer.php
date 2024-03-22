@@ -217,6 +217,7 @@ class TextAnalyzer extends Model
         $document->removeElements('path');
         $document->removeElements('noscript');
         $document->removeElements('comment');
+        $document->removeElements('title');
 
         return $document->outertext;
     }
