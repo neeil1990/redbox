@@ -46,16 +46,16 @@ class Kernel extends ConsoleKernel
         $schedule->call(new MetaTags(12))->cron('0 */12 * * *');
         $schedule->call(new MetaTags(24))->cron('0 0 * * *');
 
+        // auto update positions in monitoring module
+        $this->autoUpdateMonitoringPositions($schedule);
+
+        $schedule->call(new UserStatisticsStore())->dailyAt('00:10');
+
         // Delete relevance histories > 30 days (see relevance_analysis_config table)
         $schedule->call(new RelevanceCleaningResults())->daily();
 
         // Delete cluster histories > 180 days (see cluster_configuration table)
         $schedule->call(new ClusterCleaningResults())->daily();
-
-        // auto update positions in monitoring module
-        $this->autoUpdateMonitoringPositions($schedule);
-
-        $schedule->call(new UserStatisticsStore())->dailyAt('00:10');
 
         $schedule->call(function () {
             (new ProjectData(MonitoringProject::all()))->save();
