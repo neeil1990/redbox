@@ -253,7 +253,11 @@ class Cluster
             dispatch(new ClusterQueue($this, $key, $phrase))->onQueue('child_cluster');
         }
 
-        dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_wait');
+        try {
+            dispatch(new WaitClusterAnalyseQueue($this))->onQueue('cluster_wait');
+        } catch (\Throwable $e) {
+
+        }
     }
 
     public function calculate()
