@@ -18,6 +18,7 @@ use App\MonitoringSettings;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 
 class Kernel extends ConsoleKernel
@@ -52,10 +53,25 @@ class Kernel extends ConsoleKernel
         $schedule->call(new UserStatisticsStore())->dailyAt('00:10');
 
         // Delete relevance histories > 30 days (see relevance_analysis_config table)
-        $schedule->call(new RelevanceCleaningResults())->daily();
-
+        try {
+            $schedule->call(new RelevanceCleaningResults())->daily();
+        } catch (\Throwable $e){
+            Log::debug('RelevanceCleaningResults error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getFile(),
+            ]);
+        }
         // Delete cluster histories > 180 days (see cluster_configuration table)
-        $schedule->call(new ClusterCleaningResults())->daily();
+        try {
+            $schedule->call(new ClusterCleaningResults())->daily();
+        } catch (\Throwable $e){
+            Log::debug('ClusterCleaningResults error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getFile(),
+            ]);
+        }
 
         $schedule->call(function () {
             (new ProjectData(MonitoringProject::all()))->save();
