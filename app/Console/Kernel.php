@@ -56,21 +56,13 @@ class Kernel extends ConsoleKernel
         try {
             $schedule->call(new RelevanceCleaningResults())->daily();
         } catch (\Throwable $e){
-            Log::debug('RelevanceCleaningResults error', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getFile(),
-            ]);
+            Log::debug('RelevanceCleaningResults error');
         }
         // Delete cluster histories > 180 days (see cluster_configuration table)
         try {
             $schedule->call(new ClusterCleaningResults())->daily();
         } catch (\Throwable $e){
-            Log::debug('ClusterCleaningResults error', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getFile(),
-            ]);
+            Log::debug('ClusterCleaningResults error');
         }
 
         $schedule->call(function () {
