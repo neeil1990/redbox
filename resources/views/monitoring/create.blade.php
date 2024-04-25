@@ -308,7 +308,7 @@
                 projectId: false,
 
                 project: function (event) {
-                    let pattern = /^[a-z-а-я-0-9-\.]+\.[a-z-а-я]{2,4}$/;
+                    let pattern = /^[a-z-а-я-0-9-\.]+\.[a-z-а-я]{2,8}$/;
 
                     let name = this.part.find('input[name="name"]');
                     let url = this.part.find('input[name="url"]');
