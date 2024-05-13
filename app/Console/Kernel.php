@@ -13,6 +13,7 @@ use App\Classes\Cron\RelevanceCleaningResults;
 use App\Classes\Cron\UserStatisticsStore;
 use App\Classes\Monitoring\ProjectData;
 use App\Console\Commands\SearchIndicesDelete;
+use App\Console\Commands\SearchIndicesRemoveAll;
 use App\MonitoringProject;
 use App\MonitoringSearchengine;
 use App\MonitoringSettings;
@@ -75,6 +76,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new ActivateTasks())->everyMinute();
 
         $schedule->command(SearchIndicesDelete::class)->daily();
+        $schedule->command(SearchIndicesRemoveAll::class)->daily();
 
         // $schedule->command('inspire')
         //          ->hourly();
