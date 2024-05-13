@@ -40,7 +40,7 @@ class SearchIndicesDelete extends Command
     {
         $now = Carbon::today();
         $model = new \App\SearchIndex();
-        $days = (new \App\MonitoringSettings())->getValue('search_indices_days_delete') ?: 180;
+        $days = (new \App\MonitoringSettings())->getValue('search_indices_days_delete') ?: 30;
 
         $cnt = $model->where('created_at', '<', $now->subDays($days))->delete();
 

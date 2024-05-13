@@ -363,7 +363,7 @@
                                     });
                                 });
 
-                                $('.modal').modal('show').BootstrapModalFormTemplates({
+                                $('.modal.general').modal('show').BootstrapModalFormTemplates({
                                     title: "Обновить регионы",
                                     fields: [
                                         {

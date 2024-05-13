@@ -45,8 +45,8 @@ abstract class Positions
      */
     protected function getSitePosition()
     {
-        //if($position = $this->getSitePositionWithDB())
-            //return $position;
+        if($position = $this->getSitePositionWithDB())
+            return $position;
 
         return $this->getSitePositionWithXml();
     }
@@ -86,8 +86,8 @@ abstract class Positions
 
             $positions = $results['response']['results']['grouping']['group'];
 
-            //if ($this->save)
-                //$this->store($positions);
+            if ($this->save)
+                $this->store($positions);
 
             $position = array_filter($positions, function ($var) use ($site) {
                 $domain = parse_url($var['doc']['url']);
