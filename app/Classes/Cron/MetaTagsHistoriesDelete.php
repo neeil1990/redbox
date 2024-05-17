@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class MetaTagsHistoriesDelete
 {
-    protected $days_ago = 90;
+    protected $days_ago = 30;
 
     public function __invoke()
     {
