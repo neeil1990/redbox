@@ -109,13 +109,11 @@
         @include('monitoring.partials._table')
     </div>
 
-    @hasanyrole('Super Admin|admin')
     <div class="row mb-2">
         <div class="col-12">
             @include('monitoring.admin._btn')
         </div>
     </div>
-    @endhasanyrole
 
     @include('monitoring.keywords.modal.main')
 

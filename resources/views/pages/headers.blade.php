@@ -99,6 +99,26 @@
         </div>
     @endif
 
+    <div class="row">
+        <div class="col-12">
+            @component('component.admin-card')
+
+                @slot('description')
+
+                @endslot
+
+                @component('component.btn-app', ['href' => '/http-headers', 'class' => 'ml-0'])
+                    <i class="fas fa-home"></i> {{ __('Home') }}
+                @endcomponent
+
+                @component('component.btn-app', ['href' => route('pages.headers.settings'), 'class' => ''])
+                    <i class="fas fa-cog"></i> {{ __('Settings') }}
+                @endcomponent
+
+            @endcomponent
+        </div>
+    </div>
+
     @slot('js')
         <script src="{{ asset('plugins/jquery-ui/jquery-ui.js') }}"></script>
         <!-- CodeMirror -->

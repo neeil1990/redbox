@@ -120,6 +120,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('keyword-generator', "PagesController@keywordGenerator")->name('pages.keyword')->middleware('permission:Keyword generator');
     Route::get('utm-marks', "PagesController@utmMarks")->name('pages.utm')->middleware('permission:Utm marks');
     Route::get('roi-calculator', "PagesController@roiCalculator")->name('pages.roi')->middleware('permission:Roi calculator');
+
+    Route::get('http-headers/settings', "PagesController@httpHeadersSettings")->name('pages.headers.settings')->middleware(['role:Super Admin|admin']);
     Route::get('http-headers/{url?}', "PagesController@httpHeaders")->name('pages.headers')->middleware('permission:Http headers');
 
     Route::post('/generate-password', 'PasswordGeneratorController@createPassword')->name('generate.password');

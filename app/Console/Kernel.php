@@ -7,6 +7,7 @@ use App\Classes\Cron\checklist\ActivateTasks;
 use App\Classes\Cron\checklist\Notifications;
 use App\Classes\Cron\checklist\RepeatTasks;
 use App\Classes\Cron\ClusterCleaningResults;
+use App\Classes\Cron\HttpHeadersDelete;
 use App\Classes\Cron\MetaTags;
 use App\Classes\Cron\MetaTagsHistoriesDelete;
 use App\Classes\Cron\RelevanceCleaningResults;
@@ -44,6 +45,7 @@ class Kernel extends ConsoleKernel
     {
         // Delete histories > 30 days
         $schedule->call(new MetaTagsHistoriesDelete())->cron('0 0 * * *');
+        $schedule->call(new HttpHeadersDelete())->cron('0 0 * * *');
 
         $schedule->call(new MetaTags(6))->cron('0 */6 * * *');
         $schedule->call(new MetaTags(12))->cron('0 */12 * * *');

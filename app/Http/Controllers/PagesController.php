@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\HttpHeader;
+use App\HttpHeadersSettings;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use App\Classes\Curl\CurlFacade;
@@ -31,6 +32,21 @@ class PagesController extends Controller
         $id = $header->saveData($response);
 
         return view('pages.headers', compact('response', 'id', 'lang'));
+    }
+
+    public function httpHeadersSettings(Request $request)
+    {
+        $settings = new HttpHeadersSettings();
+
+        if($request->has('delete_records')){
+            $settings->updateOrCreate(['code' => 'delete_records'], ['value' => $request->input('delete_records')]);
+
+            return redirect()->route('pages.headers.settings')->with('status', __('Saved'));
+        }
+
+        $delete_records = $settings->where('code', 'delete_records')->value('value');
+
+        return view('pages.headers-settings', compact('delete_records'));
     }
 
     /**
