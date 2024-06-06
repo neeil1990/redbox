@@ -96,6 +96,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/meta-tags/history/{id}/compare/{id_compare}', 'MetaTagsController@showHistoryCompare')->name('meta.history.compare');
     Route::get('/meta-tags/history/{id}', 'MetaTagsController@showHistory');
     Route::get('/meta-tags/getTariffMetaTagsPages', 'MetaTagsController@getTariffMetaTagsPages');
+    Route::get('/meta-tags/settings', 'MetaTagsController@settings')->name('meta-tags.settings')->middleware(['role:Super Admin|admin']);
+    Route::get('/meta-tags/statistic', 'MetaTagsController@statistic')->name('meta-tags.statistic')->middleware(['role:Super Admin|admin']);
     Route::resource('meta-tags', 'MetaTagsController');
 
     Route::get('behavior/{behavior}/unique', 'BehaviorController@uniquePhrases')->name('behavior.unique.phrases');

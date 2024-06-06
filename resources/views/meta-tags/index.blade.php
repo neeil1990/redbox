@@ -36,6 +36,30 @@
 
     <meta-tags :meta="{{ $meta }}" :lang="{{ $lang }}"></meta-tags>
 
+    <div class="row">
+        <div class="col-12">
+            @component('component.admin-card')
+
+                @slot('description')
+
+                @endslot
+
+                @component('component.btn-app', ['href' => route('meta-tags.index'), 'class' => 'ml-0'])
+                    <i class="fas fa-home"></i> {{ __('Home') }}
+                @endcomponent
+
+                @component('component.btn-app', ['href' => route('meta-tags.settings'), 'class' => ''])
+                    <i class="fas fa-cog"></i> {{ __('Settings') }}
+                @endcomponent
+
+                @component('component.btn-app', ['href' => route('meta-tags.statistic'), 'class' => ''])
+                        <i class="fas fa-bullhorn"></i> {{ __('Statistic') }}
+                @endcomponent
+
+            @endcomponent
+        </div>
+    </div>
+
     @slot('js')
         <!-- Toastr -->
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>

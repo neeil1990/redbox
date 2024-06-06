@@ -9,6 +9,7 @@ use App\Exports\MetaTagsCompareHistoriesExport;
 use App\Mail\MetaTagsEmail;
 use App\MetaTag;
 use App\MetaTagsHistory;
+use App\MetaTagsSettings;
 use App\TelegramBot;
 use App\User;
 use Carbon\Carbon;
@@ -57,6 +58,47 @@ class MetaTagsController extends Controller
     public function __construct()
     {
         $this->middleware(['permission:Meta tags']);
+    }
+
+    public function settings(Request $request)
+    {
+        $settings = new MetaTagsSettings();
+
+        if($request->has('delete_records')){
+            $settings->updateOrCreate(['code' => 'delete_records'], ['value' => $request->input('delete_records')]);
+
+            return redirect()->route('meta-tags.settings')->with('status', __('Saved'));
+        }
+
+        $delete_records = $settings->where('code', 'delete_records')->value('value');
+
+        return view('meta-tags.settings', compact('delete_records'));
+    }
+
+    public function statistic()
+    {
+        $response = [
+            'users' => 0,
+            'projects' => 0,
+            'links' => 0,
+        ];
+
+        $meta = new MetaTag();
+
+        $users = $meta->select('user_id')->distinct()->get();
+
+        $response['users'] = $users->count();
+        $response['projects'] = $meta->count();
+
+        $projects = $meta->all();
+
+        foreach ($projects as $project)
+        {
+            $links = preg_split("/[\r\n]+/", $project['links']);
+            $response['links'] += count($links);
+        }
+
+        return view('meta-tags.statistic', compact('response'));
     }
 
     /**
