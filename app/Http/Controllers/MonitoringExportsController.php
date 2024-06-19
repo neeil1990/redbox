@@ -91,6 +91,9 @@ class MonitoringExportsController extends MonitoringKeywordsController
         if($request['mode'] == 'finance')
             $this->setTotalSum($response);
 
+        if($request['dynamicsDays'])
+            $this->removeDynamicDays($response);
+
         $this->urlColumn($response);
 
         $file = $this->project['url'] . ' ' . $params['dates_range'];
@@ -110,6 +113,16 @@ class MonitoringExportsController extends MonitoringKeywordsController
 
         $response['data']->push(collect(['Выведено фраз на сумму:', $total])->pad(-$count, ''));
         $response['data']->push(collect(['Максимальный бюджет:', $this->budget])->pad(-$count, ''));
+    }
+
+    private function removeDynamicDays(Collection &$collection)
+    {
+        $collection['data']->transform(function($item){
+            foreach ($item as $col => $val)
+                $item[$col] = preg_replace('/<sup(.*)sup>/', '', $val);
+
+            return $item;
+        });
     }
 
     private function urlColumn(Collection &$collection)

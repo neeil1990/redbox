@@ -72,6 +72,16 @@
         </div>
 
         <div class="row">
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="dynamicsDays" type="checkbox" id="dynamicsDays" value="1">
+                        <label for="dynamicsDays" class="custom-control-label">Убрать динамику по дням</label>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-sm-6">
                 <!-- checkbox -->
                 <div class="form-group">
