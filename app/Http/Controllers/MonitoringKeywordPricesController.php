@@ -64,7 +64,10 @@ class MonitoringKeywordPricesController extends Controller
         $data = $request->input('data', []);
 
         foreach ($data as $id => $val){
-            $collect = collect($val)->filter();
+            $collect = collect($val)->filter(function($val){
+                return is_numeric($val);
+            });
+
             MonitoringKeywordPrice::updateOrCreate(
                 ['monitoring_keyword_id' => $id, 'monitoring_searchengine_id' => $region],
                 $collect->toArray()

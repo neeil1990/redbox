@@ -198,6 +198,7 @@ class MonitoringKeywordsController extends Controller
     {
         $row = collect([]);
         $collectionPositions = $keyword->positions_view;
+
         if($this->mode == 'finance')
             $mastered = new Mastered($collectionPositions);
 

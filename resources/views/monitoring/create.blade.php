@@ -685,6 +685,8 @@
                             }
                         });
 
+                        self.closest('.card-body').addClass('overflow-auto');
+
                         $("#myTable_length label, #myTable_filter label").css('margin-bottom', 0);
                     },
                     drawCallback: function(settings){

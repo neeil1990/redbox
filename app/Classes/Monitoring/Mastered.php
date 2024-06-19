@@ -24,6 +24,15 @@ class Mastered
     {
         $this->price = new MonitoringKeywordPrice;
         $this->positions = $positions;
+
+        foreach ($this->positions as $position)
+        {
+            if(isset($position->monitoring_keyword_id))
+                $position->query_id = $position->monitoring_keyword_id;
+
+            if(isset($position->monitoring_searchengine_id))
+                $position->engine_id = $position->monitoring_searchengine_id;
+        }
     }
 
     public function percentOfDay($budget)
@@ -62,9 +71,9 @@ class Mastered
 
         $positions = $this->positions->where('position', 1);
 
-        $price = $this->getPrices($positions);
+        $price = $this->calcPrice($positions, 'top1');
 
-        $this->top1 = ['count' => $positions->count(), 'total' => $price->pluck('top1')->sum()];
+        $this->top1 = ['count' => $positions->count(), 'total' => $price];
 
         return $this->top1;
     }
@@ -133,16 +142,24 @@ class Mastered
     {
         $positions = $this->positions->whereBetween('position', [$start, $end]);
 
-        $price = $this->getPrices($positions);
+        $price = $this->calcPrice($positions, 'top' . $end);
 
-        return ['count' => $positions->count(), 'total' => $price->pluck('top' . $end)->sum()];
+        return ['count' => $positions->count(), 'total' => $price];
     }
 
-    protected function getPrices(Collection $positions)
+    private function calcPrice($positions, $field)
     {
-        return $this->price->whereIn('monitoring_keyword_id', $positions->pluck('query_id'))
-            ->whereIn('monitoring_searchengine_id', $positions->pluck('engine_id'))
-            ->get();
+        $price = 0;
+
+        foreach($positions as $position)
+            $price += $this->getPrice($position['query_id'], $position['engine_id'], $field);
+
+        return $price;
+    }
+
+    private function getPrice($queryId, $engineId, $value)
+    {
+        return $this->price->where('monitoring_keyword_id', $queryId)->where('monitoring_searchengine_id', $engineId)->value($value);
     }
 
 }
