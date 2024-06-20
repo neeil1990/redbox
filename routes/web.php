@@ -32,6 +32,10 @@ Route::get('info', function () {
 
 Route::get('dev', function () {
     //
+
+    // $job = new \App\Jobs();
+    // $obj = $job->find(0);
+    // unserialize($obj->payload['data']['command'])->handle();
 });
 
 Auth::routes(['verify' => true]);

@@ -13,12 +13,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use DateTime;
 
 class RelevanceAnalyseQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public $timeout = 0;
 
     public $request;
 
@@ -38,6 +37,16 @@ class RelevanceAnalyseQueue implements ShouldQueue
         $this->userId = $userId;
     }
 
+    /**
+     * Задать временной предел попыток выполнить задания.
+     *
+     * @return \DateTime
+     */
+    public function retryUntil(): DateTime
+    {
+        return now()->addMinutes(3);
+    }
+
     public function handle()
     {
         $this->relevance = new Relevance($this->request, $this->userId);
@@ -45,6 +54,7 @@ class RelevanceAnalyseQueue implements ShouldQueue
         if ($this->type === 'full') {
 
             $this->relevance->getMainPageHtml();
+
             if ($this->request['type'] == 'phrase') {
                 $this->relevance->analysisByPhrase($this->request, $this->exp);
             } elseif ($this->request['type'] == 'list') {

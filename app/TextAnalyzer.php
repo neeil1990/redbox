@@ -13,6 +13,31 @@ class TextAnalyzer extends Model
 
     protected $table = 'text_analyser_count_checks';
 
+    public static function curlInitV2($link)
+    {
+        $refers = ['google.com', 'yandex.ru'];
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_COOKIEJAR, '/tmp/cookies.txt');
+        curl_setopt($curl, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
+        curl_setopt($curl, CURLOPT_COOKIE, 'beget=begetok; path=/; realauth=SvBD85dINu3; expires=Sat, 25 Feb 2030 02:16:43 GMT; SameSite=Lax');
+        curl_setopt($curl, CURLOPT_URL, $link);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_FAILONERROR, true);
+        curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+        curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+        curl_setopt($curl, CURLOPT_REFERER, $refers[array_rand($refers)]);
+        $html = curl_exec($curl);
+
+        return $html;
+    }
+
     public static function curlInit($link)
     {
         $refers = ['google.com', 'yandex.ru'];
@@ -53,6 +78,7 @@ class TextAnalyzer extends Model
 
         foreach ($userAgents as $agent) {
             curl_setopt($curl, CURLOPT_USERAGENT, $agent);
+
             $html = curl_exec($curl);
             $headers = curl_getinfo($curl);
             if ($headers['http_code'] == 200 && $html) {
@@ -69,6 +95,7 @@ class TextAnalyzer extends Model
         }
 
         curl_close($curl);
+
         try {
             $contentType = trim(str_replace('text/html;', '', $headers['content_type']));
             $contentType = trim(str_replace('charset=', '', $contentType));
@@ -220,6 +247,20 @@ class TextAnalyzer extends Model
         $document->removeElements('title');
 
         return $document->outertext;
+    }
+
+    public static function removeStylesAndScriptsPregReplace($html): string
+    {
+        $html = preg_replace('/<svg(.*?)svg>/', '', $html);
+        $html = preg_replace('/<path(.*?)path>/', '', $html);
+        $html = preg_replace('/<script(.*?)script>/', '', $html);
+        $html = preg_replace('/<style(.*?)style>/', '', $html);
+        $html = preg_replace('/<title(.*?)title>/', '', $html);
+        $html = preg_replace('/<noscript(.*?)noscript>/', '', $html);
+        $html = preg_replace('/<link(.*?)>/', '', $html);
+        $html = preg_replace('/<meta(.*?)>/', '', $html);
+
+        return $html;
     }
 
     public static function removeNoindexText($html)

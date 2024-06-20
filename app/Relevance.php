@@ -110,9 +110,13 @@ class Relevance
         $mainUrl = parse_url($this->params['main_page_link']);
         $host = Str::lower($mainUrl['host']);
 
-        foreach ($this->domains as $item) {
+        foreach ($this->domains as $key => $item) {
             $domain = Str::lower($item['item']);
-            $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
+
+            // $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
+
+            $html = TextAnalyzer::curlInitV2($domain);
+            $result = TextAnalyzer::removeStylesAndScriptsPregReplace($html);
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
@@ -1199,17 +1203,13 @@ class Relevance
 
     public function analysisByPhrase($request, $exp)
     {
-        try {
-            RelevanceProgress::editProgress(10, $request);
-            $xml = new SimplifiedXmlFacade($request['region']);
-            $xml->setQuery($request['phrase']);
-            $xmlResponse = $xml->getXMLResponse();
+        RelevanceProgress::editProgress(10, $request);
+        $xml = new SimplifiedXmlFacade($request['region']);
+        $xml->setQuery($request['phrase']);
+        $xmlResponse = $xml->getXMLResponse();
 
-            $this->removeIgnoredDomains($request, $xmlResponse, $exp);
-            $this->parseSites($xmlResponse);
-        } catch (\Throwable $exception) {
-            $this->saveError($exception);
-        }
+        $this->removeIgnoredDomains($request, $xmlResponse, $exp);
+        $this->parseSites($xmlResponse);
     }
 
     public function analysisByList($request)
