@@ -7,6 +7,7 @@ use App\Jobs\Relevance\RemoveRelevanceProgress;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Ixudra\Curl\Facades\Curl;
 
 class Relevance
 {
@@ -113,10 +114,7 @@ class Relevance
         foreach ($this->domains as $key => $item) {
             $domain = Str::lower($item['item']);
 
-            // $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($domain));
-
-            $html = TextAnalyzer::curlInitV2($domain);
-            $result = TextAnalyzer::removeStylesAndScriptsPregReplace($html);
+            $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInitV2($domain));
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;

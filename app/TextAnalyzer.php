@@ -33,7 +33,16 @@ class TextAnalyzer extends Model
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
         curl_setopt($curl, CURLOPT_TIMEOUT, 5);
         curl_setopt($curl, CURLOPT_REFERER, $refers[array_rand($refers)]);
+
+        $headers = curl_getinfo($curl);
         $html = curl_exec($curl);
+
+        if($headers['content_type'])
+        {
+            $contentType = trim(str_replace('text/html;', '', $headers['content_type']));
+            $contentType = trim(str_replace('charset=', '', $contentType));
+            $html = mb_convert_encoding($html, "utf-8", $contentType);
+        }
 
         return $html;
     }
@@ -235,8 +244,11 @@ class TextAnalyzer extends Model
     public static function removeStylesAndScripts($html): string
     {
         $document = new HtmlDocument();
+
         $document->load(mb_strtolower($html));
+
         $document->removeElements('.js_img-for-color.hidden');
+        $document->removeElements('head');
         $document->removeElements('link');
         $document->removeElements('style');
         $document->removeElements('meta');
@@ -245,22 +257,10 @@ class TextAnalyzer extends Model
         $document->removeElements('noscript');
         $document->removeElements('comment');
         $document->removeElements('title');
+        $document->removeElements('svg');
+        $document->removeElements('img');
 
         return $document->outertext;
-    }
-
-    public static function removeStylesAndScriptsPregReplace($html): string
-    {
-        $html = preg_replace('/<svg(.*?)svg>/', '', $html);
-        $html = preg_replace('/<path(.*?)path>/', '', $html);
-        $html = preg_replace('/<script(.*?)script>/', '', $html);
-        $html = preg_replace('/<style(.*?)style>/', '', $html);
-        $html = preg_replace('/<title(.*?)title>/', '', $html);
-        $html = preg_replace('/<noscript(.*?)noscript>/', '', $html);
-        $html = preg_replace('/<link(.*?)>/', '', $html);
-        $html = preg_replace('/<meta(.*?)>/', '', $html);
-
-        return $html;
     }
 
     public static function removeNoindexText($html)
