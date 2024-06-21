@@ -114,7 +114,9 @@ class Relevance
         foreach ($this->domains as $key => $item) {
             $domain = Str::lower($item['item']);
 
-            $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInitV2($domain));
+            // $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInitV2($domain));
+
+            $result = '';
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
