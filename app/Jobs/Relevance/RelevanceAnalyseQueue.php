@@ -58,7 +58,6 @@ class RelevanceAnalyseQueue implements ShouldQueue
             if ($this->request['type'] == 'phrase')
             {
                 $this->relevance->analysisByPhrase($this->request, $this->exp);
-                // dd('analysisByPhrase');
             }
             elseif ($this->request['type'] == 'list')
             {

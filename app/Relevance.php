@@ -589,13 +589,16 @@ class Relevance
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = $numberPassageOccurrences = 0;
                 $occurrences = [];
+                $inc = 1;
+
                 foreach ($this->sites as $key => $page) {
 //                    if ($this->sites[$key]['mainPage'] && $test === false) {
 //                        Log::debug('info', $this->sites[$key]);
 //                        $test = true;
 //                    }
 
-                    if (!$page['ignored']) {
+                    if (!$page['ignored'] && $this->request['count'] >= $inc)
+                    {
                         $htmlCount = substr_count(' ' . $this->sites[$key]['html'] . ' ', " $word ");
                         if ($htmlCount > 0) {
                             $numberTextOccurrences += $htmlCount;
@@ -632,6 +635,8 @@ class Relevance
                                 $reSpam = $countRepeat;
                             }
                         }
+
+                        $inc += 1;
                     }
                 }
 
@@ -1067,7 +1072,8 @@ class Relevance
                         }
                         $countRepeatInPage += $array[$w] ?? 0;
                     }
-                    $points = min($countRepeatInPage / ($wordForm['total']['avgInTotalCompetitors'] / 100), 100);
+
+                    $points = ($wordForm['total']['avgInTotalCompetitors']) ? min($countRepeatInPage / ($wordForm['total']['avgInTotalCompetitors'] / 100), 100) : 0;
                     $densityMain += $points;
 
                     break;
