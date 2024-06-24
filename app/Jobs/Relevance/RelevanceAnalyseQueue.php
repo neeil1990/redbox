@@ -86,6 +86,6 @@ class RelevanceAnalyseQueue implements ShouldQueue
             $this->relevance->setSites($params->sites);
         }
 
-        $this->relevance->analysis();
+        RunRelevanceAnalyseQueue::dispatch($this->relevance)->onQueue('relevance_high_priority');
     }
 }
