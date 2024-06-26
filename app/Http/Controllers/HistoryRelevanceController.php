@@ -657,7 +657,8 @@ class HistoryRelevanceController extends Controller
                 $ownerId,
                 json_decode($record->request, true),
                 $record->id
-            )->onQueue(UsersJobs::getPriority($ownerId))->onConnection('database');
+            )->onQueue($request->input('queue', RelevanceController::MEDIUM_QUEUE))
+                ->onConnection('database');
 
             $record->state = 0;
             $record->save();

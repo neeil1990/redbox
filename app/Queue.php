@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Controllers\RelevanceController;
 use App\Jobs\Relevance\RelevanceHistoryQueue;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,7 @@ class Queue
                     $historyId,
                     trim($item[1]),
                     trim($item[0])
-                )->onQueue('relevance_normal_priority');
+                )->onQueue($request->input('queue', RelevanceController::MEDIUM_QUEUE));
             }
         } catch (\Throwable $e) {
 

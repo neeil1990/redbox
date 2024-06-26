@@ -18,6 +18,10 @@ use Illuminate\View\View;
 
 class RelevanceController extends Controller
 {
+    const HIGH_QUEUE = 'relevance_high_priority';
+    const MEDIUM_QUEUE = 'relevance_medium_priority';
+    const NORMAL_QUEUE = 'relevance_normal_priority';
+
     public function index(): View
     {
         $admin = User::isUserAdmin();
@@ -46,7 +50,7 @@ class RelevanceController extends Controller
 
         try {
             RelevanceAnalyseQueue::dispatch($request->all(), $request->input('exp'), Auth::id(), 'full')
-                ->onQueue(UsersJobs::getPriority(Auth::id()))
+                ->onQueue($request->input('queue', self::HIGH_QUEUE))
                 ->onConnection('database');
         } catch (\Throwable $e) {
             var_dump($e);
