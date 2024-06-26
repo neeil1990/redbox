@@ -95,7 +95,7 @@ class Relevance
 
         $this->params = RelevanceAnalyseResults::firstOrNew($params);
 
-        $this->params['main_page_link'] = $request['link'];
+        $this->params['main_page_link'] = isset($request['link']) ? $request['link'] : '';
         $this->params['sites'] = '';
         $this->params['html_main_page'] = '';
     }
