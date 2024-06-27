@@ -8,6 +8,9 @@
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/relevance-analysis/css/style.css') }}">
 
+        {{-- RowGroup --}}
+        <link rel="stylesheet" href="{{ asset('plugins/datatables-rowgroup/css/rowGroup.bootstrap4.css') }}">
+
         <style>
             i:hover {
                 opacity: 1 !important;
@@ -162,40 +165,49 @@
                         </div>
                         <div class="w-50 ">
                             <h3>{{ __('Users and their tasks') }}</h3>
-                            <table style="margin: 0 0 35px 0 !important;" id="user_jobs_table"
-                                   class="table table-bordered table-hover dataTable dtr-inline mb-5">
+                            <table id="user_jobs_table" class="table table-bordered table-hover dataTable dtr-inline" style="width: 100%">
                                 <thead>
                                 <tr>
-                                    <th>
-                                        {{ __('user') }}
-                                    </th>
-                                    <th>
-                                        {{ __('Number of tasks in the queue') }}
-                                    </th>
+                                    <th>{{ __('User') }}</th>
+                                    <th>{{ __('Email') }}</th>
+                                    <th>{{ __('Queue') }}</th>
+                                    <th>{{ __('Job') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody id="user_jobs_table_body">
                                 @foreach($usersJobs as $job)
                                     <tr class="job-row">
-                                        <td>
-                                            {{ $job->user->email }}
-                                            <div class="text-muted">
-                                                {{ $job->user->name }}
-                                                {{ $job->user->last_name }}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            {{ $job->count_jobs }}
-                                        </td>
+                                        <td>{{ $job['user'] }}</td>
+                                        <td>{{ $job['email'] }}</td>
+                                        <td> {{ $job['queue'] }} </td>
+                                        <td> {{ $job['job'] }} </td>
                                     </tr>
                                 @endforeach
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2">
+                                            <select name="" class="user-job-group text-center" style="width:100%">
+                                                <option value="0">{{ __('Group by name') }}</option>
+                                                <option value="1">{{ __('Group by email') }}</option>
+                                                <option value="2">{{ __('Group by queue') }}</option>
+                                                <option value="3">{{ __('Group by job') }}</option>
+                                            </select>
+                                        </th>
+                                        <th colspan="2">
+                                            <select name="" class="user-job-view text-center" style="width:100%">
+                                                <option value="1">{{ __('Detail view') }}</option>
+                                                <option value="2">{{ __('Short view') }}</option>
+                                            </select>
+                                        </th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
 
                     <h3>{{ __('All user projects') }}</h3>
-                    <table id="users_projects" class="table table-bordered table-hover dataTable dtr-inline mb-3">
+                    <table id="users_projects" class="table table-bordered table-hover dataTable dtr-inline mb-3" style="width: 100%">
                         <thead>
                         <tr>
                             <th class="table-header">{{ __('Project name') }}</th>
@@ -544,6 +556,9 @@
         <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
+        {{-- RowGroup --}}
+        <script src="{{ asset('plugins/datatables-rowgroup/js/dataTables.rowGroup.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-rowgroup/js/rowGroup.bootstrap4.js') }}"></script>
 
 
         <script src="{{ asset('plugins/relevance-analysis/history/mainHistoryTable.js') }}"></script>
@@ -565,17 +580,20 @@
             };
 
             $(document).ready(function () {
+
                 $('input#switchMyListWords').click(function () {
                     if ($(this).is(':checked')) {
                         $('.form-group.required.list-words.mt-1').show(300)
                     } else {
                         $('.form-group.required.list-words.mt-1').hide(300)
                     }
-                })
+                });
 
-                $('#user_jobs_table').dataTable({
+                let userJobsTable = $('#user_jobs_table').dataTable({
                     "order": [[0, "desc"]],
-                    "pageLength": 10,
+                    "paging": false,
+                    "scrollCollapse": true,
+                    "scrollY": '340px',
                     "searching": true,
                     language: {
                         paginate: {
@@ -591,7 +609,364 @@
                         "sEmptyTable": words.noRecords,
                         "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
                     },
+                    orderFixed: [0, 'asc'],
+                    rowGroup: {
+                        dataSrc: 0,
+                        startRender: function (rows, group) {
+                            return group + ' (' + rows.count() + ')';
+                        },
+                    },
+                });
+
+                $('.user-job-group').change(function () {
+                    let table = userJobsTable.api();
+                    let val = $(this).val();
+
+                    table.order.fixed({ pre: [[val, 'asc']] });
+                    table.rowGroup().dataSrc(val).draw();
+                });
+
+                $('.user-job-view').change(function(){
+                    if($(this).val() == 1)
+                        userJobsTable.find('.job-row').show();
+                    else
+                        userJobsTable.find('.job-row').hide();
+                });
+
+                usersProjects = $('#users_projects').DataTable({
+                    pageLength: 10,
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('get.all.relevance.projects') }}",
+                    columns: columns,
+                    order: [[8, 'desc']],
+                    aoColumnDefs: [
+                        {
+                            bSortable: false,
+                            aTargets: [1, 2, 7]
+                        },
+                        {
+                            type: "num",
+                            targets: [3, 4, 5]
+                        }
+                    ],
+                    language: {
+                        paginate: {
+                            "first": "«",
+                            "last": "»",
+                            "next": "»",
+                            "previous": "«"
+                        },
+                    },
+                    oLanguage: {
+                        "sSearch": words.search + ":",
+                        "sLengthMenu": words.show + " _MENU_ " + words.records,
+                        "sEmptyTable": words.noRecords,
+                        "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
+                    },
                     drawCallback: function () {
+                        let api = this.api();
+                        let currentPageData = api.rows({page: 'current'}).data();
+                        let newModals = ''
+                        $.each(currentPageData, function (key, value) {
+                            let select = getSelect(value.id)
+
+                            newModals += ' <div class="modal fade" id="removeModal' + value.id + '" tabindex="-1"' +
+                                '      aria-labelledby="removeModalLabel" aria-hidden="true">' +
+                                '     <div class="modal-dialog">' +
+                                '         <div class="modal-content">' +
+                                '             <div class="modal-header">' +
+                                '                 <h5 class="modal-title" id="removeModalLabel">' +
+                                '                     {{ __('Deleting results from a project') }} ' + value.name +
+                                '                 </h5>' +
+                                '                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                '                     <span aria-hidden="true">&times;</span>' +
+                                '                 </button>' +
+                                '             </div>' +
+                                '             <div class="modal-body">' +
+                                '             <span class="__helper-link ui_tooltip_w">' +
+                                '                 {{ __('How it works') }}' +
+                                '                 <i class="fa fa-question-circle" style="color: grey"></i>' +
+                                '                 <span class="ui_tooltip __right" style="width: 350px">' +
+                                '                     <span class="ui_tooltip_content">' +
+                                '                         {{ __('All scan results that have no comment will be deleted.') }} <br>' +
+                                '                         {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}' +
+                                '                     </span>' +
+                                '                 </span>' +
+                                '             </span>' +
+                                '                 <p>' +
+                                '                     <b>{{ __('You will not be able to recover the data.') }}</b>' +
+                                '                 </p>' +
+                                '             </div>' +
+                                '             <div class="modal-footer">' +
+                                '                 <button type="button" class="btn btn-secondary remove-empty-results"' +
+                                '                         data-target="' + value.id + '" data-dismiss="modal">' +
+                                '                     {{ __('Remove') }}' +
+                                '                 </button>' +
+                                '                 <button type="button" class="btn btn-default" data-dismiss="modal">' +
+                                '                     {{ __('Do not delete') }}' +
+                                '                 </button>' +
+                                '             </div>' +
+                                '         </div>' +
+                                '     </div>' +
+                                ' </div>' +
+                                ' <div class="modal fade" id="startThroughScan' + value.id + '" tabindex="-1" ' +
+                                '    aria-labelledby="repeatUniqueScan' + value.id + '" aria-hidden="true">' +
+                                '        <div class="modal-dialog">' +
+                                '        <div class="modal-content">' +
+                                '        <div class="modal-header">' +
+                                '        <h5 class="modal-title">' +
+                                '        {{ __('Run an analysis of the end-to-end results of the project') }} ' + value.name +
+                                '        </h5>' +
+                                '    <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                '        <span aria-hidden="true">&times;</span>' +
+                                '    </button>' +
+                                '</div>' +
+                                '    <div class="modal-body">' +
+                                '        {{ __('The analysis of end-to-end words will be performed at') }}' +
+                                '        <b>' + value.count_sites + '</b>' +
+                                '        {{ __('unique pages, are you sure?') }}' +
+                                '    </div>' +
+                                '    <div class="modal-footer">' +
+                                '        <button data-target="' + value.id + '" type="button"' +
+                                '                class="btn btn-secondary start-through-analyse click_tracking"' +
+                                '                data-dismiss="modal"' +
+                                '                data-click="Start through scan">{{ __('Start') }}</button>' +
+                                '        <button type="button" class="btn btn-default"' +
+                                '                data-dismiss="modal">{{ __('Close') }}</button>' +
+                                '    </div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '        <div class="modal fade" id="repeatUniqueScan' + value.id + '" tabindex="-1"' +
+                                '    aria-labelledby="repeatUniqueScan' + value.id + '" aria-hidden="true">' +
+                                '        <div class="modal-dialog">' +
+                                '        <div class="modal-content">' +
+                                '        <div class="modal-header">' +
+                                '        <h5 class="modal-title">{{ __('restart analyzed pages') }} ' + value.name + '</h5>' +
+                                '    <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                '        <span aria-hidden="true">&times;</span>' +
+                                '    </button>' +
+                                '</div>' +
+                                '    <div class="modal-body">' +
+                                '        {{ __('Are you going to restart the scan') }}' +
+                                '        <b>' + value.count_sites + '</b>' +
+                                '        {{ __('unique pages, are you sure?') }}' +
+                                '    </div>' +
+                                '    <div class="modal-footer">' +
+                                '        <button data-target="' + value.id + '" type="button"' +
+                                '                class="btn btn-secondary repeat-scan-unique-sites"' +
+                                '                data-dismiss="modal">{{ __('Start') }}</button>' +
+                                '        <button type="button" class="btn btn-default"' +
+                                '                data-dismiss="modal">{{ __('Close') }}</button>' +
+                                '    </div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div class="modal fade" id="removeWithFiltersModal' + value.id + '" tabindex="-1"' +
+                                '     aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">' +
+                                '         <div class="modal-dialog">' +
+                                '         <div class="modal-content">' +
+                                '         <div class="modal-header">' +
+                                '         <h5 class="modal-title"' +
+                                '     id="removeWithFiltersModalLabel">' +
+                                '         {{ __('Deleting results from a project') }} ' + value.name +
+                                '         </h5>' +
+                                '     <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                '         <span aria-hidden="true">&times;</span>' +
+                                '     </button>' +
+                                ' </div>' +
+                                '     <div class="modal-body">' +
+
+                                '         <div class="d-flex flex-row">' +
+                                '             <div>' +
+                                '                 <label>{{ __('Scans performed after (inclusive)') }}</label>' +
+                                '                 <input class="form form-control" type="date"' +
+                                '                        id="date-filter-after-' + value.id + '">' +
+                                '             </div>' +
+
+                                '             <div>' +
+                                '                 <label>{{ __('Scans performed before (inclusive)') }}</label>' +
+                                '                 <input class="form form-control" type="date"' +
+                                '                        id="date-filter-before-' + value.id + '">' +
+                                '             </div>' +
+                                '         </div>' +
+
+                                '         <label class="mt-3">{{ __('Comment') }}</label>' +
+                                '         <input type="text" class="form form-control" name="comment-filter"' +
+                                '                id="comment-filter-' + value.id + '">' +
+
+                                '             <label class="mt-3">{{ __('Phrase') }}</label>' +
+                                '             <input type="text" class="form form-control" name="phrase-filter"' +
+                                '                    id="phrase-filter-' + value.id + '">' +
+
+                                '                 <label class="mt-3">{{ __('Region') }}</label>'
+                                + select +
+                                '                 <label class="mt-3">{{ __('Link') }}</label>' +
+                                '                 <input type="text" class="form form-control"' +
+                                '                        name="link-filter"' +
+                                '                        id="link-filter-' + value.id + '">' +
+
+                                '                     <div class="d-flex flex-row mt-3 mb-3">' +
+                                '                         <div>' +
+                                '                             <label>{{ __('Position from (inclusive)') }}</label>' +
+                                '                             <input class="form form-control" type="number"' +
+                                '                                    id="position-filter-after-' + value.id + '"' +
+                                '                                    placeholder="{{ __('0 - did not get into the top 100') }}">' +
+                                '                         </div>' +
+                                '                         <div>' +
+                                '                             <label>{{ __('Position up to (inclusive)') }}</label>' +
+                                '                             <input class="form form-control" type="number"' +
+                                '                                    id="position-filter-before-' + value.id + '"' +
+                                '                                    placeholder="{{ __('0 - did not get into the top 100') }}">' +
+                                '                         </div>' +
+                                '                     </div>' +
+                                '                     <span class="__helper-link ui_tooltip_w">' +
+                                '                             {{ __('How it works') }}' +
+                                '                             <i class="fa fa-question-circle" style="color: grey"></i>' +
+                                '                             <span class="ui_tooltip __right" style="width: 350px">' +
+                                '                                 <span class="ui_tooltip_content">' +
+                                '                                    {{ __('According to your project') }} ' + value.name + ' {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>' +
+                                '                                     {{ __('All matches found will be deleted.') }} <br>' +
+                                '                                     {{ __("If you don't want to search by any parameter, then leave the field empty.") }}' +
+                                '                                 </span>' +
+                                '                             </span>' +
+                                '                         </span>' +
+                                '                     <div class="text-danger mt-3 mb-3">' +
+                                '                         {{ __('You can delete all the results associated with the project') }}' + value.name +
+                                '                         , {{ __('if you leave all fields empty, be careful') }}' +
+                                '                     </div>' +
+                                '     </div>' +
+                                '     <div class="modal-footer">' +
+                                '         <button type="button" class="btn btn-secondary remove-with-filters"' +
+                                '                 data-dismiss="modal" data-target="' + value.id + '">' +
+                                '             {{ __('Remove') }}' +
+                                '         </button>' +
+                                '         <button type="button" class="btn btn-default"' +
+                                '                 data-dismiss="modal">{{ __('Do not delete') }}</button>' +
+                                '     </div>' +
+                                ' </div>' +
+                                ' </div>' +
+                                ' </div>'
+
+                        })
+
+                        $('#block-for-modals').html(newModals)
+
+                        $('.repeat-scan-unique-sites').on('click', function () {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/repeat-scan-unique-sites",
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    id: $(this).attr('data-target'),
+                                },
+                                success: function (response) {
+                                    if (response.code === 200) {
+                                        getSuccessMessage(response.message)
+                                        $.each(response.object, function (key, value) {
+                                            $('#history-state-' + value).html(
+                                                '<p>Обрабатывается..</p>' +
+                                                '<div class="text-center" id="preloaderBlock">' +
+                                                '        <div class="three col">' +
+                                                '            <div class="loader" id="loader-1"></div>' +
+                                                '        </div>' +
+                                                '</div>'
+                                            )
+                                        })
+
+                                    } else if (response.code === 415) {
+                                        getErrorMessage(response.message)
+                                    }
+                                },
+                            });
+                        })
+
+                        $('.start-through-analyse').on('click', function () {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/start-through-analyse",
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    id: $(this).attr('data-target'),
+                                },
+                                success: function (response) {
+                                    if (response.code === 200) {
+                                        getSuccessMessage(response.message, 5000)
+                                    } else if (response.code === 415) {
+                                        getErrorMessage(response.message, 15000)
+                                    }
+                                },
+                            });
+                        })
+
+                        $('.remove-empty-results').on('click', function () {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/remove-scan-results",
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    id: $(this).attr('data-target'),
+                                },
+                                success: function (response) {
+                                    if (response.code === 200) {
+                                        getSuccessMessage(response.message)
+                                        setValues(response)
+                                        usersProjects.draw()
+                                    } else if (response.code === 415) {
+                                        getErrorMessage(response.message)
+                                    }
+                                },
+                            });
+                        })
+
+                        $('.remove-with-filters').on('click', function () {
+                            let id = $(this).attr('data-target');
+
+                            if ($('#comment-filter-' + id).val() === '' &&
+                                $('#phrase-filter-' + id).val() === '' &&
+                                $('#region-filter-' + id).val() === 'none' &&
+                                $('#link-filter-' + id).val() === '' &&
+                                $('#date-filter-before-' + id).val() === '' &&
+                                $('#date-filter-after-' + id).val() === '' &&
+                                $('#position-filter-after-' + id).val() === '' &&
+                                $('#position-filter-before-' + id).val() === ''
+                            ) {
+                                if (!confirm('У вас будут удалены ВСЕ результаты проекта.')) {
+                                    getSuccessMessage('Удаление было отменено')
+                                    return;
+                                }
+                            }
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/remove-scan-results-with-filters",
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    id: id,
+                                    comment: $('#comment-filter-' + id).val(),
+                                    phrase: $('#phrase-filter-' + id).val(),
+                                    region: $('#region-filter-' + id).val(),
+                                    link: $('#link-filter-' + id).val(),
+                                    before: $('#date-filter-before-' + id).val(),
+                                    after: $('#date-filter-after-' + id).val(),
+                                    positionAfter: $('#position-filter-after-' + id).val(),
+                                    positionBefore: $('#position-filter-before-' + id).val()
+                                },
+                                success: function (response) {
+                                    if (response.code === 200) {
+                                        getSuccessMessage(response.message)
+                                        usersProjects.draw()
+                                    } else if (response.code === 415) {
+                                        getErrorMessage(response.message)
+                                    }
+                                },
+                            });
+                        })
+
                         $('#changeAllState, #changeAllStateList').unbind().on('change', function () {
                             let state = $(this).is(':checked')
                             $.each($('.custom-control-input.switch'), function () {
@@ -601,13 +976,13 @@
                             });
                         });
 
-                        $('.project_name').unbind().click(function () {
-                            let thisElem = $(this)
-                            let thisElementClass = $(this).attr('class')
-                            hideListHistory()
-                            hideTableHistory()
+                        $('.project_name').click(function () {
+                            let thisElem = $(this);
+                            let thisElementClass = $(this).attr('class');
+                            hideListHistory();
+                            hideTableHistory();
 
-                            let storyId = $(this).attr('data-order')
+                            let storyId = $(this).attr('data-order');
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",
@@ -960,393 +1335,6 @@
 
                             $(this).attr('class', 'fa fa-plus show-stories')
                         });
-                    }
-                })
-
-                setInterval(() => {
-                    $.ajax({
-                        type: "get",
-                        dataType: "json",
-                        url: "{{ route('get.queue.count') }}",
-                        success: function (response) {
-                            $('#countJobs').html(response.count)
-                        },
-                    });
-
-                    $.ajax({
-                        type: "get",
-                        dataType: "json",
-                        url: "{{ route('get.user.jobs') }}",
-                        success: function (response) {
-                            $('#user_jobs_table').DataTable().rows().remove();
-                            $.each(response.jobs, function (key, value) {
-                                $('#user_jobs_table').DataTable().row.add({
-                                    0: '<td class="sorting_1">' +
-                                        value['user']['email'] +
-                                        '   <div class="text-muted">' +
-                                        value['user']['name'] + ' ' +
-                                        value['user']['last_name'] +
-                                        '   </div>' +
-                                        '</td>',
-                                    1: value['count_jobs'],
-                                });
-                            });
-
-                            $('#user_jobs_table').DataTable().draw()
-                        },
-                    });
-                }, 10000)
-
-                $('#user_jobs_table_length > label').append('<button class="btn btn-secondary ml-3" id="reset-statistic">Очистить статистику</button>')
-
-                $('#reset-statistic').on('click', function () {
-                    $.ajax({
-                        type: "get",
-                        dataType: "json",
-                        url: "{{ route('remove.user.jobs') }}",
-                        success: function (response) {
-                            $('#user_jobs_table').DataTable().rows().remove().draw();
-                        },
-                    });
-                })
-
-                usersProjects = $('#users_projects').DataTable({
-                    pageLength: 10,
-                    processing: true,
-                    serverSide: true,
-                    ajax: "{{ route('get.all.relevance.projects') }}",
-                    columns: columns,
-                    order: [[8, 'desc']],
-                    aoColumnDefs: [
-                        {
-                            bSortable: false,
-                            aTargets: [1, 2, 7]
-                        },
-                        {
-                            type: "num",
-                            targets: [3, 4, 5]
-                        }
-                    ],
-                    language: {
-                        paginate: {
-                            "first": "«",
-                            "last": "»",
-                            "next": "»",
-                            "previous": "«"
-                        },
-                    },
-                    oLanguage: {
-                        "sSearch": words.search + ":",
-                        "sLengthMenu": words.show + " _MENU_ " + words.records,
-                        "sEmptyTable": words.noRecords,
-                        "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
-                    },
-                    drawCallback: function () {
-                        $('#users_projects').css({
-                            width: '100%'
-                        })
-
-                        let api = this.api();
-                        let currentPageData = api.rows({page: 'current'}).data();
-                        let newModals = ''
-                        $.each(currentPageData, function (key, value) {
-                            let select = getSelect(value.id)
-
-                            newModals += ' <div class="modal fade" id="removeModal' + value.id + '" tabindex="-1"' +
-                                '      aria-labelledby="removeModalLabel" aria-hidden="true">' +
-                                '     <div class="modal-dialog">' +
-                                '         <div class="modal-content">' +
-                                '             <div class="modal-header">' +
-                                '                 <h5 class="modal-title" id="removeModalLabel">' +
-                                '                     {{ __('Deleting results from a project') }} ' + value.name +
-                                '                 </h5>' +
-                                '                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                                '                     <span aria-hidden="true">&times;</span>' +
-                                '                 </button>' +
-                                '             </div>' +
-                                '             <div class="modal-body">' +
-                                '             <span class="__helper-link ui_tooltip_w">' +
-                                '                 {{ __('How it works') }}' +
-                                '                 <i class="fa fa-question-circle" style="color: grey"></i>' +
-                                '                 <span class="ui_tooltip __right" style="width: 350px">' +
-                                '                     <span class="ui_tooltip_content">' +
-                                '                         {{ __('All scan results that have no comment will be deleted.') }} <br>' +
-                                '                         {{ __('But the most recent and unique (by fields: phrase, region, link) will not be deleted.') }}' +
-                                '                     </span>' +
-                                '                 </span>' +
-                                '             </span>' +
-                                '                 <p>' +
-                                '                     <b>{{ __('You will not be able to recover the data.') }}</b>' +
-                                '                 </p>' +
-                                '             </div>' +
-                                '             <div class="modal-footer">' +
-                                '                 <button type="button" class="btn btn-secondary remove-empty-results"' +
-                                '                         data-target="' + value.id + '" data-dismiss="modal">' +
-                                '                     {{ __('Remove') }}' +
-                                '                 </button>' +
-                                '                 <button type="button" class="btn btn-default" data-dismiss="modal">' +
-                                '                     {{ __('Do not delete') }}' +
-                                '                 </button>' +
-                                '             </div>' +
-                                '         </div>' +
-                                '     </div>' +
-                                ' </div>' +
-                                ' <div class="modal fade" id="startThroughScan' + value.id + '" tabindex="-1" ' +
-                                '    aria-labelledby="repeatUniqueScan' + value.id + '" aria-hidden="true">' +
-                                '        <div class="modal-dialog">' +
-                                '        <div class="modal-content">' +
-                                '        <div class="modal-header">' +
-                                '        <h5 class="modal-title">' +
-                                '        {{ __('Run an analysis of the end-to-end results of the project') }} ' + value.name +
-                                '        </h5>' +
-                                '    <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                                '        <span aria-hidden="true">&times;</span>' +
-                                '    </button>' +
-                                '</div>' +
-                                '    <div class="modal-body">' +
-                                '        {{ __('The analysis of end-to-end words will be performed at') }}' +
-                                '        <b>' + value.count_sites + '</b>' +
-                                '        {{ __('unique pages, are you sure?') }}' +
-                                '    </div>' +
-                                '    <div class="modal-footer">' +
-                                '        <button data-target="' + value.id + '" type="button"' +
-                                '                class="btn btn-secondary start-through-analyse click_tracking"' +
-                                '                data-dismiss="modal"' +
-                                '                data-click="Start through scan">{{ __('Start') }}</button>' +
-                                '        <button type="button" class="btn btn-default"' +
-                                '                data-dismiss="modal">{{ __('Close') }}</button>' +
-                                '    </div>' +
-                                '</div>' +
-                                '</div>' +
-                                '</div>' +
-                                '        <div class="modal fade" id="repeatUniqueScan' + value.id + '" tabindex="-1"' +
-                                '    aria-labelledby="repeatUniqueScan' + value.id + '" aria-hidden="true">' +
-                                '        <div class="modal-dialog">' +
-                                '        <div class="modal-content">' +
-                                '        <div class="modal-header">' +
-                                '        <h5 class="modal-title">{{ __('restart analyzed pages') }} ' + value.name + '</h5>' +
-                                '    <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                                '        <span aria-hidden="true">&times;</span>' +
-                                '    </button>' +
-                                '</div>' +
-                                '    <div class="modal-body">' +
-                                '        {{ __('Are you going to restart the scan') }}' +
-                                '        <b>' + value.count_sites + '</b>' +
-                                '        {{ __('unique pages, are you sure?') }}' +
-                                '    </div>' +
-                                '    <div class="modal-footer">' +
-                                '        <button data-target="' + value.id + '" type="button"' +
-                                '                class="btn btn-secondary repeat-scan-unique-sites"' +
-                                '                data-dismiss="modal">{{ __('Start') }}</button>' +
-                                '        <button type="button" class="btn btn-default"' +
-                                '                data-dismiss="modal">{{ __('Close') }}</button>' +
-                                '    </div>' +
-                                '</div>' +
-                                '</div>' +
-                                '</div>' +
-                                '<div class="modal fade" id="removeWithFiltersModal' + value.id + '" tabindex="-1"' +
-                                '     aria-labelledby="removeWithFiltersModalLabel" aria-hidden="true">' +
-                                '         <div class="modal-dialog">' +
-                                '         <div class="modal-content">' +
-                                '         <div class="modal-header">' +
-                                '         <h5 class="modal-title"' +
-                                '     id="removeWithFiltersModalLabel">' +
-                                '         {{ __('Deleting results from a project') }} ' + value.name +
-                                '         </h5>' +
-                                '     <button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                                '         <span aria-hidden="true">&times;</span>' +
-                                '     </button>' +
-                                ' </div>' +
-                                '     <div class="modal-body">' +
-
-                                '         <div class="d-flex flex-row">' +
-                                '             <div>' +
-                                '                 <label>{{ __('Scans performed after (inclusive)') }}</label>' +
-                                '                 <input class="form form-control" type="date"' +
-                                '                        id="date-filter-after-' + value.id + '">' +
-                                '             </div>' +
-
-                                '             <div>' +
-                                '                 <label>{{ __('Scans performed before (inclusive)') }}</label>' +
-                                '                 <input class="form form-control" type="date"' +
-                                '                        id="date-filter-before-' + value.id + '">' +
-                                '             </div>' +
-                                '         </div>' +
-
-                                '         <label class="mt-3">{{ __('Comment') }}</label>' +
-                                '         <input type="text" class="form form-control" name="comment-filter"' +
-                                '                id="comment-filter-' + value.id + '">' +
-
-                                '             <label class="mt-3">{{ __('Phrase') }}</label>' +
-                                '             <input type="text" class="form form-control" name="phrase-filter"' +
-                                '                    id="phrase-filter-' + value.id + '">' +
-
-                                '                 <label class="mt-3">{{ __('Region') }}</label>'
-                                + select +
-                                '                 <label class="mt-3">{{ __('Link') }}</label>' +
-                                '                 <input type="text" class="form form-control"' +
-                                '                        name="link-filter"' +
-                                '                        id="link-filter-' + value.id + '">' +
-
-                                '                     <div class="d-flex flex-row mt-3 mb-3">' +
-                                '                         <div>' +
-                                '                             <label>{{ __('Position from (inclusive)') }}</label>' +
-                                '                             <input class="form form-control" type="number"' +
-                                '                                    id="position-filter-after-' + value.id + '"' +
-                                '                                    placeholder="{{ __('0 - did not get into the top 100') }}">' +
-                                '                         </div>' +
-                                '                         <div>' +
-                                '                             <label>{{ __('Position up to (inclusive)') }}</label>' +
-                                '                             <input class="form form-control" type="number"' +
-                                '                                    id="position-filter-before-' + value.id + '"' +
-                                '                                    placeholder="{{ __('0 - did not get into the top 100') }}">' +
-                                '                         </div>' +
-                                '                     </div>' +
-                                '                     <span class="__helper-link ui_tooltip_w">' +
-                                '                             {{ __('How it works') }}' +
-                                '                             <i class="fa fa-question-circle" style="color: grey"></i>' +
-                                '                             <span class="ui_tooltip __right" style="width: 350px">' +
-                                '                                 <span class="ui_tooltip_content">' +
-                                '                                    {{ __('According to your project') }} ' + value.name + ' {{ __('the results of the scans will be searched by the filter that you will generate.') }} <br>' +
-                                '                                     {{ __('All matches found will be deleted.') }} <br>' +
-                                '                                     {{ __("If you don't want to search by any parameter, then leave the field empty.") }}' +
-                                '                                 </span>' +
-                                '                             </span>' +
-                                '                         </span>' +
-                                '                     <div class="text-danger mt-3 mb-3">' +
-                                '                         {{ __('You can delete all the results associated with the project') }}' + value.name +
-                                '                         , {{ __('if you leave all fields empty, be careful') }}' +
-                                '                     </div>' +
-                                '     </div>' +
-                                '     <div class="modal-footer">' +
-                                '         <button type="button" class="btn btn-secondary remove-with-filters"' +
-                                '                 data-dismiss="modal" data-target="' + value.id + '">' +
-                                '             {{ __('Remove') }}' +
-                                '         </button>' +
-                                '         <button type="button" class="btn btn-default"' +
-                                '                 data-dismiss="modal">{{ __('Do not delete') }}</button>' +
-                                '     </div>' +
-                                ' </div>' +
-                                ' </div>' +
-                                ' </div>'
-
-                        })
-
-                        $('#block-for-modals').html(newModals)
-
-                        $('.repeat-scan-unique-sites').on('click', function () {
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/repeat-scan-unique-sites",
-                                data: {
-                                    _token: $('meta[name="csrf-token"]').attr('content'),
-                                    id: $(this).attr('data-target'),
-                                },
-                                success: function (response) {
-                                    if (response.code === 200) {
-                                        getSuccessMessage(response.message)
-                                        $.each(response.object, function (key, value) {
-                                            $('#history-state-' + value).html(
-                                                '<p>Обрабатывается..</p>' +
-                                                '<div class="text-center" id="preloaderBlock">' +
-                                                '        <div class="three col">' +
-                                                '            <div class="loader" id="loader-1"></div>' +
-                                                '        </div>' +
-                                                '</div>'
-                                            )
-                                        })
-
-                                    } else if (response.code === 415) {
-                                        getErrorMessage(response.message)
-                                    }
-                                },
-                            });
-                        })
-
-                        $('.start-through-analyse').on('click', function () {
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/start-through-analyse",
-                                data: {
-                                    _token: $('meta[name="csrf-token"]').attr('content'),
-                                    id: $(this).attr('data-target'),
-                                },
-                                success: function (response) {
-                                    if (response.code === 200) {
-                                        getSuccessMessage(response.message, 5000)
-                                    } else if (response.code === 415) {
-                                        getErrorMessage(response.message, 15000)
-                                    }
-                                },
-                            });
-                        })
-
-                        $('.remove-empty-results').on('click', function () {
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/remove-scan-results",
-                                data: {
-                                    _token: $('meta[name="csrf-token"]').attr('content'),
-                                    id: $(this).attr('data-target'),
-                                },
-                                success: function (response) {
-                                    if (response.code === 200) {
-                                        getSuccessMessage(response.message)
-                                        setValues(response)
-                                        usersProjects.draw()
-                                    } else if (response.code === 415) {
-                                        getErrorMessage(response.message)
-                                    }
-                                },
-                            });
-                        })
-
-                        $('.remove-with-filters').on('click', function () {
-                            let id = $(this).attr('data-target');
-
-                            if ($('#comment-filter-' + id).val() === '' &&
-                                $('#phrase-filter-' + id).val() === '' &&
-                                $('#region-filter-' + id).val() === 'none' &&
-                                $('#link-filter-' + id).val() === '' &&
-                                $('#date-filter-before-' + id).val() === '' &&
-                                $('#date-filter-after-' + id).val() === '' &&
-                                $('#position-filter-after-' + id).val() === '' &&
-                                $('#position-filter-before-' + id).val() === ''
-                            ) {
-                                if (!confirm('У вас будут удалены ВСЕ результаты проекта.')) {
-                                    getSuccessMessage('Удаление было отменено')
-                                    return;
-                                }
-                            }
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/remove-scan-results-with-filters",
-                                data: {
-                                    _token: $('meta[name="csrf-token"]').attr('content'),
-                                    id: id,
-                                    comment: $('#comment-filter-' + id).val(),
-                                    phrase: $('#phrase-filter-' + id).val(),
-                                    region: $('#region-filter-' + id).val(),
-                                    link: $('#link-filter-' + id).val(),
-                                    before: $('#date-filter-before-' + id).val(),
-                                    after: $('#date-filter-after-' + id).val(),
-                                    positionAfter: $('#position-filter-after-' + id).val(),
-                                    positionBefore: $('#position-filter-before-' + id).val()
-                                },
-                                success: function (response) {
-                                    if (response.code === 200) {
-                                        getSuccessMessage(response.message)
-                                        usersProjects.draw()
-                                    } else if (response.code === 415) {
-                                        getErrorMessage(response.message)
-                                    }
-                                },
-                            });
-                        })
                     }
                 });
             });

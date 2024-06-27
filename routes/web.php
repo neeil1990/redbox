@@ -34,8 +34,10 @@ Route::get('dev', function () {
     //
 
      $job = new \App\Jobs();
-     $obj = $job->find(1);
-     // unserialize($obj->payload['data']['command'])->handle();
+     $obj = $job->find(42);
+     // $obj = unserialize($obj->payload['data']['command']);
+
+     // dd($obj);
 });
 
 Auth::routes(['verify' => true]);

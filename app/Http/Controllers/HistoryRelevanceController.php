@@ -61,7 +61,7 @@ class HistoryRelevanceController extends Controller
                 'total_points' => $record['total_points'],
                 'avg_position' => $record['avg_position'],
                 'though' => $though,
-                'last_check' => $record->story->last_check
+                'last_check' => ($record->story) ? $record->story->last_check : '',
             ];
 
             if ($owner) {

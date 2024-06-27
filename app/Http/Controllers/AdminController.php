@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\AnalyzeRelevance\RelevanceQueues;
 use App\PolicyTermsDocs;
 use App\ProjectRelevanceHistory;
 use App\RelevanceAllUniqueDomains;
@@ -42,7 +43,7 @@ class AdminController extends Controller
         return view('relevance-analysis.all', [
             'projects' => $projects,
             'config' => RelevanceAnalysisConfig::first(),
-            'usersJobs' => UsersJobs::where('count_jobs', '>', 0)->with('user')->get(),
+            'usersJobs' => $this->userJobs(),
             'statistics' => [
                 'toDay' => RelevanceStatistics::where('date', '=', Carbon::now()->toDateString())->first(),
                 'month' => RelevanceStatistics::where('created_at', '>=', $firstDay->toDateString())->sum('count_checks'),
@@ -55,6 +56,35 @@ class AdminController extends Controller
                 'countJobs' => UsersJobs::where('count_jobs', '>', 0)->sum('count_jobs'),
             ]
         ]);
+    }
+
+    protected function userJobs()
+    {
+        $rows = collect([]);
+        $queues = new RelevanceQueues();
+        $jobs = $queues->all();
+
+        foreach($jobs as $job)
+        {
+            $row = [
+                'user' => 'System',
+                'email' => '',
+                'queue' => $job->queue,
+                'job' => class_basename($job),
+            ];
+
+            if(property_exists($job, 'userId'))
+            {
+                $user = User::find($job->userId);
+
+                $row['user'] = $user->fullName;
+                $row['email'] = $user->email;
+            }
+
+            $rows->push($row);
+        }
+
+        return $rows;
     }
 
     /**
