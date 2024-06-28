@@ -100,6 +100,13 @@ class Relevance
         $this->params['html_main_page'] = '';
     }
 
+    protected function removeSymbol(string $string)
+    {
+        $symbol = [';', ')', '(', '\x00'];
+
+        return str_replace($symbol, '', $string);
+    }
+
     public function getMainPageHtml()
     {
         $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
@@ -115,6 +122,7 @@ class Relevance
             $domain = Str::lower($item['item']);
 
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInitV2($domain));
+            $result = $this->removeSymbol($result);
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
