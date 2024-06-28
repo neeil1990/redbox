@@ -75,10 +75,6 @@ class RelevanceHistory extends Model
         return $this->hasOne(RelevanceHistoryResult::class, 'project_id', 'id');
     }
 
-    /**
-     * @param int $count
-     * @return bool
-     */
     public static function checkRelevanceAnalysisLimits(int $count = 0): bool
     {
         $user = Auth::user();

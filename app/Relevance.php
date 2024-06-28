@@ -109,7 +109,7 @@ class Relevance
     public function parseSites($xmlResponse = false, $searchPosition = false)
     {
         $mainUrl = parse_url($this->params['main_page_link']);
-        $host = Str::lower($mainUrl['host']);
+        $host = isset($mainUrl['host']) ? Str::lower($mainUrl['host']) : '';
 
         foreach ($this->domains as $key => $item) {
             $domain = Str::lower($item['item']);
