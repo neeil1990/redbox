@@ -14,13 +14,24 @@ class RelevanceProgressController extends Controller
     public function startProgress(Request $request): JsonResponse
     {
         $request = $request->all();
-        if (isset($request['data']['type']) && $request['data']['type'] === 'list') {
+
+        if (isset($request['data']['type']) && $request['data']['type'] === 'list')
+        {
             $ar = array_diff(explode("\n", $request['data']['siteList']), [""]);
-            if (count($ar) < 5) {
+            if (count($ar) < 5)
+            {
                 return response()->json([
                     'message' => __('The list of sites must contain at least 5 sites')
                 ], 415);
             }
+        }
+
+        $mainUrl = parse_url($request['data']['link']);
+        if(isset($mainUrl['scheme']) === false || isset($mainUrl['host']) === false)
+        {
+            return response()->json([
+                'message' => __('Ваша посадочная страница должна быть полным URL адресом. Пример: https://site.ru')
+            ], 415);
         }
 
         return response()->json([
