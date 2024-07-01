@@ -267,25 +267,25 @@ class MonitoringKeywordsController extends Controller
                         $row->put('exact', '-');
                     break;
                 case 'price_top_1':
-                    $row->put('price_top_1', $keyword->price['top1']);
+                    $row->put('price_top_1', ($keyword->price) ? $keyword->price['top1'] : 0);
                     break;
                 case 'price_top_3':
-                    $row->put('price_top_3', $keyword->price['top3']);
+                    $row->put('price_top_3', ($keyword->price) ? $keyword->price['top3'] : 0);
                     break;
                 case 'price_top_5':
-                    $row->put('price_top_5', $keyword->price['top5']);
+                    $row->put('price_top_5', ($keyword->price) ? $keyword->price['top5'] : 0);
                     break;
                 case 'price_top_10':
-                    $row->put('price_top_10', $keyword->price['top10']);
+                    $row->put('price_top_10', ($keyword->price) ? $keyword->price['top10'] : 0);
                     break;
                 case 'price_top_20':
-                    $row->put('price_top_20', $keyword->price['top20']);
+                    $row->put('price_top_20', ($keyword->price) ? $keyword->price['top20'] : 0);
                     break;
                 case 'price_top_50':
-                    $row->put('price_top_50', $keyword->price['top50']);
+                    $row->put('price_top_50', ($keyword->price) ? $keyword->price['top50'] : 0);
                     break;
                 case 'price_top_100':
-                    $row->put('price_top_100', $keyword->price['top100']);
+                    $row->put('price_top_100', ($keyword->price) ? $keyword->price['top100'] : 0);
                     break;
                 case 'days_top_1':
                     $top = $mastered->top1();
