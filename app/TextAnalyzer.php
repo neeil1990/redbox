@@ -186,27 +186,23 @@ class TextAnalyzer extends Model
         return $response;
     }
 
+    public static function loadHtml(string $html): \DOMDocument
+    {
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+
+        $dom->loadHTML("\xEF\xBB\xBF" . $html, LIBXML_NOERROR | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+        return $dom;
+    }
+
     public static function deleteEverythingExceptCharacters($html)
     {
-        $html = TextAnalyzer::removeStylesAndScripts($html);
+        if(!$html)
+            return "";
 
-        $html = str_replace('>', '> ', $html);
-        $text = trim(strip_tags($html));
+        $array = preg_split('/[^А-Яа-яЁё]+/u', $html);
 
-        $text = trim(str_replace(chr(194) . chr(160), ' ', html_entity_decode($text)));
-        $text = preg_replace('/[^a-zа-яё\w\s]/ui', ' ', $text);
-        $text = preg_replace("/&#?[a-z]+;/i", "", $text);
-        $text = str_replace([
-            "\n", "\t", "\r",
-            "»", "«", ".", ",", "!", "?",
-            "(", ")", "+", ";", ":", "-",
-            "₽", "$", "/", "[", "]", "“"
-        ], ' ', $text);
-        $text = str_replace("ё", "е", $text);
-
-        $text = TextAnalyzer::removeNumbersWithoutLetters($text);
-
-        return preg_replace('| +|', ' ', $text);
+        return implode(' ', $array);
     }
 
     protected static function removeNumbersWithoutLetters($text): string
@@ -241,26 +237,30 @@ class TextAnalyzer extends Model
         return false;
     }
 
-    public static function removeStylesAndScripts($html): string
+    public static function removeStylesAndScripts(string $html): string
     {
-        $document = new HtmlDocument();
+        if(strlen($html) < 1)
+            return "";
 
-        $document->load(mb_strtolower($html));
+        $dom = TextAnalyzer::loadHtml(mb_strtolower($html));
 
-        $document->removeElements('.js_img-for-color.hidden');
-        $document->removeElements('head');
-        $document->removeElements('link');
-        $document->removeElements('style');
-        $document->removeElements('meta');
-        $document->removeElements('script');
-        $document->removeElements('path');
-        $document->removeElements('noscript');
-        $document->removeElements('comment');
-        $document->removeElements('title');
-        $document->removeElements('svg');
-        $document->removeElements('img');
+        $removeTags = [
+            'script',
+            'link',
+            'style',
+            'path',
+            'noscript',
+            'svg',
+            'img',
+        ];
 
-        return $document->outertext;
+        foreach($removeTags as $tag)
+        {
+            foreach (iterator_to_array($dom->getElementsByTagName($tag)) as $item)
+                $item->parentNode->removeChild($item);
+        }
+
+        return $dom->saveHTML();
     }
 
     public static function removeNoindexText($html)
@@ -467,6 +467,9 @@ class TextAnalyzer extends Model
 
     public static function getLinkText($html)
     {
+        if(!$html)
+            return "";
+
         $linkText = '';
         $html = str_replace("article", "div", $html);
         $html = preg_replace('| +|', ' ', $html);

@@ -102,7 +102,7 @@ class Relevance
 
     public function getMainPageHtml()
     {
-        $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInit($this->params['main_page_link']));
+        $html = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInitV2($this->params['main_page_link']));
         $this->setMainPage($html);
     }
 
@@ -167,38 +167,27 @@ class Relevance
 
     public function analysis($historyId = false)
     {
-        try {
-            $this->removeNoIndex();
-            $this->getHiddenData();
-            $this->separateLinksFromText();
-            $this->removePartsOfSpeech();
-            $this->removeListWords();
-            $this->getTextFromCompetitors();
-            $this->separateAllText();
-            $this->preparePhrasesTable();
-            $this->searchWordForms();
-            $this->processingOfGeneralInformation();
-            $this->prepareUnigramTable();
-            $this->analyseRecommendations();
-            $this->prepareAnalysedSitesTable();
-            $this->prepareClouds();
-            $this->saveHistory($historyId);
+        $this->removeNoIndex();
+        $this->getHiddenData();
+        $this->separateLinksFromText();
+        $this->removePartsOfSpeech();
+        $this->removeListWords();
+        $this->getTextFromCompetitors();
+        $this->separateAllText();
+        $this->preparePhrasesTable();
+        $this->searchWordForms();
+        $this->processingOfGeneralInformation();
+        $this->prepareUnigramTable();
+        $this->analyseRecommendations();
+        $this->prepareAnalysedSitesTable();
+        $this->prepareClouds();
+        $this->saveHistory($historyId);
 
-            UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
+        UsersJobs::where('user_id', '=', $this->params['user_id'])->decrement('count_jobs');
 
-            RemoveRelevanceProgress::dispatch($this->scanHash)
-                ->onQueue('default')
-                ->delay(now()->addSeconds(100));
-
-        } catch (\Throwable $exception) {
-            $this->saveError($exception);
-
-            if ($historyId !== false) {
-                RelevanceHistory::where('id', '=', $historyId)->update([
-                    'state' => '-1'
-                ]);
-            }
-        }
+        RemoveRelevanceProgress::dispatch($this->scanHash)
+            ->onQueue('default')
+            ->delay(now()->addSeconds(100));
     }
 
     /**
@@ -230,8 +219,10 @@ class Relevance
     public function separateLinksFromText()
     {
         foreach ($this->sites as $key => $page) {
+
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
             $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));
+
             if ($this->request['searchPassages']) {
 
                 $this->sites[$key]['passages'] = Relevance::searchPassages($this->sites[$key]['defaultHtml']);
@@ -960,6 +951,7 @@ class Relevance
         $result = [];
         $phrases = $this->searchPhrases();
         $totalCount = count($phrases);
+
         foreach ($phrases as $phrase) {
 
             if ($phrase === "") {
@@ -971,6 +963,7 @@ class Relevance
 
             foreach ($this->sites as $key => $page) {
                 if (!$page['ignored']) {
+
                     $htmlCount = preg_match_all("/ ($phrase) /", ' ' . $page['html'] . ' ');
                     if ($htmlCount > 0) {
                         $numberTextOccurrences += $htmlCount;

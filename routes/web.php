@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Query\Builder;
 
+
 Route::get('info', function () {
     phpinfo();
 });
@@ -34,10 +35,11 @@ Route::get('dev', function () {
     //
 
      $job = new \App\Jobs();
-     $obj = $job->find(59);
+     $obj = $job->find(18);
      //$obj = unserialize($obj->payload['data']['command']);
      //$obj->handle();
 
+     //dd('done');
 });
 
 Auth::routes(['verify' => true]);
