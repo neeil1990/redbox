@@ -211,6 +211,9 @@ class TextAnalyzer extends Model
         if(!$html)
             return "";
 
+        $html = str_replace('><', '> <', $html);
+        $html = str_replace('&nbsp;', ' ', $html);
+
         $dom = TextAnalyzer::loadHtml($html);
 
         $array = preg_split('/[^А-Яа-яЁё]+/u', $dom->textContent);

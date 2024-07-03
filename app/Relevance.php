@@ -217,8 +217,8 @@ class Relevance
 
     public function separateLinksFromText()
     {
-        foreach ($this->sites as $key => $page) {
-
+        foreach ($this->sites as $key => $page)
+        {
             $this->sites[$key]['linkText'] = TextAnalyzer::getLinkText($this->sites[$key]['html']);
             $this->sites[$key]['html'] = TextAnalyzer::deleteEverythingExceptCharacters(TextAnalyzer::clearHTMLFromLinks($this->sites[$key]['html']));
 
@@ -574,6 +574,7 @@ class Relevance
 
 //        $test = false;
         $wordCount = count(explode(' ', $this->competitorsTextAndLinks));
+
         foreach ($this->wordForms as $root => $wordForm) {
             foreach ($wordForm as $word => $item) {
                 $reSpam = $numberTextOccurrences = $numberLinkOccurrences = $numberOccurrences = $numberPassageOccurrences = 0;
