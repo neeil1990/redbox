@@ -188,11 +188,22 @@ class TextAnalyzer extends Model
 
     public static function loadHtml(string $html): \DOMDocument
     {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom = new \DOMDocument();
+
+        $dom->encoding = 'utf-8';
 
         $dom->loadHTML("\xEF\xBB\xBF" . $html, LIBXML_NOERROR | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
         return $dom;
+    }
+
+    public static function saveHtml(\DOMDocument $dom): string
+    {
+        $html = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+
+        $html .= $dom->saveHTML( $dom->documentElement );
+
+        return $html;
     }
 
     public static function deleteEverythingExceptCharacters($html)
@@ -260,7 +271,7 @@ class TextAnalyzer extends Model
                 $item->parentNode->removeChild($item);
         }
 
-        return $dom->saveHTML();
+        return TextAnalyzer::saveHtml($dom);
     }
 
     public static function removeNoindexText($html)

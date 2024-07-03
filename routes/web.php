@@ -35,7 +35,7 @@ Route::get('dev', function () {
     //
 
      $job = new \App\Jobs();
-     $obj = $job->find(18);
+     $obj = $job->find(51);
      //$obj = unserialize($obj->payload['data']['command']);
      //$obj->handle();
 
