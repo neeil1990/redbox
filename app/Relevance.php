@@ -115,7 +115,6 @@ class Relevance
             $domain = Str::lower($item['item']);
 
             $result = TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInitV2($domain));
-            $result = htmlspecialchars($result);
 
             $this->sites[$domain]['danger'] = $result == '' || $result == null;
             $this->sites[$domain]['html'] = $result;
