@@ -211,7 +211,9 @@ class TextAnalyzer extends Model
         if(!$html)
             return "";
 
-        $array = preg_split('/[^А-Яа-яЁё]+/u', $html);
+        $dom = TextAnalyzer::loadHtml($html);
+
+        $array = preg_split('/[^А-Яа-яЁё]+/u', $dom->textContent);
 
         return implode(' ', $array);
     }
@@ -263,6 +265,7 @@ class TextAnalyzer extends Model
             'noscript',
             'svg',
             'img',
+            'title',
         ];
 
         foreach($removeTags as $tag)
