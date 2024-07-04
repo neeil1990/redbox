@@ -192,18 +192,16 @@ class TextAnalyzer extends Model
 
         $dom->encoding = 'utf-8';
 
-        $dom->loadHTML("\xEF\xBB\xBF" . $html, LIBXML_NOERROR | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $html = str_starts_with($html, "\xEF\xBB\xBF") ? $html : "\xEF\xBB\xBF" . $html;
+
+        $dom->loadHTML($html, LIBXML_NOERROR | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
         return $dom;
     }
 
     public static function saveHtml(\DOMDocument $dom): string
     {
-        $html = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
-
-        $html .= $dom->saveHTML( $dom->documentElement );
-
-        return $html;
+        return $dom->saveHTML( $dom->documentElement );
     }
 
     public static function deleteEverythingExceptCharacters($html)
