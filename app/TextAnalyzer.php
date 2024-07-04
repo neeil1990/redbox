@@ -194,7 +194,7 @@ class TextAnalyzer extends Model
 
         $html = str_starts_with($html, "\xEF\xBB\xBF") ? $html : "\xEF\xBB\xBF" . $html;
 
-        $dom->loadHTML($html, LIBXML_NOERROR | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $dom->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
         return $dom;
     }

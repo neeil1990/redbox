@@ -40,6 +40,14 @@ Route::get('dev', function () {
      // $obj->handle();
 
      // dd('done');
+
+    //$html = file_get_contents('https://kia-vasauto.ru/pages/zamena-masla-mkpp/');
+
+    //$dom = TextAnalyzer::loadHtml($html);
+
+    //$html = TextAnalyzer::saveHtml($dom);
+
+    //dd($html);
 });
 
 Auth::routes(['verify' => true]);
