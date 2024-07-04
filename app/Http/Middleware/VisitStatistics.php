@@ -30,6 +30,9 @@ class VisitStatistics
         }
 
         try {
+            if(!array_key_exists('controller', Route::current()->action))
+                return $next($request);
+
             $controllerAction = last(explode('\\', Route::current()->action['controller']));
 
             if ($controllerAction === 'PublicController@updateStatistics') {
