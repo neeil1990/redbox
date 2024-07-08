@@ -62,7 +62,7 @@ function renderScannedSitesList(words, sites, avgCoveragePercent, count, hide, b
                 + ignorBlock
 
             if (id !== null) {
-                warning += "<a class='btn btn-sm btn-success' href='/relevance/show-detail-html/" + value['site'].replace(/\//g, 'splittedSlashe') + "/" + id + "/" + search + "' target='_blank'>Просмотр html</a>"
+                warning += "<a class='btn btn-sm btn-success' href='/relevance/show-detail-html/" + encodeURIComponent(value['site'].replace(/\//g, 'splittedSlashe')) + "/" + id + "/" + search + "' target='_blank'>Просмотр html</a>"
             }
 
             warning += "</td>"
