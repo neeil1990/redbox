@@ -37,8 +37,6 @@ class TextAnalyzer extends Model
         $headers = curl_getinfo($curl);
         $html = curl_exec($curl);
 
-        dump($headers);
-
         if($headers['content_type'])
         {
             $contentType = trim(str_replace('text/html;', '', $headers['content_type']));

@@ -41,9 +41,9 @@ Route::get('dev', function () {
 
      // dd('done');
 
-    //$html = file_get_contents('https://kia-vasauto.ru/pages/zamena-masla-mkpp/');
 
     $html = TextAnalyzer::curlInitV2('https://apteka.ru/product/ekstrakt-pixty-sibirskoj-500-ml-66600bc9920d208f06ea0830/');
+    $html = file_get_contents('https://apteka.ru/product/ekstrakt-pixty-sibirskoj-500-ml-66600bc9920d208f06ea0830/');
 
     dump($html);
 
