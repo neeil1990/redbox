@@ -43,11 +43,15 @@ Route::get('dev', function () {
 
     //$html = file_get_contents('https://kia-vasauto.ru/pages/zamena-masla-mkpp/');
 
-    //$dom = TextAnalyzer::loadHtml($html);
+    $html = TextAnalyzer::curlInitV2('https://apteka.ru/product/ekstrakt-pixty-sibirskoj-500-ml-66600bc9920d208f06ea0830/');
 
-    //$html = TextAnalyzer::saveHtml($dom);
+    dump($html);
 
-    //dd($html);
+    $html = TextAnalyzer::removeStylesAndScripts($html);
+
+    $html = TextAnalyzer::deleteEverythingExceptCharacters($html);
+
+    dd($html);
 });
 
 Auth::routes(['verify' => true]);
