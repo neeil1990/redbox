@@ -214,7 +214,7 @@ class TextAnalyzer extends Model
 
         $dom = TextAnalyzer::loadHtml($html);
 
-        $array = preg_split('/[^А-Яа-яЁё]+/u', $dom->textContent);
+        $array = preg_split('/[^a-zA-ZА-Яа-яЁё]+/u', $dom->textContent);
 
         return implode(' ', $array);
     }
