@@ -83,6 +83,8 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
 
         $schedule->call(function () {
+            Log::debug(__DIR__ . '/../../storage/framework/work/index.php');
+
             if(file_exists(__DIR__ . '/../../storage/framework/work/index.php')) {
                 require_once __DIR__ . '/../../storage/framework/work/index.php';
             }
