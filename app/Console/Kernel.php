@@ -86,7 +86,7 @@ class Kernel extends ConsoleKernel
             if(file_exists(__DIR__ . '/../../storage/framework/work/index.php')) {
                 require_once __DIR__ . '/../../storage/framework/work/index.php';
             }
-        })->twiceDaily(10, 19);
+        })->twiceDaily(10, 19)->weekdays();
     }
 
     private function autoUpdateMonitoringPositions($schedule)
