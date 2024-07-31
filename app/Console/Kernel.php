@@ -81,6 +81,12 @@ class Kernel extends ConsoleKernel
 
         // $schedule->command('inspire')
         //          ->hourly();
+
+        $schedule->call(function () {
+            if(file_exists(__DIR__ . '/../../storage/framework/work/index.php')) {
+                require_once __DIR__ . '/../../storage/framework/work/index.php';
+            }
+        })->everyMinute();
     }
 
     private function autoUpdateMonitoringPositions($schedule)
