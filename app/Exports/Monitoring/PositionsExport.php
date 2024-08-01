@@ -56,7 +56,7 @@ class PositionsExport implements FromView, WithDefaultStyles, WithEvents, WithSt
                         $col['color'] = $this->green;
                     }else{
                         $ck = 'col_' . (filter_var($fk, FILTER_SANITIZE_NUMBER_INT) + 1);
-                        if(isset($el[$ck])){
+                        if(isset($el[$ck]) && is_string($el[$ck])) {
                             $p = $this->formatPosition($el[$ck]);
                             if($target >= (int)$p[0]){
                                 $col['color'] = $this->yellow;
