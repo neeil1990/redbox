@@ -34,6 +34,7 @@
             ['name' => 'query', 'text' => __('Query'), 'default' => 'on'],
             ['name' => 'url', 'text' => __('URL'), 'default' => 'on'],
             ['name' => 'group', 'text' => __('Group'), 'default' => 'on'],
+            ['name' => 'target_url', 'text' => __('Target URL'), 'default' => 'off'],
             ['name' => 'target', 'text' => __('Target'), 'default' => 'on'],
             ['name' => 'dynamics', 'text' => __('Dynamics'), 'default' => 'on'],
             ['name' => 'base', 'text' => __('YW'), 'default' => 'off'],

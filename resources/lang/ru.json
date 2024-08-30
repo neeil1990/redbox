@@ -1050,6 +1050,8 @@
     "Description": "Описание задачи",
     "Save": "Сохранить",
     "Url": "Адрес",
+    "URL": "URL в выдаче",
+    "Target URL": "Целевой URL",
     "Requests": "Запросы",
     "Add key phrases request": "Добавить ключевой запрос",
     "Search request": "Поисковой запрос",

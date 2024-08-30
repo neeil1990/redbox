@@ -238,6 +238,9 @@ class MonitoringKeywordsController extends Controller
                 case 'group':
                     $row->put('group', view('monitoring.partials.show.group', ['group' => $keyword->group])->render());
                     break;
+                case 'target_url':
+                    $row->put('target_url', $keyword->page);
+                    break;
                 case 'target':
                     $row->put('target', view('monitoring.partials.show.target', ['key' => $keyword])->render());
                     break;
@@ -505,6 +508,7 @@ class MonitoringKeywordsController extends Controller
             'query' => view('monitoring.partials.show.header.query')->render(),
             'url' => __('URL'),
             'group' => __('Group'),
+            'target_url' => __('Target URL'),
             'target' => __('Target'),
             'dynamics' => __('Dynamics'),
             'base' => view('monitoring.partials.show.header.yw', ['ext' => ''])->render(),

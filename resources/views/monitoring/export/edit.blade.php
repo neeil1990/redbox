@@ -115,6 +115,10 @@
                         <input class="custom-control-input" name="urlCol" type="checkbox" id="url" value="1">
                         <label for="url" class="custom-control-label">{{ __('URL') }}</label>
                     </div>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="target_urlCol" type="checkbox" id="target_url" value="1">
+                        <label for="target_url" class="custom-control-label">{{ __('Target URL') }}</label>
+                    </div>
                 </div>
             </div>
         </div>
