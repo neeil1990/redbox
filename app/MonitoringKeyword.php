@@ -76,4 +76,9 @@ class MonitoringKeyword extends Model
 
         return $query;
     }
+
+    public function scopeJoinGroup($query)
+    {
+        return $query->leftJoin('monitoring_groups', 'monitoring_keywords.monitoring_group_id', '=', 'monitoring_groups.id');
+    }
 }

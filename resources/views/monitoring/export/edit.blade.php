@@ -71,6 +71,26 @@
             </select>
         </div>
 
+        <div class="form-group">
+            <label>Сортировка</label>
+            <div class="row">
+                <div class="col-6">
+                    <select class="custom-select" name="order[column]">
+                        <option value="{{ \App\Http\Controllers\MonitoringExportsController::QUERY_INDEX }}">Запрос</option>
+                        <option value="{{ \App\Http\Controllers\MonitoringExportsController::GROUP_INDEX }}">Группа</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <select class="custom-select" name="order[dir]">
+                        <option value="asc">По возрастанию</option>
+                        <option value="desc">По убыванию</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+
         <div class="row">
 
             <div class="col-sm-12">

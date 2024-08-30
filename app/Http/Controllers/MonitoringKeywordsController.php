@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\DB;
 
 class MonitoringKeywordsController extends Controller
 {
+    const GROUP_NAME = 'group_name';
+
     protected $user;
     protected $project;
     protected $projectID;
@@ -75,7 +77,7 @@ class MonitoringKeywordsController extends Controller
         $id = $this->getProjectID();
         $this->project = $this->user->monitoringProjects()->find($id);
         $this->regions = $this->project->searchengines()->with('location')->orderBy('id', 'asc')->get();
-        $this->queries = $this->project->keywords();
+        $this->queries = $this->project->keywords()->select('monitoring_keywords.*', 'monitoring_groups.name as ' . self::GROUP_NAME)->joinGroup();
     }
 
     public function showDataTable(Request $request, $id)
@@ -101,7 +103,7 @@ class MonitoringKeywordsController extends Controller
         if($regionID)
             $this->regions = $this->regions->where('id', $regionID);
 
-        $this->filter($filteredColumns)->order($order);
+        $this->filter($filteredColumns)->order($order, $filteredColumns);
 
         $page = ($length) ? ($start / $length) + 1 : false;
         if($page){
@@ -584,18 +586,23 @@ class MonitoringKeywordsController extends Controller
         );
     }
 
-    private function order($by = null)
+    private function order($order = null, $columns = [])
     {
-        $dir = 'asc';
+        if (!$order) {
+            $this->queries->orderBy('query', 'asc');
+        } else {
+            if (is_array($order)) {
+                $order = collect($order)->collapse();
 
-        if ($by && is_array($by)) {
-            $order = collect($by)->collapse();
+                if ($name = $columns[$order['column']]['data']) {
+                    if ($name == 'group') {
+                        $name = self::GROUP_NAME;
+                    }
 
-            if ($order->has('dir') && $order['dir'] != $dir)
-                $dir = $order['dir'];
+                    $this->queries->orderBy($name, $order['dir']);
+                }
+            }
         }
-
-        $this->queries->orderBy('query', $dir);
 
         return $this;
     }

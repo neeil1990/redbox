@@ -11,7 +11,9 @@ use Illuminate\Http\Request;
 
 class MonitoringExportsController extends MonitoringKeywordsController
 {
-    private $groupColumnIndex = 4;
+    const QUERY_INDEX = 1;
+    const GROUP_INDEX = 2;
+
     private $removeColumns = [
         'checkbox',
         'btn',
@@ -68,13 +70,25 @@ class MonitoringExportsController extends MonitoringKeywordsController
             'region_id' => $request['region'],
             'dates_range' => $date,
             'columns' => [
-                $this->groupColumnIndex => [
+                self::GROUP_INDEX => [
                     'data' => 'group',
                     'search' => [
                         'value' => ($request['group']) ? implode(',', $request['group']) : null
                     ]
+                ],
+                self::QUERY_INDEX => [
+                    'data' => 'query',
+                    'search' => [
+                        'value' => null
+                    ]
                 ]
-            ]
+            ],
+            'order' => [
+                [
+                    'column' => $request['order']['column'],
+                    'dir' => $request['order']['dir'],
+                ]
+            ],
         ]);
 
         foreach ($this->removeColumns as $col) {

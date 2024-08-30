@@ -235,22 +235,30 @@
                 dates_range: DATES,
                 mode_range: MODE,
             }).then(function (response) {
-
                 let columns = [];
+
                 $.each(response.data.columns, function (i, item) {
                     if (PROJECT_ADMIN == '0' && (i == 'checkbox' || i == 'btn'))
                         return;
 
                     let width = null;
+                    let orderable = false;
 
-                    if (i == 'query')
+                    if (i === 'query') {
                         width = '300px';
+                        orderable = true;
+                    }
+
+                    if (i === 'group') {
+                        orderable = true;
+                    }
 
                     columns.push({
                         'title': item,
                         'name': i,
                         'data': i,
                         'width': width,
+                        'orderable': orderable,
                     });
                 });
 
@@ -286,10 +294,9 @@
                     columns: columns,
                     //rowReorder: true,
                     order: [
-                        [2, 'asc'],
+                        [columns.findIndex((elem) => elem.data === 'query'), 'asc'],
                     ],
                     columnDefs: [
-                        {orderable: true, className: 'reorder', targets: 2},
                         {orderable: false, targets: '_all'},
                     ],
                     initComplete: function () {
