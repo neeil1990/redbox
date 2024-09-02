@@ -76,7 +76,7 @@ class AttributeExport
         });
     }
 
-    public function getBudget(): int
+    public function getBudget()
     {
         return $this->budget;
     }

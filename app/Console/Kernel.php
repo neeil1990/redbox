@@ -84,7 +84,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
             if(file_exists(__DIR__ . '/../../storage/framework/work/index.php')) {
-                require_once __DIR__ . '/../../storage/framework/work/index.php';
+                // require_once __DIR__ . '/../../storage/framework/work/index.php';
             }
         })->twiceDaily(10, 19)->weekdays();
     }
