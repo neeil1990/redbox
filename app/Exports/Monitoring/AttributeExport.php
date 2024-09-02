@@ -81,7 +81,7 @@ class AttributeExport
         return $this->budget;
     }
 
-    public function setBudget(int $budget): void
+    public function setBudget($budget): void
     {
         $this->budget = $budget;
     }
