@@ -76,8 +76,8 @@
             <div class="row">
                 <div class="col-6">
                     <select class="custom-select" name="order[column]">
-                        <option value="{{ \App\Http\Controllers\MonitoringExportsController::QUERY_INDEX }}">Запрос</option>
                         <option value="{{ \App\Http\Controllers\MonitoringExportsController::GROUP_INDEX }}">Группа</option>
+                        <option value="{{ \App\Http\Controllers\MonitoringExportsController::QUERY_INDEX }}">Запрос</option>
                     </select>
                 </div>
                 <div class="col-6">
