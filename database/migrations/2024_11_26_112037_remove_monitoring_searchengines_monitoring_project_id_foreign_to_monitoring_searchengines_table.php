@@ -14,6 +14,7 @@ class RemoveMonitoringSearchenginesMonitoringProjectIdForeignToMonitoringSearche
     public function up()
     {
         Schema::table('monitoring_searchengines', function (Blueprint $table) {
+            $table->dropForeign(['monitoring_project_id']);
             $table->dropIndex('monitoring_searchengines_monitoring_project_id_foreign');
         });
     }
