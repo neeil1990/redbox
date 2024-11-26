@@ -217,7 +217,17 @@ class MonitoringProjectCreatorController extends Controller
 
     private function removeRegion(Request $request)
     {
-        $this->project->searchengines()->where(['engine' => $request->input('engine'), 'lr' => $request->input('lr')])->delete();
+        $searchengines = $this->project->searchengines()
+            ->where(['engine' => $request->input('engine'), 'lr' => $request->input('lr')])
+            ->first();
+
+        if ($this->project) {
+            foreach ($this->project->keywords as $keys) {
+                $keys->positions()->where('monitoring_searchengine_id', $searchengines['id'])->delete();
+            }
+
+            $searchengines->delete();
+        }
     }
 
     private function createQueries(Request $request)
