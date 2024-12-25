@@ -42,16 +42,17 @@ Route::get('dev', function () {
      // dd('done');
 
 
-    $html = TextAnalyzer::curlInitV2('https://apteka.ru/product/ekstrakt-pixty-sibirskoj-500-ml-66600bc9920d208f06ea0830/');
-    $html = file_get_contents('https://apteka.ru/product/ekstrakt-pixty-sibirskoj-500-ml-66600bc9920d208f06ea0830/');
+    $html = TextAnalyzer::curlInitV2('https://akson.ru/voronezh/c/mebel_dlya_vannoy_komnaty/');
 
-    dump($html);
+    //$html = file_get_contents('https://apteka.ru/product/ekstrakt-pixty-sibirskoj-500-ml-66600bc9920d208f06ea0830/');
 
-    $html = TextAnalyzer::removeStylesAndScripts($html);
+    // echo $html;
 
-    $html = TextAnalyzer::deleteEverythingExceptCharacters($html);
+    //$html = TextAnalyzer::removeStylesAndScripts($html);
 
-    dd($html);
+    //$html = TextAnalyzer::deleteEverythingExceptCharacters($html);
+
+    //dd($html);
 });
 
 Auth::routes(['verify' => true]);

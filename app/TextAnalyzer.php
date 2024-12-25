@@ -29,7 +29,7 @@ class TextAnalyzer extends Model
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_FAILONERROR, true);
         curl_setopt($curl, CURLOPT_AUTOREFERER, true);
-        curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
+        curl_setopt($curl, CURLOPT_ENCODING, '');
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 4);
         curl_setopt($curl, CURLOPT_TIMEOUT, 5);
         curl_setopt($curl, CURLOPT_REFERER, $refers[array_rand($refers)]);
@@ -37,11 +37,15 @@ class TextAnalyzer extends Model
         $headers = curl_getinfo($curl);
         $html = curl_exec($curl);
 
-        if($headers['content_type'])
-        {
-            $contentType = trim(str_replace('text/html;', '', $headers['content_type']));
-            $contentType = trim(str_replace('charset=', '', $contentType));
-            $html = mb_convert_encoding($html, "utf-8", $contentType);
+        if (preg_match('/<meta[^>]+charset=["\']?([\w-]+)["\']?/i', $html, $matches)) {
+            $encoding = strtoupper($matches[1]);
+        } else {
+            // Если не найдено, используем UTF-8 по умолчанию
+            $encoding = 'UTF-8';
+        }
+
+        if ($encoding !== 'UTF-8') {
+            $html = mb_convert_encoding($html, 'UTF-8', $encoding);
         }
 
         return $html;
