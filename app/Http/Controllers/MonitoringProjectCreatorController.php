@@ -285,9 +285,9 @@ class MonitoringProjectCreatorController extends Controller
             throw new ModelNotFoundException("Not exist MonitoringProject model");
 
         $this->project->keywords()->create([
-            'monitoring_group_id' => $data['group'],
-            'query' => $data['query'],
-            'page' => $data['page'],
+            'monitoring_group_id' => $data['group'] ?? "",
+            'query' => $data['query'] ?? "",
+            'page' => $data['page'] ?? "",
             'target' => $data['target'],
         ]);
     }
