@@ -41,18 +41,13 @@ Route::get('dev', function () {
 
      // dd('done');
 
+    $html = TextAnalyzer::curlInitV2('https://l.himopttorg.ru/catalog/kaltsiy_khloristyy_/');
 
-    $html = TextAnalyzer::curlInitV2('https://akson.ru/voronezh/c/mebel_dlya_vannoy_komnaty/');
+    $html = TextAnalyzer::removeStylesAndScripts($html);
 
-    //$html = file_get_contents('https://apteka.ru/product/ekstrakt-pixty-sibirskoj-500-ml-66600bc9920d208f06ea0830/');
+    $html = TextAnalyzer::deleteEverythingExceptCharacters($html);
 
-    // echo $html;
-
-    //$html = TextAnalyzer::removeStylesAndScripts($html);
-
-    //$html = TextAnalyzer::deleteEverythingExceptCharacters($html);
-
-    //dd($html);
+    // dd($html);
 });
 
 Auth::routes(['verify' => true]);

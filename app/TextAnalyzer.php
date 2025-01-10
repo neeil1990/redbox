@@ -46,6 +46,7 @@ class TextAnalyzer extends Model
 
         if ($encoding !== 'UTF-8') {
             $html = mb_convert_encoding($html, 'UTF-8', $encoding);
+            $html = str_ireplace($encoding, 'UTF-8', $html);
         }
 
         return $html;
