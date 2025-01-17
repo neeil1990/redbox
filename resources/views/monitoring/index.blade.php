@@ -184,6 +184,11 @@
                         },
                     }, // 1
                     {
+                        title: 'Название',
+                        name: 'name',
+                        data: 'name',
+                    }, // 2
+                    {
                         orderable: false,
                         title: '{{ __('Users') }}',
                         name: 'users',
@@ -217,48 +222,48 @@
 
                             return ul[0].outerHTML;
                         },
-                    }, // 2
+                    }, // 3
                     {
                         orderable: false,
                         className: 'text-nowrap',
                         title: '<i class="fab fa-yandex fa-sm"></i> <i class="fab fa-google fa-sm"></i>',
                         name: 'engines',
                         data: 'engines',
-                    }, // 3
+                    }, // 4
                     {
                         title: '{{ __('Words') }}',
                         name: 'words',
                         data: 'words',
-                    }, // 4
+                    }, // 5
                     {
                         name: 'middle',
                         data: 'middle',
-                    }, // 5
+                    }, // 6
                     {
                         title: '3 %',
                         name: 'top3',
                         data: 'top3',
-                    }, // 6
+                    }, // 7
                     {
                         title: '5 %',
                         name: 'top5',
                         data: 'top5',
-                    }, // 7
+                    }, // 8
                     {
                         title: '10 %',
                         name: 'top10',
                         data: 'top10',
-                    }, // 8
+                    }, // 9
                     {
                         title: '30 %',
                         name: 'top30',
                         data: 'top30',
-                    }, // 9
+                    }, // 10
                     {
                         title: '100 %',
                         name: 'top100',
                         data: 'top100',
-                    }, // 10
+                    }, // 11
                     {
                         title: '{{ __('Budget') }}',
                         name: 'budget',
@@ -269,16 +274,16 @@
 
                             return currencyFormatRu(row.budget) + sup[0].outerHTML;
                         },
-                    }, // 11
+                    }, // 12
                     {
                         visible: false, searchable: false, data: function (row) {
                             let percent = Math.floor(row.mastered / (row.budget / 30) * 100);
 
                             return Number.isNaN(percent) ? 0 : percent;
                         }
-                    }, // 12
+                    }, // 13
                     {
-                        "iDataSort": 12,
+                        "iDataSort": 13,
                         title: '{{ __('Mastered') }}',
                         name: 'mastered',
                         data: function (row) {
@@ -291,7 +296,7 @@
 
                             return currencyFormatRu(row.mastered);
                         },
-                    }, // 13
+                    }, // 14
                     {
                         orderable: false,
                         data: function (row) {
@@ -353,7 +358,7 @@
                             return group[0].outerHTML;
                         },
                         class: 'project-actions text-right',
-                    }, // 14
+                    }, // 15
                 ],
                 headerCallback: function(thead, data, start, end, display) {
                     let api = this.api();

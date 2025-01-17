@@ -18,6 +18,7 @@
 
     <div class="btn-group">
         @foreach ([
+            ['name' => 'name', 'text' => 'Название'],
             ['name' => 'users', 'text' => __('Users')],
             ['name' => 'engines', 'text' => __('Search engine')],
             ['name' => 'words', 'text' => __('Words')],
