@@ -174,7 +174,7 @@
                         data: function(){
                             return '<a href="#" class="dt-control text-muted click_tracking" data-click="Show project positions"><i class="fas fa-plus-circle"></i></a>';
                         }
-                    },
+                    }, // 0
                     {
                         title: '{{ __('Domain') }}',
                         name: 'url',
@@ -182,7 +182,7 @@
                         data: function (row) {
                             return `<a class="text-muted" href="https://${row.url}" target="_blank">${row.url}</a>`;
                         },
-                    },
+                    }, // 1
                     {
                         orderable: false,
                         title: '{{ __('Users') }}',
@@ -217,48 +217,48 @@
 
                             return ul[0].outerHTML;
                         },
-                    },
+                    }, // 2
                     {
                         orderable: false,
                         className: 'text-nowrap',
                         title: '<i class="fab fa-yandex fa-sm"></i> <i class="fab fa-google fa-sm"></i>',
                         name: 'engines',
                         data: 'engines',
-                    },
+                    }, // 3
                     {
                         title: '{{ __('Words') }}',
                         name: 'words',
                         data: 'words',
-                    },
+                    }, // 4
                     {
                         name: 'middle',
                         data: 'middle',
-                    },
+                    }, // 5
                     {
                         title: '3 %',
                         name: 'top3',
                         data: 'top3',
-                    },
+                    }, // 6
                     {
                         title: '5 %',
                         name: 'top5',
                         data: 'top5',
-                    },
+                    }, // 7
                     {
                         title: '10 %',
                         name: 'top10',
                         data: 'top10',
-                    },
+                    }, // 8
                     {
                         title: '30 %',
                         name: 'top30',
                         data: 'top30',
-                    },
+                    }, // 9
                     {
                         title: '100 %',
                         name: 'top100',
                         data: 'top100',
-                    },
+                    }, // 10
                     {
                         title: '{{ __('Budget') }}',
                         name: 'budget',
@@ -269,8 +269,16 @@
 
                             return currencyFormatRu(row.budget) + sup[0].outerHTML;
                         },
-                    },
+                    }, // 11
                     {
+                        visible: false, searchable: false, data: function (row) {
+                            let percent = Math.floor(row.mastered / (row.budget / 30) * 100);
+
+                            return Number.isNaN(percent) ? 0 : percent;
+                        }
+                    }, // 12
+                    {
+                        "iDataSort": 12,
                         title: '{{ __('Mastered') }}',
                         name: 'mastered',
                         data: function (row) {
@@ -283,7 +291,7 @@
 
                             return currencyFormatRu(row.mastered);
                         },
-                    },
+                    }, // 13
                     {
                         orderable: false,
                         data: function (row) {
@@ -345,7 +353,7 @@
                             return group[0].outerHTML;
                         },
                         class: 'project-actions text-right',
-                    },
+                    }, // 14
                 ],
                 headerCallback: function(thead, data, start, end, display) {
                     let api = this.api();
