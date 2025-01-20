@@ -60,6 +60,10 @@ class ProjectDependencies
             $latestPositions = $latestPositions->merge($positions);
         }
 
+        $latestPositions = $latestPositions->filter(function ($value) {
+            return $value['position'] !== null;
+        });
+
         return $latestPositions;
     }
 
