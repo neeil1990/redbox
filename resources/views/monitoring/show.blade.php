@@ -600,6 +600,8 @@
                         card.find('.processing').remove();
                         card.find('.dTable').css('display', 'block');
 
+                        console.log("drawCallback", $('.table tr'));
+
                         $('.table tr').each(function (i, item) {
                             let target = $(item).find('.target').text();
                             let positions = $(item).find('td span[data-position]');
