@@ -531,9 +531,7 @@
                         let notValidateUrl = $('<div />', {
                             class: 'custom-control custom-switch'
                         }).css({
-                            float: "left",
-                            "margin-left": "2.25rem",
-                            "margin-top": "6px",
+                            "margin-right": "2.25rem",
                         });
 
                         notValidateUrl.append($('<input />', {
@@ -561,8 +559,8 @@
                         let dynamic = $('<div />', {
                             class: 'form-group'
                         }).css({
-                            float: "left",
                             "margin-bottom": "0px",
+                            "margin-right": "15px",
                         });
 
                         let dynamicOptions = [
@@ -587,8 +585,8 @@
                         dynamic.append(dynamicSelect);
 
                         if (response.data.region.length === 1) {
-                            this.closest('.card').find('.card-header').append(dynamic);
-                            this.closest('.card').find('.card-header').append(notValidateUrl);
+                            this.closest('.card').find('.card-header .card-title').after(dynamic);
+                            this.closest('.card').find('.card-header .card-title').after(notValidateUrl);
                         }
 
                         this.closest('.card').find('.card-header label').css('margin-bottom', 0);
