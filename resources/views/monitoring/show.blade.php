@@ -215,6 +215,7 @@
         <script>
             const PROJECT_ADMIN = '{{ $project->pivot->admin }}';
             const PROJECT_ID = '{{ $project->id }}';
+            const PROJECT_NAME = '{{ $project->name }}';
             const REGION_ID = '{{ request('region', null) }}';
             const DATES = '{{ request('dates', null) }}';
             const MODE = '{{ request('mode', null) }}';
@@ -263,7 +264,7 @@
                 });
 
                 let dTable = table.DataTable({
-                    dom: '<"card-header"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
+                    dom: '<"card-header d-flex align-items-center"<"card-title"><"float-right"l>><"card-body p-0"<"mailbox-controls">rt<"mailbox-controls">><"card-footer clearfix"p><"clear">',
                     scrollX: true,
                     lengthMenu: LENGTH_MENU,
                     pageLength: PAGE_LENGTH,
@@ -592,6 +593,7 @@
 
                         this.closest('.card').find('.card-header label').css('margin-bottom', 0);
                         $('.dataTables_length').find('select').removeClass('custom-select-sm');
+                        this.closest('.card').find('.card-header .card-title').addClass('flex-grow-1').text(PROJECT_NAME);
                     },
                     drawCallback: function () {
                         let api = this.api();
