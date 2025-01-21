@@ -96,6 +96,11 @@ class Kernel extends ConsoleKernel
 
             foreach ($engines as $engine) {
 
+                /*if (empty($engine->project)) {
+                    $engine->delete();
+                    continue;
+                }*/
+
                 $time = explode(':', $engine->time ?? '00:00');
                 $hour = (int)$time[0];
                 $minute = (int)$time[1];
