@@ -196,19 +196,27 @@
                             let ul = $('<ul />', { class : 'list-inline user-list'});
 
                             $.each(row.users, function(i, item){
-                                let li = $('<li />', {class : 'list-inline-item position-relative tooltip-on', "user-id": item.id, title : item.name + ' ' + item.last_name}).append($('<img />', { class : 'table-avatar', src : item.image }));
+                                let li = $('<li />', {
+                                    class : 'list-inline-item position-relative tooltip-on',
+                                    "user-id": item.id,
+                                    "project-id": row.id,
+                                    title : item.name + ' ' + item.last_name
+                                }).append($('<img />', { class : 'table-avatar', src : item.image }));
 
-                                if(item.pivot.admin)
+                                if (item.pivot.admin) {
                                     li.append($('<span />', {class : 'badge badge-danger navbar-badge'})
                                         .css({'left' : 0, 'right' : 0, 'top' : '-10px'}).text('ADMIN'));
-                                else{
+                                } else {
                                     if(row.pivot.admin){
                                         li.append($('<span />', {class : 'badge badge-secondary navbar-badge detach-user'}).css({
                                             cursor: 'pointer',
                                             top: '-5px',
                                             right: 0,
                                             "font-size": 'x-small',
-                                        }).attr("data-id", item.id).html('<i class="fas fa-times"></i>'));
+                                        }).attr({
+                                            "data-id": item.id,
+                                            "data-project": row.id
+                                        }).html('<i class="fas fa-times"></i>'));
                                     }
                                 }
 
@@ -724,8 +732,9 @@
             });
 
             $('#projects').on('click', '.detach-user', function(){
-                let ProjectId = $(this).closest('tr').find('input[type="checkbox"]').val();
-                let UserId = $(this).data('id');
+                let $self = $(this);
+                let ProjectId = $self.data('project');
+                let UserId = $self.data('id');
 
                 if (window.confirm("{{ __('Detach user from project?') }}")) {
 
@@ -734,7 +743,7 @@
                         user_id: UserId,
                     }).then(function (response) {
                         toastr.success('{{ __('User deleted') }}');
-                        table.draw(false);
+                        $self.closest("li").remove();
                     }).catch(function (error) {
                         toastr.error('{{ __('Wrong request') }}');
                     });
@@ -746,7 +755,7 @@
             $('#projects').on('click', '.user-list li', function(){
                 let self = $(this);
                 let user = self.attr('user-id');
-                let project = $(this).closest('tr').find('input[type="checkbox"]').val();
+                let project = self.attr('project-id');
 
                 axios.get('/monitoring/get-user-status-options')
                     .then(function(response){

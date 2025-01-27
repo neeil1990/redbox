@@ -41,11 +41,11 @@ Route::get('dev', function () {
 
      // dd('done');
 
-    $html = TextAnalyzer::curlInitV2('https://l.himopttorg.ru/catalog/kaltsiy_khloristyy_/');
+    // $html = TextAnalyzer::curlInitV2('https://l.himopttorg.ru/catalog/kaltsiy_khloristyy_/');
 
-    $html = TextAnalyzer::removeStylesAndScripts($html);
+    // $html = TextAnalyzer::removeStylesAndScripts($html);
 
-    $html = TextAnalyzer::deleteEverythingExceptCharacters($html);
+    // $html = TextAnalyzer::deleteEverythingExceptCharacters($html);
 
     // dd($html);
 });

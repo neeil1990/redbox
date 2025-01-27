@@ -63,10 +63,9 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
-        $projects = $user->monitoringProjects();
 
-        $countApprovedProject = $projects->wherePivot('approved', 1)->count();
-        $foreignProject = $projects->wherePivot('approved', 0)->get();
+        $countApprovedProject = $user->monitoringProjects()->wherePivot('approved', 1)->count();
+        $foreignProject = $user->monitoringProjects()->wherePivot('approved', 0)->get();
 
         return view('monitoring.index', compact('foreignProject', 'countApprovedProject'));
     }
@@ -81,8 +80,9 @@ class MonitoringController extends Controller
         if ($users->isEmpty())
             return abort('403');
 
+        $id = $request->input('id');
+
         foreach ($users as $user) {
-            $id = $request->input('id');
             if ($user->monitoringProjects()->find($id) === null) {
                 $result = $user->monitoringProjects()->syncWithoutDetaching([$id => ['approved' => 0]]);
                 if (count($result['attached']) > 0) {
@@ -347,7 +347,7 @@ class MonitoringController extends Controller
         $user = $this->user;
 
         /** @var MonitoringProject $project */
-        $project = $user->monitoringProjects()->find($id);
+        $project = $user->monitoringProjects()->wherePivot('approved', 1)->findOrFail($id);
         $navigations = $this->navigations($project);
 
         $length = $this->getLength($project->id);
