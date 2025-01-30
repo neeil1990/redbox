@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class MonitoringPosition extends Model
 {
-    protected $fillable = ['monitoring_searchengine_id', 'position', 'url', 'target'];
+    protected $fillable = ['monitoring_searchengine_id', 'position', 'url', 'target', 'created_at', 'updated_at'];
 
     public function engine()
     {

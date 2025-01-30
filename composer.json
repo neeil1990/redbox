@@ -12,6 +12,7 @@
         "ext-gd": "*",
         "ext-json": "*",
         "barryvdh/laravel-dompdf": "^0.9.0",
+        "beyondcode/laravel-websockets": "^1.6",
         "doctrine/dbal": "2.*",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
