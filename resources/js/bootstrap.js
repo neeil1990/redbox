@@ -39,7 +39,7 @@ window.Echo = new Echo({
     key: "local",
     wsHost: window.location.hostname,
     wsPort: 6002,
-    forceTLS: window.location.protocol == "http:" ? false : true,
+    forceTLS: false,
     disableStats: true,
     enabledTransports: ["ws", "wss"],
 });
