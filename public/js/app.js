@@ -96342,7 +96342,7 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: "pusher",
   key: "local",
   wsHost: window.location.hostname,
-  wsPort: 6001,
+  wsPort: 6002,
   forceTLS: window.location.protocol == "http:" ? false : true,
   disableStats: true,
   enabledTransports: ["ws", "wss"]
