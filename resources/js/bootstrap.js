@@ -38,9 +38,8 @@ window.Echo = new Echo({
     broadcaster: "pusher",
     key: "local",
     wsHost: window.location.hostname,
-    wsPort: 443,
-    wssPort: 443,
-    forceTLS: true,
+    wsPort: 6001,
+    forceTLS: false,
     disableStats: true,
     enabledTransports: ["ws", "wss"],
 });
