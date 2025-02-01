@@ -140,7 +140,8 @@
     </script>
 @endif
 
-<script src="https://www.youtube.com/iframe_api"></script>
+<!-- <script src="https://www.youtube.com/iframe_api"></script> -->
+
 <script>
     $(document).ready(function () {
         let player;
