@@ -17,8 +17,6 @@ class FillEmptyPositions
     protected $endDate;
     protected $period;
     protected $project;
-    protected $min = 1;
-    protected $max = 20;
 
     public function __construct($project_id, $engine_id, $startDate, $endDate)
     {
@@ -35,18 +33,11 @@ class FillEmptyPositions
 
             $min = $this->getMinPosition($query);
 
-            if ($min > $this->max) {
-                $this->max = $min;
-                $this->min = $min - 10;
-            } else {
-                $this->min = $min;
-            }
-
             foreach ($this->period as $period) {
                 $date = $period->format('Y-m-d');
 
                 if ($this->positionDoesntExist($query, $date)) {
-                    $this->addPosition($query, $date, rand($this->min, $this->max));
+                    $this->addPosition($query, $date, rand($min, $min + 10));
                 }
             }
         }
