@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\MonitoringPositionInsert;
+use App\Monitoring\FillEmptyPositions;
 use App\MonitoringProject;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -45,49 +46,8 @@ class MonitoringSetPositions extends Controller
         $projectId = $request->input('projectId');
         $engineId = $request->input('engineId');
 
-        $endDate = Carbon::parse($request->input('endDate'));
-        $startDate = Carbon::parse($request->input('startDate'));
+        $fillPositions = new FillEmptyPositions($projectId, $engineId, $request->input('startDate'), $request->input('endDate'));
 
-        $period = CarbonPeriod::create($startDate, '1 day', $endDate);
-
-        $maxPos = 20;
-
-        $project = MonitoringProject::findOrFail($projectId);
-
-        foreach ($project->keywords as $keyword) {
-
-            $minPos = $keyword->positions()
-                ->where('monitoring_searchengine_id', $engineId)
-                ->whereDate('created_at', '<', $startDate)
-                ->orderBy('created_at', 'desc')
-                ->take(5)
-                ->min('position');
-
-            if ($minPos > $maxPos) {
-                $maxPos = $minPos;
-                $minPos -= 10;
-            }
-
-            foreach ($period as $date) {
-
-                $dateFormat = $date->format('Y-m-d');
-
-                $positionDoesntExist = $keyword->positions()
-                    ->where('monitoring_searchengine_id', $engineId)
-                    ->whereDate('created_at', $dateFormat)
-                    ->doesntExist();
-
-                if ($positionDoesntExist) {
-                    $positions = $keyword->positions()->make([
-                        'monitoring_searchengine_id' => $engineId,
-                        'position' => rand($minPos, $maxPos),
-                        'created_at' => $dateFormat,
-                        'updated_at' => $dateFormat,
-                    ])->load('keyword');
-
-                    broadcast(new MonitoringPositionInsert($positions));
-                }
-            }
-        }
+        $fillPositions->execute();
     }
 }

@@ -178,7 +178,7 @@
 
 <!-- app -->
 @unless(request()->path() == 'utm-marks' || request()->path() == 'all-projects')
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ mix('js/app.js') }}"></script>
 @endunless
 <!-- AdminLTE -->
 <script src="{{ asset('js/adminlte.js') }}"></script>
