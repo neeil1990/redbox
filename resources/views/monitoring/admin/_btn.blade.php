@@ -16,4 +16,8 @@
         <i class="fas fa-bullhorn"></i> {{ __('Statistics') }}
     @endcomponent
 
+    @component('component.btn-app', ['href' => route('set.positions'), 'class' => ''])
+        <i class="fas fa-plus"></i> {{ __('Set positions') }}
+    @endcomponent
+
 @endcomponent

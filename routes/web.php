@@ -304,7 +304,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/charts', 'MonitoringChartsController@getChartData');
 
     // Monitoring set positions
-    Route::get('/monitoring/set-positions', 'MonitoringSetPositions@index');
+    Route::get('/monitoring/set-positions', 'MonitoringSetPositions@index')->name('set.positions');
     Route::get('/monitoring/set-positions/project-search-engines', 'MonitoringSetPositions@projectSearchEngines')->name('project.search.engines');
     Route::get('/monitoring/set-positions/insert-positions', 'MonitoringSetPositions@insertPositions')->name('insert.positions');
 
