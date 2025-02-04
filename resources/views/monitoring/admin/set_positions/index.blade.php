@@ -180,6 +180,12 @@
                 editor.scrollTo(null, editor.getScrollInfo().height);
             });
 
+            window.Echo.channel("monitoring").listen("MonitoringPositionPassed", (event) => {
+                let text = "Пропущено: " + event.date + " " + event.key.query + " \n";
+                editor.replaceRange(text, CodeMirror.Pos(editor.lastLine()));
+                editor.scrollTo(null, editor.getScrollInfo().height);
+            });
+
         </script>
     @endslot
 

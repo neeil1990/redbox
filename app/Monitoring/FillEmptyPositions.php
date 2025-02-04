@@ -5,6 +5,7 @@ namespace App\Monitoring;
 
 
 use App\Events\MonitoringPositionInsert;
+use App\Events\MonitoringPositionPassed;
 use App\MonitoringKeyword;
 use App\MonitoringProject;
 use Carbon\Carbon;
@@ -45,6 +46,8 @@ class FillEmptyPositions
 
                     $position = rand($min, $max);
                     $this->addPosition($query, $date, $position);
+                } else {
+                    $this->passedPosition($query, $date);
                 }
             }
         }
@@ -79,6 +82,11 @@ class FillEmptyPositions
         ])->load('keyword');
 
         broadcast(new MonitoringPositionInsert($positions));
+    }
+
+    protected function passedPosition(MonitoringKeyword $keyword, $date)
+    {
+        broadcast(new MonitoringPositionPassed($keyword, $date));
     }
 
 }
