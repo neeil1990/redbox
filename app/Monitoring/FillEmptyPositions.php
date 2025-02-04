@@ -37,7 +37,14 @@ class FillEmptyPositions
                 $date = $period->format('Y-m-d');
 
                 if ($this->positionDoesntExist($query, $date)) {
-                    $this->addPosition($query, $date, rand($min, $min + 10));
+                    $max = $min + 10;
+
+                    if ($min < 20) {
+                        $max = $min + 5;
+                    }
+
+                    $position = rand($min, $max);
+                    $this->addPosition($query, $date, $position);
                 }
             }
         }
