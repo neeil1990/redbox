@@ -103,7 +103,7 @@ class MonitoringKeywordsController extends Controller
 
         $offset = $collection->get('offset');
 
-        if ($offset["count"]) {
+        if (isset($offset["count"])) {
             $this->offset = $offset;
         }
 
