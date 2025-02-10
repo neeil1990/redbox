@@ -303,10 +303,15 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/admin/settings/delete/{name}', 'MonitoringSettingsController@destroy')->name('monitoring.admin.settings.delete');
     Route::get('/monitoring/charts', 'MonitoringChartsController@getChartData');
 
+    Route::get('/monitoring/project/get-search-engines', 'MonitoringProject@getSearchEngines')->name('get.search.engines');
+
     // Monitoring set positions
     Route::get('/monitoring/set-positions', 'MonitoringSetPositions@index')->name('set.positions');
-    Route::get('/monitoring/set-positions/project-search-engines', 'MonitoringSetPositions@projectSearchEngines')->name('project.search.engines');
     Route::get('/monitoring/set-positions/insert-positions', 'MonitoringSetPositions@insertPositions')->name('insert.positions');
+
+    // Monitoring offset positions
+    Route::get('/monitoring/offset-positions', 'MonitoringOffsetPositions@index')->name('offset.positions');
+    Route::post('/monitoring/offset-positions', 'MonitoringOffsetPositions@offset')->name('offset.positions');
 
     // Monitoring keywords occurrence
     Route::post('/monitoring/occurrence', 'MonitoringOccurrenceController@update');

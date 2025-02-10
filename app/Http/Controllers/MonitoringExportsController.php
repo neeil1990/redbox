@@ -62,8 +62,9 @@ class MonitoringExportsController extends MonitoringKeywordsController
     {
         $date = implode(' - ', [
             Carbon::parse($request['startDate'])->locale('ru')->toDateString(),
-            Carbon::parse($request['endDate'])->locale('ru')->toDateString()]
-        );
+            Carbon::parse($request['endDate'])->locale('ru')->toDateString()
+        ]);
+
         $params = collect([
             'length' => 0,
             'mode_range' => $request['mode'],
@@ -89,6 +90,12 @@ class MonitoringExportsController extends MonitoringKeywordsController
                     'dir' => $request['order']['dir'],
                 ]
             ],
+            'offset' => [
+                'count' => $request['count'],
+                'from' => $request['from'],
+                'to' => $request['to'],
+                'operator' => $request['operator'],
+            ],
         ]);
 
         foreach ($this->removeColumns as $col) {
@@ -97,7 +104,11 @@ class MonitoringExportsController extends MonitoringKeywordsController
             }
         }
 
-        $this->setProjectID($id)->dataPrepare($params)->columns->forget($this->removeColumns);
+        $this->setProjectID($id)
+            ->dataPrepare($params)
+            ->columns
+            ->forget($this->removeColumns);
+
         $response = $this->generateDataTable();
 
         $attribute = new AttributeExport($response, $request);

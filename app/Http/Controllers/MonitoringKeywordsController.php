@@ -34,6 +34,7 @@ class MonitoringKeywordsController extends Controller
     protected $columns;
     protected $mode = "range";
     protected $total = 0;
+    protected $offset = null;
 
     public function __construct()
     {
@@ -100,26 +101,36 @@ class MonitoringKeywordsController extends Controller
 
         $this->setMode($collection->get('mode_range'));
 
-        if($regionID)
+        $offset = $collection->get('offset');
+
+        if ($offset["count"]) {
+            $this->offset = $offset;
+        }
+
+        if ($regionID) {
             $this->regions = $this->regions->where('id', $regionID);
+        }
 
         $this->filter($filteredColumns)->order($order, $filteredColumns);
 
         $page = ($length) ? ($start / $length) + 1 : false;
-        if($page){
+
+        if ($page) {
             $this->queries = $this->queries->paginate($length, ['*'], 'page', $page);
             $this->total = $this->queries->total();
-        }else{
+        } else {
             $this->queries = $this->queries->get();
             $this->total = $this->queries->count();
         }
 
-        if($length > 1)
+        if ($length > 1) {
             $this->setSetting($this->getProjectID(), 'length', $length);
+        }
 
         $dates = null;
-        if (strlen($datesRange) > 1)
+        if (strlen($datesRange) > 1) {
             $dates = explode(' - ', $datesRange, 2);
+        }
 
         $this->loadPositions($dates);
 
@@ -201,8 +212,47 @@ class MonitoringKeywordsController extends Controller
         $row = collect([]);
         $collectionPositions = $keyword->positions_view;
 
-        if($this->mode == 'finance')
+        if ($this->offset) {
+
+            $offset = $this->offset;
+
+            $collectionPositions->transform(function ($item) use ($offset) {
+
+                if ($item->position >= $offset['from'] && $item->position <= $offset['to']) {
+
+                    if ($offset['operator'] == "+") {
+                        $item->position += $offset['count'];
+                    } else {
+                        $item->position -= $offset['count'];
+                    }
+                }
+
+                if ($item->position <= 0) {
+                    $item->position = 1;
+                }
+
+                return $item;
+            });
+        }
+
+        if ($this->mode == 'finance') {
             $mastered = new Mastered($collectionPositions);
+        }
+
+        $top1 = $top3 = $top5 = $top10 = $top20 = $top50 = $top100 = 0;
+
+        if ($keyword->price && $this->regions->isNotEmpty()) {
+
+            $engineID = $this->regions->pluck("id")->first();
+
+            $top1 = $keyword->price()->where("monitoring_searchengine_id", $engineID)->value('top1');
+            $top3 = $keyword->price()->where("monitoring_searchengine_id", $engineID)->value('top3');
+            $top5 = $keyword->price()->where("monitoring_searchengine_id", $engineID)->value('top5');
+            $top10 = $keyword->price()->where("monitoring_searchengine_id", $engineID)->value('top10');
+            $top20 = $keyword->price()->where("monitoring_searchengine_id", $engineID)->value('top20');
+            $top50 = $keyword->price()->where("monitoring_searchengine_id", $engineID)->value('top50');
+            $top100 = $keyword->price()->where("monitoring_searchengine_id", $engineID)->value('top100');
+        }
 
         $columns = $this->columns;
 
@@ -272,25 +322,25 @@ class MonitoringKeywordsController extends Controller
                         $row->put('exact', '-');
                     break;
                 case 'price_top_1':
-                    $row->put('price_top_1', ($keyword->price) ? $keyword->price['top1'] : 0);
+                    $row->put('price_top_1', $top1);
                     break;
                 case 'price_top_3':
-                    $row->put('price_top_3', ($keyword->price) ? $keyword->price['top3'] : 0);
+                    $row->put('price_top_3', $top3);
                     break;
                 case 'price_top_5':
-                    $row->put('price_top_5', ($keyword->price) ? $keyword->price['top5'] : 0);
+                    $row->put('price_top_5', $top5);
                     break;
                 case 'price_top_10':
-                    $row->put('price_top_10', ($keyword->price) ? $keyword->price['top10'] : 0);
+                    $row->put('price_top_10', $top10);
                     break;
                 case 'price_top_20':
-                    $row->put('price_top_20', ($keyword->price) ? $keyword->price['top20'] : 0);
+                    $row->put('price_top_20', $top20);
                     break;
                 case 'price_top_50':
-                    $row->put('price_top_50', ($keyword->price) ? $keyword->price['top50'] : 0);
+                    $row->put('price_top_50', $top50);
                     break;
                 case 'price_top_100':
-                    $row->put('price_top_100', ($keyword->price) ? $keyword->price['top100'] : 0);
+                    $row->put('price_top_100', $top100);
                     break;
                 case 'days_top_1':
                     $top = $mastered->top1();

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Monitoring;
+namespace App\Monitoring\Positions;
 
 
 use App\Events\MonitoringPositionInsert;
@@ -11,7 +11,7 @@ use App\MonitoringProject;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
-class FillEmptyPositions
+class Fill
 {
     protected $engine_id;
     protected $startDate;
@@ -19,7 +19,7 @@ class FillEmptyPositions
     protected $period;
     protected $project;
 
-    public function __construct($project_id, $engine_id, $startDate, $endDate)
+    public function __construct(int $project_id, int $engine_id, string $startDate, string $endDate)
     {
         $this->project = MonitoringProject::findOrFail($project_id);
         $this->engine_id = $engine_id;

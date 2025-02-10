@@ -115,7 +115,7 @@
 
                 if (id) {
                     $.ajax({
-                        url: '{{ route('project.search.engines') }}',
+                        url: '{{ route('get.search.engines') }}',
                         type: 'GET',
                         data: { id: id },
                         dataType: 'json',

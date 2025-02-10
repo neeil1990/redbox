@@ -20,4 +20,8 @@
         <i class="fas fa-plus"></i> {{ __('Set positions') }}
     @endcomponent
 
+    @component('component.btn-app', ['href' => route('offset.positions'), 'class' => ''])
+        <i class="fas fa-link"></i> {{ __('Корректировать') }}
+    @endcomponent
+
 @endcomponent
