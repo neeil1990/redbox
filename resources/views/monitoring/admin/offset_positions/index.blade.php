@@ -89,6 +89,10 @@
                     let content = response.data;
                     modal.find('.modal-content').html(content);
 
+                    modal.find('select[name="mode"] option[value="finance"]').prop('selected', true);
+
+                    modal.find('#finance').removeClass('d-none');
+
                     modal.find('select[name="mode"]').change(function(){
                         if($(this).val() === 'finance')
                             modal.find('#finance').removeClass('d-none');
