@@ -654,7 +654,7 @@ class MonitoringKeywordsController extends Controller
                         $name = self::GROUP_NAME;
                     }
 
-                    $this->queries->orderBy($name, $order['dir']);
+                    $this->queries->orderBy($name, $order['dir'])->orderBy('query', 'asc');
                 }
             }
         }
