@@ -34,7 +34,7 @@ class MonitoringKeywordsController extends Controller
     protected $columns;
     protected $mode = "range";
     protected $total = 0;
-    protected $offset = null;
+    protected $offset = [];
 
     public function __construct()
     {
@@ -101,11 +101,7 @@ class MonitoringKeywordsController extends Controller
 
         $this->setMode($collection->get('mode_range'));
 
-        $offset = $collection->get('offset');
-
-        if (isset($offset["count"])) {
-            $this->offset = $offset;
-        }
+        $this->offset = $collection->get('offset', []);
 
         if ($regionID) {
             $this->regions = $this->regions->where('id', $regionID);
@@ -207,32 +203,41 @@ class MonitoringKeywordsController extends Controller
         ]);
     }
 
+    private function _offsetPositions(&$positions, $offset)
+    {
+        $positions->transform(function ($item) use ($offset) {
+
+            if ($item->position >= $offset['from'] && $item->position <= $offset['to']) {
+
+                if ($offset['operator'] == "+") {
+                    $item->position += $offset['count'];
+                } else {
+                    $item->position -= $offset['count'];
+                }
+            }
+
+            if ($item->position <= 0) {
+                $item->position = 1;
+            }
+
+            return $item;
+        });
+    }
+
     private function generateRowDataTable($keyword)
     {
         $row = collect([]);
         $collectionPositions = $keyword->positions_view;
 
-        if ($this->offset) {
+        if (count($this->offset)) {
 
-            $offset = $this->offset;
+            $offsets = $this->offset;
 
-            $collectionPositions->transform(function ($item) use ($offset) {
-
-                if ($item->position >= $offset['from'] && $item->position <= $offset['to']) {
-
-                    if ($offset['operator'] == "+") {
-                        $item->position += $offset['count'];
-                    } else {
-                        $item->position -= $offset['count'];
-                    }
+            foreach ($offsets as $offset) {
+                if ($offset['from'] && $offset['to'] && $offset['count']) {
+                    $this->_offsetPositions($collectionPositions, $offset);
                 }
-
-                if ($item->position <= 0) {
-                    $item->position = 1;
-                }
-
-                return $item;
-            });
+            }
         }
 
         if ($this->mode == 'finance') {

@@ -90,12 +90,7 @@ class MonitoringExportsController extends MonitoringKeywordsController
                     'dir' => $request['order']['dir'],
                 ]
             ],
-            'offset' => [
-                'count' => $request['count'],
-                'from' => $request['from'],
-                'to' => $request['to'],
-                'operator' => $request['operator'],
-            ],
+            'offset' => $request['offset'],
         ]);
 
         foreach ($this->removeColumns as $col) {

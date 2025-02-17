@@ -102,23 +102,81 @@
                         locale: 'ru',
                     });
 
-                    let $group = $("<div />", { "class" : "form-group" });
                     let $label = $("<label />").text("Корректировать позиции");
-                    let $from = $("<input />", { "type" : "number", "min" : "1", "class" : "form-control mb-2", "name" : "from", "placeholder" : "С" });
-                    let $to = $("<input />", { "type" : "number", "min" : "1", "class" : "form-control mb-2", "name" : "to", "placeholder" : "До" });
-                    let $count = $("<input />", { "type" : "number", "min" : "1", "class" : "form-control mb-2", "name" : "count", "placeholder" : "Кол-во позиций" });
 
-                    let $operator = $("<select />", { "name" : "operator", "class" : "custom-select mb-2" }).append([$("<option />").val("+").text("+"), $("<option />").val("-").text("-")]);
+                    let $rule1 = createGroupRule({
+                        label: "Правило 1",
+                        inputFrom: { value: "11" },
+                        inputTo: { value: "16" },
+                        inputCount: { value: "6" }
+                    }, 0);
 
-                    $group.append([$label, $from, $to, $operator, $count]);
+                    let $rule2 = createGroupRule({
+                        label: "Правило 2",
+                        inputFrom: { value: "17" },
+                        inputTo: { value: "22" },
+                        inputCount: { value: "12" }
+                    }, 1);
 
-                    modal.find('.form-group').eq(1).after($group);
+                    let $rule3 = createGroupRule({
+                        label: "Правило 3"
+                    }, 2);
 
+                    modal.find('.form-group').eq(1).after([$label, $rule1, $rule2, $rule3]);
 
                 }).catch(function (error) {
                     modal.find('.modal-content').html(error);
                 });
             });
+
+            function createGroupRule(params, index = 0) {
+
+                let def = {
+                    label: "Корректировать позиции",
+                    inputAttr: {
+                        type : "number",
+                        min : "1",
+                        class : "form-control mb-2",
+                        name : "",
+                        placeholder : "",
+                        value : "",
+                    },
+                    inputFrom: {
+                        name: "offset["+ index +"][from]",
+                        placeholder: "С"
+                    },
+                    inputTo: {
+                        name: "offset["+ index +"][to]",
+                        placeholder: "До"
+                    },
+                    inputCount: {
+                        name: "offset["+ index +"][count]",
+                        placeholder: "Кол-во позиций"
+                    },
+                };
+
+                let options = $.extend(true, def, params);
+
+                let $group = $("<div />", { "class" : "form-group" });
+
+                let $label = $("<label />").text(options.label);
+
+                let $operator = $("<select />", { "name" : "offset["+ index +"][operator]", "class" : "custom-select mb-2" })
+                    .append([
+                        $("<option />").val("-").text("-"),
+                        $("<option />").val("+").text("+")
+                    ]);
+
+                $group.append([
+                    $label,
+                    $("<input />", $.extend(true, options.inputAttr, options.inputFrom)),
+                    $("<input />", $.extend(true, options.inputAttr, options.inputTo)),
+                    $operator,
+                    $("<input />", $.extend(true, options.inputAttr, options.inputCount))
+                ]);
+
+                return $group;
+            }
 
         </script>
     @endslot
