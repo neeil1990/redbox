@@ -10,13 +10,14 @@ class WordForms
 {
     protected $morphy;
     protected $words = [];
+    protected $originWords = [];
     protected $count = 0;
 
     public function __construct(string $text)
     {
         $this->morphy = new Morphy("ru");
-
-        $this->words = array_count_values(WordHelper::getWordUpperArray($text));
+        $this->originWords = WordHelper::getWordUpperArray($text);
+        $this->words = array_count_values($this->originWords);
     }
 
     public function getWordFormsInText(string $str) {
@@ -50,6 +51,11 @@ class WordForms
     public function getCount(): int
     {
         return $this->count;
+    }
+
+    public function getOriginWords(): array
+    {
+        return $this->originWords;
     }
 
     private function _toUpper($word)

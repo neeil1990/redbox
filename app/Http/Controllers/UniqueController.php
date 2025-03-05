@@ -19,19 +19,16 @@ class UniqueController extends Controller
         $content = $request->input("content", "");
 
         if ($content) {
-            $words = WordHelper::getWordLowerArray($content);
-
             $morphy = new WordForms($content);
 
-            foreach ($words as $word) {
-                if ($forms = $morphy->getWordFormsInText($word)) {
-                    $data[] = [
-                        $word,
-                        mb_strtolower(implode(', ', $forms)),
-                        $morphy->getCount(),
-                        ""
-                    ];
+            foreach ($morphy->getOriginWords() as $word) {
+                $forms = $morphy->getWordFormsInText($word);
+
+                if (!$forms) {
+                    continue;
                 }
+
+                $data[] = [$word, mb_strtolower(implode(', ', $forms)), $morphy->getCount(), ""];
             }
         }
 
