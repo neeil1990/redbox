@@ -28,7 +28,12 @@ class UniqueController extends Controller
                     continue;
                 }
 
-                $data[] = [$word, mb_strtolower(implode(', ', $forms)), $morphy->getCount(), ""];
+                $word = mb_strtolower($word);
+                $forms = mb_strtolower(implode(', ', $forms));
+                $count = $morphy->getCount();
+                $keysWords = "";
+
+                $data[] = [$word, $forms, $count, $keysWords];
             }
         }
 
