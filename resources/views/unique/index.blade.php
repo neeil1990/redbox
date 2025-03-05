@@ -8,11 +8,31 @@
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
-                <label>Список ключевых слов</label>
+                <label>Список ключевых слов:</label>
                 <textarea class="form-control" rows="5" id="content"></textarea>
             </div>
             <div class="form-group">
                 <button type="button" class="btn btn-success" id="processing">Обработать</button>
+            </div>
+        </div>
+    </div>
+
+    <label>Удалить строки, где кол-во вхождений:</label>
+
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <input type="number" min="1" class="form-control" placeholder="больше или равно" id="range-from">
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <input type="number" min="1" class="form-control" placeholder="меньше или равно" id="range-to">
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="form-group">
+                <button type="button" class="btn btn-success" id="range-remove">Удалить</button>
             </div>
         </div>
     </div>
@@ -63,11 +83,27 @@
                     });
 
                     let $tbody = $('#list-words tbody');
+                    let $rangeRemove = $('#range-remove');
 
                     $tbody.off('click');
 
                     $tbody.on('click', 'button.remove', function () {
                         table.row($(this).parents('tr')).remove().draw(false);
+                    });
+
+                    $rangeRemove.off('click');
+
+                    $rangeRemove.click(function () {
+                        let $from = parseInt($('#range-from').val());
+                        let $to = parseInt($('#range-to').val());
+
+                        if ($from > 0) {
+                            table.rows((idx, data) => data[2] >= $from).remove().draw(false);
+                        }
+
+                        if ($to > 0) {
+                            table.rows((idx, data) => data[2] <= $to).remove().draw(false);
+                        }
                     });
                 });
             });
