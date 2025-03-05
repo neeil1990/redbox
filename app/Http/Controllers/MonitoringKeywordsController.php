@@ -132,12 +132,14 @@ class MonitoringKeywordsController extends Controller
 
         $this->setOccurrence();
 
-        if($this->isMainView()){
-            $this->mainView();
-            $this->columns->forget(['url', 'dynamics']);
-        }else{
-            $this->setUrls();
-            $this->getLatestPositions()->updateDynamics();
+        if ($this->regions && $this->regions->isNotEmpty()) {
+            if($this->isMainView()){
+                $this->mainView();
+                $this->columns->forget(['url', 'dynamics']);
+            }else{
+                $this->setUrls();
+                $this->getLatestPositions()->updateDynamics();
+            }
         }
 
         return $this;
