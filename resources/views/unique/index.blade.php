@@ -3,6 +3,24 @@
     @slot('css')
         <!-- Toastr -->
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
+
+        <style>
+            th {
+                cursor: pointer;
+            }
+
+            .hint {
+                font-size: 0.8em;
+                color: gray;
+                margin-left: 5px;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            th:hover .hint {
+                opacity: 1;
+            }
+        </style>
     @endslot
 
     <div class="row">
@@ -17,9 +35,9 @@
         </div>
     </div>
 
-    <label>Удалить строки, где кол-во вхождений:</label>
+    <label class="fade">Удалить строки, где кол-во вхождений:</label>
 
-    <div class="row">
+    <div class="row fade">
         <div class="col-sm-2">
             <div class="form-group">
                 <input type="number" min="1" class="form-control" placeholder="больше или равно" id="range-from">
@@ -37,14 +55,14 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row fade">
         <div class="col-md-12">
             <table class="table table-sm table-bordered table-hover" id="list-words" style="width:100%">
                 <thead>
                     <tr>
-                        <th>Слово</th>
-                        <th>Словоформы</th>
-                        <th>Кол-во вхождений</th>
+                        <th>Слово <span class="hint">(Сортировка)</span></th>
+                        <th>Словоформы <span class="hint">(Сортировка)</span></th>
+                        <th>Кол-во вхождений <span class="hint">(Сортировка)</span></th>
                         <th>Ключевые фразы</th>
                         <th></th>
                     </tr>
@@ -61,11 +79,13 @@
 
         <script>
             $('#processing').click(function () {
+                $('.fade').addClass('show');
                 axios.post('{{ route('unique.dataTableView') }}', {
                     content : $('#content').val()
                 }).then((response) => {
                     let table = $('#list-words').DataTable({
                         destroy: true,
+                        autoWidth: false,
                         searching: false,
                         paging: false,
                         info: false,
