@@ -55,6 +55,23 @@
         </div>
     </div>
 
+    <label class="fade">Включить в отчет:</label>
+
+    <div class="row fade">
+        <div class="col-sm-12">
+            <div class="form-inline mb-2">
+                @foreach (['Слово', 'Словоформы', 'Кол-во вхождений', 'Ключевые фразы'] as $idx => $checkbox)
+                    <div class="form-group mr-4">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input toggle-vis" type="checkbox" id="vis-{{ $idx }}" data-column="{{ $idx }}" checked="">
+                            <label for="vis-{{ $idx }}" class="custom-control-label">{{ $checkbox }}</label>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
     <div class="row fade">
         <div class="col-md-12">
             <table class="table table-sm table-bordered table-hover" id="list-words" style="width:100%">
@@ -76,6 +93,8 @@
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <!-- DataTables  & Plugins -->
         <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
 
         <script>
             $('#processing').click(function () {
@@ -85,6 +104,7 @@
                 }).then((response) => {
                     let table = $('#list-words').DataTable({
                         destroy: true,
+                        dom: 'Bt',
                         autoWidth: false,
                         searching: false,
                         paging: false,
@@ -100,20 +120,19 @@
                                 className: 'text-center'
                             }
                         ],
+                        buttons: [
+                            { extend: 'copy', text: '<i class="far fa-copy"></i>', className: 'btn btn-success mb-2', exportOptions: { columns: ':visible' } },
+                            { extend: 'csv', text: '<i class="far fa-save"></i>', className: 'btn btn-success mb-2', exportOptions: { columns: ':visible' } }
+                        ],
                     });
 
-                    let $tbody = $('#list-words tbody');
-                    let $rangeRemove = $('#range-remove');
+                    $('#list-words tbody, #range-remove, .toggle-vis').off('click');
 
-                    $tbody.off('click');
-
-                    $tbody.on('click', 'button.remove', function () {
+                    $('#list-words tbody').on('click', 'button.remove', function () {
                         table.row($(this).parents('tr')).remove().draw(false);
                     });
 
-                    $rangeRemove.off('click');
-
-                    $rangeRemove.click(function () {
+                    $('#range-remove').click(function () {
                         let $from = parseInt($('#range-from').val());
                         let $to = parseInt($('#range-to').val());
 
@@ -124,6 +143,11 @@
                         if ($to > 0) {
                             table.rows((idx, data) => data[2] <= $to).remove().draw(false);
                         }
+                    });
+
+                    $('.toggle-vis').click(function () {
+                        let column = table.column($(this).attr('data-column'));
+                        column.visible($(this).prop('checked'));
                     });
                 });
             });
