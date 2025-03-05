@@ -32,22 +32,26 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    //
 
-     $job = new \App\Jobs();
-     $obj = $job->find(1);
-     // $obj = unserialize($obj->payload['data']['command']);
-     // $obj->handle();
+    $text = 'Представитель графской ветви дворянского рода Толстых, происходящей от петровского сподвижника П. А. Толстого. Писатель имел обширные родственные связи в мире высшей аристократии. Среди двоюродных братьев и сестёр отца — авантюрист и бретёр Ф. И. Толстой, художник Ф. П. Толстой, красавица М. И. Лопухина, светская дама А. Ф. Закревская, камер-фрейлина А. А. Толстая. Поэт А. К. Толстой приходился ему троюродным братом. Среди двоюродных братьев матери — генерал-лейтенант Д. М. Волконский и богатый эмигрант Н. И. Трубецкой. А. П. Мансуров и А. В. Всеволожский были женаты на двоюродных сёстрах матери. Толстой был связан свойство́м с министрами А. А. Закревским и Л. А. Перовским (женаты на двоюродных сёстрах его родителей), генералами 1812 года Л. И. Депрерадовичем (женат на сестре бабушки) и А. И. Юшковым (деверь одной из тёток), а также с канцлером А. М. Горчаковым (его отец Горчаков Михаил Алексеевич (1768—1831) был двоюродным братом бабушки писателя — Пелагеи Николаевны Горчаковой (1762—1838)). Общим предком Льва Толстого и Пушкина был адмирал Иван Головин, помогавший Петру I создавать русский флот.';
 
-     // dd('done');
+    $morphy = new \App\UniqueWords\WordForms($text);
 
-    // $html = TextAnalyzer::curlInitV2('https://l.himopttorg.ru/catalog/kaltsiy_khloristyy_/');
+    $words = \App\Helpers\WordHelper::getWordLowerArray($text);
 
-    // $html = TextAnalyzer::removeStylesAndScripts($html);
+    $data = [];
 
-    // $html = TextAnalyzer::deleteEverythingExceptCharacters($html);
+    foreach ($words as $word) {
+        if ($forms = $morphy->getWordFormsInText($word)) {
+            $data[$word] = [
+                "forms" => $forms,
+                "count" => $morphy->getCount(),
+            ];
+        }
+    }
 
-    // dd($html);
+    dd($data);
+
 });
 
 Auth::routes(['verify' => true]);
@@ -153,6 +157,10 @@ Route::middleware(['verified'])->group(function () {
     Route::get('list-comparison', 'ListComparisonController@index')->name('list.comparison');
     Route::post('list-comparison', 'ListComparisonController@listComparison')->name('counting.list.comparison');
     Route::post('download-comparison-file', 'ListComparisonController@downloadComparisonFile')->name('download.comparison.file');
+
+    // unique
+    Route::get('unique', 'UniqueController@index');
+    Route::post('unique', 'UniqueController@dataTableView')->name('unique.dataTableView');
 
     Route::get('unique-words', 'UniqueWordsController@index')->name('unique.words');
     Route::post('unique-words', 'UniqueWordsController@countingUniqueWords')->name('unique.words');

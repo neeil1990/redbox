@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b52425591a8a388a0a6d02c517c020eb",
+    "content-hash": "25ac4eb3ca3a1a6785426b96ce6fcc20",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -217,6 +217,55 @@
                 "source": "https://github.com/ratchetphp/Ratchet/tree/v0.4.4"
             },
             "time": "2021-12-14T00:20:41+00:00"
+        },
+        {
+            "name": "cijic/phpmorphy",
+            "version": "0.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cijic/phpmorphy.git",
+                "reference": "7e700908fa659995aa4ba3d664ce5bd144ccbd28"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cijic/phpmorphy/zipball/7e700908fa659995aa4ba3d664ce5bd144ccbd28",
+                "reference": "7e700908fa659995aa4ba3d664ce5bd144ccbd28",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "cijic\\phpMorphy\\": "src"
+                },
+                "classmap": [
+                    "libs/phpmorphy/src/common.php",
+                    "libs/phpmorphy/src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chiril Teterea",
+                    "email": "altcode@ya.ru",
+                    "role": "Developer"
+                }
+            ],
+            "description": "phpMorphy - morphological analyzer library for Russisan, English languages.",
+            "homepage": "https://github.com/cijic/phpmorphy",
+            "keywords": [
+                "phpmorphy"
+            ],
+            "support": {
+                "issues": "https://github.com/cijic/phpmorphy/issues",
+                "source": "https://github.com/cijic/phpmorphy/tree/0.3.3"
+            },
+            "time": "2023-04-29T20:44:05+00:00"
         },
         {
             "name": "clue/buzz-react",
