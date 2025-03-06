@@ -126,6 +126,10 @@
                         ],
                     });
 
+                    table.buttons().container().on('click', '.buttons-copy', function() {
+                        toastr.success('Данные успешно скопированы!')
+                    });
+
                     $('#list-words tbody, #range-remove, .toggle-vis').off('click');
 
                     $('#list-words tbody').on('click', 'button.remove', function () {
