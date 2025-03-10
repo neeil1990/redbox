@@ -9,6 +9,10 @@
                 cursor: pointer;
             }
 
+            .table td {
+                vertical-align: middle;
+            }
+
             .hint {
                 font-size: 0.8em;
                 color: gray;
