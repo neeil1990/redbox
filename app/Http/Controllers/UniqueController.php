@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\UniqueWords\ShinglesWord;
 use Illuminate\Http\Request;
 use App\UniqueWords\WordForms;
 use App\Helpers\WordHelper;
@@ -20,6 +21,8 @@ class UniqueController extends Controller
 
         if ($content) {
             $morphy = new WordForms($content);
+            $shingles = new ShinglesWord;
+            $shingles->setText($content);
 
             foreach ($morphy->getOriginWords() as $word) {
                 $forms = $morphy->getWordFormsInText($word);
@@ -28,10 +31,10 @@ class UniqueController extends Controller
                     continue;
                 }
 
+                $keysWords = implode(PHP_EOL, $shingles->getShinglesAroundWord($forms));
                 $word = mb_strtolower($word);
                 $forms = mb_strtolower(implode(', ', $forms));
                 $count = $morphy->getCount();
-                $keysWords = "";
 
                 $data[] = [$word, $forms, $count, $keysWords];
             }

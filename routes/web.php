@@ -11,47 +11,18 @@
 |
 */
 
-use App\ChecklistNotification;
-use App\ChecklistTasks;
-use App\Classes\SimpleHtmlDom\HtmlDocument;
-use App\MainProject;
-use App\MonitoringKeyword;
-use App\RelevanceHistory;
-use App\RelevanceHistoryResult;
-use App\SearchCompetitors;
-use App\TextAnalyzer;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Query\Builder;
 
-
 Route::get('info', function () {
     phpinfo();
 });
 
 Route::get('dev', function () {
-
-    $text = 'Представитель графской ветви дворянского рода Толстых, происходящей от петровского сподвижника П. А. Толстого. Писатель имел обширные родственные связи в мире высшей аристократии. Среди двоюродных братьев и сестёр отца — авантюрист и бретёр Ф. И. Толстой, художник Ф. П. Толстой, красавица М. И. Лопухина, светская дама А. Ф. Закревская, камер-фрейлина А. А. Толстая. Поэт А. К. Толстой приходился ему троюродным братом. Среди двоюродных братьев матери — генерал-лейтенант Д. М. Волконский и богатый эмигрант Н. И. Трубецкой. А. П. Мансуров и А. В. Всеволожский были женаты на двоюродных сёстрах матери. Толстой был связан свойство́м с министрами А. А. Закревским и Л. А. Перовским (женаты на двоюродных сёстрах его родителей), генералами 1812 года Л. И. Депрерадовичем (женат на сестре бабушки) и А. И. Юшковым (деверь одной из тёток), а также с канцлером А. М. Горчаковым (его отец Горчаков Михаил Алексеевич (1768—1831) был двоюродным братом бабушки писателя — Пелагеи Николаевны Горчаковой (1762—1838)). Общим предком Льва Толстого и Пушкина был адмирал Иван Головин, помогавший Петру I создавать русский флот.';
-
-    $morphy = new \App\UniqueWords\WordForms($text);
-
-    $words = \App\Helpers\WordHelper::getWordLowerArray($text);
-
-    $data = [];
-
-    foreach ($words as $word) {
-        if ($forms = $morphy->getWordFormsInText($word)) {
-            $data[$word] = [
-                "forms" => $forms,
-                "count" => $morphy->getCount(),
-            ];
-        }
-    }
-
-    dd($data);
-
+    //
 });
 
 Auth::routes(['verify' => true]);

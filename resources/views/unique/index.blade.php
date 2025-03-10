@@ -118,6 +118,13 @@
                                 defaultContent: '<button class="btn btn-outline-danger btn-xs remove"><i class="fas fa-trash"></i></button>',
                                 targets: -1,
                                 className: 'text-center'
+                            },
+                            {
+                                targets: 3,
+                                width: '35%',
+                                render: function(data) {
+                                    return `<textarea class="form-control text-nowrap" rows="3">${data}</textarea>`;
+                                }
                             }
                         ],
                         buttons: [

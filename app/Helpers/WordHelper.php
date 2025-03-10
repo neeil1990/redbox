@@ -21,4 +21,11 @@ class WordHelper
         return WordHelper::strSplit(mb_strtoupper($text));
     }
 
+    static public function isFirstLetterUppercase(string $str) : bool
+    {
+        $firstLetter = mb_substr($str, 0, 1);
+
+        return $firstLetter === mb_strtoupper($firstLetter);
+    }
+
 }
