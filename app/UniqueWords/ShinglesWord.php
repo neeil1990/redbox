@@ -73,7 +73,7 @@ class ShinglesWord
     {
         $word = "";
 
-        if ($index > 0 && count($words) > $index) {
+        if ($index >= 0 && count($words) > $index) {
             $word = $words[$index];
         }
 
