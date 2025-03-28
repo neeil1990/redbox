@@ -23,7 +23,9 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    //
+    $url = file_get_contents('https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/getUpdates');
+
+    dd($url);
 });
 
 Auth::routes(['verify' => true]);

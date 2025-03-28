@@ -90,14 +90,15 @@ class TelegramBot extends Model
     public static function getUpdates(string $offset = null): array
     {
         $data = [];
+
         if (isset($offset)) {
             $data = ['offset' => $offset];
         }
+
         $updates = json_decode(
-            file_get_contents(
-                'https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/getUpdates?'
-                . http_build_query($data)
-            ), true);
+            file_get_contents('https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/getUpdates?' . http_build_query($data)),
+            true
+        );
 
         return $updates['result'];
     }
