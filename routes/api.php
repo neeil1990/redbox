@@ -79,3 +79,5 @@ Route::get('checkYandexToken/{name?}', function($name = "Воронеж"){
     $location = new Yandex();
     dd($location->requestYandex($name));
 });
+
+Route::post('bot', 'TelegramBotController@index');

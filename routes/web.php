@@ -17,15 +17,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Validator;
 
 Route::get('info', function () {
     phpinfo();
 });
 
 Route::get('dev', function () {
-    $url = file_get_contents('https://api.telegram.org/bot2073017935:AAF5OJbt74xrX8W7kR_O4NhSMWncpTiwflo/getUpdates');
-
-    dd($url);
+    //
 });
 
 Auth::routes(['verify' => true]);
@@ -108,6 +107,7 @@ Route::middleware(['verified'])->group(function () {
     Route::get('profile/', 'ProfilesController@index')->name('profile.index');
     Route::post('profile/', 'ProfilesController@update')->name('profile.update');
     Route::patch('profile/', 'ProfilesController@password')->name('profile.password');
+    Route::get('test-telegram-notify', 'ProfilesController@testTelegramNotify')->name('profile.test-telegram-notify');
 
     Route::get('description/{description}/edit/{position?}', 'DescriptionController@edit')->name('description.edit');
     Route::patch('description/{description}', 'DescriptionController@update')->name('description.update');

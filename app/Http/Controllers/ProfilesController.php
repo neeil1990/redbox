@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\TariffSetting;
 use App\TariffSettingUserValue;
+use App\TelegramBot;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
@@ -48,7 +49,6 @@ class ProfilesController extends Controller
         $user = $this->user;
         $tariff = $user->tariff();
         $name = ($tariff) ? $tariff->name() : null;
-        self::checkTelegramToken($user);
 
         $tariffProperties = [];
         $tariffSettings = $user->tariffSettings()->get();
@@ -205,15 +205,10 @@ class ProfilesController extends Controller
         //
     }
 
-    /**
-     * @param $user
-     * @return void
-     */
-    public function checkTelegramToken($user)
+    public function testTelegramNotify()
     {
-        if (empty($user->telegram_token)) {
-            $user->telegram_token = str_shuffle(Str::random(50) . Carbon::now());
-            $user->save();
-        }
+        TelegramBot::sendTestNotify();
+
+        return redirect()->back();
     }
 }

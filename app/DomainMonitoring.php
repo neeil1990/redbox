@@ -21,10 +21,6 @@ class DomainMonitoring extends Model
         return $this->hasOne(TelegramBot::class);
     }
 
-    /**
-     * @param $project
-     * @return float|int|void
-     */
     public static function calculateUpTime($project)
     {
         $created = new Carbon($project->created_at);
@@ -47,10 +43,6 @@ class DomainMonitoring extends Model
         $project->save();
     }
 
-    /**
-     * @param $project
-     * @param $oldState
-     */
     public static function calculateTotalTimeLastBreakdown($project, $oldState)
     {
         if ($oldState && !$project->broken) {
@@ -63,14 +55,11 @@ class DomainMonitoring extends Model
         }
     }
 
-    /**
-     * @param $project
-     * @param $oldState
-     */
     public static function sendNotifications($project, $oldState)
     {
         if ($project->send_notification) {
             $user = User::where('id', '=', $project->user_id)->first();
+
             if ($oldState && !$project->broken) {
                 $user->repairDomainNotification($project);
                 if ($user->telegram_bot_active) {
@@ -88,13 +77,16 @@ class DomainMonitoring extends Model
             }
 
             $lastNotification = new Carbon($project->time_last_notification);
-            if ($oldState && $project->broken && $lastNotification->diffInMinutes(Carbon::now()) >= 360) {
+
+            if ($oldState && $project->broken && ($lastNotification->diffInMinutes(Carbon::now()) >= 360 || $project->time_last_notification === null)) {
                 $user->brokenDomainNotification($project);
                 if ($user->telegram_bot_active) {
                     TelegramBot::brokenDomainNotification($project, $user->chat_id);
                 }
                 $project->time_last_notification = Carbon::now();
             }
+
+            $project->save();
         }
     }
 

@@ -167,42 +167,12 @@
                 <div class="card-header">
                     <h3 class="card-title">{{ __('Telegram bot') }}</h3>
                 </div>
-                @if(!$user->telegram_bot_active)
-                    <div class="card-body">
-                        <div>{{ __("This is your special token, don't show it to anyone!") }}<br>
-                            <div class="text-info d-flex">
-                                <input type="text" value="{{ $user->telegram_token }}" id="special-token" class="form form-control w-75 d-inline">
-                                <button class="btn btn-default ml-2" id="saveInBufferButton">
-                                    <i class="fa fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <p>{{ __('send it to our telegram bot') }}
-                            <span>
-                    <a href="https://t.me/RedboxNotificationBot" target="_blank">
-                        @RedboxNotificationBot
-                    </a>
-                </span>
-                            {{ __('in order to receive notifications') }}</p>
-                    </div>
+                <div class="card-body">
+                    <a href="https://t.me/RedBoxServiceBot?start={{ base64_encode($user->email) }}" target="_blank"><i class="fab fa-telegram-plane"></i> Подписаться на уведомления</a>
+                </div>
+                @if ($user->chat_id)
                     <div class="card-footer">
-                        <form action="{{ route('verification.token', $user->telegram_token)}}"
-                              method="get">
-                            @csrf
-                            <button class="btn btn-secondary" type="submit">
-                                {{ __('I sent the token to the bot') }}
-                            </button>
-                        </form>
-                    </div>
-                @else
-                    <div class="card-body">
-                        <p>{{ __('You have set up receiving notifications from the bot') }}</p>
-                        <p>
-                            {{ __('Want to') }}
-                            <a href="{{ route('reset.notification', $user->telegram_token) }}">
-                                {{ __('stop receiving notifications') }}
-                            </a>
-                            ?</p>
+                        <a href="{{ route('profile.test-telegram-notify') }}" class="btn btn-block btn-info btn-sm">Отправить тестовое уведомление</a>
                     </div>
                 @endif
             </div>

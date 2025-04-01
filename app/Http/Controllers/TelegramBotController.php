@@ -2,35 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\TelegramBotService;
 use App\TelegramBot;
 use App\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class TelegramBotController extends Controller
 {
-    public function verificationToken($token): RedirectResponse
+    public function index(Request $request)
     {
-        if (TelegramBot::searchToken($token)) {
-            flash()->overlay(__('Now notifications will come to you in a telegram'), ' ')->success();
-            return Redirect::back();
+        $message = $request->input('message');
+
+        if ($message) {
+            $telegram = new TelegramBotService($message['chat']['id']);
+            $text = explode(" ", $message['text'], 2);
+
+            if (isset($text[1])) {
+                $email = base64_decode($text[1]);
+
+                $validator = Validator::make(['email' => $email], [
+                    'email' => ['required', 'email'],
+                ]);
+
+                if ($validator->passes()) {
+                    if ($telegram->updateUserChatID($email)) {
+                        $telegram->sendMsg(__('You have successfully subscribed to the notification newsletter'));
+                    }
+                } else {
+                    $telegram->sendMsg("Команда не распознана");
+                }
+            }
         }
-
-        flash()->overlay(__("The project token was not found in the bot's telegram history"), ' ')->error();
-        return Redirect::back();
-    }
-
-    /**
-     * @param $token
-     * @return RedirectResponse
-     */
-    public function resetNotification($token): RedirectResponse
-    {
-        User::where('telegram_token', '=', $token)->update([
-            'telegram_bot_active' => 0,
-        ]);
-        flash()->overlay(__('You have successfully unsubscribed from the mailing list'), ' ')->success();
-
-        return Redirect::back();
     }
 }
