@@ -6,6 +6,7 @@ namespace App\Classes\Monitoring;
 
 use App\MonitoringLimit;
 use App\TelegramBot;
+use App\Services\TelegramBotService;
 
 abstract class Limits
 {
@@ -55,7 +56,8 @@ abstract class Limits
         $this->user->sendMonitoringLimitExhaustedNotification();
         if($this->user['telegram_bot_active']){
             $text = "Здравствуйте! Лимит модуля Мониторинг позиций исчерпан.";
-            TelegramBot::sendMessage($text, $this->user['chat_id']);
+
+            (new TelegramBotService($this->user['chat_id']))->sendMsg($text);
         }
     }
 }

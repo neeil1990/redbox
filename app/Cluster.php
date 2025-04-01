@@ -8,6 +8,7 @@ use App\Jobs\Cluster\WaitClusterAnalyseQueue;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Services\TelegramBotService;
 
 class Cluster
 {
@@ -846,7 +847,7 @@ class Cluster
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/csv'>Скачать CSV</a>
 <a href='https://lk.redbox.su/download-cluster-result/" . $this->newCluster->id . "/xls'>Скачать XLS</a>";
 
-        TelegramBot::sendMessage($message, $this->user->chat_id);
+        (new TelegramBotService($this->user->chat_id))->sendMsg($message);
     }
 
     public static function recalculateClusterInfo(ClusterResults $cluster, array $clusters)

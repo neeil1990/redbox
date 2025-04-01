@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Services\TelegramBotService;
 
 class MetaTags extends MetaTagsController
 {
@@ -113,7 +114,8 @@ class MetaTags extends MetaTagsController
                     //send telegram notification
                     $link_compare = route('meta.history.compare', [$ideal->id, $history->id]);
                     $telegram = view('meta-tags.telegram', compact('model', 'link_compare'))->render();
-                    TelegramBot::sendMessage($telegram, $model->user->chat_id);
+                    
+                    (new TelegramBotService($model->user->chat_id))->sendMsg($telegram);
                 }
             }
         }
