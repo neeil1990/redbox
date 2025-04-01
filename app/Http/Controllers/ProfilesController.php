@@ -207,8 +207,12 @@ class ProfilesController extends Controller
 
     public function testTelegramNotify()
     {
-        TelegramBot::sendTestNotify();
+        try {
+            TelegramBot::sendTestNotify();
+        } catch (\ErrorException $exception) {
+            return redirect()->back()->with('status', 'Для отправки уведомления нажмите "Подписаться на уведомления"');
+        }
 
-        return redirect()->back();
+        return redirect()->back()->with('status', 'Уведомление отправленно!');
     }
 }

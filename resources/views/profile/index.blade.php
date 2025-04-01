@@ -168,6 +168,12 @@
                     <h3 class="card-title">{{ __('Telegram bot') }}</h3>
                 </div>
                 <div class="card-body">
+                    @if (session('status'))
+                        <div class="alert alert-info">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
                     <a href="https://t.me/RedBoxServiceBot?start={{ base64_encode($user->email) }}" target="_blank"><i class="fab fa-telegram-plane"></i> Подписаться на уведомления</a>
                 </div>
                 @if ($user->chat_id)
