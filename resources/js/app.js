@@ -54,7 +54,7 @@ $.ajaxSetup({
 window.loading = function () {
     let loading = require('please-wait');
 
-    let string = 'A good day to you fine user!';
+    let string = 'Good day to you, and thank you for using our service!';
 
     let msg = $('<p />').css({
         "font-size": '20px',
