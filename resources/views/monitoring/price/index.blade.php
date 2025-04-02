@@ -154,9 +154,15 @@
                 e.stopImmediatePropagation();
 
                 editor.inline( $(this).parent(), {
-                    onBlur: 'submit'
+                    onBlur: 'submit',
                 } );
             } );
+
+            editor.on('initEdit', function(event, row, data, el, type) {
+                if (type === 'inline') {
+                    setTimeout(() => el.find('input').select(), 50);
+                }
+            });
 
             $('#prices').DataTable( {
                 dom: '<"card-header"<"card-title"B><"float-right"f><"float-right"l>><"card-body p-0"rt><"card-footer clearfix"p><"clear">',
