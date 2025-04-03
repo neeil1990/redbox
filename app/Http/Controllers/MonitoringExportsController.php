@@ -107,11 +107,7 @@ class MonitoringExportsController extends MonitoringKeywordsController
 
         $response = $this->generateDataTable();
 
-        $editor = new ColumnEditor($response);
-
-        if($request['days_top_10_sumCol']) {
-            $editor->setDaysTop10SumColumn();
-        }
+        $editor = (new ColumnEditor($response))->setColumns($request);
 
         $response['columns'] = $editor->getColumns();
         $response['data'] = $editor->getData();

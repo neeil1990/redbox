@@ -3,6 +3,7 @@
 
 namespace App\Exports\Monitoring;
 
+use Illuminate\Http\Request;
 
 class ColumnEditor
 {
@@ -25,7 +26,16 @@ class ColumnEditor
         return $this->data;
     }
 
-    public function setDaysTop10SumColumn()
+    public function setColumns(Request $request)
+    {
+        if($request->input('days_top_10_sumCol')) {
+            $this->daysTop10Sum();
+        }
+
+        return $this;
+    }
+
+    private function daysTop10Sum()
     {
         $col = 'days_top_10_sum';
 
