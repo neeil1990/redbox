@@ -645,21 +645,22 @@ class MonitoringKeywordsController extends Controller
 
     private function order($order = null, $columns = [])
     {
-        if (!$order) {
-            $this->queries->orderBy('query', 'asc');
-        } else {
-            if (is_array($order)) {
-                $order = collect($order)->collapse();
+        $column = 'query';
+        $direction = 'asc';
 
-                if ($name = $columns[$order['column']]['data']) {
-                    if ($name == 'group') {
-                        $name = self::GROUP_NAME;
-                    }
+        if (is_array($order)) {
+            $order = collect($order)->collapse();
 
-                    $this->queries->orderBy($name, $order['dir'])->orderBy('query', 'asc');
+            if ($column = $columns[$order['column']]['data']) {
+                if ($column == 'group') {
+                    $column = self::GROUP_NAME;
                 }
+
+                $direction = $order['dir'];
             }
         }
+
+        $this->queries->orderBy($column, $direction)->orderBy('query', 'asc');
 
         return $this;
     }

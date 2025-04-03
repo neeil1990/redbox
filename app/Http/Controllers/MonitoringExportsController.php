@@ -14,6 +14,7 @@ class MonitoringExportsController extends MonitoringKeywordsController
 {
     const QUERY_INDEX = 1;
     const GROUP_INDEX = 2;
+    const CREATED_AT_INDEX = 3;
 
     private $removeColumns = [
         'checkbox',
@@ -83,7 +84,13 @@ class MonitoringExportsController extends MonitoringKeywordsController
                     'search' => [
                         'value' => null
                     ]
-                ]
+                ],
+                self::CREATED_AT_INDEX => [
+                    'data' => 'created_at',
+                    'search' => [
+                        'value' => null
+                    ]
+                ],
             ],
             'order' => [
                 [

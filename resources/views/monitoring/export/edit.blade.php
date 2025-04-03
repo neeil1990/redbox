@@ -78,6 +78,7 @@
                     <select class="custom-select" name="order[column]">
                         <option value="{{ \App\Http\Controllers\MonitoringExportsController::GROUP_INDEX }}">Группа</option>
                         <option value="{{ \App\Http\Controllers\MonitoringExportsController::QUERY_INDEX }}">Запрос</option>
+                        <option value="{{ \App\Http\Controllers\MonitoringExportsController::CREATED_AT_INDEX }}">Дата добавления запроса</option>
                     </select>
                 </div>
                 <div class="col-6">
