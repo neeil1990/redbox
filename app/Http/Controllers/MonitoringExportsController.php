@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\Monitoring\AttributeExport;
+use App\Exports\Monitoring\ColumnEditor;
 use App\Exports\Monitoring\Format\IFormat;
 use App\Exports\Monitoring\PositionsExportFactory;
 use App\MonitoringProject;
@@ -105,6 +106,15 @@ class MonitoringExportsController extends MonitoringKeywordsController
             ->forget($this->removeColumns);
 
         $response = $this->generateDataTable();
+
+        $editor = new ColumnEditor($response);
+
+        if($request['days_top_10_sumCol']) {
+            $editor->setDaysTop10SumColumn();
+        }
+
+        $response['columns'] = $editor->getColumns();
+        $response['data'] = $editor->getData();
 
         $attribute = new AttributeExport($response, $request);
         $attribute->setBudget($this->project->budget);

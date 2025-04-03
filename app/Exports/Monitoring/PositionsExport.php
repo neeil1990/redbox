@@ -38,48 +38,6 @@ class PositionsExport implements FromView, WithDefaultStyles, WithEvents, WithSt
         $this->dataFormat();
     }
 
-    private function dataFormat()
-    {
-        $data = $this->data['data'];
-        foreach ($data as $ek => $el) {
-            if (!isset($el['target'])) {
-                continue;
-            }
-
-            $target = trim(strip_tags($el['target']));
-
-            foreach ($el as $fk => $field) {
-                if (preg_match('/data-position/', $field)) {
-                    $col = $this->formatPosition($field);
-                    $col['color'] = null;
-
-                    if ($target >= (int)$col[0]) {
-                        $col['color'] = $this->green;
-                    } else {
-                        $ck = 'col_' . (filter_var($fk, FILTER_SANITIZE_NUMBER_INT) + 1);
-                        if (isset($el[$ck]) && is_string($el[$ck])) {
-                            $p = $this->formatPosition($el[$ck]);
-                            if ($target >= (int)$p[0]) {
-                                $col['color'] = $this->yellow;
-                            }
-                        }
-                    }
-                    $this->data['data'][$ek][$fk] = $col;
-                } else {
-                    $this->data['data'][$ek][$fk] = trim(strip_tags($field));
-                }
-            }
-        }
-    }
-
-    private function formatPosition(string $field): array
-    {
-        return array_values(array_filter(explode(' ', trim(strip_tags($field)))));
-    }
-
-    /**
-     * @return View
-     */
     public function view(): View
     {
         $data = $this->data;
@@ -152,5 +110,44 @@ class PositionsExport implements FromView, WithDefaultStyles, WithEvents, WithSt
     public function title(): string
     {
         return 'RedBox title';
+    }
+
+    private function dataFormat()
+    {
+        $data = $this->data['data'];
+        foreach ($data as $ek => $el) {
+            if (!isset($el['target'])) {
+                continue;
+            }
+
+            $target = trim(strip_tags($el['target']));
+
+            foreach ($el as $fk => $field) {
+                if (preg_match('/data-position/', $field)) {
+                    $col = $this->formatPosition($field);
+                    $col['color'] = null;
+
+                    if ($target >= (int)$col[0]) {
+                        $col['color'] = $this->green;
+                    } else {
+                        $ck = 'col_' . (filter_var($fk, FILTER_SANITIZE_NUMBER_INT) + 1);
+                        if (isset($el[$ck]) && is_string($el[$ck])) {
+                            $p = $this->formatPosition($el[$ck]);
+                            if ($target >= (int)$p[0]) {
+                                $col['color'] = $this->yellow;
+                            }
+                        }
+                    }
+                    $this->data['data'][$ek][$fk] = $col;
+                } else {
+                    $this->data['data'][$ek][$fk] = trim(strip_tags($field));
+                }
+            }
+        }
+    }
+
+    private function formatPosition(string $field): array
+    {
+        return array_values(array_filter(explode(' ', trim(strip_tags($field)))));
     }
 }

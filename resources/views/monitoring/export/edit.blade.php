@@ -165,6 +165,11 @@
                             <label for="days_top_{{ $top }}" class="custom-control-label">{{ __('Days') }} top-{{ $top }}</label>
                         </div>
                     @endforeach
+
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="days_top_10_sumCol" type="checkbox" id="days_top_10_sum" value="1" checked>
+                        <label for="days_top_10_sum" class="custom-control-label">{{ __('Сумма дней топ 10') }}</label>
+                    </div>
                 </div>
             </div>
         </div>
