@@ -3,7 +3,9 @@
 
 namespace App\Exports\Monitoring;
 
+use App\Helpers\CollectionHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class ColumnEditor
 {
@@ -37,11 +39,12 @@ class ColumnEditor
 
     private function daysTop10Sum()
     {
+        $beforeCol = 'mastered';
         $col = 'days_top_10_sum';
 
-        $this->columns->put($col, 'Сумма дней в топ 10');
+        $this->columns = CollectionHelper::appendBefore($this->columns, $col, __('Сумма дней в топ 10'), $beforeCol);
 
-        $this->data->transform(function ($item) use ($col) {
+        $this->data->transform(function ($item) use ($col, $beforeCol) {
             $sum = 0;
 
             foreach ([1, 3, 5, 10] as $top) {
@@ -50,7 +53,7 @@ class ColumnEditor
                 }
             }
 
-            $item->put($col, $sum);
+            $item = CollectionHelper::appendBefore($item, $col, $sum, $beforeCol);
 
             return $item;
         });
