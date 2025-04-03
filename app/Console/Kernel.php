@@ -107,7 +107,13 @@ class Kernel extends ConsoleKernel
 
                 $weekdays = ($engine->weekdays) ? implode(',', $engine->weekdays) : '*';
 
-                $monthday = ($engine->monthday) ? '*/' . $engine->monthday : '*';
+                $monthday = '*';
+
+                if ($engine->monthday) {
+                    $monthday = '*/' . $engine->monthday;
+                } else if ($engine->day) {
+                    $monthday = $engine->day;
+                }
 
                 $cron = implode(' ', [$minute, $hour, $monthday, '*', $weekdays]);
 

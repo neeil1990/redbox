@@ -204,6 +204,7 @@ class MonitoringProjectCreatorController extends Controller
             'time' => null,
             'weekdays' => null,
             'monthday' => null,
+            'day' => null,
         ]);
 
         $data = $request->input('data');

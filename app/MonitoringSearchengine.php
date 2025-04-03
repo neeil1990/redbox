@@ -13,6 +13,7 @@ class MonitoringSearchengine extends Model
         'time',
         'weekdays',
         'monthday',
+        'day',
     ];
 
     protected $casts = [

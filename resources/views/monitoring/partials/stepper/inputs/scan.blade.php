@@ -16,6 +16,7 @@
                     <label>Режимы</label>
                     <select id="mode-scan" class="custom-select">
                         <option value="times">Каждый день</option>
+                        <option value="months">Каждый месяц</option>
                         <option value="weeks">По дням</option>
                         <option value="ranges">Через определенное количество дней</option>
                     </select>

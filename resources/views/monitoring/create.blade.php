@@ -191,15 +191,20 @@
                                   days: item.weekdays,
                                 },
                                 monthday: item.monthday,
+                                day: {
+                                    days: item.day,
+                                    time: (item.day) ? item.time : null,
+                                },
                             },
                             label: label,
                             lr: item.lr,
                         };
 
-                        if(item.weekdays || item.monthday)
+                        if(item.weekdays || item.monthday || item.day)
                             inputData.val.time = null;
 
                         template.append(this.timeTemplate(inputData).addClass('d-none'));
+                        template.append(this.monthTemplate(inputData).addClass('d-none'));
                         template.append(this.weeksTemplate(inputData).addClass('d-none'));
                         template.append(this.rangeTemplate(inputData).addClass('d-none'));
                     });
@@ -267,6 +272,24 @@
                     }).attr('data-id', data.id);
 
                     return form.append(label, input);
+                },
+                monthTemplate: function(data) {
+
+                    let form = this.formGroupTemplate('months', data.lr);
+                    let label = $('<label />').text(data.label);
+                    let input = $('<input />', {
+                        class: 'form-control mb-2',
+                        type: 'number',
+                        min: '1',
+                        max: '28',
+                        name: 'day',
+                        value: data.val.day.days,
+                        placeholder: 'Выберите число месяца от 1 до 28'
+                    }).attr('data-id', data.id);
+
+                    let time = this.inputTime(data, data.val.day.time);
+
+                    return form.append(label, input, time);
                 },
                 formGroupTemplate: function(mode, lr){
 

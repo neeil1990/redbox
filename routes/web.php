@@ -11,6 +11,7 @@
 |
 */
 
+use App\MonitoringSearchengine;
 use cijic\phpMorphy\Morphy;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
