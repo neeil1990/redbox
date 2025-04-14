@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\ApplyMonitoringTeamPermissions;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\CheckForMaintenanceMode;
 use App\Http\Middleware\CheckHttpHeadersDataBase;
@@ -11,6 +12,7 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\LastOnline;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\SetTeamContext;
 use App\Http\Middleware\VisitStatistics;
 use \Spatie\Permission\Middlewares\PermissionMiddleware;
 use \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
@@ -63,6 +65,7 @@ class Kernel extends HttpKernel
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
+            SetTeamContext::class,
             SubstituteBindings::class,
             CheckHttpHeadersDataBase::class,
             SetLocaleToAuthUser::class,

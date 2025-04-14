@@ -83,6 +83,8 @@ class MonitoringKeywordsController extends Controller
 
     public function showDataTable(Request $request, $id)
     {
+        apply_team_permissions($id);
+
         $this->setProjectID($id);
         $request = collect($request->all());
 
@@ -740,8 +742,10 @@ class MonitoringKeywordsController extends Controller
         return $lastUrlPosition;
     }
 
-    public function showControlsPanel()
+    public function showControlsPanel($id)
     {
+        apply_team_permissions($id);
+
         return view('monitoring.keywords.controls');
     }
 
@@ -795,7 +799,11 @@ class MonitoringKeywordsController extends Controller
         $user = $this->user;
 
         $keyword = MonitoringKeyword::findOrFail($id);
+
         if($keyword->project->users->find($user->id)){
+
+            apply_team_permissions($keyword->project->id);
+
             return view('monitoring.keywords.edit', compact('keyword'));
         }
         else
@@ -804,6 +812,8 @@ class MonitoringKeywordsController extends Controller
 
     public function editPlural($id)
     {
+        apply_team_permissions($id);
+
         $project = MonitoringProject::findOrFail($id);
         return view('monitoring.keywords.edit_plural', compact('project'));
     }

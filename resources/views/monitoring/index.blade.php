@@ -84,22 +84,21 @@
             div.dataTables_wrapper div.dataTables_info {
                 padding-top: .45em;
             }
-        </style>
 
-        @hasanyrole('Super Admin|admin')
-        <style>
             .add-user {
                 display: inline-block;
             }
-        </style>
-        @endhasanyrole
-    @endslot
+            .projects .table-avatar img, .projects img.table-avatar {
+                width: 40px;
+                height: 40px;
+            }
 
-    @if($foreignProject->count())
-    <div class="row">
-        @include('monitoring.partials._approve')
-    </div>
-    @endif
+            .projects .table-avatar img, .projects img.table-avatar.admin-monitoring {
+                border-color: #138496;
+            }
+        </style>
+
+    @endslot
 
     <div class="row mb-1">
         @include('monitoring.partials._buttons')
@@ -143,7 +142,7 @@
         <script src="{{ asset('plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
 
         <script>
-            const PROJECTS_COUNT = '{{ $countApprovedProject }}';
+            const PROJECTS_COUNT = '{{ $count }}';
 
             toastr.options = {
                 "preventDuplicates": true,
@@ -192,44 +191,7 @@
                         orderable: false,
                         title: '{{ __('Users') }}',
                         name: 'users',
-                        data: function (row) {
-                            let ul = $('<ul />', { class : 'list-inline user-list'});
-
-                            $.each(row.users, function(i, item){
-                                let li = $('<li />', {
-                                    class : 'list-inline-item position-relative tooltip-on',
-                                    "user-id": item.id,
-                                    "project-id": row.id,
-                                    title : item.name + ' ' + item.last_name
-                                }).append($('<img />', { class : 'table-avatar', src : item.image }));
-
-                                if (item.pivot.admin) {
-                                    li.append($('<span />', {class : 'badge badge-danger navbar-badge'})
-                                        .css({'left' : 0, 'right' : 0, 'top' : '-10px'}).text('ADMIN'));
-                                } else {
-                                    if(row.pivot.admin){
-                                        li.append($('<span />', {class : 'badge badge-secondary navbar-badge detach-user'}).css({
-                                            cursor: 'pointer',
-                                            top: '-5px',
-                                            right: 0,
-                                            "font-size": 'x-small',
-                                        }).attr({
-                                            "data-id": item.id,
-                                            "data-project": row.id
-                                        }).html('<i class="fas fa-times"></i>'));
-                                    }
-                                }
-
-                                li.append($('<span />', {class : 'badge badge-success navbar-badge'})
-                                    .css({'right' : 0, 'left' : 0, 'top' : 'unset', 'bottom' : '-15px', cursor : 'pointer', "z-index" : 1})
-                                    .text(item.status.code)
-                                );
-
-                                ul.append(li);
-                            });
-
-                            return ul[0].outerHTML;
-                        },
+                        data: 'users_column',
                     }, // 3
                     {
                         orderable: false,
@@ -307,64 +269,7 @@
                     }, // 14
                     {
                         orderable: false,
-                        data: function (row) {
-
-                            if(row.pivot.admin == false){
-                                let view = $('<a />', {class: 'btn btn-primary btn-sm', href: '/monitoring/' + row.id}).append($('<i />', {class: 'fas fa-folder'})).append(' {{ __('View') }}');
-                                return view[0].outerHTML;
-                            }
-
-                            let group = $('<div />', { class: "btn-group"});
-
-                            let dropdown = $('<button />', {
-                                type: 'button',
-                                "data-toggle": 'dropdown',
-                                "data-offset": '-170',
-                                class: 'btn btn-info dropdown-toggle',
-                            }).append($('<i />', { class: 'fas fa-bars'}));
-
-                            let menu = $('<div />', {class: 'dropdown-menu'});
-
-                            let addUser = $('<a />', {class: 'dropdown-item add-user', "data-id": row.id}).html('{{ __('Add user') }}').prepend($('<i/>').addClass('far fa-user mr-2'));
-
-                            let exports = $('<a />', {
-                                class: 'dropdown-item click_tracking',
-                                "data-click": 'Export project',
-                                "data-toggle": 'modal',
-                                "data-target": '.modal',
-                                "data-type": 'export-edit',
-                                "data-id": row.id,
-                            }).html('{{ __('Project export') }}').prepend($('<i/>').addClass('fas fa-file-download mr-2'));
-
-                            let create = $('<a />', {
-                                class: 'dropdown-item',
-                                "data-toggle": 'modal',
-                                "data-target": '.modal',
-                                "data-type": 'create_keywords',
-                                "data-id": row.id,
-                            }).text('{{ __('Add keyword') }}').prepend($('<i/>').addClass('far fa-plus-square mr-2'));
-
-                            let edit = $('<a />', {
-                                class: 'dropdown-item',
-                                href: `/monitoring/create#id=${row.id}`,
-                            }).html('{{ __('Edit project') }}').prepend($('<i/>').addClass('fas fa-edit mr-2'));
-
-                            let folder = $('<a />', {
-                                class: 'dropdown-item',
-                                href: '/monitoring/' + row.id + '/groups',
-                                title: '',
-                            }).html('{{ __('Project groups') }}').prepend($('<i/>').addClass('far fa-folder mr-2'));
-
-                            let open = $('<a />', {
-                                class: 'dropdown-item',
-                                href: `/monitoring/${row.id}`,
-                            }).html('{{ __('Open project') }}').prepend($('<i/>').addClass('far fa-folder-open mr-2'));
-
-                            group.append([dropdown, menu]);
-                            menu.append([open, $('<div />', {class: 'dropdown-divider'}), addUser, exports, create, edit, folder]);
-
-                            return group[0].outerHTML;
-                        },
+                        data: 'dropdown_menu',
                         class: 'project-actions text-right',
                     }, // 15
                 ],
@@ -476,6 +381,8 @@
                             return false;
 
                         table.row.add(response[0]).draw(false);
+
+                        $('[data-toggle="tooltip"]').tooltip();
                     },
                 });
             }
@@ -656,18 +563,6 @@
                 }
             });
 
-            $('.approve-project').click(function(){
-                let self = $(this);
-                let id = self.closest('tr').data('id');
-
-                axios.post('{{ route('approve.project') }}', {
-                    approve: 1,
-                    id: id
-                }).then(function (response) {
-                    window.location.reload();
-                });
-            });
-
             $('.cancel-project').click(function(){
                 let self = $(this);
                 let id = self.closest('tr').data('id');
@@ -736,23 +631,19 @@
                 let ProjectId = $self.data('project');
                 let UserId = $self.data('id');
 
-                if (window.confirm("{{ __('Detach user from project?') }}")) {
-
-                    axios.post('{{ route('user.detach') }}', {
-                        project_id: ProjectId,
-                        user_id: UserId,
-                    }).then(function (response) {
-                        toastr.success('{{ __('User deleted') }}');
-                        $self.closest("li").remove();
-                    }).catch(function (error) {
-                        toastr.error('{{ __('Wrong request') }}');
-                    });
-                }
+                axios.post('{{ route('user.detach') }}', {
+                    project_id: ProjectId,
+                    user_id: UserId,
+                }).then(function (response) {
+                    window.location.reload();
+                }).catch(function (error) {
+                    toastr.error('{{ __('Wrong request') }}');
+                });
 
                 return false;
             });
 
-            $('#projects').on('click', '.user-list li', function(){
+            $('#projects').on('click', '.change-user-status', function(){
                 let self = $(this);
                 let user = self.attr('user-id');
                 let project = self.attr('project-id');

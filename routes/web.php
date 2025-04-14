@@ -19,16 +19,31 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\PermissionRegistrar;
 
 Route::get('info', function () {
     phpinfo();
 });
 
 Route::get('dev', function () {
-    //
+    $projects = \App\MonitoringProject::all();
+
+    foreach ($projects as $project) {
+
+        apply_team_permissions($project->id);
+
+        foreach ($project->users as $user) {
+            if ($user->id === $project->creator) {
+                $user->assignRole('admin_monitoring');
+            } else {
+                $user->assignRole('viewer_monitoring');
+            }
+        }
+    }
 });
 
 Auth::routes(['verify' => true]);
+
 Route::post('/validate-registration-form', 'Auth\RegisterController@validateData')->name('validate.registration.form');
 Route::post('/validate-verify-code', 'Auth\VerificationController@validateVerifyCode')->name('validate.verify.code');
 Route::post('email/verify/code', 'Auth\VerificationController@verifyCode')->name('verification.code');
@@ -331,8 +346,8 @@ Route::middleware(['verified'])->group(function () {
     Route::post('monitoring/{id}/groups', 'MonitoringGroupsController@action')->name('groups.action');
 
     // Monitoring user status
-    Route::post('monitoring/set-user-project-status', 'MonitoringProjectUserStatusController@set')->name('monitoring.user.project.status');
-    Route::get('monitoring/get-user-status-options', 'MonitoringProjectUserStatusController@getOptions');
+    Route::post('monitoring/set-user-project-status', 'MonitoringPermissionsController@syncProjectRoles')->name('monitoring.user.project.status');
+    Route::get('monitoring/get-user-status-options', 'MonitoringPermissionsController@getRoleOptions');
 
     // Monitoring statistics
     Route::get('/monitoring/statistics', 'MonitoringStatisticsController@index');
@@ -342,6 +357,9 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/monitoring/statistics/seo-table', 'MonitoringStatisticsController@seoTable');
     Route::get('/monitoring/statistics/project-table/{id}', 'MonitoringStatisticsController@projectTable');
     Route::get('/monitoring/statistics/attention-table', 'MonitoringStatisticsController@attentionTable');
+
+    Route::get('monitoring/permissions', 'MonitoringPermissionsController@index')->name('monitoring-permissions.index');
+    Route::post('monitoring/permissions', 'MonitoringPermissionsController@store')->name('monitoring-permissions.store');
 
     Route::resource('monitoring', 'MonitoringController');
 
@@ -379,7 +397,7 @@ Route::middleware(['verified'])->group(function () {
     Route::resource('monitoring/keywords', 'MonitoringKeywordsController');
     Route::get('/monitoring/keywords/{project_id}/create', 'MonitoringKeywordsController@create');
     Route::get('/monitoring/keywords/empty/modal', 'MonitoringKeywordsController@showEmptyModal');
-    Route::get('/monitoring/keywords/show/controls', 'MonitoringKeywordsController@showControlsPanel')->name('keywords.show.controls.panel');
+    Route::get('/monitoring/keywords/show/controls/{project_id}', 'MonitoringKeywordsController@showControlsPanel')->name('keywords.show.controls.panel');
     Route::get('/monitoring/keywords/{id}/edit-plural', 'MonitoringKeywordsController@editPlural')->name('keywords.edit.plural');
     Route::post('/monitoring/keywords/update-plural', 'MonitoringKeywordsController@updatePlural')->name('keywords.update.plural');
     Route::patch('/monitoring/keywords/{project_id}/set-test-positions', 'MonitoringKeywordsController@setTestPositions')->name('keywords.set.test.positions');

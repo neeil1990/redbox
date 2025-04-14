@@ -5,28 +5,38 @@
 </button>
 
 <div class="btn-group queries-controls">
-    <button type="button" class="btn btn-default btn-sm tooltip-on" data-toggle="modal" data-target=".modal" data-type="create_keywords" title="Добавить запрос">
-        <i class="fas fa-plus"></i>
-    </button>
+    @can('create_query_monitoring')
+        <button type="button" class="btn btn-default btn-sm tooltip-on" data-toggle="modal" data-target=".modal" data-type="create_keywords" title="Добавить запрос">
+            <i class="fas fa-plus"></i>
+        </button>
+    @endcan
 
-    <button type="button" class="btn btn-default btn-sm tooltip-on" data-toggle="modal" data-target=".modal" data-type="edit_plural" title="Редактировать запросы">
-        <i class="fas fa-pen"></i>
-    </button>
+    @can('edit_query_monitoring')
+        <button type="button" class="btn btn-default btn-sm tooltip-on" data-toggle="modal" data-target=".modal" data-type="edit_plural" title="Редактировать запросы">
+            <i class="fas fa-pen"></i>
+        </button>
+    @endcan
 
+    @can('delete_query_monitoring')
     <button type="button" class="btn btn-default btn-sm delete-multiple tooltip-on" title="Удалить запросы">
         <i class="far fa-trash-alt"></i>
     </button>
+    @endcan
 </div>
 <!-- /.btn-group -->
 
 <div class="btn-group positions-controls">
-    <button type="button" class="btn btn-default btn-sm parse-positions-keys tooltip-on" title="Добавить в очередь выбранные">
-        <i class="fas fa-layer-group"></i>
-    </button>
+    @can('update_position_monitoring')
+        <button type="button" class="btn btn-default btn-sm parse-positions-keys tooltip-on" title="Добавить в очередь выбранные">
+            <i class="fas fa-layer-group"></i>
+        </button>
+    @endcan
 
-    <button type="button" class="btn btn-default btn-sm parse-positions tooltip-on" title="Добавить в очередь все">
-        <i class="fas fa-sync-alt"></i>
-    </button>
+    @can('update_position_all_monitoring')
+        <button type="button" class="btn btn-default btn-sm parse-positions tooltip-on" title="Добавить в очередь все">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+    @endcan
 </div>
 
 <div class="btn-group columns-hidden">

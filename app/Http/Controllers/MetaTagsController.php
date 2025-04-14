@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Yangqi\Htmldom\Htmldom;
+use KubAT\PhpSimple\HtmlDomParser;
 use Ixudra\Curl\Facades\Curl;
 
 /**
@@ -242,8 +242,7 @@ class MetaTagsController extends Controller
 
         $this->response = $html;
 
-        $DOM = new Htmldom();
-        $this->html = $DOM->load($html['content']);
+        $this->html = HtmlDomParser::str_get_html($html['content']);
 
         return $this;
     }

@@ -30,11 +30,13 @@ class MonitoringGroupsController extends Controller
 
     public function index(Request $request, $id)
     {
+        apply_team_permissions($id);
+
         $this->fillFields($request, $id);
 
         if($request->ajax())
             return $this->getDataTable();
-		
+
         return view('monitoring.groups.index');
     }
 

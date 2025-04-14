@@ -82,6 +82,8 @@ return [
          */
 
         'model_morph_key' => 'model_id',
+
+        'team_foreign_key' => 'team_id',
     ],
 
     /*
@@ -105,6 +107,8 @@ return [
      */
 
     'enable_wildcard_permission' => false,
+
+    'teams' => true,
 
     'cache' => [
 

@@ -24,4 +24,8 @@
         <i class="fas fa-link"></i> {{ __('Корректировать') }}
     @endcomponent
 
+    @component('component.btn-app', ['href' => route('monitoring-permissions.index'), 'class' => ''])
+        <i class="fas fa-lock-open"></i> {{ __('Права') }}
+    @endcomponent
+
 @endcomponent

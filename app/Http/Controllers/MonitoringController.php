@@ -9,6 +9,7 @@ use App\Classes\Monitoring\PanelButtons\SimpleButtonsFactory;
 use App\Classes\Monitoring\ProjectData;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
+use App\Events\MonitoringProjectBeforeDelete;
 use App\Jobs\Monitoring\MonitoringChangesDateQueue;
 use App\Jobs\Monitoring\MonitoringCompetitorsQueue;
 use App\Mail\MonitoringApproveProjectMail;
@@ -35,6 +36,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\PermissionRegistrar;
 
 class MonitoringController extends Controller
 {
@@ -64,10 +66,9 @@ class MonitoringController extends Controller
         /** @var User $user */
         $user = $this->user;
 
-        $countApprovedProject = $user->monitoringProjects()->wherePivot('approved', 1)->count();
-        $foreignProject = $user->monitoringProjects()->wherePivot('approved', 0)->get();
+        $count = $user->monitoringProjects()->count();
 
-        return view('monitoring.index', compact('foreignProject', 'countApprovedProject'));
+        return view('monitoring.index', compact( 'count'));
     }
 
     public function attachUser(Request $request)
@@ -84,10 +85,15 @@ class MonitoringController extends Controller
 
         foreach ($users as $user) {
             if ($user->monitoringProjects()->find($id) === null) {
+
                 $result = $user->monitoringProjects()->syncWithoutDetaching([$id => ['approved' => 0]]);
+
                 if (count($result['attached']) > 0) {
                     Mail::to($user)->send(new MonitoringShareProjectMail(MonitoringProject::find($id)));
-                    (new MonitoringProjectUserStatusController())->setStatusUser($user, $id, $request->input('status'));
+
+                    apply_team_permissions($id);
+
+                    $user->assignRole($request->input('status'));
                 }
             }
         }
@@ -100,17 +106,24 @@ class MonitoringController extends Controller
         $id = $request->input('id');
         $approve = $request->input('approve');
 
+        apply_team_permissions($id);
+
         /** @var User $user */
         $user = $this->user;
 
         if ($approve) {
             $project = $user->monitoringProjects()->find($id);
-            $userAdmin = $project->admin->first();
 
-            Mail::to($userAdmin)->send(new MonitoringApproveProjectMail($user, $project));
+            foreach($project->users as $project_user) {
+                if ($project_user->hasRole('admin_monitoring')) {
+                    Mail::to($project_user)->send(new MonitoringApproveProjectMail($user, $project));
+                }
+            }
 
             return $user->monitoringProjects()->updateExistingPivot($id, ["approved" => 1]);
         }
+
+        $user->syncRoles([]);
 
         return $user->monitoringProjects()->detach($id);
     }
@@ -120,8 +133,12 @@ class MonitoringController extends Controller
         $projectId = $request->input('project_id');
         $userId = $request->input('user_id');
 
+        apply_team_permissions($projectId);
+
         $user = User::findOrFail($userId);
         $project = $user->monitoringProjects()->findOrFail($projectId);
+
+        $user->syncRoles([]);
 
         return $user->monitoringProjects()->detach($project['id']);
     }
@@ -343,11 +360,13 @@ class MonitoringController extends Controller
      */
     public function show($id)
     {
+        apply_team_permissions($id);
+
         /** @var User $user */
         $user = $this->user;
 
         /** @var MonitoringProject $project */
-        $project = $user->monitoringProjects()->wherePivot('approved', 1)->findOrFail($id);
+        $project = $user->monitoringProjects()->findOrFail($id);
         $navigations = $this->navigations($project);
 
         $length = $this->getLength($project->id);
@@ -465,15 +484,16 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
+
         $project = $user->monitoringProjects()->find($id);
-        // If current user admin project
-        if ($project->pivot->admin) {
-            foreach ($project->users as $u)
-                $u->monitoringProjects()->detach($project['id']);
+
+        apply_team_permissions($project->id);
+
+        if ($user->hasRole('admin_monitoring')) {
+
+            event(new MonitoringProjectBeforeDelete($user, $project));
 
             $project->delete();
-        } else {
-            $user->monitoringProjects()->detach($project['id']);
         }
     }
 

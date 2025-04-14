@@ -90,15 +90,17 @@
         </div>
     </div>
 
-    @if($project->pivot->admin)
-        <div class="row">
-            <div class="col-12 mb-3">
-                <a href="{{ route('groups.index', $project->id) }}" class="btn btn-default">Управление группами проекта</a>
+    <div class="row">
+        <div class="col-12 mb-3">
+            <a href="{{ route('groups.index', $project->id) }}" class="btn btn-default">Управление группами проекта</a>
+
+            @can('update_occurrence_monitoring')
                 <a href="javascript:void(0)" id="occurrence-update" class="btn btn-default">Обновить частотность проекта</a>
-                <a href="{{ route('prices.index', $project->id) }}" id="" class="btn btn-default">Цена запросов</a>
-            </div>
+            @endcan
+
+            <a href="{{ route('prices.index', $project->id) }}" id="" class="btn btn-default">Цена запросов</a>
         </div>
-    @endif
+    </div>
 
     <div class="row">
         <div class="col-12 card-table">
@@ -106,14 +108,11 @@
                 <div class="dataTables_processing"><img src="/img/1485.gif" style="width: 50px; height: 50px;"></div>
             </div>
             <div class="card dTable">
-                <table class="table table-hover table-responsive table-bordered text-center"
-                       id="monitoringTable"></table>
+                <table class="table table-hover table-responsive table-bordered text-center" id="monitoringTable"></table>
             </div>
             <!-- /.card -->
         </div>
     </div>
-
-    {{--@include('monitoring.testing')--}}
 
     @include('monitoring.keywords.modal.main')
 
@@ -213,7 +212,6 @@
         </script>
 
         <script>
-            const PROJECT_ADMIN = '{{ $project->pivot->admin }}';
             const PROJECT_ID = '{{ $project->id }}';
             const PROJECT_NAME = '{{ $project->name }}';
             const REGION_ID = '{{ request('region', null) }}';
@@ -236,11 +234,13 @@
                 dates_range: DATES,
                 mode_range: MODE,
             }).then(function (response) {
+
                 let columns = [];
 
                 $.each(response.data.columns, function (i, item) {
-                    if (PROJECT_ADMIN == '0' && (i == 'checkbox' || i == 'btn'))
+                    if ('{{ !auth()->user()->can('edit_query_monitoring') }}' && '{{ !auth()->user()->can('delete_query_monitoring') }}' && i === "btn") {
                         return;
+                    }
 
                     let width = null;
                     let orderable = false;
@@ -306,18 +306,12 @@
                         let url = new URL(window.location.href);
                         let params = new URLSearchParams(url.search);
 
-                        axios.get(`/monitoring/keywords/show/controls`).then(function (response) {
+                        axios.get(`/monitoring/keywords/show/controls/${PROJECT_ID}`).then(function (response) {
 
                             let container = $('.mailbox-controls');
                             let content = response.data;
 
                             container.html(content);
-
-                            if (PROJECT_ADMIN == '0') {
-                                container.find('.checkbox-toggle').remove();
-                                container.find('.queries-controls').remove();
-                                container.find('.positions-controls').remove();
-                            }
 
                             let checkbox = container.find('.checkbox-toggle');
 
@@ -525,8 +519,9 @@
                             });
                         });
 
-                        if (params.has('group'))
+                        if (params.has('group')) {
                             setTimeout(() => api.column('group:name').search(params.get('group')).draw(), 1000);
+                        }
 
                         let notValidateUrl = $('<div />', {
                             class: 'custom-control custom-switch'

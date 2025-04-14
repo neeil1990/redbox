@@ -31,6 +31,7 @@ class MonitoringProjectUserStatusController extends Controller
     {
         /* @var  User $auth */
         $auth = $this->auth;
+
         $project = $request->input('project');
 
         if(!$this->isProjectAdmin($auth, $project))

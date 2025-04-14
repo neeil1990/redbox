@@ -87,7 +87,7 @@
             @auth
                 @include('users.panel')
             @endauth
-            @include('navigation.sidebar')
+                @include('navigation.sidebar')
         </div>
     </aside>
     <!-- Content Wrapper. Contains page content -->

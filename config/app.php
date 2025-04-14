@@ -169,12 +169,11 @@ return [
         /*
          * Package Service Providers...
          */
+        Spatie\Permission\PermissionServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         Laracasts\Flash\FlashServiceProvider::class,
-        Spatie\Permission\PermissionServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
-        Yangqi\Htmldom\HtmldomServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
@@ -246,7 +245,6 @@ return [
         'Flash' => Laracasts\Flash\Flash::class,
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Curl' => Ixudra\Curl\Facades\Curl::class,
-        'Htmldom' => Yangqi\Htmldom\Htmldom::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Carbon' => Carbon\Carbon::class,

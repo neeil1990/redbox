@@ -40,55 +40,26 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <button type="button"
-                                    class="btn btn-primary btn-block"
-                                    id="verifyCodeButton"
-                                    onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628'); _tmr.push({ type: 'reachGoal', id: 3340935, goal: 'Verifikacija170523'});"
-                                    style="display: none">{{ __('Send') }}</button>
-                            <button type="button" class="btn btn-primary btn-block" id="fakeButton"
-                                    disabled>{{ __('Send') }}</button>
+                            <button type="submit" class="btn btn-primary btn-block"
+                                    onclick="ym(89500732,'reachGoal','verifikacija_po_majlu_1628'); _tmr.push({ type: 'reachGoal', id: 3340935, goal: 'Verifikacija170523'});">
+                                {{ __('Send') }}
+                            </button>
                         </div>
                     </div>
                 </form>
-                <p class="mt-2">{{ __('If you did not receive the email') }},
-                    <a href="{{ route('verification.resend') }}">{{ __('click here to request another') }}</a>.
+                <p class="mt-2">
+                    <form method="POST" action="{{ route('verification.resend') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-block btn-outline-secondary btn-sm">{{ __('click here to request another') }}</button>
+                    </form>
                 </p>
             </div>
         </div>
     </div>
 @endsection
+
 @section('js')
     <script>
-        $('body > div.login-box > div > div.card-body > form > div.input-group.mb-3 > input').on('keyup', function () {
-            validateCode($(this).val())
-        })
 
-        $('body > div.login-box > div > div.card-body > form > div.input-group.mb-3 > input').on('paste', function () {
-            if ($(this).val().length > 0) {
-                validateCode($(this).val())
-            }
-        })
-
-        function validateCode(value) {
-            $.ajax({
-                method: "post",
-                dataType: "json",
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    code: value,
-                },
-                url: "{{ route('validate.verify.code') }}",
-                error: function (response) {
-                    $('#fakeButton').show()
-                    $('#verifyCodeButton').hide()
-                    $('#verifyCodeButton').attr('type', 'button')
-                },
-                success: function (response) {
-                    $('#fakeButton').hide()
-                    $('#verifyCodeButton').show()
-                    $('#verifyCodeButton').attr('type', 'submit')
-                }
-            })
-        }
     </script>
 @endsection

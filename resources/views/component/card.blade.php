@@ -9,13 +9,11 @@
 @section('content')
 
     @if(\App\User::isUserAdmin() && count(explode('/', $code)) == 1)
-        <a href="{{ route('description.edit', [$code, 'top']) }}"
-           class="btn btn-secondary mb-4">{{ __('Add description') }}
-        </a>
+        {{--<a href="{{ route('description.edit', [$code, 'top']) }}" class="btn btn-secondary mb-4">{{ __('Add description') }}</a>--}}
     @endif
 
     @if(isset($description['top']))
-        @include('description.main', ['description' => $description['top']])
+        {{-- @include('description.main', ['description' => $description['top']]) --}}
     @endif
     <div class="card">
         <div class="card-header">

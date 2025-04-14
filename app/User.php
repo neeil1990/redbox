@@ -103,7 +103,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return URL::temporarySignedRoute(
             'verification.verify',
             \Illuminate\Support\Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
-            ['id' => $notifiable->getKey()]
+            ['id' => $notifiable->getKey(), 'hash' => sha1($notifiable->getEmailForVerification())]
         );
     }
 
@@ -241,7 +241,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function monitoringProjectsDataTable()
     {
-        return $this->monitoringProjects()->wherePivot('approved', 1)->with('users');
+        return $this->monitoringProjects()->with('users');
     }
 
     public function behaviors()

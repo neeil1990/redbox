@@ -42,17 +42,19 @@
             <a href="{{ route('monitoring.show', request('id')) }}" class="btn btn-block btn-default">Вернутся в проект</a>
         </div>
         <div class="col-4">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">
-                      {{ __('Budget') }}
-                    </span>
+            @can('update_budget_monitoring')
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          {{ __('Budget') }}
+                        </span>
+                    </div>
+                    <input type="number" min="0" step="0.01" placeholder="{{ __('Projects budget') }}" value="{{ $project['budget'] }}" class="form-control">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-success budget">{{ __('Save') }}</button>
+                    </div>
                 </div>
-                <input type="number" min="0" step="0.01" placeholder="{{ __('Projects budget') }}" value="{{ $project['budget'] }}" class="form-control">
-                <div class="input-group-append">
-                    <button type="button" class="btn btn-success budget">{{ __('Save') }}</button>
-                </div>
-            </div>
+            @endcan
         </div>
     </div>
 
@@ -143,7 +145,7 @@
             } );
 
             let editIcon = function ( data, type, row ) {
-                if ( type === 'display') {
+                if ( type === 'display' && '{{ auth()->user()->can('update_price_monitoring') }}') {
                     return data + ' <i class="fa fa-pencil" style="opacity: 0.5;font-size: 12px;cursor: pointer;"/>';
                 }
 
@@ -252,7 +254,10 @@
                         text: "Редактировать выбранные",
                         className: "btn-default btn-sm",
                         extend: "edit",
-                        editor: editor
+                        editor: editor,
+                        available: function () {
+                            return {{ auth()->user()->can('update_price_monitoring') }}
+                        }
                     },
                 ],
                 initComplete: function(){

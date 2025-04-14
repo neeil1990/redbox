@@ -231,7 +231,8 @@
                             return '<a href="javascript:void(0)" class="btn btn-sm btn-default" title="Редактировать">'+ icon +'</a>';
                         },
                         className: "dt-center editor-edit",
-                        orderable: false
+                        orderable: false,
+                        visible: '{{ auth()->user()->can('edit_groups_monitoring') }}'
                     },
                     {
                         title: 'Удалить',
@@ -240,7 +241,8 @@
                             return '<a href="javascript:void(0)" class="btn btn-sm btn-default" title="Удалить">'+ icon +'</a>';
                         },
                         className: "dt-center editor-delete",
-                        orderable: false
+                        orderable: false,
+                        visible: '{{ auth()->user()->can('delete_groups_monitoring') }}'
                     }
                 ],
                 select: {
@@ -267,13 +269,19 @@
                                 title: "Создать новую группу",
                                 buttons: "Создать",
                             });
+                        },
+                        available: function () {
+                            return {{ auth()->user()->can('create_groups_monitoring') }}
                         }
                     },
                     {
                         text: "Редактировать выбранные",
                         className: "btn-default btn-sm",
                         extend: "edit",
-                        editor: editor
+                        editor: editor,
+                        available: function () {
+                            return {{ auth()->user()->can('edit_groups_monitoring') }}
+                        }
                     },
                 ],
                 headerCallback: function(thead, data, start, end, display) {

@@ -24,6 +24,7 @@ class MenuComposer
                         }
 
                         $access = (is_null($elem['access'])) ? [] : $elem['access'];
+
                         if ($user->hasRole($access)) {
                             $modules[$key][] = [
                                 'id' => $elem['id'],

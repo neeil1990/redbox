@@ -24,7 +24,10 @@ class MonitoringKeywordPricesController extends Controller
 
     private function initField(Request $request): void
     {
+        apply_team_permissions($request['id']);
+
         $user = $this->user;
+
         $this->project = $user->monitoringProjects()->find($request['id']);
         if(!$this->project)
             abort('404');

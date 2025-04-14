@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MonitoringProjectCreated;
 use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -25,6 +26,7 @@ class MonitoringProjectCreatorController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
+
         $project = $user->monitoringProjects()->create([
             'creator' => $user['id'],
             'status' => 1,
@@ -32,16 +34,11 @@ class MonitoringProjectCreatorController extends Controller
             'url' => $request->input('url'),
         ]);
 
-        if(!$project)
+        if (!$project) {
             return false;
+        }
 
-        $user->monitoringProjects()
-            ->withTimestamps()
-            ->updateExistingPivot($project['id'], [
-                'admin' => 1,
-                'status' => MonitoringProjectUserStatusController::getIdStatusByCode(MonitoringProjectUserStatusController::STATUS_OWNER),
-                ]
-            );
+        event(new MonitoringProjectCreated($user, $project));
 
         return $project['id'];
     }

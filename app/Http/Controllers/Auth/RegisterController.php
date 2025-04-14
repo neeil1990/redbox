@@ -109,9 +109,6 @@ class RegisterController extends Controller
             'metrics' => $metrics,
         ]);
 
-        $user->assignRole('Free');
-        $user->assignRole('user');
-
         return $user;
     }
 
