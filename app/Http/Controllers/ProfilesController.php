@@ -144,7 +144,11 @@ class ProfilesController extends Controller
 
         flash()->overlay(__('User update successfully'), __('Update user'))->success();
 
-        return ($user->email_verified_at) ? redirect()->route('profile.index') : redirect()->route('verification.resend');
+        if ($user->email_verified_at) {
+            return redirect()->route('profile.index');
+        }
+
+        return redirect()->route('verification.resend');
     }
 
     public function password(Request $request)

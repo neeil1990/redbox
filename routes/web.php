@@ -29,6 +29,8 @@ Route::get('dev', function () {
     //
 });
 
+Route::get('email/resend', 'Auth\VerificationController@resend');
+
 Auth::routes(['verify' => true]);
 
 Route::post('/validate-registration-form', 'Auth\RegisterController@validateData')->name('validate.registration.form');
