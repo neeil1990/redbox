@@ -26,20 +26,7 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    $projects = \App\MonitoringProject::all();
-
-    foreach ($projects as $project) {
-
-        apply_team_permissions($project->id);
-
-        foreach ($project->users as $user) {
-            if ($user->id === $project->creator) {
-                $user->assignRole('admin_monitoring');
-            } else {
-                $user->assignRole('viewer_monitoring');
-            }
-        }
-    }
+    //
 });
 
 Auth::routes(['verify' => true]);

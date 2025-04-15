@@ -14,6 +14,7 @@ use App\Jobs\Monitoring\MonitoringChangesDateQueue;
 use App\Jobs\Monitoring\MonitoringCompetitorsQueue;
 use App\Mail\MonitoringApproveProjectMail;
 use App\Mail\MonitoringShareProjectMail;
+use App\Monitoring\Services\MonitoringUserService;
 use App\MonitoringChangesDate;
 use App\MonitoringColumn;
 use App\MonitoringCompetitor;
@@ -147,13 +148,20 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
+
         $project = $user->monitoringProjects()->find($request->input('projectId'));
+
         if (!$project)
             return collect(['status' => false]);
 
         $engines = $project->searchengines()->whereIn('id', $request->input('regions'))->get();
 
+        if ($userAdmin = (new MonitoringUserService())->getMonitoringAdminUser($project)) {
+            $user = $userAdmin;
+        }
+
         $queue = new PositionsDispatch($user['id'], 'position_high');
+
         foreach ($engines as $engine) {
             foreach ($project->keywords as $query)
                 $queue->addQueryWithRegion($query, $engine);
@@ -167,11 +175,17 @@ class MonitoringController extends Controller
     {
         /** @var User $user */
         $user = $this->user;
+
         $project = $user->monitoringProjects()->find($request->input('projectId'));
         $keywords = $project->keywords()->whereIn('id', $request->input('keys'))->get();
         $engine = $project->searchengines()->find($request->input('region'));
 
+        if ($userAdmin = (new MonitoringUserService())->getMonitoringAdminUser($project)) {
+            $user = $userAdmin;
+        }
+
         $queue = new PositionsDispatch($user['id'], 'position_high');
+
         foreach ($keywords as $keyword)
             $queue->addQueryWithRegion($keyword, $engine);
 

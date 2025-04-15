@@ -18,6 +18,7 @@ class PositionLimit extends Limits
         $this->user = $user;
 
         $tariff = $user->tariff()->getAsArray();
+
         if(isset($tariff['settings'][$this->name])){
             $settings = $tariff['settings'][$this->name];
             $this->limit = $settings['value'];
