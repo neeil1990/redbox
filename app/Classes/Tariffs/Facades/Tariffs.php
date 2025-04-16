@@ -20,6 +20,7 @@ use App\Classes\Tariffs\UltimateTariff;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Prophecy\Exception\Doubler\ClassNotFoundException;
+use \Spatie\Permission\PermissionRegistrar;
 
 class Tariffs
 {
@@ -77,6 +78,10 @@ class Tariffs
     {
         if(!$user)
             throw new ClassNotFoundException("Auth class not found!", Auth::class);
+
+        app(PermissionRegistrar::class)->setPermissionsTeamId(1);
+
+        $user->unsetRelation('roles');
 
         /** @var Tariff $tariff */
         foreach ($this->getTariffs() as $tariff){
