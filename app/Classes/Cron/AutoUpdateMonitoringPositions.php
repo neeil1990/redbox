@@ -19,9 +19,8 @@ class AutoUpdateMonitoringPositions
     {
         $engine = $this->engine;
         $project = $engine->project;
-        $user = $project->admin->first();
 
-        $queue = new PositionsDispatch($user["id"], 'position_low');
+        $queue = new PositionsDispatch($project->creator, 'position_low');
         foreach ($project->keywords as $query)
             $queue->addQueryWithRegion($query, $engine);
 
