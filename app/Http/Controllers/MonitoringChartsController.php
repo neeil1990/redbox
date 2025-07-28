@@ -207,8 +207,11 @@ class MonitoringChartsController extends Controller
     protected function getTopPercent(Request $request)
     {
         $topSettings = [
-            10 => ['top' => 10, 'color' => '#28a745', 'hidden' => false],
-            20 => ['top' => 20, 'color' => '#007bff', 'hidden' => false],
+            1 => ['top' => 1, 'color' => '#359d4d', 'hidden' => true],
+            3 => ['top' => 3, 'color' => '#2cb94d', 'hidden' => true],
+            5 => ['top' => 5, 'color' => '#36e15e', 'hidden' => true],
+            10 => ['top' => 10, 'color' => '#64ef85', 'hidden' => false],
+            20 => ['top' => 20, 'color' => '#007bff', 'hidden' => true],
             30 => ['top' => 30, 'color' => '#ffc107', 'hidden' => true],
             40 => ['top' => 40, 'color' => '#dc3545', 'hidden' => true],
             50 => ['top' => 50, 'color' => '#6c757d', 'hidden' => true],
