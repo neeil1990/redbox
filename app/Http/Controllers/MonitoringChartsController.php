@@ -213,7 +213,7 @@ class MonitoringChartsController extends Controller
             10 => ['top' => 10, 'color' => '#9370DB', 'hidden' => false],
             20 => ['top' => 20, 'color' => '#D2691E', 'hidden' => true],
             30 => ['top' => 30, 'color' => '#CD5C5C', 'hidden' => true],
-            40 => ['top' => 40, 'color' => '#dc3545', 'hidden' => true],
+            40 => ['top' => 40, 'color' => '#B22222', 'hidden' => true],
             50 => ['top' => 50, 'color' => '#A9A9A9', 'hidden' => true],
         ];
         $response = [];
