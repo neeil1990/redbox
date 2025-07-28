@@ -207,14 +207,14 @@ class MonitoringChartsController extends Controller
     protected function getTopPercent(Request $request)
     {
         $topSettings = [
-            1 => ['top' => 1, 'color' => '#359d4d', 'hidden' => true],
-            3 => ['top' => 3, 'color' => '#2cb94d', 'hidden' => true],
-            5 => ['top' => 5, 'color' => '#36e15e', 'hidden' => true],
-            10 => ['top' => 10, 'color' => '#64ef85', 'hidden' => false],
-            20 => ['top' => 20, 'color' => '#007bff', 'hidden' => true],
-            30 => ['top' => 30, 'color' => '#ffc107', 'hidden' => true],
+            1 => ['top' => 1, 'color' => '#228B22', 'hidden' => true],
+            3 => ['top' => 3, 'color' => '#1E90FF', 'hidden' => true],
+            5 => ['top' => 5, 'color' => '#008080', 'hidden' => true],
+            10 => ['top' => 10, 'color' => '#9370DB', 'hidden' => false],
+            20 => ['top' => 20, 'color' => '#D2691E', 'hidden' => true],
+            30 => ['top' => 30, 'color' => '#CD5C5C', 'hidden' => true],
             40 => ['top' => 40, 'color' => '#dc3545', 'hidden' => true],
-            50 => ['top' => 50, 'color' => '#6c757d', 'hidden' => true],
+            50 => ['top' => 50, 'color' => '#A9A9A9', 'hidden' => true],
         ];
         $response = [];
         $positions = $this->getLastPositions($request->input('range'));
