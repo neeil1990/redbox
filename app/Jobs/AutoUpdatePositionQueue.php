@@ -21,6 +21,8 @@ class AutoUpdatePositionQueue implements ShouldQueue
     protected $engine;
 
     public $timeout = 0;
+
+    public $tries = 3;
     public $retryAfter = 60;
 
     /**

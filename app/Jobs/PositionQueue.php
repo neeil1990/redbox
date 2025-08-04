@@ -19,6 +19,9 @@ class PositionQueue implements ShouldQueue
     protected $model;
 
     public $timeout = 0;
+
+    public $tries = 3;
+
     public $retryAfter = 60;
 
     /**
