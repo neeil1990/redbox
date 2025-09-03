@@ -18,13 +18,13 @@
         @can('form_target_monitoring')
             <div class="form-group">
                 <label class="col-form-label">{{ __('Target') }}:</label>
-                {{ Form::select('target', [1 => 1, 3 => 3, 5 => 5, 10 => 10, 50 => 50, 100 => 100], null, ['class' => 'custom-select']) }}
+                {{ Form::select('target', [1 => 1, 3 => 3, 5 => 5, 10 => 10, 50 => 50, 100 => 100], null, ['class' => 'custom-select', 'placeholder' => 'Выбрать...']) }}
             </div>
         @endcan
 
         <div class="form-group">
             <label class="col-form-label">{{ __('Groups') }}:</label>
-            {{ Form::select('monitoring_group_id', $project->groups->pluck('name', 'id'), null, ['class' => 'custom-select']) }}
+            {{ Form::select('monitoring_group_id', $project->groups->pluck('name', 'id'), null, ['class' => 'custom-select', 'placeholder' => 'Выбрать...']) }}
         </div>
 
         @can('form_group_monitoring')

@@ -815,6 +815,7 @@ class MonitoringKeywordsController extends Controller
         apply_team_permissions($id);
 
         $project = MonitoringProject::findOrFail($id);
+
         return view('monitoring.keywords.edit_plural', compact('project'));
     }
 
@@ -842,13 +843,19 @@ class MonitoringKeywordsController extends Controller
 
     public function updatePlural(Request $request)
     {
-        $keywords = MonitoringKeyword::whereIn('id', $request->input('id', []))->update([
-            'monitoring_group_id' => $request->input('monitoring_group_id'),
-            'target' => $request->input('target'),
-            'page' => $request->input('page'),
-        ]);
+        $data = [];
 
-        return $keywords;
+        foreach (['monitoring_group_id', 'target', 'page'] as $key) {
+            if ($request->filled($key)) {
+                $data[$key] = $request->input($key);
+            }
+        }
+
+        if ($data) {
+            return MonitoringKeyword::whereIn('id', $request->input('id', []))->update($data);
+        }
+
+        return false;
     }
 
     /**
