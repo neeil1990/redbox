@@ -21,13 +21,11 @@ function renderPhrasesTable(phrases, count, words) {
                 'copy',
                 'csv',
                 {
-                    extend: 'excel',
-                    text: 'Excel',
-                    filename: 'phrases',
+                    extend: 'excelHtml5',
                     exportOptions: {
-                        columns: ':visible',
-                        stripHtml: true,
-                        trim: true
+                        format: {
+                            body: (data) => sanitizeExcel(data)
+                        }
                     }
                 }
             ],
@@ -163,6 +161,12 @@ function renderPhrasesTable(phrases, count, words) {
         }, 400)
 
     });
+}
+
+function sanitizeExcel(value) {
+    if (value == null) return '';
+    const s = String(value);
+    return /^[=\+\-@]/.test(s) ? "'" + s : s;
 }
 
 function renderTr(key, item) {
