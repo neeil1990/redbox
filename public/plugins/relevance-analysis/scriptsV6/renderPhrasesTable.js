@@ -20,7 +20,26 @@ function renderPhrasesTable(phrases, count, words) {
             buttons: [
                 'copy',
                 'csv',
-                'excelHtml5'
+                {
+                    extend: 'excelHtml5',
+                    extension: '.xlsx',
+                    exportOptions: {
+                        columns: ':visible',
+                        format: {
+                            body: function (data, row, column, node) {
+                                if (typeof data === 'string') {
+                                    // Удаляем HTML и специальные символы
+                                    return data
+                                        .replace(/<[^>]*>/g, '')
+                                        .replace(/&nbsp;/g, ' ')
+                                        .replace(/&amp;/g, '&')
+                                        .trim();
+                                }
+                                return data;
+                            }
+                        }
+                    }
+                }
             ],
             language: {
                 paginate: {
