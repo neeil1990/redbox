@@ -22,9 +22,20 @@ function renderPhrasesTable(phrases, count, words) {
                 'csv',
                 {
                     extend: 'excelHtml5',
+                    filename: 'report_safe.xlsx',
                     exportOptions: {
                         format: {
-                            body: (data) => sanitizeExcel(data)
+                            body: function (data, row, column, node) {
+                                if (typeof data === 'string') {
+                                    // Удаляем HTML-теги (<a>, <span> и т.д.)
+                                    data = data.replace(/<\/?[^>]+(>|$)/g, "");
+                                    // Удаляем URL-ы внутри текста
+                                    data = data.replace(/https?:\/\/\S+/gi, "");
+                                    // Удаляем пробелы по краям
+                                    data = data.trim();
+                                }
+                                return data;
+                            }
                         }
                     }
                 }
@@ -161,12 +172,6 @@ function renderPhrasesTable(phrases, count, words) {
         }, 400)
 
     });
-}
-
-function sanitizeExcel(value) {
-    if (value == null) return '';
-    const s = String(value);
-    return /^[=\+\-@]/.test(s) ? "'" + s : s;
 }
 
 function renderTr(key, item) {
