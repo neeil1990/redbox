@@ -20,27 +20,7 @@ function renderPhrasesTable(phrases, count, words) {
             buttons: [
                 'copy',
                 'csv',
-                {
-                    extend: 'excel',
-                    title: 'Excel',
-                    exportOptions: {
-                        columns: ':visible',
-                        orthogonal: 'export',
-                        format: {
-                            body: function (data, row, column, node) {
-                                // Удаляем HTML теги и лишние пробелы
-                                return typeof data === 'string'
-                                    ? data.replace(/<[^>]*>/g, '').trim()
-                                    : data;
-                            }
-                        }
-                    },
-                    customize: function(xlsx) {
-                        let sheet = xlsx.xl.worksheets['sheet1.xml'];
-                        // Очищаем потенциально опасные метаданные
-                        $('row c[t="inlineStr"]', sheet).attr('t', 's');
-                    }
-                }
+                'excelHtml5'
             ],
             language: {
                 paginate: {
