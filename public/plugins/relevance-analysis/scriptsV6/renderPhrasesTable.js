@@ -21,23 +21,13 @@ function renderPhrasesTable(phrases, count, words) {
                 'copy',
                 'csv',
                 {
-                    extend: 'excelHtml5',
-                    extension: '.xlsx',
+                    extend: 'excel',
+                    text: 'Excel',
+                    filename: 'phrases',
                     exportOptions: {
                         columns: ':visible',
-                        format: {
-                            body: function (data, row, column, node) {
-                                if (typeof data === 'string') {
-                                    // Удаляем HTML и специальные символы
-                                    return data
-                                        .replace(/<[^>]*>/g, '')
-                                        .replace(/&nbsp;/g, ' ')
-                                        .replace(/&amp;/g, '&')
-                                        .trim();
-                                }
-                                return data;
-                            }
-                        }
+                        stripHtml: true,
+                        trim: true
                     }
                 }
             ],
