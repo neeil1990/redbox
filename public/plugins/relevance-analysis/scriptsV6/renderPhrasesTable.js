@@ -20,25 +20,7 @@ function renderPhrasesTable(phrases, count, words) {
             buttons: [
                 'copy',
                 'csv',
-                {
-                    extend: 'excelHtml5',
-                    filename: 'report_safe.xlsx',
-                    exportOptions: {
-                        format: {
-                            body: function (data, row, column, node) {
-                                if (typeof data === 'string') {
-                                    // Удаляем HTML-теги (<a>, <span> и т.д.)
-                                    data = data.replace(/<\/?[^>]+(>|$)/g, "");
-                                    // Удаляем URL-ы внутри текста
-                                    data = data.replace(/https?:\/\/\S+/gi, "");
-                                    // Удаляем пробелы по краям
-                                    data = data.trim();
-                                }
-                                return data;
-                            }
-                        }
-                    }
-                }
+                'excelHtml5'
             ],
             language: {
                 paginate: {
