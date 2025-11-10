@@ -1230,43 +1230,19 @@
                             },
                             plugins: {
                                 crosshair: false,
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            let label = context.label;
-                                            let data = context.dataset.data;
-                                            let dataItem = data[context.dataIndex];
-
-                                            let sum = 0;
-                                            data.map(data => {
-                                                sum += data
-                                            });
-                                            let percent = Math.round((dataItem * 100 / sum));
-
-                                            label += ': ' + dataItem + ' (' + percent + '%)';
-
-                                            return label;
-                                        }
-                                    }
-                                },
                                 datalabels: {
                                     anchor: 'center',
                                     color: '#fff',
                                     font: {
-                                        size: 14,
-                                        weight: 'bold'
+                                        size: 12,
+                                        weight: 'bold',
                                     },
                                     formatter: (value, ctx) => {
-                                        let sum = 0;
-                                        let dataArr = ctx.chart.data.datasets[0].data;
-                                        dataArr.map(data => {
-                                            sum += data
-                                        });
-                                        let percent = Math.round((value * 100 / sum));
-                                        if (percent > 1)
-                                            return `${percent}%`;
-                                        else
-                                            return null;
+                                        if (! value) {
+                                            return null
+                                        }
+
+                                        return `${value}%`;
                                     },
                                 },
                                 legend: {
@@ -1283,16 +1259,10 @@
                                                 let dsIndex = 0;
                                                 let ds = data.datasets[0];
 
-                                                let sum = 0;
-                                                ds.data.map(data => {
-                                                    sum += data
-                                                });
-
                                                 let value = chart.config.data.datasets[dsIndex].data[i];
-                                                let percent = Math.round((value * 100 / sum));
 
                                                 return {
-                                                    text: label + ": " + percent + "%",
+                                                    text: label + ": " + value + "%",
                                                     fillStyle: ds.backgroundColor[i],
                                                     strokeStyle: ds.backgroundColor[i],
                                                     hidden: ds.hidden,

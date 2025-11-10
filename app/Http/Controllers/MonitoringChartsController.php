@@ -95,23 +95,12 @@ class MonitoringChartsController extends Controller
             return (new AreaChartData([]))->setData([])->get();
 
         $positions = $positionsGroupByDate->last();
-        foreach ($positions as $position){
 
-            if($position > 0 && $position <= 3)
-                $response['data'][0] += 1;
-
-            if($position > 0 && $position <= 10)
-                $response['data'][1] += 1;
-
-            if($position > 10 && $position <= 30)
-                $response['data'][2] += 1;
-
-            if($position > 30 && $position <= 50)
-                $response['data'][3] += 1;
-
-            if($position > 50 && $position <= 100)
-                $response['data'][4] += 1;
-        }
+        $response["data"][0] = $this->calculatePercentPositionsInTop($positions, 3);
+        $response["data"][1] = $this->calculatePercentPositionsInTop($positions, 10);
+        $response["data"][2] = $this->calculatePercentPositionsInTop($positions, 30);
+        $response["data"][3] = $this->calculatePercentPositionsInTop($positions, 50);
+        $response["data"][4] = $this->calculatePercentPositionsInTop($positions, 100);
 
         $response['data'][5] += ($this->keywords->count() - $positions->count());
 
