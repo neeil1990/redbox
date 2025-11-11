@@ -1007,10 +1007,15 @@
         <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+
         <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
+
+        {{--<script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>--}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
         <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
 
