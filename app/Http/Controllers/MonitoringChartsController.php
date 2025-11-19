@@ -86,7 +86,7 @@ class MonitoringChartsController extends Controller
     protected function getDistributionByTop(Request $request)
     {
         $response = [
-            'labels' => ['1-3', '1-10', '11-30', '31-50', '51-100', '101+'],
+            'labels' => ['ТОП 3', 'ТОП 10', 'ТОП 30', 'ТОП 50', 'ТОП 100', 'ТОП 101+'],
             'data' => [0, 0, 0, 0, 0, 0],
         ];
         $positionsGroupByDate = $this->getLastPositionsByDays();
