@@ -155,6 +155,9 @@ $('#coverage-clouds-button').click(function () {
 
 function arrayToObj(array) {
     let length = array.count
+    if (Object.keys(array).length - 1 < length) {
+        length = Object.keys(array).length - 1;
+    }
     let a = [], b = {};
     for (let i = 0; i < length; i++) {
         b = array[i]
