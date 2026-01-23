@@ -590,13 +590,16 @@
                     },
                     drawCallback: function () {
                         let api = this.api();
-
+                        let data = api.data();
                         let card = table.closest('.card-table');
                         card.find('.processing').remove();
                         card.find('.dTable').css('display', 'block');
 
-                        $('tr', table).each(function (i, item) {
-                            let target = $(item).find('.target').text();
+                        $('tbody > tr', table).each(function (i, item) {
+                            let target = 0;
+                            if ('target' in data[i]) {
+                                target = $('<div />').html(data[i].target).text();
+                            }
                             let positions = $(item).find('td span[data-position]');
 
                             $.each(positions, function (i, item) {
