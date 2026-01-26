@@ -49,7 +49,11 @@
                     </div>
                     @endif
 
-                    <form action="" id="filter" style="display: contents;" onchange='$("#filter").trigger("filtered")'>
+                    <form action="" id="filter" style="display: contents;" onchange='this.submit()'>
+                        @foreach(request()->except('group') as $key => $value)
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endforeach
+
                         <div class="col-4">
                             <div class="form-group">
                                 <label>{{ __('Groups') }}:</label>
