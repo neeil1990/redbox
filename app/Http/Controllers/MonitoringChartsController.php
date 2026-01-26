@@ -23,6 +23,10 @@ class MonitoringChartsController extends Controller
 
         $this->keywords = $this->project->keywords;
 
+        if ($request->filled('group')) {
+            $this->keywords = $this->keywords->where('monitoring_group_id', $request->input('group'));
+        }
+
         $region = $this->project->searchengines();
 
         if($request->input('regionId'))

@@ -215,6 +215,7 @@
             const PROJECT_ID = '{{ $project->id }}';
             const PROJECT_NAME = '{{ $project->name }}';
             const REGION_ID = '{{ request('region', null) }}';
+            const GROUP_ID = '{{ request('group', null) }}';
             const DATES = '{{ request('dates', null) }}';
             const MODE = '{{ request('mode', null) }}';
             const PAGE_LENGTH = '{{ $length }}';
@@ -1194,6 +1195,7 @@
                     axios.get('/monitoring/charts', {
                         params: {
                             projectId: PROJECT_ID,
+                            group: GROUP_ID,
                             regionId: REGION_ID,
                             dateRange: DATES,
                             range: range,
@@ -1213,6 +1215,7 @@
             axios.get('/monitoring/charts', {
                 params: {
                     projectId: PROJECT_ID,
+                    group: GROUP_ID,
                     regionId: REGION_ID,
                     dateRange: DATES,
                     chart: 'distribution',
