@@ -92,6 +92,7 @@ class Kernel extends ConsoleKernel
     private function autoUpdateMonitoringPositions($schedule)
     {
         $engines = MonitoringSearchengine::where('auto_update', true)->get();
+
         if ($engines->isNotEmpty()) {
 
             foreach ($engines as $engine) {
@@ -109,15 +110,22 @@ class Kernel extends ConsoleKernel
 
                 $monthday = '*';
 
-                if ($engine->monthday) {
-                    $monthday = '*/' . $engine->monthday;
-                } else if ($engine->day) {
+                if ($engine->day) {
                     $monthday = $engine->day;
                 }
 
                 $cron = implode(' ', [$minute, $hour, $monthday, '*', $weekdays]);
 
-                $schedule->call(new AutoUpdateMonitoringPositions($engine))->cron($cron);
+                $task = $schedule->call(new AutoUpdateMonitoringPositions($engine));
+
+                if ($engine->monthday) {
+                    $monthday = $engine->monthday;
+                    $task->daily()->when(function () use ($monthday) {
+                        return now()->day % $monthday === 0;
+                    });
+                } else {
+                    $task->cron($cron);
+                }
             }
         }
     }
