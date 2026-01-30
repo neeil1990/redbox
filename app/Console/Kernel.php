@@ -120,9 +120,21 @@ class Kernel extends ConsoleKernel
 
                 if ($engine->monthday) {
                     $monthday = $engine->monthday;
+
                     $task->daily()->when(function () use ($monthday) {
-                        return now()->day % $monthday === 0;
+                        $shouldRun = now()->day % $monthday === 0;
+                        \Log::info('Schedule check', [
+                            'day' => now()->day,
+                            'monthday' => $monthday,
+                            'should_run' => $shouldRun
+                        ]);
+                        return $shouldRun;
                     });
+
+                    \Log::info('Schedule check monthday case', [
+                        'monthday' => $monthday,
+                        'id' => $engine['id']
+                    ]);
                 } else {
                     $task->cron($cron);
                 }
