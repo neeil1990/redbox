@@ -92,6 +92,7 @@
     </aside>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
+
         <!-- Main content -->
         <div class="content pt-3 pb-3" id="app">
             <div class="container-fluid">

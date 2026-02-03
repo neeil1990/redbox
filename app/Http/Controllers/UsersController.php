@@ -38,6 +38,7 @@ class UsersController extends Controller
 
     public function __construct()
     {
+
         $this->middleware(['permission:Users']);
 
         $this->tariff = new Tariffs();

@@ -30,6 +30,7 @@ class ComposerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        
         view()->composer('component.card', DescriptionComposer::class);
         view()->composer('users.panel', UserPanelComposer::class);
         view()->composer('navigation.menu-right', UserPanelComposer::class);
