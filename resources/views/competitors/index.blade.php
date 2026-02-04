@@ -311,7 +311,7 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-secondary mt-1" id="exportXLS">
+                    <button class="btn btn-default" id="exportXLS">
                         Экспорт XLS
                     </button>
                 </div>
