@@ -221,7 +221,7 @@
 
             <div id="sites-block" class="mt-5" style="display:none;">
                 <h2>{{ __('Top sites based on your keywords') }}</h2>
-                <div class="site-block-buttons">
+                <div class="site-block-buttons mb-2">
                     <button class="btn btn-secondary colored-button mt-1 click_tracking"
                             data-click="Highlight identical urls" id="coloredEloquentUrls">
                         {{ __('Highlight identical urls') }}
@@ -310,10 +310,15 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
-                <div id="sites-tables" class="d-flex" style="width: 100%; overflow-x: auto">
+                <div class="export-block">
+                    <p><i class="fas fa-file-download"></i> Файлы экспорта:</p>
+                    <a href="javascript:void(0)" class="d-block">export.xlsx</a>
                 </div>
+
+                <div id="sites-tables" class="d-flex" style="width: 100%; overflow-x: auto"></div>
             </div>
 
             <div class="top-sites mt-5" style="display: none">
@@ -494,6 +499,7 @@
         <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
         <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
         <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>

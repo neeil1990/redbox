@@ -88,7 +88,15 @@ function renderTopSitesV2(analysedSites, messages) {
     })
 
     $('#sites-block').show()
+
     showEquivalentElements()
+
+    let keyCount = Object.keys(analysedSites).length;
+    let filename = `export-${keyCount}.xlsx`;
+    let $exportButton = $('.export-block').find('a').text(filename);
+
+    $exportButton.unbind().click(() => exportAnalysedSitesToExcel(analysedSites, filename));
+
     $('[data-toggle="tooltip"]').tooltip()
 }
 
@@ -361,4 +369,22 @@ function getColorsArray() {
     ]
 
     return colorArray.sort(() => Math.random() - 0.5);
+}
+
+function exportAnalysedSitesToExcel(obj, filename = 'report.xlsx') {
+    let data = [];
+
+    $.each(obj, function (cols, value) {
+        let sites = Object.keys(value);
+        $.each(sites, function (index, site) {
+            let row = {[cols]: site}
+            if (data[index] === undefined) {
+                data.push(row)
+            } else {
+                $.extend( data[index], row );
+            }
+        })
+    })
+
+    exportToExcel(data, filename);
 }

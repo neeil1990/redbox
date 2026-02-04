@@ -28,6 +28,15 @@ function renderUrlsTable(urls, pageLength) {
             order: [[2, "desc"]],
             pageLength: pageLength,
             searching: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Экспорт в Excel',
+                    title: 'Анализ URL',
+                    className: 'btn btn-secondary'
+                }
+            ],
             language: {
                 "paginate": {
                     "first": "«",

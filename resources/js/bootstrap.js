@@ -44,3 +44,12 @@ window.Echo = new Echo({
     disableStats: true,
     enabledTransports: ["ws", "wss"],
 });
+
+window.XLSX = require('xlsx');
+
+window.exportToExcel = function(data, filename = 'export.xlsx') {
+    const worksheet = window.XLSX.utils.json_to_sheet(data);
+    const workbook = window.XLSX.utils.book_new();
+    window.XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    window.XLSX.writeFile(workbook, filename);
+};
