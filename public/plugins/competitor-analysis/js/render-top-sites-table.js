@@ -93,7 +93,7 @@ function renderTopSitesV2(analysedSites, messages) {
 
     let keyCount = Object.keys(analysedSites).length;
     let filename = `export-${keyCount}.xlsx`;
-    let $exportButton = $('.export-block').find('a').text(filename);
+    let $exportButton = $('.site-block-buttons').find('#exportXLS');
 
     $exportButton.unbind().click(() => exportAnalysedSitesToExcel(analysedSites, filename));
 

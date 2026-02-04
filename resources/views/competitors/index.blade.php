@@ -311,11 +311,9 @@
                         </div>
                     </div>
 
-                </div>
-
-                <div class="export-block">
-                    <p><i class="fas fa-file-download"></i> Файлы экспорта:</p>
-                    <a href="javascript:void(0)" class="d-block">export.xlsx</a>
+                    <button class="btn btn-secondary mt-1" id="exportXLS">
+                        Экспорт XLS
+                    </button>
                 </div>
 
                 <div id="sites-tables" class="d-flex" style="width: 100%; overflow-x: auto"></div>
