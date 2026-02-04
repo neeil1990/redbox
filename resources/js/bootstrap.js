@@ -49,6 +49,21 @@ window.XLSX = require('xlsx');
 
 window.exportToExcel = function(data, filename = 'export.xlsx') {
     const worksheet = window.XLSX.utils.json_to_sheet(data);
+
+    const cols = [];
+    const columnHeaders = Object.keys(data[0] || {});
+
+    columnHeaders.forEach(header => {
+        const maxLength = data.reduce((max, row) => {
+            const cellValue = row[header] ? String(row[header]) : '';
+            return Math.max(max, cellValue.length, header.length);
+        }, 0);
+
+        cols.push({ wch: maxLength + 2 }); // +2 для отступов
+    });
+
+    worksheet['!cols'] = cols;
+
     const workbook = window.XLSX.utils.book_new();
     window.XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
     window.XLSX.writeFile(workbook, filename);
