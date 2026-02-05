@@ -75,7 +75,7 @@ class PagesController extends Controller
             6 => __('remove characters at the beginning of a word'),
             7 => __('remove characters at the end of a word'),
             8 => __('remove duplicates'),
-            9 => __('replace'),
+            9 => __('replace e'),
         ])->toJson();
 
         return view('pages.duplicates', compact('options'));
