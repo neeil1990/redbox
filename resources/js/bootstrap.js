@@ -45,7 +45,7 @@ window.Echo = new Echo({
     enabledTransports: ["ws", "wss"],
 });
 
-window.XLSX = require('xlsx');
+window.XLSX = require('xlsx-js-style');
 
 window.exportToExcel = function(data, filename = 'export.xlsx') {
     const worksheet = window.XLSX.utils.json_to_sheet(data);
@@ -63,6 +63,55 @@ window.exportToExcel = function(data, filename = 'export.xlsx') {
     });
 
     worksheet['!cols'] = cols;
+
+    // Раскраска заголовков
+    const range = window.XLSX.utils.decode_range(worksheet['!ref']);
+
+    const colors = ['FFFFEB3B', 'FF4CAF50', 'FFFF9800', 'FF9C27B0', 'FF00BCD4'];
+
+    const valueMap = new Map();
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+        let colorIndex = 0;
+
+        // Собираем уникальные значения в колонке (начиная со 2-й строки)
+        for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+            const address = window.XLSX.utils.encode_cell({r: R, c: C});
+            const cell = worksheet[address];
+
+            if (!cell || !cell.v) continue;
+
+            const value = String(cell.v);
+
+            if (!valueMap.has(value)) {
+                valueMap.set(value, colors[colorIndex % colors.length]);
+                colorIndex++;
+            }
+        }
+    }
+
+    // Применяем цвета только если есть дубликаты
+    valueMap.forEach((color, value) => {
+        const cells = [];
+
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+                const address = window.XLSX.utils.encode_cell({ r: R, c: C });
+                const cell = worksheet[address];
+                if (cell && String(cell.v) === value) {
+                    cells.push(address);
+                }
+            }
+        }
+
+        // Красим только если значение повторяется
+        if (cells.length > 1) {
+            cells.forEach(addr => {
+                worksheet[addr].s = {
+                    fill: { fgColor: { rgb: color } }
+                };
+            });
+        }
+    });
 
     const workbook = window.XLSX.utils.book_new();
     window.XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');

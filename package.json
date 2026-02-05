@@ -34,6 +34,7 @@
         "pusher-js": "^7.6.0",
         "spinkit": "^2.0.1",
         "vue-cookie": "^1.1.4",
-        "xlsx": "^0.18.5"
+        "xlsx": "^0.18.5",
+        "xlsx-js-style": "^1.2.0"
     }
 }
