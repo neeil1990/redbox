@@ -65,34 +65,39 @@
                         </span>
                         @enderror
                     </div>
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="icheck-primary">
-                                <input type="checkbox" name="remember"
-                                       id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                <label for="remember" id="remember-me-label">
-                                    {{ __('Remember Me') }}
-                                </label>
-                            </div>
+                    <div class="input-group mb-3">
+                        <div class="icheck-primary">
+                            <input type="checkbox" name="remember"
+                                   id="remember" {{ old('remember') ? 'checked' : '' }}>
+                            <label for="remember" id="remember-me-label">
+                                {{ __('Remember Me') }}
+                            </label>
                         </div>
-                        <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block"
-                                    id="login-button">{{ __('Login') }}</button>
-                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <button type="submit" class="btn btn-primary btn-block" id="login-button">{{ __('Login') }}</button>
                     </div>
                 </form>
 
                 <div class="social-auth-links text-center mt-2 mb-3">
-                    @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="btn btn-block btn-primary">
-                            <i class="fas fa-key mr-2"></i> {{ __('Forgot Your Password?') }}
-                        </a>
-                    @endif
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn btn-block btn-danger">
-                            <i class="fas fa-registered mr-2"></i> {{ __('Register a new membership') }}
-                        </a>
-                    @endif
+                    <div class="row">
+                        @if (Route::has('password.request'))
+                            <div class="col-6">
+                                <a href="{{ route('password.request') }}" class="btn btn-block btn-danger">
+                                    <i class="fas fa-key mr-2"></i> {{ __('Forgot Your Password?') }}
+                                </a>
+                            </div>
+                        @endif
+
+                        @if (Route::has('register'))
+                            <div class="col-6">
+                                <a href="{{ route('register') }}" class="btn btn-block btn-primary">
+                                    <i class="fas fa-registered mr-2"></i> {{ __('Register') }}
+                                </a>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
