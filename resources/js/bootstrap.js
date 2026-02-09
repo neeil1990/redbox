@@ -47,6 +47,25 @@ window.Echo = new Echo({
 
 window.XLSX = require('xlsx-js-style');
 
+function rgbaToHex(rgba) {
+    const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+    if (!match) return "FFFFFF";
+
+    const r = parseInt(match[1]).toString(16).padStart(2, '0');
+    const g = parseInt(match[2]).toString(16).padStart(2, '0');
+    const b = parseInt(match[3]).toString(16).padStart(2, '0');
+
+    return (r + g + b).toUpperCase();
+}
+
+function generateRgbaColor() {
+    const red = Math.floor(Math.random() * 128) + 128;
+    const green = Math.floor(Math.random() * 128) + 128;
+    const blue = Math.floor(Math.random() * 128) + 128;
+
+    return "rgb(" + red + ", " + green + ", " + blue + ")";
+}
+
 window.exportToExcel = function(data, filename = 'export.xlsx') {
     const worksheet = window.XLSX.utils.json_to_sheet(data);
 
@@ -59,7 +78,7 @@ window.exportToExcel = function(data, filename = 'export.xlsx') {
             return Math.max(max, cellValue.length, header.length);
         }, 0);
 
-        cols.push({ wch: maxLength + 2 }); // +2 для отступов
+        cols.push({ wch: maxLength }); // +2 для отступов
     });
 
     worksheet['!cols'] = cols;
@@ -67,11 +86,8 @@ window.exportToExcel = function(data, filename = 'export.xlsx') {
     // Раскраска заголовков
     const range = window.XLSX.utils.decode_range(worksheet['!ref']);
 
-    const colors = ['FFFFEB3B', 'FF4CAF50', 'FFFF9800', 'FF9C27B0', 'FF00BCD4'];
-
     const valueMap = new Map();
     for (let C = range.s.c; C <= range.e.c; ++C) {
-        let colorIndex = 0;
 
         // Собираем уникальные значения в колонке (начиная со 2-й строки)
         for (let R = range.s.r + 1; R <= range.e.r; ++R) {
@@ -83,8 +99,7 @@ window.exportToExcel = function(data, filename = 'export.xlsx') {
             const value = String(cell.v);
 
             if (!valueMap.has(value)) {
-                valueMap.set(value, colors[colorIndex % colors.length]);
-                colorIndex++;
+                valueMap.set(value, generateRgbaColor());
             }
         }
     }
@@ -107,7 +122,7 @@ window.exportToExcel = function(data, filename = 'export.xlsx') {
         if (cells.length > 1) {
             cells.forEach(addr => {
                 worksheet[addr].s = {
-                    fill: { fgColor: { rgb: color } }
+                    fill: { fgColor: { rgb: rgbaToHex(color) } }
                 };
             });
         }
@@ -117,3 +132,5 @@ window.exportToExcel = function(data, filename = 'export.xlsx') {
     window.XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
     window.XLSX.writeFile(workbook, filename);
 };
+
+
