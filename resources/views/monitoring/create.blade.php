@@ -268,7 +268,7 @@
                         max: '31',
                         name: 'monthday',
                         value: data.val.monthday,
-                        placeholder: 'Выберите от 1 до 31. (Пример: 1 - это съём позиций каждый день, 5 - каждые пять дней)'
+                        placeholder: 'Выберите от 1 до 31.'
                     }).attr('data-id', data.id);
 
                     return form.append(label, input);
@@ -723,6 +723,7 @@
                 let self = $(this);
                 let option = self.val();
                 let modes = $('.mode-scan').find('.form-group');
+                let $calloutInfo = $('.card-body').find('#callout-info')
 
                 modes.addClass('d-none');
                 modes.find('code').remove();
@@ -735,6 +736,14 @@
                 let hidden = modes.filter(function () {
                     return $(this).hasClass('d-none');
                 });
+
+                if (option === 'ranges') {
+                    $calloutInfo.addClass("callout callout-info")
+                    $calloutInfo.html("Если ставим 1 - снимается каждый день.<br/>Если ставим 2 - снимается 2-4-6 числа и т.д.<br/>Если ставим 5 - снимается 5-10-15-20 числа и т.д.<br/>Если ставим 20 - снимается 20 числа каждого месяца.<br/>Если ставим 30 - снимается 30 числа каждого месяца (в феврале сниматься не будет).")
+                } else {
+                    $calloutInfo.html("")
+                    $calloutInfo.removeClass("callout callout-info")
+                }
 
                 $.each(selected, function(i, elem){
                     let el = $(elem);

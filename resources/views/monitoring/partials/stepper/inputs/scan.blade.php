@@ -18,9 +18,11 @@
                         <option value="times">Каждый день</option>
                         <option value="months">Каждый месяц</option>
                         <option value="weeks">По дням</option>
-                        <option value="ranges">Через определенное количество дней</option>
+                        <option value="ranges">Периодами (Через определенное количество дней)</option>
                     </select>
                 </div>
+
+                <div class="" id="callout-info"></div>
 
                 <div class="mode-scan"></div>
 
