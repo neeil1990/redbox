@@ -50,12 +50,20 @@
     <a href="#" class="btn btn-default mt-3 mb-3 mr-2" id="selectedProjects">
         {{ __('Delete selected projects') }}
     </a>
+    <a href="javascript:void(0)" class="btn btn-default mt-3 mb-3 mr-2" id="checkSelectedProjects">
+        Проверить выбранные проекты
+    </a>
     <input type="hidden" class="checked-projects">
     <div>{{ __('Count tracked projects') }}: <span id="count-projects">{{ $countProjects }}</span></div>
     <table id="table" class="table table-bordered table-striped dataTable dtr-inline">
         <thead>
         <tr>
-            <th></th>
+            <th>
+                <div class="custom-control custom-checkbox ml-2">
+                    <input type="checkbox" id="project-all" class="checkbox custom-control-input">
+                    <label for="project-all" class="custom-control-label"></label>
+                </div>
+            </th>
             <th class="col-3">{{ __('Domain') }}</th>
             <th class="col-1">{{ __('Track DNS changes') }}</th>
             <th class="col-1">{{ __('Track the registration period') }}</th>
@@ -84,11 +92,9 @@
             </div>
             <tr id="{{ $project->id }}">
                 <td>
-                    <div class="custom-control custom-checkbox checbox-for-remove-project">
-                        <input type="checkbox" id="project-{{ $project->id }}" class="checkbox custom-control-input"
-                               name="enums">
-                        <label for="project-{{ $project->id }}" class="custom-control-label">
-                        </label>
+                    <div class="custom-control custom-checkbox ml-2 checbox-for-remove-project">
+                        <input type="checkbox" id="project-{{ $project->id }}" value="{{ $project->id }}" class="checkbox custom-control-input" name="enums">
+                        <label for="project-{{ $project->id }}" class="custom-control-label"></label>
                     </div>
                 </td>
                 <td data-order="{{ $project->domain }}">
@@ -145,18 +151,18 @@
                     </td>
                 @endif
                 <td>
-                    <form action="{{ route('check.domain.information', $project->id)}}" method="get"
-                          class="__helper-link ui_tooltip_w  d-inline">
-                        @csrf
-                        <button class="btn btn-default __helper-link ui_tooltip_w" type="submit">
-                            <i aria-hidden="true" class="fa fa-search"></i>
-                            <span class="ui_tooltip __left __l">
-                            <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Run the check manually')}}
-                            </span>
-                        </span>
-                        </button>
+                    <form action="{{ route('check.domain.information', $project->id)}}" method="get" class="__helper-link ui_tooltip_w  d-inline">
+                            @csrf
+                            <button class="btn btn-default __helper-link ui_tooltip_w" type="submit">
+                                <i aria-hidden="true" class="fa fa-search"></i>
+                                <span class="ui_tooltip __left __l">
+                                    <span class="ui_tooltip_content" style="width: 250px !important;">
+                                        {{__('Run the check manually')}}
+                                    </span>
+                                </span>
+                            </button>
                     </form>
+
                     <button class="btn btn-default __helper-link ui_tooltip_w d-inline" data-toggle="modal"
                             data-target="#remove-project-id-{{$project->id}}">
                         <i class="fa fa-trash"></i>
@@ -188,10 +194,11 @@
         <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/buttons.min.js') }}"></script>
-        <script src="{{ asset('plugins/datatable`s/buttons/jszip.min.js') }}"></script>
+        <script src="{{ asset('plugins/datatables/buttons/jszip.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/vfs_fonts.min.js') }}"></script>
         <script src="{{ asset('plugins/datatables/buttons/html5.min.js') }}"></script>
         <script defer>
+
             let oldValue = ''
             let oldProjectName = ''
             $('input.check-dns').click(function () {
@@ -289,29 +296,19 @@
                 }
             })
             $('#selectedProjects').click(function () {
+
+                let $projectIDs = $('input[name=enums]:checked').map(function() { return $(this).val(); }).get().join(', ');
+
                 $.ajax({
                     type: "post",
                     dataType: "json",
                     url: "{{ route('delete.domain-information') }}",
                     data: {
-                        ids: $('.checked-projects').text(),
+                        ids: $projectIDs,
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function () {
-                        let iterator = 0;
-                        $('[data-select=true]').each(function () {
-                            iterator++
-                            $(this).remove();
-                        })
-                        $('#count-projects').text($('#count-projects').text() - iterator)
-                        console.log($('#count-projects').text())
-                        if ($('#count-projects').text() == 0) {
-                            window.location.replace('https://lk.redbox.su/add-domain-information');
-                        }
-                        $('.toast-top-right.delete-success-message').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.delete-success-message').hide(300)
-                        }, 4000)
+                        window.location.reload()
                     },
                     error: function () {
                         $('.toast-top-right.delete-error-message').show()
@@ -358,9 +355,32 @@
                         "sEmptyTable": words.noRecords,
                         "sInfo": words.showing + " " + words.from + "  _START_ " + words.to + " _END_ " + words.of + " _TOTAL_ " + words.entries,
                     },
-                    columnDefs: [{
-                            orderable: false, targets: [0, 6]
-                    }],
+                    order: [[1, 'asc']],
+                    columnDefs: [
+                        { orderable: false, targets: [0, 6] }
+                    ],
+                    initComplete: function (settings, json) {
+
+                        $('#project-all').change(function () {
+                            $('input[name=enums]').prop('checked', $(this).prop("checked"))
+                        });
+
+                        $('#checkSelectedProjects').click(async function () {
+                            let $projects = $('input[name=enums]:checked')
+
+                            if ($projects.length === 0) {
+                                alert('Выберите проект')
+                                return
+                            }
+
+                            for (let i = 0; i < $projects.length; i++) {
+                                await axios.get(`/check-domain-information/${ $($projects[i]).val() }`)
+                            }
+
+                            window.location.reload()
+                        });
+
+                    }
                 });
             });
 

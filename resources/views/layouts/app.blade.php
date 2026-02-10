@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     <!-- Node modules style -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
     @yield('css')
     <style>
         .main-sidebar.sidebar-dark-primary.elevation-4 {
@@ -118,6 +119,7 @@
 {{--<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>--}}
 <!-- Bootstrap -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
 @if(request()->route()->parameter('statistic_project_id') !== null)
     <script>
         const tracking_project_id = "{{ request()->route()->parameter('statistic_project_id') }}";
@@ -140,8 +142,6 @@
         });
     </script>
 @endif
-
-<!-- <script src="https://www.youtube.com/iframe_api"></script> -->
 
 <script>
     $(document).ready(function () {
@@ -183,6 +183,7 @@
 @endunless
 <!-- AdminLTE -->
 <script src="{{ asset('js/adminlte.js') }}"></script>
+
 @if(\App\User::find(Auth::id())['statistic'])
     <script>
         let secondsTrackingRedbox = 0;
