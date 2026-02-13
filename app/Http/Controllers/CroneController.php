@@ -39,6 +39,8 @@ class CroneController extends Controller
     public function checkDomains()
     {
         $projects = DomainInformation::all();
+        $projects = $projects->where('domain', 'kawe.su')->where('user_id', 2);
+
         foreach ($projects as $project) {
             DomainInformation::checkDomain($project);
         }

@@ -72,21 +72,18 @@ class DomainInformation extends Model
     public static function sendNotifications($project, $oldState, $oldDNS = null, $freeDate = null)
     {
         $user = User::find($project->user_id);
-        if ($project->broken != $oldState) {
-            if ($user->telegram_bot_active) {
-                TelegramBot::sendNotificationAboutChangeStateProject($project, $user->chat_id);
-            }
-            $user->DomainInformationNotification($project);
-        }
+
         if ($project->check_dns && $project->dns !== $oldDNS && isset($oldDNS)) {
             if ($user->telegram_bot_active) {
                 TelegramBot::sendNotificationAboutChangeDNS($project, $user->chat_id, $oldDNS);
             }
             $user->sendNotificationAboutChangeDNS($project);
         }
+
         if ($project->check_registration_date && isset($freeDate)) {
             $freeDate = new Carbon($freeDate);
             $diffInDays = $freeDate->diffInDays(Carbon::now());
+
             if ($diffInDays < 20) {
                 if ($user->telegram_bot_active) {
                     TelegramBot::sendNotificationAboutExpirationRegistrationPeriod($project, $user->chat_id, $diffInDays);
