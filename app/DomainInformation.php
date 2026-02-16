@@ -73,22 +73,28 @@ class DomainInformation extends Model
     {
         $user = User::find($project->user_id);
 
-        if ($project->check_dns && $project->dns !== $oldDNS && isset($oldDNS)) {
-            if ($user->telegram_bot_active) {
+        if ($project->dns !== $oldDNS && isset($oldDNS)) {
+            if ($user->telegram_bot_active and $project->check_dns) {
                 TelegramBot::sendNotificationAboutChangeDNS($project, $user->chat_id, $oldDNS);
             }
-            $user->sendNotificationAboutChangeDNS($project);
+
+            if ($project->check_dns_email) {
+                $user->sendNotificationAboutChangeDNS($project);
+            }
         }
 
-        if ($project->check_registration_date && isset($freeDate)) {
+        if (isset($freeDate)) {
             $freeDate = new Carbon($freeDate);
             $diffInDays = $freeDate->diffInDays(Carbon::now());
 
             if ($diffInDays < 20) {
-                if ($user->telegram_bot_active) {
+                if ($user->telegram_bot_active and $project->check_registration_date) {
                     TelegramBot::sendNotificationAboutExpirationRegistrationPeriod($project, $user->chat_id, $diffInDays);
                 }
-                $user->sendNotificationAboutExpirationRegistrationPeriod($project, $diffInDays);
+
+                if ($project->check_registration_date_email) {
+                    $user->sendNotificationAboutExpirationRegistrationPeriod($project, $diffInDays);
+                }
             }
         }
     }

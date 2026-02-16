@@ -65,9 +65,9 @@
                 </div>
             </th>
             <th class="col-3">{{ __('Domain') }}</th>
-            <th class="col-1">{{ __('Track DNS changes') }}</th>
-            <th class="col-1">{{ __('Track the registration period') }}</th>
-            <th class="col-2">{{ __('Last check') }}</th>
+            <th class="col-2">Уведомления DNS</th>
+            <th class="col-2">Уведомления домена</th>
+            <th class="col-1">{{ __('Last check') }}</th>
             <th class="col-4">{{ __('Domain information') }}</th>
             <th class="col-1"></th>
         </tr>
@@ -91,7 +91,7 @@
                 </div>
             </div>
             <tr id="{{ $project->id }}">
-                <td>
+                <td onclick="this.querySelector('.checkbox').checked = (!this.querySelector('.checkbox').checked)">
                     <div class="custom-control custom-checkbox ml-2 checbox-for-remove-project">
                         <input type="checkbox" id="project-{{ $project->id }}" value="{{ $project->id }}" class="checkbox custom-control-input" name="enums">
                         <label for="project-{{ $project->id }}" class="custom-control-label"></label>
@@ -100,16 +100,18 @@
                 <td data-order="{{ $project->domain }}">
                     {!! Form::text('domain', $project->domain ,['class' => 'form-control information', 'rows' => 2, 'data-order' => $project->link]) !!}
                 </td>
-                <td data-order="{{ $project->check_dns }}">
-                    <div class="__helper-link ui_tooltip_w check-dns">
-                        <div
-                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
-                            <input type="checkbox"
-                                   class="custom-control-input check-dns"
-                                   @if($project->check_dns) checked @endif
-                                   id="customSwitchDNS{{$project->id}}">
-                            <label class="custom-control-label" for="customSwitchDNS{{$project->id}}"></label>
+                <td>
+                    <div class="__helper-link ui_tooltip_w">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                            <input type="checkbox" name="check_dns" class="custom-control-input notify" @if($project->check_dns) checked @endif id="dns-tg-{{$project->id}}">
+                            <label class="custom-control-label" for="dns-tg-{{$project->id}}">в телеграм</label>
                         </div>
+
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                            <input type="checkbox" name="check_dns_email" class="custom-control-input notify" @if($project->check_dns_email) checked @endif id="dns-email-{{$project->id}}">
+                            <label class="custom-control-label" for="dns-email-{{$project->id}}">на почту</label>
+                        </div>
+
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
                                 {{__('Green - you will receive a notification about the DNS status change')}}
@@ -119,25 +121,29 @@
                         </span>
                     </div>
                 </td>
-                <td data-order="{{ $project->check_registration_date }}">
-                    <div class="__helper-link ui_tooltip_w check-registration-date">
-                        <div
-                            class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
-                            <input type="checkbox"
-                                   class="custom-control-input check-registration-date"
-                                   @if($project->check_registration_date) checked @endif
-                                   id="customSwitchDate{{$project->id}}">
-                            <label class="custom-control-label" for="customSwitchDate{{$project->id}}"></label>
+
+                <td>
+                    <div class="__helper-link ui_tooltip_w">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                            <input type="checkbox" name="check_registration_date" class="custom-control-input notify" @if($project->check_registration_date) checked @endif id="registration-tg-{{$project->id}}">
+                            <label class="custom-control-label" for="registration-tg-{{$project->id}}">в телеграм</label>
                         </div>
+
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                            <input type="checkbox" name="check_registration_date_email" class="custom-control-input notify" @if($project->check_registration_date_email) checked @endif id="registration-email-{{$project->id}}">
+                            <label class="custom-control-label" for="registration-email-{{$project->id}}">на почту</label>
+                        </div>
+
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
-                                {{__('Green - you will receive notifications when the domain registration expiration time is less than 10 days.')}}
+                                {{__('Green - you will receive a notification about the DNS status change')}}
                                 <br>
                                 {{__('Red - you will not receive notifications')}}
                             </span>
                         </span>
                     </div>
                 </td>
+
                 <td>
                     {{ $project->last_check }}
                 </td>
@@ -201,14 +207,14 @@
 
             let oldValue = ''
             let oldProjectName = ''
-            $('input.check-dns').click(function () {
+            $('input.notify').click(function () {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "{{ route('edit.domain.information') }}",
                     data: {
-                        id: $(this).parent().parent().parent().parent().attr('id'),
-                        name: 'check_dns',
+                        id: $(this).closest('tr').attr('id'),
+                        name: $(this).attr('name'),
                         option: $(this).is(':checked') ? 1 : 0,
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
@@ -226,31 +232,7 @@
                     }
                 });
             })
-            $('input.check-registration-date').click(function () {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "{{ route('edit.domain.information') }}",
-                    data: {
-                        id: $(this).parent().parent().parent().parent().attr('id'),
-                        name: 'check_registration_date',
-                        option: $(this).is(':checked') ? 1 : 0,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function () {
-                        $('.toast-top-right.success-message').show(300)
-                        setTimeout(() => {
-                            $('.toast-top-right.success-message').hide(300)
-                        }, 4000)
-                    },
-                    error: function () {
-                        $('.toast-top-right.error-message').show()
-                        setTimeout(() => {
-                            $('.toast-top-right.error-message').hide(300)
-                        }, 4000)
-                    }
-                });
-            })
+
             $(".information").focus(function () {
                 oldValue = $(this).val()
             })
