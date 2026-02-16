@@ -136,6 +136,7 @@
 
                         <span class="ui_tooltip __left __l">
                             <span class="ui_tooltip_content" style="width: 250px !important;">
+                                {{__('Green - you will receive notifications when the domain registration expiration time is less than 10 days.')}}
                                 {{__('Green - you will receive a notification about the DNS status change')}}
                                 <br>
                                 {{__('Red - you will not receive notifications')}}
