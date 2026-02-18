@@ -102,12 +102,12 @@
                 </td>
                 <td>
                     <div class="__helper-link ui_tooltip_w">
-                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex">
                             <input type="checkbox" name="check_dns" class="custom-control-input notify" @if($project->check_dns) checked @endif id="dns-tg-{{$project->id}}">
                             <label class="custom-control-label" for="dns-tg-{{$project->id}}">в телеграм</label>
                         </div>
 
-                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex">
                             <input type="checkbox" name="check_dns_email" class="custom-control-input notify" @if($project->check_dns_email) checked @endif id="dns-email-{{$project->id}}">
                             <label class="custom-control-label" for="dns-email-{{$project->id}}">на почту</label>
                         </div>
@@ -124,12 +124,12 @@
 
                 <td>
                     <div class="__helper-link ui_tooltip_w">
-                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex">
                             <input type="checkbox" name="check_registration_date" class="custom-control-input notify" @if($project->check_registration_date) checked @endif id="registration-tg-{{$project->id}}">
                             <label class="custom-control-label" for="registration-tg-{{$project->id}}">в телеграм</label>
                         </div>
 
-                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex justify-content-center">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success d-flex">
                             <input type="checkbox" name="check_registration_date_email" class="custom-control-input notify" @if($project->check_registration_date_email) checked @endif id="registration-email-{{$project->id}}">
                             <label class="custom-control-label" for="registration-email-{{$project->id}}">на почту</label>
                         </div>
