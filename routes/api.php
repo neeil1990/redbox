@@ -18,6 +18,7 @@ use \App\Classes\Locations\Searches\Google;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 Route::get('/backlink/scan-links', 'CroneController@scanLinks');
 Route::get('/backlink/scan-broken-links', 'CroneController@scanBrokenLinks');
 Route::get('/domain-monitoring/check-link-crone/{timing}', 'CroneController@checkLinkCrone');

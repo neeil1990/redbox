@@ -85,6 +85,7 @@ Route::middleware(['verified'])->group(function () {
         'create', 'index', 'show', 'edit', 'update'
     ]);
 
+    Route::get('/meta-tags/tags-options', 'MetaTagsController@tagsOptions');
     Route::delete('/meta-tags/history/{id}', 'MetaTagsController@destroyHistory')->name('meta.history.delete');
     Route::get('/meta-tags/history/{id}/compare/{id_compare}/export/', 'MetaTagsController@exportCompare')->name('meta.history.export_compare');
     Route::get('/meta-tags/history/{id}/export/', 'MetaTagsController@export')->name('meta.history.export');

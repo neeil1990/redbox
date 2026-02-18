@@ -61,6 +61,17 @@ class MetaTagsController extends Controller
         $this->middleware(['permission:Meta tags']);
     }
 
+    public function tagsOptions()
+    {
+        $options = [];
+
+        foreach ($this->tags as $tag) {
+            $options[] = ['value' => $tag['name'], 'text' => $tag['name']];
+        }
+
+        return $options;
+    }
+
     public function settings(Request $request)
     {
         $settings = new MetaTagsSettings();
@@ -182,6 +193,11 @@ class MetaTagsController extends Controller
     {
         $title = $request->input('url', false);
         $length = $request->input('length', false);
+        $tags = $request->input('tags', false);
+
+        $this->tags = array_filter($this->tags, function($tag) use ($tags) {
+            return in_array($tag['name'], $tags);
+        });
 
         return $this->dataMetaTags($title, $length);
     }

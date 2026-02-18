@@ -9,6 +9,18 @@
                         <label>{{ lang.check_url }}</label>
                         <textarea type="text" class="form-control" rows="10" v-model="url"></textarea>
                     </div>
+
+                    <div class="form-group">
+                        <label>Получить данные</label>
+                        <select multiple class="custom-select" v-model="selectedOptions">
+                            <option v-for="option in availableOptions"
+                                    :key="option.value"
+                                    :value="option.value">
+                                {{ option.text }}
+                            </option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label>{{ lang.timeout_request }}</label>
                         <input type="number" min="1" class="form-control" v-model="time">
@@ -252,6 +264,12 @@
                 .then(function (response) {
                     app.TariffMetaTagsPages = response.data;
                 });
+
+            axios.get('/meta-tags/tags-options')
+                .then(response => {
+                    this.availableOptions = response.data;
+                    this.selectedOptions = response.data.map(option => option.value);
+                });
         },
         data() {
             return {
@@ -276,7 +294,9 @@
                     {value: 12, text: '12 часов'},
                     {value: 24, text: '24 часов'},
                 ],
-                startBtnProjectId: null
+                startBtnProjectId: null,
+                selectedOptions: [],
+                availableOptions: [],
             }
         },
         computed: {
@@ -421,6 +441,7 @@
                 axios.post('/meta-tags/get', {
                     url: url,
                     length: app.length,
+                    tags: app.selectedOptions,
                 }).then(function (response) {
                     app.result.push(response.data);
                 }).catch(function (error) {
