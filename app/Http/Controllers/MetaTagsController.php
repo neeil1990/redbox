@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Classes\Tariffs\Facades\Tariffs;
+use App\Exports\MetaTagsFormExport;
 use App\Exports\MetaTagsHistoriesExport;
 use App\Exports\MetaTagsCompareHistoriesExport;
 use App\Mail\MetaTagsEmail;
@@ -64,7 +65,7 @@ class MetaTagsController extends Controller
     {
         $settings = new MetaTagsSettings();
 
-        if($request->has('delete_records')){
+        if ($request->has('delete_records')) {
             $settings->updateOrCreate(['code' => 'delete_records'], ['value' => $request->input('delete_records')]);
 
             return redirect()->route('meta-tags.settings')->with('status', __('Saved'));
@@ -92,8 +93,7 @@ class MetaTagsController extends Controller
 
         $projects = $meta->all();
 
-        foreach ($projects as $project)
-        {
+        foreach ($projects as $project) {
             $links = preg_split("/[\r\n]+/", $project['links']);
             $response['links'] += count($links);
         }
@@ -229,6 +229,10 @@ class MetaTagsController extends Controller
             $error['badge'][$tag] = $this->errorsMetaTags($tag, $value, 'badge', $recommend_length);
         }
 
+        if ($this->response["redirect"]) {
+            $title = $this->response["redirect"];
+        }
+
         return compact('title', 'data', 'error');
     }
 
@@ -238,7 +242,19 @@ class MetaTagsController extends Controller
      */
     public function domain(string $domain)
     {
-        $html = Curl::to($domain)->returnResponseArray()->get();
+        $html = Curl::to($domain)
+            ->allowRedirect()
+            ->withResponseHeaders()
+            ->returnResponseArray()
+            ->get();
+
+        $html["redirect"] = "";
+
+        if (array_key_exists('Location', $html['headers'])) {
+            if ($html['headers']['Location'] != $domain) {
+                $html["redirect"] = implode(" → ", [$domain, $html['headers']['Location']]);
+            }
+        }
 
         $this->response = $html;
 
@@ -284,6 +300,11 @@ class MetaTagsController extends Controller
         return $arr;
     }
 
+    public function exportForm(Request $request)
+    {
+        return Excel::download(new MetaTagsFormExport($request->input('result')), 'meta_tags.csv');
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -320,7 +341,6 @@ class MetaTagsController extends Controller
      */
     public function storeHistories(Request $request, $id)
     {
-
         $history = $request->input('histories', false);
 
         if ($history) {

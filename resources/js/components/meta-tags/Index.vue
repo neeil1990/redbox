@@ -128,6 +128,7 @@
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#ProjectModalForm" >{{ lang.save_as_project }}</button>
                                 <base-modal-form v-on:close-modal-form="CloseModalFormMetaTags" target="ProjectModalForm" method="post" request="/meta-tags" :data="result" :links="url" :lang="lang"></base-modal-form>
+                                <button type="button" class="btn btn-info" @click.prevent="Export">Экспорт</button>
                             </div>
                         </div>
 
@@ -459,6 +460,32 @@
             StringAsObj(str)
             {
                 return _.compact(str.split(/[\r\n]+/));
+            },
+            Export()
+            {
+                axios.request({
+                    url: '/meta-tags/export',
+                    method: 'post',
+                    responseType: 'blob',
+                    data: {
+                        result: this.result
+                    }
+                }).then(function(response){
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+
+                    link.href = url;
+
+                    const contentDisposition = response.headers['content-disposition'];
+                    const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+
+                    link.setAttribute('download', fileNameMatch[1]);
+                    document.body.appendChild(link);
+                    link.click();
+
+                    link.remove();
+                    window.URL.revokeObjectURL(url);
+                });
             }
         }
     }
