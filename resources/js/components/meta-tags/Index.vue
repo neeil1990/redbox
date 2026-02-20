@@ -89,11 +89,11 @@
                                                 </button>
 
                                                 <div class="dropdown-menu dropdown-menu-right" role="menu" style="">
-                                                    <a :href="url.title" target="_blank" class="dropdown-item">
+                                                    <a :href="url.url" target="_blank" class="dropdown-item">
                                                         <i class="fas fa-external-link-alt"></i>
                                                         {{ lang.go_to_site }}
                                                     </a>
-                                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(url.title)">
+                                                    <a href="#" class="dropdown-item" @click.prevent="Analyzer(url.url)">
                                                         <i class="fas fa-chart-pie"></i>
                                                         {{ lang.text_analysis }}
                                                     </a>
@@ -140,7 +140,8 @@
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#ProjectModalForm" >{{ lang.save_as_project }}</button>
                                 <base-modal-form v-on:close-modal-form="CloseModalFormMetaTags" target="ProjectModalForm" method="post" request="/meta-tags" :data="result" :links="url" :lang="lang"></base-modal-form>
-                                <button type="button" class="btn btn-info" @click.prevent="Export">Экспорт</button>
+                                <button type="button" class="btn btn-info" @click.prevent="Export('csv')">Экспорт CSV</button>
+                                <button type="button" class="btn btn-info" @click.prevent="Export('xlsx')">Экспорт XLSX</button>
                             </div>
                         </div>
 
@@ -337,7 +338,9 @@
                 this.name = "Исключение, определённое пользователем";
             },
             Analyzer(link) {
+
                 var form = document.createElement("form");
+
                 form.action = "/text-analyzer";
                 form.method = "POST";
                 form.target = "_blank";
@@ -356,7 +359,7 @@
 
                 var text = document.createElement("input");
                 text.setAttribute("type", "text");
-                text.setAttribute("name", "text");
+                text.setAttribute("name", "url");
                 text.setAttribute("value", link);
                 form.appendChild(text);
 
@@ -482,14 +485,15 @@
             {
                 return _.compact(str.split(/[\r\n]+/));
             },
-            Export()
+            Export(format)
             {
                 axios.request({
                     url: '/meta-tags/export',
                     method: 'post',
                     responseType: 'blob',
                     data: {
-                        result: this.result
+                        result: this.result,
+                        format: format
                     }
                 }).then(function(response){
                     const url = window.URL.createObjectURL(new Blob([response.data]));

@@ -225,6 +225,7 @@ class MetaTagsController extends Controller
     {
         $error = [];
         $recommend_length = [];
+        $url = $title;
 
         foreach ($length as $len) {
             $recommend_length[$len['id'] . '_min'] = $len['input']['min'];
@@ -247,9 +248,10 @@ class MetaTagsController extends Controller
 
         if ($this->response["redirect"]) {
             $title = $this->response["redirect"];
+            $url = $this->response['headers']['Location'];
         }
 
-        return compact('title', 'data', 'error');
+        return compact('title', 'url', 'data', 'error');
     }
 
     /**
@@ -318,7 +320,22 @@ class MetaTagsController extends Controller
 
     public function exportForm(Request $request)
     {
-        return Excel::download(new MetaTagsFormExport($request->input('result')), 'meta_tags.csv');
+        if ($request->input('format', 'csv') == "xlsx")
+        {
+            return $this->exportFormXLS($request);
+        }
+
+        return $this->exportFormCSV($request);
+    }
+
+    public function exportFormXLS(Request $request)
+    {
+        return Excel::download(new MetaTagsFormExport($request->input('result')), "meta_tags.xlsx", \Maatwebsite\Excel\Excel::XLSX);
+    }
+
+    public function exportFormCSV(Request $request)
+    {
+        return Excel::download(new MetaTagsFormExport($request->input('result')), "meta_tags.csv", \Maatwebsite\Excel\Excel::CSV);
     }
 
     /**
