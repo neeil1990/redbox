@@ -12,6 +12,10 @@
             <a class="dropdown-item add-user" data-id="{{ $project->id }}"><i class="far fa-user mr-2"></i>Добавить пользователя</a>
         @endcan
 
+        <a class="dropdown-item" href="{{ route('monitoring.copy', $project->id) }}" target="_blank">
+            <i class="far fa-copy mr-2"></i>Копировать проект
+        </a>
+
         @can('export_report_monitoring')
             <a class="dropdown-item click_tracking" data-click="Export project" data-toggle="modal" data-target=".modal" data-type="export-edit" data-id="{{ $project->id }}">
                 <i class="fas fa-file-download mr-2"></i>Экспорт отчета

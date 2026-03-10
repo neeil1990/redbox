@@ -354,6 +354,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('monitoring/permissions', 'MonitoringPermissionsController@index')->name('monitoring-permissions.index');
     Route::post('monitoring/permissions', 'MonitoringPermissionsController@store')->name('monitoring-permissions.store');
 
+    Route::get('/monitoring/{id}/copy', 'MonitoringController@copy')->name('monitoring.copy');
+
     Route::resource('monitoring', 'MonitoringController');
 
     Route::get('/monitoring/{id}/count', 'MonitoringController@getCountProject');
