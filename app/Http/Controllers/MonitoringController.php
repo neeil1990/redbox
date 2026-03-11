@@ -10,9 +10,11 @@ use App\Classes\Monitoring\ProjectData;
 use App\Classes\Monitoring\Queues\PositionsDispatch;
 use App\Common;
 use App\Events\MonitoringProjectBeforeDelete;
+use App\Events\MonitoringProjectCopyProgress;
 use App\Events\MonitoringProjectCreated;
 use App\Jobs\Monitoring\MonitoringChangesDateQueue;
 use App\Jobs\Monitoring\MonitoringCompetitorsQueue;
+use App\Jobs\MonitoringProjectCopyJob;
 use App\Mail\MonitoringApproveProjectMail;
 use App\Mail\MonitoringShareProjectMail;
 use App\Monitoring\Services\MonitoringUserService;
@@ -93,57 +95,9 @@ class MonitoringController extends Controller
 
         event(new MonitoringProjectCreated($user, $newProject));
 
-        $groupIds = [];
-        foreach ($original->groups as $groups) {
-            $newGroup = $groups->replicate();
-            $newGroup->monitoring_project_id = $newProject->id;
-            $newGroup->save();
-            $groupIds[$groups->id] = $newGroup->id;
-        }
+        event(new MonitoringProjectCopyProgress($user->id, "Проект создан, копирование запущено"));
 
-        $keywordIds = [];
-        foreach ($original->keywords as $keyword) {
-            $newKeyword = $keyword->replicate();
-            $newKeyword->monitoring_project_id = $newProject->id;
-            $newKeyword->monitoring_group_id = $groupIds[$keyword->monitoring_group_id];
-            $newKeyword->save();
-            $keywordIds[$keyword->id] = $newKeyword->id;
-        }
-
-        $searchengineIds = [];
-        foreach ($original->searchengines as $engine) {
-            $newEngine = $engine->replicate();
-            $newEngine->monitoring_project_id = $newProject->id;
-            $newEngine->save();
-            $searchengineIds[$engine->id] = $newEngine->id;
-        }
-
-        foreach ($original->keywords as $keyword) {
-            foreach ($keyword->positions as $position) {
-                $newPosition = $position->replicate();
-                $newPosition->monitoring_keyword_id = $keywordIds[$position->monitoring_keyword_id];
-                $newPosition->monitoring_searchengine_id = $searchengineIds[$position->monitoring_searchengine_id];
-                $newPosition->created_at = $position->created_at;
-                $newPosition->updated_at = $position->updated_at;
-                $newPosition->save();
-            }
-
-            foreach ($keyword->prices as $price) {
-                $newPrice = $price->replicate();
-                $newPrice->monitoring_keyword_id = $keywordIds[$price->monitoring_keyword_id];
-                $newPrice->monitoring_searchengine_id = $searchengineIds[$price->monitoring_searchengine_id];
-                $newPrice->save();
-            }
-        }
-
-        foreach ($original->competitors as $competitor) {
-            $newCompetitor = $competitor->replicate();
-            $newCompetitor->monitoring_project_id = $newProject->id;
-            $newCompetitor->save();
-        }
-
-        return redirect()->route('monitoring.show', $newProject->id)
-            ->with('success', 'Проект успешно скопирован');
+        MonitoringProjectCopyJob::dispatch($user->id, $newProject, $original);
     }
 
     public function attachUser(Request $request)

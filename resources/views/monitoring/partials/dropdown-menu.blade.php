@@ -12,7 +12,7 @@
             <a class="dropdown-item add-user" data-id="{{ $project->id }}"><i class="far fa-user mr-2"></i>Добавить пользователя</a>
         @endcan
 
-        <a class="dropdown-item" href="{{ route('monitoring.copy', $project->id) }}" target="_blank">
+        <a class="dropdown-item copy-project" data-action="{{ route('monitoring.copy', $project->id) }}">
             <i class="far fa-copy mr-2"></i>Копировать проект
         </a>
 

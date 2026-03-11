@@ -146,7 +146,9 @@
 
             toastr.options = {
                 "preventDuplicates": true,
-                "timeOut": "5000"
+                "timeOut": "5000",
+                "maxOpened": 3,
+                "autoDismiss": true
             };
 
             let table = $('#projects').DataTable({
@@ -686,6 +688,15 @@
                 return false;
             });
 
+            $('#projects').on('click', '.copy-project', function () {
+                let action = $(this).data("action");
+                axios.get(action).then(function (response) {
+                    if (response.statusText === 'OK') {
+                        toastr.success("Запрос отправлен")
+                    }
+                });
+            });
+
             $('.checkbox-toggle').click(function(){
 
                 let el = $(this);
@@ -708,6 +719,12 @@
                     trigger: 'hover',
                 });
             }
+
+            window.Echo.private(`App.User.{{ auth()->id() }}`).listen('MonitoringProjectCopyProgress', (e) => {
+                    toastr.remove();
+                    toastr.info(e.message);
+            });
+
         </script>
     @endslot
 
