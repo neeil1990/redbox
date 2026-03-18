@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class CopyKeywordsMonitoringProjectJob implements ShouldQueue
 {
@@ -38,20 +39,22 @@ class CopyKeywordsMonitoringProjectJob implements ShouldQueue
      */
     public function handle()
     {
-        foreach ($this->keyword->positions as $position) {
-            $newPosition = $position->replicate();
-            $newPosition->monitoring_keyword_id = $this->keywordIds[$position->monitoring_keyword_id];
-            $newPosition->monitoring_searchengine_id = $this->searchengineIds[$position->monitoring_searchengine_id];
-            $newPosition->created_at = $position->created_at;
-            $newPosition->updated_at = $position->updated_at;
-            $newPosition->save();
-        }
+        DB::transaction(function () {
+            foreach ($this->keyword->positions as $position) {
+                $newPosition = $position->replicate();
+                $newPosition->monitoring_keyword_id = $this->keywordIds[$position->monitoring_keyword_id];
+                $newPosition->monitoring_searchengine_id = $this->searchengineIds[$position->monitoring_searchengine_id];
+                $newPosition->created_at = $position->created_at;
+                $newPosition->updated_at = $position->updated_at;
+                $newPosition->save();
+            }
 
-        foreach ($this->keyword->prices as $price) {
-            $newPrice = $price->replicate();
-            $newPrice->monitoring_keyword_id = $this->keywordIds[$price->monitoring_keyword_id];
-            $newPrice->monitoring_searchengine_id = $this->searchengineIds[$price->monitoring_searchengine_id];
-            $newPrice->save();
-        }
+            foreach ($this->keyword->prices as $price) {
+                $newPrice = $price->replicate();
+                $newPrice->monitoring_keyword_id = $this->keywordIds[$price->monitoring_keyword_id];
+                $newPrice->monitoring_searchengine_id = $this->searchengineIds[$price->monitoring_searchengine_id];
+                $newPrice->save();
+            }
+        }, 5);
     }
 }
