@@ -71,7 +71,8 @@ class MonitoringProjectCopyJob implements ShouldQueue
         $keywordsCount = $original->keywords()->count();
 
         foreach ($original->keywords as $keyword) {
-            dispatch(new CopyKeywordsMonitoringProjectJob($this->userId, $keyword, $keywordIds, $searchengineIds, $keywordsCount));
+            dispatch(new CopyKeywordsMonitoringProjectJob($keyword, $keywordIds, $searchengineIds));
+            $this->sendProcess("Ключевых запросов осталось: " . $keywordsCount);
 
             $keywordsCount -= 1;
         }
@@ -81,6 +82,12 @@ class MonitoringProjectCopyJob implements ShouldQueue
             $newCompetitor->monitoring_project_id = $newProject->id;
             $newCompetitor->save();
         }
+
+        $this->sendProcess("Проект скопирован. <a href='/monitoring/$newProject->id' target='_blank'>Перейти</a>");
     }
 
+    protected function sendProcess(string $message)
+    {
+        event(new MonitoringProjectCopyProgress($this->userId, $message));
+    }
 }

@@ -17,23 +17,16 @@ class CopyKeywordsMonitoringProjectJob implements ShouldQueue
     public $keywordIds;
     public $searchengineIds;
 
-    public $userId;
-
-    public $keywordsCount;
-
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($userId, $keyword, $keywordIds, $searchengineIds, $keywordsCount)
+    public function __construct($keyword, $keywordIds, $searchengineIds)
     {
-        $this->userId = $userId;
         $this->keyword = $keyword;
         $this->keywordIds = $keywordIds;
         $this->searchengineIds = $searchengineIds;
-        $this->keywordsCount = $keywordsCount;
     }
 
     /**
@@ -58,12 +51,5 @@ class CopyKeywordsMonitoringProjectJob implements ShouldQueue
             $newPrice->monitoring_searchengine_id = $this->searchengineIds[$price->monitoring_searchengine_id];
             $newPrice->save();
         }
-
-        $this->sendProcess("Ключевых запросов осталось: " . $this->keywordsCount);
-    }
-
-    protected function sendProcess(string $message)
-    {
-        event(new MonitoringProjectCopyProgress($this->userId, $message));
     }
 }
