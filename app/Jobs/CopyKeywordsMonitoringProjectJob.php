@@ -13,6 +13,8 @@ class CopyKeywordsMonitoringProjectJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 3;
+
     public $keyword;
     public $keywordIds;
     public $searchengineIds;
