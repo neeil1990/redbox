@@ -7,7 +7,6 @@ use App\Jobs\Relevance\RemoveRelevanceProgress;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Ixudra\Curl\Facades\Curl;
 
 class Relevance
 {
@@ -1367,5 +1366,9 @@ class Relevance
 
             return $data;
         }
+    }
+
+    public static function uncompressItem($item) {
+        return json_decode(gzuncompress(base64_decode($item)), true);
     }
 }

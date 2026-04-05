@@ -2,8 +2,6 @@
 
 namespace App\Classes\Xml;
 
-use App\TelegramBot;
-use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;

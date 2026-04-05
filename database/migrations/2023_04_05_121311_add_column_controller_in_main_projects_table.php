@@ -14,7 +14,7 @@ class AddColumnControllerInMainProjectsTable extends Migration
     public function up()
     {
         Schema::table('main_projects', function (Blueprint $table) {
-            $table->text('controller')->after('title')->index()->nullable();
+            $table->text('controller', )->after('title')->index()->nullable();
         });
     }
 

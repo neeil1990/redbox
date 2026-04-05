@@ -11,16 +11,14 @@
 |
 */
 
-use App\MonitoringSearchengine;
-use cijic\phpMorphy\Morphy;
-use Illuminate\Support\Carbon;
+use App\AiGenerationHistory;
+use App\ProjectRelevanceHistory;
+use App\Relevance;
+use App\RelevanceHistory;
+use App\RelevanceHistoryResult;
+use App\TextAnalyzer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\Validator;
-use Ixudra\Curl\Facades\Curl;
-use Spatie\Permission\PermissionRegistrar;
+use Illuminate\Support\Facades\Route;
 
 Route::get('info', function () {
     phpinfo();
@@ -184,7 +182,6 @@ Route::middleware(['verified'])->group(function () {
     Route::post('check-site-monitoring', 'MonitoringDomainController@checkLink')->name('check.domain');
     Route::post('edit-site-monitoring', 'MonitoringDomainController@edit')->name('edit.domain');
     Route::post('delete-domains-monitoring', 'MonitoringDomainController@removeDomains')->name('delete.sites.monitoring');
-
 
     Route::get('verification-token/{token}', 'TelegramBotController@verificationToken')->name('verification.token');
     Route::get('reset-notification/{token}', 'TelegramBotController@resetNotification')->name('reset.notification');
@@ -521,4 +518,18 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/checklist/delete-notification/{notification}', 'CheckListController@deleteNotification')->name('checklist.delete.notification');
 
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
+
+    Route::get('/ai-generation/story', 'AiController@story')->name('ai.generation.story');
+
+    Route::get('/ai-generation/category', 'AiController@category')->name('ai.generation.category');
+    Route::post('/ai-generation/category', 'AiController@generateCategory')->name('ai.generation.category.generate');
+    Route::get('/ai-generation/get-result/{recordId}', 'AiController@getResult')->name('ai.generation.get.result');
+    Route::get('/relevance-history/{project}', 'AiController@relevanceHistory')->name('ai.generation.relevance.history');
+    Route::get('/relevance-history/getPhrases/{projectId}', 'AiController@getPhrases')->name('ai.generation.relevance.history.phrases');
+});
+
+Route::get('/test', function () {
+    AiGenerationHistory::latest()->first()->delete();
+    dd(1);
+    return TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInitV2('https://almamed.su/'));
 });
