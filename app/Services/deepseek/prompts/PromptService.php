@@ -2,9 +2,42 @@
 
 namespace App\Services\deepseek\prompts;
 
-use Illuminate\Support\Facades\Log;
+class PromptService 
+{
 
-class PromptService {
+    public function generateAnnouncement($keywords = [], $stopwords = [], $note = null) {
+        $addWords = '';
+        foreach ($keywords as $item) {
+            $addWords .= "<b>Нужно добавить слово " . $item['word'] . " или любое его склонение, число, падеж " . $item['count'] . " раз(а), чтобы слово естественно вписывалось в текст.</b>\n";
+        }
+
+        $cancelWords = '';
+        foreach ($stopwords as $word) {
+            $cancelWords .= "<b>Запрещено использовать слово и любое его склонение, число или падеж $word.</b>\n";
+        }
+
+        $text = "Роль: Ты — профессиональный копирайтер.
+
+Исходные данные:
+Ниже представлен текст о товаре, на основе которого нужно составить преимущества:
+$note
+
+Задача:
+Составь список коротких тезисов, описывающих ключевые преимущества. Не выдумывай характеристики, которых нет в тексте.
+
+Обязательные требования:
+$addWords
+Если ты не можешь вписать в текст слово, пропусти его. 
+$cancelWords
+Формат:
+- Маркированный список.
+- Объем до 400 символов с пробелами.
+- Уникальный стиль (не копировать фразы дословно).
+- Текст должен быть полностью уникальным (не скопирован с других сайтов).
+- Предложения должны быть грамотными, правильными с точки зрения русского языка и легко читаться.";
+
+        return $this->confirmPrompt($text);
+    }
 
     public function generateCategory($link, $keywords = [], $stopwords = [], $note = null): string
     {

@@ -1,7 +1,17 @@
 <ul class="nav nav-pills p-2" id="main-nav">
     <li class="nav-item">
         <a class="nav-link" href="{{ route('ai.generation.category') }}">
-            Текст категории
+            Категории
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('ai.generation.announcement') }}">
+            Анонсы
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('ai.stopwords.index') }}">
+            Запрещённые слова
         </a>
     </li>
     <li class="nav-item">
@@ -9,6 +19,8 @@
             История
         </a>
     </li>
+
+
 </ul>
 
 <script>

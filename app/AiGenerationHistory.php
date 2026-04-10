@@ -11,6 +11,7 @@ class AiGenerationHistory extends Model
     const FAILED = 'failed';
     
     const TYPE_CATEGORY = 'category';
+    const TYPE_ANNOUNCEMENT = 'announcement';
 
     protected $fillable = [
         'user_id',

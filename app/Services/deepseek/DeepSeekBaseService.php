@@ -8,6 +8,7 @@ class DeepSeekBaseService
 {
     protected $client;
     protected $apiKey;
+    protected $lastUsage = [];
 
     public function __construct()
     {
@@ -31,7 +32,21 @@ class DeepSeekBaseService
             ], $options),
         ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        $this->lastUsage = $data['usage'] ?? [];
+
+        return $data;
+    }
+
+    public function getLastUsageTokens(): int
+    {
+        return $this->lastUsage['total_tokens'] ?? 0;
+    }
+
+    public function getLastUsageDetails(): array
+    {
+        return $this->lastUsage;
     }
 
     public function request(string $prompt): string

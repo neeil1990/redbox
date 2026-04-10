@@ -1,5 +1,6 @@
 @component('component.card', ['title' => 'Категории'])
     @slot('css')
+        <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
         <style>
             #prompt-preview {
@@ -15,12 +16,19 @@
             .card-body::after, .card-footer::after, .card-header::after {
                 display: none;
             }
+
+            .select2-container .select2-selection--single {
+                height: 38px !important;
+                border: 1px solid #ced4da !important;
+            }
         </style>
+        <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.css') }}">
     @endslot
 
     <div class="card">
         <div class="card-header d-flex p-0">
-            @include('ai-generation.nav')
+            @include('ai-generation.blocks.nav')
         </div>
         <div class="card-body">
             <div id="prompt-preview"></div>
@@ -29,90 +37,9 @@
                 <input type="text" class="form-control" id="category-link" placeholder="https://example.com/category/...">
             </div>
 
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <div>Выбор проекта (Анализ релевантности)</div>
-                    <button class="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse" data-target="#project-card-body" aria-expanded="false" aria-controls="project-card-body">
-                        <i class="fa fa-eye"></i>
-                    </button>
-                </div>
-                <div id="project-card-body" class="collapse">
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label>Проект</label>
-                            <select id="project-select" class="form-control">
-                                <option value="">Выберите проект</option>
-                                @foreach($projects as $project)
-                                    <option value="{{ $project->id }}">
-                                        {{ $project->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+            @include('ai-generation.blocks.relevance')
 
-                        <div class="form-group mt-3 mb-3">
-                            <label>Фраза / страница</label>
-                            <select id="relevance-select" class="form-control" disabled>
-                                <option value="">Сначала выберите проект</option>
-                            </select>
-                        </div>
-
-                        <div class="form-text text-muted mb-3">
-                            Выбор проекта не обязателен — вы можете указать ссылку вручную.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <h5>Добавляемые слова</h5>
-
-                    <div class="d-flex mb-2 justify-content-between">
-                        <input type="text" id="keywords-search" class="form-control form-control-sm me-2 w-50" placeholder="Поиск слова...">
-                        <button class="btn btn-danger btn-sm" id="clear-keywords">Очистить таблицу</button>
-                    </div>
-                    <table class="table table-bordered" id="keywords-table">
-                        <thead>
-                        <tr>
-                            <th>Слово / Предложение</th>
-                            <th width="10">Количество</th>
-                            <th width="50"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td><input type="text" class="form-control" name="keywords[]"></td>
-                            <td><input type="number" class="form-control" name="counts[]" value="1"></td>
-                            <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <button class="btn btn-secondary btn-sm" id="add-keyword">Добавить слово</button>
-                </div>
-
-                <div class="col-6">
-                    <h5>Запрещённые слова</h5>
-
-                    <table class="table table-bordered" id="stopwords-table">
-                        <thead>
-                        <tr>
-                            <th>Слово\Предложение</th>
-                            <th width="50"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td><input type="text" class="form-control" name="stopwords[]"></td>
-                            <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <button class="btn btn-secondary btn-sm" id="add-stopword">Добавить слово</button>
-                </div>
-            </div>
+            @include('ai-generation.blocks.words')
 
             <div class="mt-4">
                 <button class="btn btn-success generate-button" data-mode="new">
@@ -163,83 +90,25 @@
     </div>
 
     @slot('js')
+        <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
+        <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
+        <script src="{{ asset('plugins/select2/js/select2.js') }}"></script>
+        <script src="{{ asset('plugins/select2/js/profile.js') }}"></script>
         <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
         <script>
-            $('#project-select').on('change', function () {
-                let projectId = $(this).val();
-
-                // Блокируем поле, если выбран проект
-                if (projectId) {
-                    $('#category-link')
-                        .prop('readonly', true)
-                        .addClass('bg-light'); // визуально показать что поле заблокировано
-                } else {
-                    $('#category-link')
-                        .prop('readonly', false)
-                        .removeClass('bg-light');
-                }
-
-                $('#relevance-select').prop('disabled', true).html('<option>Загрузка...</option>');
-
-                if (!projectId) return;
-
-                $.get(`/relevance-history/${projectId}`, function (data) {
-                    let options = '<option value="">Выберите</option>';
-
-                    data.forEach(item => {
-                        options += `<option 
-                            value="${item.main_link}" 
-                            data-id="${item.id}">
-                            ${item.phrase} (${item.main_link})
-                        </option>`;
-                    });
-
-                    $('#relevance-select').html(options).prop('disabled', false);
+            $(document).ready(function() {
+                $('#result-text').summernote({
+                    height: 300,
+                    lang: 'ru-RU',
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['font', ['strikethrough']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['view', ['codeview']]
+                    ]
                 });
             });
 
-            $('#relevance-select').on('change', function () {
-                let projectId = $('#project-select').val(); // ✅ берём тут
-                let link = $(this).val();
-
-                if (!projectId) return;
-
-                // подставляем ссылку в input
-                $('#category-link').val(link).trigger('input');
-
-                $.get(`/relevance-history/getPhrases/${projectId}`, function (response) {
-                    console.log('Ответ phrases:', response);
-
-                    let phrases = response.phrases;
-
-                    $('#keywords-table tbody').html('');
-
-                    for (let word in phrases) {
-                        let item = phrases[word];
-
-                        let avg = parseFloat(item.avgInTotalCompetitors) || 0;
-                        let total = parseFloat(item.totalRepeatMainPage) || 0;
-
-                        if (avg > total) {
-                            let diff = Math.ceil(avg - total);
-
-                            let row = `
-                                <tr>
-                                    <td><input type="text" class="form-control" name="keywords[]" value="${word}"></td>
-                                    <td><input type="number" class="form-control" name="counts[]" value="${diff}"></td>
-                                    <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
-                                </tr>
-                            `;
-
-                            $('#keywords-table tbody').append(row);
-                        }
-                    }
-
-                    updatePrompt();
-                });
-            });
-        </script>
-        <script>
             let lastId = null;
 
             $('.generate-button').click(function () {
@@ -258,28 +127,10 @@
                 }
 
                 if (!isValidUrl(link)) {
+                    $('#category-link').removeClass('is-valid').addClass('is-invalid');
                     toastr.error('Введите корректную ссылку');
                     return;
                 }
-
-                let keywords = [];
-                $('#keywords-table tbody tr').each(function () {
-                    let word = $(this).find('input[name="keywords[]"]').val();
-                    let count = $(this).find('input[name="counts[]"]').val();
-
-                    if (word) {
-                        keywords.push({
-                            word: word,
-                            count: parseInt(count) || 1
-                        });
-                    }
-                });
-
-                let stopwords = [];
-                $('#stopwords-table tbody tr').each(function () {
-                    let word = $(this).find('input[name="stopwords[]"]').val();
-                    if (word) stopwords.push(word);
-                });
 
                 $.ajax({
                     url: "{{ route('ai.generation.category.generate') }}",
@@ -287,8 +138,8 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         link: link,
-                        keywords: keywords,
-                        stopwords: stopwords,
+                        keywords: getWords(),
+                        stopwords: getStopWords(),
                         note: note,
                         mode: mode,
                         current_text: isRegenerate ? $('#result-text').val() : null,
@@ -316,35 +167,14 @@
             });
 
             $('#copy-result').click(function () {
-                let text = $('#result-text').val();
-
-                navigator.clipboard.writeText(text).then(function () {
-                    toastr.success('Скопировано!');
-                });
-            });
-
-            $('#clear-keywords').on('click', function() {
-                $('#keywords-table tbody').html(`
-                    <tr>
-                        <td><input type="text" class="form-control" name="keywords[]"></td>
-                        <td><input type="number" class="form-control" name="counts[]" value="1"></td>
-                        <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
-                    </tr>
-                `); 
-               updatePrompt();
-            });
-
-            $('#keywords-search').on('input', function() {
-                let query = $(this).val().toLowerCase();
-
-                $('#keywords-table tbody tr').each(function() {
-                    let word = $(this).find('input[name="keywords[]"]').val().toLowerCase();
-                    if(word.includes(query)) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
+                let html = $('#result-text').summernote('code');
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(html).then(function () {
+                        toastr.success('Скопировано!');
+                    });
+                } else {
+                    fallbackCopyTextToClipboard(html);
+                }
             });
 
             $(document).ready(function () {
@@ -378,29 +208,6 @@
                     }
                 });
 
-                $('#add-keyword').click(function () {
-                    $('#keywords-table tbody').append(`
-                        <tr>
-                            <td><input type="text" class="form-control" name="keywords[]"></td>
-                            <td><input type="number" class="form-control" name="counts[]" value="1"></td>
-                            <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
-                        </tr>
-                    `);
-                });
-
-                $('#add-stopword').click(function () {
-                    $('#stopwords-table tbody').append(`
-                        <tr>
-                            <td><input type="text" class="form-control" name="stopwords[]"></td>
-                            <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
-                        </tr>
-                    `);
-                });
-
-                $(document).on('click', '.remove-row', function () {
-                    $(this).closest('tr').remove();
-                });
-
                 $('#category-link').on('input', updatePrompt);
                 $('#keywords-table, #stopwords-table').on('input', 'input', updatePrompt);
                 $(document).ready(updatePrompt);
@@ -409,8 +216,6 @@
             function isValidUrl(string) {
                 try {
                     let url = new URL(string);
-
-                    // только http/https
                     return url.protocol === "http:" || url.protocol === "https:";
                 } catch (_) {
                     return false;
@@ -479,8 +284,7 @@
 
                                 $('#generation-loading').addClass('d-none');
                                 $('#generation-success').removeClass('d-none');
-
-                                $('#result-text').val(response.record.result);
+                                $('#result-text').summernote('code', response.record.result);
 
                                 lastId = response.record.id;
                             }

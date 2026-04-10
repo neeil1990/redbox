@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\AiGenerationHistory;
-use App\Jobs\AIGeneration\GenerateCategoryQueue;
+use App\Jobs\AIGeneration\GenerationAnnouncementQueue;
+use App\Jobs\AIGeneration\GenerationCategoryQueue;
 use App\ProjectRelevanceHistory;
 use App\Relevance;
 use App\RelevanceHistory;
@@ -25,9 +26,22 @@ class AiController extends Controller
 
     public function category()
     {
-        $projects = ProjectRelevanceHistory::where('user_id', Auth::id())->orderBy('name')->get();
+        return view('ai-generation.types.category');
+    }
 
-        return view('ai-generation.category', compact('projects'));
+    public function announcement()
+    {
+        return view('ai-generation.types.announcement');
+    }
+
+    public function getProjects()
+    {
+        $projects = ProjectRelevanceHistory::where('user_id', Auth::id())
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($projects);
     }
 
     public function generateCategory(Request $request)
@@ -73,7 +87,38 @@ class AiController extends Controller
             'type' => AiGenerationHistory::TYPE_CATEGORY,
         ]);
 
-        GenerateCategoryQueue::dispatch($record)->onQueue('ai_generation');
+        GenerationCategoryQueue::dispatch($record)->onQueue('ai_generation');
+
+        return response()->json([
+            'status' => 'ok',
+            'record_id' => $record->id,
+        ]);
+    }
+
+    public function generateAnnouncement(Request $request)
+    {
+        $data = $request->validate([
+            'keywords' => 'array',
+            'stopwords' => 'array',
+            'current_text' => 'required|string',
+        ]);
+
+        $service = app(\App\Services\deepseek\prompts\PromptService::class);
+
+        $prompt = $service->generateAnnouncement(
+            $data['keywords'] ?? [],
+            $data['stopwords'] ?? [],
+            $data['current_text'],
+        );
+
+        $record = AiGenerationHistory::create([
+            'user_id' => Auth::id(),
+            'parrameters' => $data,
+            'prompt' => $prompt,
+            'type' => AiGenerationHistory::TYPE_ANNOUNCEMENT,
+        ]);
+
+        GenerationAnnouncementQueue::dispatch($record)->onQueue('ai_generation');
 
         return response()->json([
             'status' => 'ok',
@@ -97,7 +142,7 @@ class AiController extends Controller
     public function relevanceHistory($projectId)
     {
         return RelevanceHistory::where('project_relevance_history_id', $projectId)
-            ->select('id', 'phrase', 'main_link')
+            ->select('id', 'phrase', 'main_link', 'created_at')
             ->get();
     }
 
