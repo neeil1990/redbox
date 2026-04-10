@@ -7,13 +7,14 @@
 
     <div class="card">
         <div class="card-header d-flex p-0">
-            @include('ai-generation.nav')
+            @include('ai-generation.blocks.nav')
         </div>
         <div class="card-body">
             <table id="history-table" class="table table-bordered table-striped">
                 <thead>
                 <tr>
                     <th></th>
+                    <th>Использовано токенов</th>
                     <th>Тип</th>
                     <th>Статус</th>
                     <th>Дата</th>
@@ -25,7 +26,8 @@
                     <tr data-prompt='{!! $item->prompt !!}'
                         data-result='{!! $item->result !!}'>
                         <td class="details-control" style="cursor:pointer;">Показать информацию</td>
-                        <td>@if($item->type === \App\AiGenerationHistory::TYPE_CATEGORY) Текст категории @else ыыы @endif</td>
+                        <td>{{ $item->used_tokens }}</td>
+                        <td>@if($item->type === \App\AiGenerationHistory::TYPE_CATEGORY) Текст категории @elseif ($item->type === \App\AiGenerationHistory::TYPE_ANNOUNCEMENT) Анонс @endif</td>
                         <td>
                             @if($item->status === \App\AiGenerationHistory::COMPLETED)
                                 <span class="badge badge-success">Завершено</span>
@@ -81,10 +83,10 @@
                 let table = $('#history-table').DataTable({
                     "responsive": true,
                     "autoWidth": false,
-                    "order": [[3, "desc"]],
+                    "order": [[4, "desc"]],
                     "pageLength": 10,
                     "columnDefs": [
-                        { "orderable": false, "targets": [0, 4] }
+                        { "orderable": false, "targets": [0, 5] }
                     ],
                     "language": {
                         "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/ru.json"

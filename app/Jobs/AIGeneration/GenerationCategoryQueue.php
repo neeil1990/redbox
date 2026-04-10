@@ -11,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class GenerateCategoryQueue implements ShouldQueue
+class GenerationCategoryQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -52,6 +52,7 @@ class GenerateCategoryQueue implements ShouldQueue
             }
 
             $this->data->result = $deepseekService->request($finalPrompt);
+            $this->data->used_tokens = $deepseekService->getLastUsageTokens();
             $this->data->status = AiGenerationHistory::COMPLETED;
             $this->data->save();
         } catch (Exception $e) {
