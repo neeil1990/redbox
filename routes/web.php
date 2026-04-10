@@ -527,9 +527,3 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/relevance-history/{project}', 'AiController@relevanceHistory')->name('ai.generation.relevance.history');
     Route::get('/relevance-history/getPhrases/{projectId}', 'AiController@getPhrases')->name('ai.generation.relevance.history.phrases');
 });
-
-Route::get('/test', function () {
-    AiGenerationHistory::latest()->first()->delete();
-    dd(1);
-    return TextAnalyzer::removeStylesAndScripts(TextAnalyzer::curlInitV2('https://almamed.su/'));
-});
