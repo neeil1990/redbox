@@ -165,13 +165,9 @@
                     } else {
                         $(this).removeClass('is-valid').addClass('is-invalid');
                     }
-                    
-                    updatePrompt();
                 });
 
                 $('#keywords-table, #stopwords-table').on('input', 'input', updatePrompt);
-
-                updatePrompt();
             });
 
             function updatePrompt() {

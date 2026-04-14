@@ -65,7 +65,6 @@
                     <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
                 </tr>
             `); 
-            updatePrompt();
         });
 
         $('#keywords-search').on('input', function() {
@@ -102,7 +101,6 @@
 
         $(document).on('click', '.remove-row', function () {
             $(this).closest('tr').remove();
-            updatePrompt();
         });
 
         $('#clear-stopwords').on('click', function() {
@@ -112,7 +110,6 @@
                     <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
                 </tr>
             `); 
-            updatePrompt();
         });
 
         $('#stopwords-search').on('input', function() {
@@ -145,7 +142,6 @@
                         </tr>
                     `);
                 });
-                updatePrompt();
             }
         });
     }
@@ -222,10 +218,6 @@
                     <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
                 </tr>
             `);
-        }
-
-        if (typeof updatePrompt === 'function') {
-            updatePrompt();
         }
     };
 

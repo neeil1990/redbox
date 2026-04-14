@@ -126,8 +126,6 @@
                         $('#keywords-table tbody').append(row);
                     }
                 }
-
-                updatePrompt();
             });
         });
     });
