@@ -15,7 +15,7 @@
             .history-table-wrapper {
                 flex-grow: 1;
                 overflow-y: auto;
-                overflow-x: hidden;
+                overflow-x: auto;
             }
 
             .history-sidebar .dataTables_wrapper {
