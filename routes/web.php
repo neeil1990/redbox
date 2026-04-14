@@ -11,6 +11,7 @@
 |
 */
 
+use App\ProjectRelevanceHistory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -19,10 +20,11 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    // dump(App\RelevanceHistory::get()->toArray());
-    // dd(App\ProjectRelevanceHistory::with(['stories'])->get()->toArray());
-    // dd(App\RelevanceHistoryResult::with(['mainHistory'])->get()->toArray());
-    // dd(App\RelevanceHistory::get()->toArray());
+    // dd(App\RelevanceHistory::with('mainHistory')->get()->toArray());
+    // dump(App\RelevanceHistoryResult::with('mainHistory')->get()->toArray());
+    // dd(ProjectRelevanceHistory::where('user_id', Auth::id())->with('stories')->get()->toArray());
+    dd(App\RelevanceHistory::where('user_id', '=', Auth::id())->with('results')->get()->toArray());
+    // $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first(); Сканы с короткой сводкой
 });
 
 Route::get('email/resend', 'Auth\VerificationController@resend');
