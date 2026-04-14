@@ -19,7 +19,10 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    //
+    // dump(App\RelevanceHistory::get()->toArray());
+    // dd(App\ProjectRelevanceHistory::with(['stories'])->get()->toArray());
+    // dd(App\RelevanceHistoryResult::with(['mainHistory'])->get()->toArray());
+    // dd(App\RelevanceHistory::get()->toArray());
 });
 
 Route::get('email/resend', 'Auth\VerificationController@resend');
@@ -514,6 +517,7 @@ Route::middleware(['verified'])->group(function () {
     Route::post('/checklist/multiply-create', 'CheckListController@multiplyCreate')->name('checklist.multiply.create');
 
     Route::get('/ai-generation/story', 'AiController@story')->name('ai.generation.story');
+    Route::get('/ai-generation/all-history', 'AiController@allHistory')->name('ai.generation.all.story');
 
     Route::get('/ai-generation/category', 'AiController@category')->name('ai.generation.category');
     Route::get('/ai-generation/announcement', 'AiController@announcement')->name('ai.generation.announcement');
@@ -524,14 +528,12 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/relevance-history/{project}', 'AiController@relevanceHistory')->name('ai.generation.relevance.history');
     Route::get('/relevance-history/getPhrases/{projectId}', 'AiController@getPhrases')->name('ai.generation.relevance.history.phrases');
     Route::get('/relevance-projects', 'AiController@getProjects')->name('ai.generation.relevance.projects');
+    Route::post('/ai-generation/history', 'AiController@getHistoryJson')->name('ai.generation.history.json');
+    
 
     Route::get('/ai-generation/stopwords', 'AiGenerationStopWordController@index')->name('ai.stopwords.index');
     Route::post('/ai-generation/stopwords', 'AiGenerationStopWordController@store')->name('ai.stopwords.store');
     Route::delete('/ai-generation/stopwords/{id}', 'AiGenerationStopWordController@destroy')->name('ai.stopwords.destroy');
     Route::put('/ai-stopwords/{id}', 'AiGenerationStopWordController@update')->name('ai.stopwords.update');
     Route::get('/ai-generation/stopwords-list', 'AiGenerationStopWordController@getJson');
-});
-
-Route::get('/test', function () {
-    dd(config('deepseek.token'));
 });

@@ -1,3 +1,7 @@
+@php
+    $isAllHistory = request()->is('*/all-history');
+@endphp
+
 @component('component.card', ['title' => 'История'])
     @slot('css')
         <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
@@ -10,48 +14,18 @@
             @include('ai-generation.blocks.nav')
         </div>
         <div class="card-body">
-            <table id="history-table" class="table table-bordered table-striped">
+            <table id="history-table" class="table table-bordered table-striped w-100">
                 <thead>
-                <tr>
-                    <th></th>
-                    <th>Использовано токенов</th>
-                    <th>Тип</th>
-                    <th>Статус</th>
-                    <th>Дата</th>
-                    <th>Действия</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($generationHistory as $item)
-                    <tr data-prompt='{!! $item->prompt !!}'
-                        data-result='{!! $item->result !!}'>
-                        <td class="details-control" style="cursor:pointer;">Показать информацию</td>
-                        <td>{{ $item->used_tokens }}</td>
-                        <td>@if($item->type === \App\AiGenerationHistory::TYPE_CATEGORY) Текст категории @elseif ($item->type === \App\AiGenerationHistory::TYPE_ANNOUNCEMENT) Анонс @endif</td>
-                        <td>
-                            @if($item->status === \App\AiGenerationHistory::COMPLETED)
-                                <span class="badge badge-success">Завершено</span>
-                            @elseif($item->status === \App\AiGenerationHistory::FAILED)
-                                <span class="badge badge-danger">Не удалось</span>
-                            @else
-                                <span class="badge badge-warning">В ожидании</span>
-                            @endif
-                        </td>
-                        <td>{{ $item->created_at->format('d.m.Y H:i') }}</td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
-                                    Действия
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a href="#" class="dropdown-item copy-result">Скопировать результат</a>
-                                    <a href="#" class="dropdown-item copy-prompt">Скопировать промпт</a>
-                                </div>
-                            </div>
-                        </td>
+                    <tr>
+                        <th></th>
+                        @if($isAllHistory) <th>Пользователь</th> @endif
+                        <th>Использовано токенов</th>
+                        <th>Источник данных</th>
+                        <th>Статус</th>
+                        <th>Дата</th>
+                        <th>Действия</th>
                     </tr>
-                @endforeach
-                </tbody>
+                </thead>
             </table>
         </div>
     </div>
@@ -80,87 +54,107 @@
             }
 
             $(function () {
-                let table = $('#history-table').DataTable({
-                    "responsive": true,
-                    "autoWidth": false,
-                    "order": [[4, "desc"]],
-                    "pageLength": 10,
-                    "columnDefs": [
-                        { "orderable": false, "targets": [0, 5] }
-                    ],
-                    "language": {
-                        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/ru.json"
+                const isAllHistory = {{ $isAllHistory ? 'true' : 'false' }};
+
+                let columns = [
+                    { 
+                        data: null, 
+                        className: 'details-control', 
+                        orderable: false, 
+                        defaultContent: 'Показать информацию',
+                        render: function() { return '<span style="cursor:pointer; color: #007bff;">Показать информацию</span>'; }
                     }
+                ];
+
+                if (isAllHistory) {
+                    columns.push({ 
+                        data: 'user_info', 
+                        render: function(data) {
+                            return `<small>ID: ${data.id}<br>Name: ${data.name}<br>Email: ${data.email}</small>`;
+                        } 
+                    });
+                }
+
+                columns.push(
+                    { data: 'used_tokens' },
+                    { 
+                        data: 'source', 
+                        render: function(data) {
+                            return data === 'parse_html' ? 'Парсинг HTML' : 'База данных AI';
+                        } 
+                    },
+                    { 
+                        data: 'status', 
+                        render: function(data) {
+                            if (data === 'completed') return '<span class="badge badge-success">Завершено</span>';
+                            if (data === 'failed') return '<span class="badge badge-danger">Не удалось</span>';
+                            return '<span class="badge badge-warning">В ожидании</span>';
+                        } 
+                    },
+                    { data: 'date' },
+                    { 
+                        data: null, 
+                        orderable: false, 
+                        render: function(data) {
+                            return `
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">Действия</button>
+                                    <div class="dropdown-menu">
+                                        <a href="#" class="dropdown-item copy-result">Скопировать результат</a>
+                                        <a href="#" class="dropdown-item apply-history-full">Применить конфиг</a>
+                                    </div>
+                                </div>`;
+                        } 
+                    }
+                );
+
+                let table = $('#history-table').DataTable({
+                    serverSide: true,
+                    processing: true,
+                    ajax: {
+                        url: "{{ route('ai.generation.history.json') }}",
+                        type: "POST",
+                        data: { 
+                            _token: "{{ csrf_token() }}",
+                            scope: isAllHistory ? 'all' : 'user'
+                        }
+                    },
+                    columns: columns,
+                    order: [[isAllHistory ? 5 : 4, "desc"]],
                 });
 
                 $('#history-table tbody').on('click', 'td.details-control', function () {
                     let tr = $(this).closest('tr');
                     let row = table.row(tr);
+                    let rowData = row.data();
 
                     if (row.child.isShown()) {
                         row.child.hide();
-                        tr.find('td.details-control').text('Показать информацию');
+                        $(this).find('span').text('Показать информацию');
                     } else {
-                        row.child(format(tr)).show();
-                        tr.find('td.details-control').text('Скрыть информацию');
+                        row.child(`
+                            <div class="p-3 bg-light">
+                                <b>Промпт:</b> <div class="mb-2" style="white-space:pre-wrap">${rowData.prompt}</div>
+                                <hr>
+                                <b>Результат:</b> <div style="white-space:pre-wrap">${rowData.result}</div>
+                            </div>
+                        `).show();
+                        $(this).find('span').text('Скрыть информацию');
                     }
                 });
 
-                function copyToClipboard(text) {
-                    toastr.success('Скопировано в буфер обмена');
+                $(document).on('click', '.apply-history-full', function(e) {
+                    e.preventDefault();
+                    let data = table.row($(this).closest('tr')).data();
                     
-                    if (navigator.clipboard && window.isSecureContext) {
-                        return navigator.clipboard.writeText(text);
-                    } else {
-                        return new Promise(function (resolve, reject) {
-                            let textarea = document.createElement("textarea");
-                            textarea.value = text;
+                    $('#prompt-text').val(data.prompt);
+                    $('#category-link').val(data.link);
+                    $(`input[name="parsing_method"][value="${data.source}"]`).prop('checked', true);
 
-                            textarea.style.position = "fixed";
-                            textarea.style.left = "-999999px";
-
-                            document.body.appendChild(textarea);
-                            textarea.focus();
-                            textarea.select();
-
-                            try {
-                                let successful = document.execCommand('copy');
-                                document.body.removeChild(textarea);
-
-                                if (successful) {
-                                    resolve();
-                                } else {
-                                    reject();
-                                }
-                            } catch (err) {
-                                document.body.removeChild(textarea);
-                                reject(err);
-                            }
-                        });
+                    if (window.applyWordsFromHistory) {
+                        window.applyWordsFromHistory(data.keywords, data.stopwords);
                     }
-
-                }
-
-                $(document).on('click', '.copy-result', function (e) {
-                    e.preventDefault();
-
-                    let tr = $(this).closest('tr');
-                    let result = tr.data('result');
-
-                    try { result = JSON.parse(result); } catch (e) {}
-
-                    copyToClipboard(result, $(this));
-                });
-
-                $(document).on('click', '.copy-prompt', function (e) {
-                    e.preventDefault();
-
-                    let tr = $(this).closest('tr');
-                    let prompt = tr.data('prompt');
-
-                    try { prompt = JSON.parse(prompt); } catch (e) {}
-
-                    copyToClipboard(prompt, $(this));
+                    toastr.success('Конфигурация восстановлена');
                 });
             });
         </script>
