@@ -20,11 +20,8 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    // dd(App\RelevanceHistory::with('mainHistory')->get()->toArray());
-    // dump(App\RelevanceHistoryResult::with('mainHistory')->get()->toArray());
-    // dd(ProjectRelevanceHistory::where('user_id', Auth::id())->with('stories')->get()->toArray());
-    dd(App\RelevanceHistory::where('user_id', '=', Auth::id())->with('results')->get()->toArray());
-    // $history = ProjectRelevanceHistory::where('id', '=', $request->history_id)->first(); Сканы с короткой сводкой
+    $object = App\RelevanceHistory::with('results')->get()->toArray();
+    dd($object);
 });
 
 Route::get('email/resend', 'Auth\VerificationController@resend');

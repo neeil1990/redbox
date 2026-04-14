@@ -204,7 +204,7 @@ class AiController extends Controller
 
     public function relevanceHistory($projectId)
     {
-        return RelevanceHistory::where('project_relevance_history_id', $projectId)
+        return RelevanceHistory::where('id', $projectId)
             ->select('id', 'phrase', 'main_link', 'created_at')
             ->get();
     }
@@ -213,7 +213,6 @@ class AiController extends Controller
         $record = RelevanceHistory::where('id', $projectId)->with(['results'])->first();
 
         if($record) {
-            Log::info($record->results);
             $phrases = Relevance::uncompressItem($record->results->phrases);
 
             return response()->json([
@@ -231,10 +230,10 @@ class AiController extends Controller
     public function allHistory()
     {
         /** @var \App\Models\User $user */
-        // $user = Auth::user();
-        // if(!$user::isUserAdmin()) {
-        //     abort(403);
-        // }
+        $user = Auth::user();
+        if(!$user::isUserAdmin()) {
+            abort(403);
+        }
 
         $generationHistory = AiGenerationHistory::orderBy('created_at', 'desc')->get();
 
