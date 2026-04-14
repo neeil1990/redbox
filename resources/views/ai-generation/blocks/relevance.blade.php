@@ -80,9 +80,7 @@
 
                 let options = '<option value="">Выберите</option>';
                 data.forEach(item => {
-                    options += `<option 
-                        value="${item.main_link}" 
-                        data-id="${item.id}">
+                    options += `<option value="${item.id}">
                         ${item.phrase} | ${item.main_link} | ${item.created_at}
                     </option>`;
                 });
@@ -92,10 +90,8 @@
         });
 
         $('#relevance-select').on('change', function () {
-            let projectId = $('#project-select').val();
+            let projectId = $(this).val();
             let link = $(this).val();
-
-            if (!projectId) return;
 
             $('#category-link').val(link).trigger('input');
 
