@@ -209,10 +209,10 @@ class AiController extends Controller
             ->get();
     }
 
+    //не могу это победить.....
     public function getPhrases($projectId) {
         $record = RelevanceHistoryResult::where('project_id', $projectId)->first();
 
-        Log::info($record);
         if($record) {
             $phrases = Relevance::uncompressItem($record->phrases);
 
