@@ -204,17 +204,18 @@ class AiController extends Controller
 
     public function relevanceHistory($projectId)
     {
-        return RelevanceHistory::where('id', $projectId)
-            ->select('id', 'phrase', 'main_link', 'created_at')
-            ->get();
+        $history = ProjectRelevanceHistory::where('id', $projectId)->first();
+
+        return $history->stories()->get([
+            'id', 'phrase', 'main_link', 'created_at', 'last_check'
+        ]);
     }
 
-    //не могу это победить.....
-    public function getPhrases($projectId) {
-        $record = RelevanceHistoryResult::where('project_id', $projectId)->first();
+    public function getPhrases($id) {
+        $record = RelevanceHistory::where('id', $id)->with('results')->first();
 
         if($record) {
-            $phrases = Relevance::uncompressItem($record->phrases);
+            $phrases = Relevance::uncompressItem($record->results->phrases);
 
             return response()->json([
                 'status' => 'ok',
