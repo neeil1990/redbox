@@ -190,9 +190,6 @@ class HistoryRelevanceController extends Controller
     {
         $admin = User::isUserAdmin();
         $object = RelevanceHistory::where('id', '=', $id)->first();
-
-        dd($object);
-
         $access = RelevanceSharing::where('user_id', '=', Auth::id())
             ->where('project_id', '=', $object->project_relevance_history_id)
             ->first();
