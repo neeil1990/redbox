@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-6">
-        <h5>Добавляемые слова</h5>
+        <h5>Добавляемые слова №1</h5>
 
         <div class="d-flex mb-2 justify-content-between">
             <input type="text" id="keywords-search" class="form-control form-control-sm me-2 w-50" placeholder="Поиск слова...">
@@ -26,7 +26,7 @@
         <button class="btn btn-secondary btn-sm" id="add-keyword">Добавить слово</button>
     </div>
     <div class="col-6">
-        <h5>Запрещённые слова</h5>
+        <h5>Запрещённые слова №2</h5>
 
         <div class="d-flex mb-2 justify-content-between">
             <input type="text" id="stopwords-search" class="form-control form-control-sm me-2 w-50" placeholder="Поиск слова...">
@@ -178,4 +178,55 @@
 
         return stopwords;
     }
+
+    window.applyWordsFromHistory = function(keywordsArray, stopwordsArray) {
+        let keywordsBody = $('#keywords-table tbody');
+        keywordsBody.empty();
+
+        if (keywordsArray && keywordsArray.length > 0) {
+            keywordsArray.forEach(item => {
+                keywordsBody.append(`
+                    <tr>
+                        <td><input type="text" class="form-control" name="keywords[]" value="${item.word || ''}"></td>
+                        <td><input type="number" class="form-control" name="counts[]" value="${item.count || 1}"></td>
+                        <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
+                    </tr>
+                `);
+            });
+        } else {
+            keywordsBody.append(`
+                <tr>
+                    <td><input type="text" class="form-control" name="keywords[]"></td>
+                    <td><input type="number" class="form-control" name="counts[]" value="1"></td>
+                    <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
+                </tr>
+            `);
+        }
+
+        let stopwordsBody = $('#stopwords-table tbody');
+        stopwordsBody.empty();
+
+        if (stopwordsArray && stopwordsArray.length > 0) {
+            stopwordsArray.forEach(word => {
+                stopwordsBody.append(`
+                    <tr>
+                        <td><input type="text" class="form-control" name="stopwords[]" value="${word}"></td>
+                        <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
+                    </tr>
+                `);
+            });
+        } else {
+            stopwordsBody.append(`
+                <tr>
+                    <td><input type="text" class="form-control" name="stopwords[]"></td>
+                    <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
+                </tr>
+            `);
+        }
+
+        if (typeof updatePrompt === 'function') {
+            updatePrompt();
+        }
+    };
+
 </script>

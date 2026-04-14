@@ -1,7 +1,7 @@
 <ul class="nav nav-pills p-2" id="main-nav">
     <li class="nav-item">
         <a class="nav-link" href="{{ route('ai.generation.category') }}">
-            Категории
+            Адаптивный промпт
         </a>
     </li>
     <li class="nav-item">
@@ -19,8 +19,13 @@
             История
         </a>
     </li>
-
-
+    <!-- @if(App\User::isUserAdmin()) -->
+    <!-- @endif -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('ai.generation.all.story') }}">
+                Общая история
+            </a>
+        </li>
 </ul>
 
 <script>

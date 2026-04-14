@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class GenerationCategoryQueue implements ShouldQueue
 {
@@ -38,9 +39,9 @@ class GenerationCategoryQueue implements ShouldQueue
 
         try {
             $finalPrompt = $this->data->prompt;
-            $link = $this->data->parrameters['link'];
 
-            if ($link) {
+            if ($this->data->parrameters['source'] === AiGenerationHistory::SOURCE_PARSE_HTML) {
+                $link = $this->data->parrameters['link'];
                 $htmlContent = TextAnalyzer::removeStylesAndScripts(
                     TextAnalyzer::curlInitV2($link)
                 );

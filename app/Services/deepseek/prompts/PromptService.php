@@ -39,42 +39,36 @@ $cancelWords
         return $this->confirmPrompt($text);
     }
 
-    public function generateCategory($link, $keywords = [], $stopwords = [], $note = null): string
+    public function adaptivePrompt($link, $keywords = [], $stopwords = [], $note = null, $baseText): string
     {
+        $baseText = str_replace('{link}', $link, $baseText);
+
         $addWords = '';
-        foreach ($keywords as $item) {
-            $addWords .= "<b>Нужно добавить слово " . $item['word'] . " или любое его склонение, число, падеж " . $item['count'] . " раз(а), чтобы слово естественно вписывалось в текст.</b>\n";
+        if (!empty($keywords)) {
+            $addWords = "\n\nДобавь слова из списка №1 (обязательно):\n";
+            foreach ($keywords as $item) {
+                $addWords .= "- " . $item['word'] . " (использовать " . $item['count'] . " раз, можно склонять или менять падеж)\n";
+            }
         }
 
         $cancelWords = '';
-        foreach ($stopwords as $word) {
-            $cancelWords .= "<b>Запрещено использовать слово и любое его склонение, число или падеж $word.</b>\n";
+        if (!empty($stopwords)) {
+            $cancelWords = "\nСписок №2 (запрещенные слова):\n";
+            foreach ($stopwords as $word) {
+                $cancelWords .= "- $word\n";
+            }
         }
 
-        $text = "Роль:
-Ты — профессиональный копирайтер.
-
-Задача:
-Составь уникальный текст для категории товаров, которая расположена по ссылке: $link. 
-
-Текст должен быть составлен таким образом, чтобы его можно было разместить на сайте в качестве SEO-текста для привлечения клиентов. Достаточно составить один вариант текста. 
-Ты обязан выполнить следующие требования:
-$addWords
-Если ты не можешь вписать в текст слово, пропусти его. 
-$cancelWords
-Уникальность и грамотность:
-Текст должен быть полностью уникальным (не скопирован с других сайтов).
-Предложения должны быть грамотными, правильными с точки зрения русского языка и легко читаться.";
+        $text = $baseText . $addWords . $cancelWords;
 
         if ($note) {
-            $text .= "\nДополнительные требования к тексту: $note\n";
+            $text .= "\nДополнительное примечание: $note\n";
         }
 
         return $this->confirmPrompt($text);
-
     }
 
-    public function regenerateCategory($currentPrompt, $currentText, $note): string
+    public function regenerateAdaptivePrompt($currentPrompt, $currentText, $note): string
     {
         $text = "Вот задача которую я тебе дал: $currentPrompt\n\n";
         $text .= "Вот текст который ты мне сгенерировал: $currentText\n\n";
