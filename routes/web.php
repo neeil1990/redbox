@@ -20,7 +20,7 @@ Route::get('info', function () {
 });
 
 Route::get('dev', function () {
-    $object = App\RelevanceHistory::with('results')->get()->toArray();
+    $object = App\RelevanceHistoryResult::limit(5)->get()->toArray();
     dd($object);
 });
 
