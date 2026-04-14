@@ -210,7 +210,7 @@ class AiController extends Controller
     }
 
     public function getPhrases($projectId) {
-        $record = RelevanceHistory::where('project_id', $projectId)->with(['results'])->first();
+        $record = RelevanceHistory::where('id', $projectId)->with(['results'])->first();
 
         if($record) {
             $phrases = Relevance::uncompressItem($record->results->phrases);

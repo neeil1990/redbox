@@ -1,54 +1,64 @@
 <div class="row">
-    <div class="col-6">
+    <div class="col-12 mb-4">
         <h5>Добавляемые слова №1</h5>
 
-        <div class="d-flex mb-2 justify-content-between">
-            <input type="text" id="keywords-search" class="form-control form-control-sm me-2 w-50" placeholder="Поиск слова...">
-            <button class="btn btn-danger btn-sm" id="clear-keywords">Очистить таблицу</button>
+        <div class="d-flex mb-2 justify-content-between align-items-center">
+            <input type="text" id="keywords-search" class="form-control form-control-sm me-2" style="max-width: 300px;" placeholder="Поиск слова в таблице №1...">
+            <button class="btn btn-danger btn-sm" id="clear-keywords">Очистить</button>
         </div>
-        <table class="table table-bordered" id="keywords-table">
-            <thead>
-            <tr>
-                <th>Слово / Предложение</th>
-                <th width="10">Количество</th>
-                <th width="50"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><input type="text" class="form-control" name="keywords[]"></td>
-                <td><input type="number" class="form-control" name="counts[]" value="1"></td>
-                <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
-            </tr>
-            </tbody>
-        </table>
 
-        <button class="btn btn-secondary btn-sm" id="add-keyword">Добавить слово</button>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="keywords-table">
+                <thead>
+                    <tr>
+                        <th>Слово / Предложение</th>
+                        <th width="120">Количество</th>
+                        <th width="50"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" name="keywords[]"></td>
+                        <td><input type="number" class="form-control" name="counts[]" value="1"></td>
+                        <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="add-keyword">
+            <i class="fas fa-plus"></i> Добавить слово
+        </button>
     </div>
-    <div class="col-6">
+
+    <div class="col-12"><hr class="my-4"></div>
+
+    <div class="col-12">
         <h5>Запрещённые слова №2</h5>
 
-        <div class="d-flex mb-2 justify-content-between">
-            <input type="text" id="stopwords-search" class="form-control form-control-sm me-2 w-50" placeholder="Поиск слова...">
-            <button class="btn btn-danger btn-sm" id="clear-stopwords">Очистить таблицу</button>
+        <div class="d-flex mb-2 justify-content-between align-items-center">
+            <input type="text" id="stopwords-search" class="form-control form-control-sm me-2" style="max-width: 300px;" placeholder="Поиск слова в таблице №2...">
+            <button class="btn btn-danger btn-sm" id="clear-stopwords">Очистить</button>
         </div>
 
-        <table class="table table-bordered" id="stopwords-table">
-            <thead>
-            <tr>
-                <th>Слово / Предложение</th>
-                <th width="50"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><input type="text" class="form-control" name="stopwords[]"></td>
-                <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
-            </tr>
-            </tbody>
-        </table>
-
-        <button class="btn btn-secondary btn-sm" id="add-stopword">Добавить слово</button>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="stopwords-table">
+                <thead>
+                    <tr>
+                        <th>Слово / Предложение</th>
+                        <th width="50"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" name="stopwords[]"></td>
+                        <td><button class="btn btn-danger btn-sm remove-row">×</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="add-stopword">
+            <i class="fas fa-plus"></i> Добавить слово
+        </button>
     </div>
 </div>
 
