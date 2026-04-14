@@ -213,6 +213,7 @@ class AiController extends Controller
         $record = RelevanceHistory::where('id', $projectId)->with(['results'])->first();
 
         if($record) {
+            Log::info($record->results);
             $phrases = Relevance::uncompressItem($record->results->phrases);
 
             return response()->json([
