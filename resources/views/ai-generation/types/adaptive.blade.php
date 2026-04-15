@@ -332,7 +332,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('ai.generation.category.generate') }}",
+                    url: "{{ route('ai.generation.prompt.generate') }}",
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",

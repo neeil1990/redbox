@@ -82,14 +82,9 @@ class AiController extends Controller
         ]);
     }
 
-    public function category()
+    public function prompt()
     {
         return view('ai-generation.types.adaptive');
-    }
-
-    public function announcement()
-    {
-        return view('ai-generation.types.announcement');
     }
 
     public function getProjects()
@@ -102,7 +97,7 @@ class AiController extends Controller
         return response()->json($projects);
     }
 
-    public function generateCategory(Request $request)
+    public function generatePrompt(Request $request)
     {
         $data = $request->validate([
             'id'           => 'nullable|integer',
@@ -122,8 +117,6 @@ class AiController extends Controller
         if ($data['mode'] == 'new') {
             $prompt = $service->adaptivePrompt(
                 $data['link'],
-                $data['keywords'] ?? [],
-                $data['stopwords'] ?? [],
                 $data['note'] ?? null,
                 $data['prompt']
             );
@@ -158,37 +151,6 @@ class AiController extends Controller
         ]);
     }
 
-    public function generateAnnouncement(Request $request)
-    {
-        $data = $request->validate([
-            'keywords' => 'array',
-            'stopwords' => 'array',
-            'current_text' => 'required|string',
-        ]);
-
-        $service = app(\App\Services\deepseek\prompts\PromptService::class);
-
-        $prompt = $service->generateAnnouncement(
-            $data['keywords'] ?? [],
-            $data['stopwords'] ?? [],
-            $data['current_text'],
-        );
-
-        $record = AiGenerationHistory::create([
-            'user_id' => Auth::id(),
-            'parrameters' => $data,
-            'prompt' => $prompt,
-            'type' => AiGenerationHistory::TYPE_ANNOUNCEMENT,
-        ]);
-
-        GenerationAnnouncementQueue::dispatch($record)->onQueue('ai_generation');
-
-        return response()->json([
-            'status' => 'ok',
-            'record_id' => $record->id,
-        ]);
-    }
-
     public function getResult($recordId)
     {
         $record = AiGenerationHistory::where('id', $recordId)
@@ -206,20 +168,26 @@ class AiController extends Controller
     {
         $history = ProjectRelevanceHistory::where('id', $projectId)->first();
 
-        return $history->stories()->get([
-            'id', 'phrase', 'main_link', 'created_at', 'last_check'
-        ]);
+        if($history) {
+            return $history->stories()->get([
+                'id', 'phrase', 'main_link', 'created_at', 'last_check'
+            ]);
+        }
+
+        return [];
     }
 
     public function getPhrases($id) {
         $record = RelevanceHistory::where('id', $id)->with('results')->first();
 
-        if($record) {
+        if($record && $record->results) {
             $phrases = Relevance::uncompressItem($record->results->phrases);
+            $unigram = Relevance::uncompressItem($record->results->unigram_table);
 
             return response()->json([
                 'status' => 'ok',
                 'phrases' => $phrases,
+                'unigram' => $unigram
             ]);
         }
 

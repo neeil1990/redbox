@@ -1,12 +1,7 @@
 <ul class="nav nav-pills p-2" id="main-nav">
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('ai.generation.category') }}">
+        <a class="nav-link" href="{{ route('ai.generation.prompt') }}">
             Адаптивный промпт
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ route('ai.generation.announcement') }}">
-            Анонсы
         </a>
     </li>
     <li class="nav-item">
@@ -19,13 +14,13 @@
             История
         </a>
     </li>
-    <!-- @if(App\User::isUserAdmin()) -->
-    <!-- @endif -->
+    @if(App\User::isUserAdmin())
         <li class="nav-item">
             <a class="nav-link" href="{{ route('ai.generation.all.story') }}">
                 Общая история
             </a>
         </li>
+    @endif
 </ul>
 
 <script>
