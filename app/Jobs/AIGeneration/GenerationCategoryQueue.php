@@ -40,6 +40,24 @@ class GenerationCategoryQueue implements ShouldQueue
         try {
             $finalPrompt = $this->data->prompt;
 
+            $addWords = '';
+            if (isset($this->data->parrameters['keywords'])) {
+                $addWords = "\n\nДобавь каждое слова из этого списка:\n";
+                foreach ($this->data->parrameters['keywords'] as $item) {
+                    $addWords .= "- " . $item['word'] . " (использовать " . $item['count'] . " раз, можно склонять или менять падеж)\n";
+                }
+            }
+
+            $cancelWords = '';
+            if (isset($this->data->parrameters['stopwords'])) {
+                $cancelWords = "\nСлова которые запрещенно использовать в любом числе и падеже:\n";
+                foreach ($this->data->parrameters['stopwords'] as $word) {
+                    $cancelWords .= "- $word\n";
+                }
+            }
+
+            $finalPrompt .= $addWords . $cancelWords;
+
             if ($this->data->parrameters['source'] === AiGenerationHistory::SOURCE_PARSE_HTML) {
                 $link = $this->data->parrameters['link'];
                 $htmlContent = TextAnalyzer::removeStylesAndScripts(

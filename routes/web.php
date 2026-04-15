@@ -518,10 +518,8 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/ai-generation/story', 'AiController@story')->name('ai.generation.story');
     Route::get('/ai-generation/all-history', 'AiController@allHistory')->name('ai.generation.all.story');
 
-    Route::get('/ai-generation/category', 'AiController@category')->name('ai.generation.category');
-    Route::get('/ai-generation/announcement', 'AiController@announcement')->name('ai.generation.announcement');
-    Route::post('/ai-generation/category', 'AiController@generateCategory')->name('ai.generation.category.generate');
-    Route::post('/ai-generation/announcement', 'AiController@generateAnnouncement')->name('ai.generation.announcement.generate');
+    Route::get('/ai-generation/prompt', 'AiController@prompt')->name('ai.generation.prompt');
+    Route::post('/ai-generation/prompt', 'AiController@generatePrompt')->name('ai.generation.prompt.generate');
     
     Route::get('/ai-generation/get-result/{recordId}', 'AiController@getResult')->name('ai.generation.get.result');
     Route::get('/relevance-history/{project}', 'AiController@relevanceHistory')->name('ai.generation.relevance.history');

@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 mb-4">
+    <div class="col-lg-6 col-md-12 mb-4">
         <h5>Добавляемые слова №1</h5>
 
         <div class="d-flex mb-2 justify-content-between align-items-center">
@@ -12,7 +12,9 @@
                 <thead>
                     <tr>
                         <th>Слово / Предложение</th>
-                        <th width="120">Количество</th>
+                        <th width="140" style="cursor: pointer;" id="sort-keywords-count" class="text-nowrap user-select-none">
+                            Количество <i class="fas fa-sort text-muted ms-1"></i>
+                        </th>
                         <th width="50"></th>
                     </tr>
                 </thead>
@@ -30,9 +32,7 @@
         </button>
     </div>
 
-    <div class="col-12"><hr class="my-4"></div>
-
-    <div class="col-12">
+    <div class="col-lg-6 col-md-12">
         <h5>Запрещённые слова №2</h5>
 
         <div class="d-flex mb-2 justify-content-between align-items-center">
@@ -133,6 +133,36 @@
                     $(this).hide();
                 }
             });
+        });
+
+        let countSortAsc = true; 
+
+        $('#sort-keywords-count').on('click', function() {
+            let tbody = $('#keywords-table tbody');
+            let rows = tbody.find('tr').toArray();
+            let icon = $(this).find('i');
+
+            countSortAsc = !countSortAsc;
+
+            icon.removeClass('fa-sort fa-sort-up fa-sort-down');
+            if (countSortAsc) {
+                icon.addClass('fa-sort-up text-dark').removeClass('text-muted');
+            } else {
+                icon.addClass('fa-sort-down text-dark').removeClass('text-muted');
+            }
+
+            rows.sort(function(a, b) {
+                let countA = parseInt($(a).find('input[name="counts[]"]').val()) || 0;
+                let countB = parseInt($(b).find('input[name="counts[]"]').val()) || 0;
+
+                if (countSortAsc) {
+                    return countA - countB;
+                } else {
+                    return countB - countA;
+                }
+            });
+
+            tbody.append(rows); 
         });
 
         loadSavedStopWords();
