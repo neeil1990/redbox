@@ -533,4 +533,13 @@ Route::middleware(['verified'])->group(function () {
     Route::delete('/ai-generation/stopwords/{id}', 'AiGenerationStopWordController@destroy')->name('ai.stopwords.destroy');
     Route::put('/ai-stopwords/{id}', 'AiGenerationStopWordController@update')->name('ai.stopwords.update');
     Route::get('/ai-generation/stopwords-list', 'AiGenerationStopWordController@getJson');
+
+    Route::get('/ai-stopwords/datatable', 'AiGenerationStopWordController@datatable')->name('ai.stopwords.datatable');
+    Route::get('/ai-stopwords-categories/datatable', 'AiGenerationStopWordCategoryController@datatable')->name('ai.stopwords.categories.datatable');
+
+    Route::prefix('ai-stopwords-categories')->name('ai.stopwords.categories.')->group(function () {
+        Route::post('/', 'AiGenerationStopWordCategoryController@store')->name('store');
+        Route::put('/{id}', 'AiGenerationStopWordCategoryController@update')->name('update');
+        Route::delete('/{id}', 'AiGenerationStopWordCategoryController@destroy')->name('destroy');
+    });
 });
