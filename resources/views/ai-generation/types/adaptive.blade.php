@@ -68,6 +68,14 @@
                     <div class="form-group mt-3 mb-4">
                         <label for="category-link">Посадочная страница</label>
                         <input type="text" class="form-control mb-3" id="category-link" placeholder="https://example.com/category/...">
+                            
+                        <div class="mt-4">
+                            <button class="btn btn-success generate-button" data-mode="new">
+                                Сгенерировать текст
+                            </button>
+                        </div>
+
+                        <hr>
 
                         <label class="d-block mb-2">Способ анализа страницы</label>
                         
@@ -95,12 +103,6 @@
 
                     @include('ai-generation.blocks.relevance')
                     @include('ai-generation.blocks.words')
-
-                    <div class="mt-4">
-                        <button class="btn btn-success generate-button" data-mode="new">
-                            Сгенерировать текст
-                        </button>
-                    </div>
 
                     <div id="generation-result" class="d-none mt-4">
                         <div id="generation-loading" class="text-muted">
@@ -145,13 +147,14 @@
                 </div>
 
                 <div class="col-lg-4 col-md-12">
-                    <div class="card card-outline card-secondary history-sidebar" style="position: sticky; top: 20px;">
-                        <div class="card-header">
-                            <h3 class="card-title">История запросов</h3>
+                    <div class="card card-outline card-secondary history-sidebar" style="top: 22px;">
+                        <div class="card-header d-flex justify-content-between align-items-center p-2">
+                            <h3 class="card-title m-0" style="font-size: 1.1rem;">История запросов</h3>
+                            <input type="text" id="custom-history-search" class="form-control form-control-sm" style="width: 150px;" placeholder="Поиск...">
                         </div>
-                        <div class="card-body p-2 history-container">
-                            <div class="history-table-wrapper">
-                                <table id="sidebar-history-table" class="table table-hover w-100" style="border-top: none;">
+                        
+                        <div class="card-body p-0 history-container"> <div class="history-table-wrapper">
+                                <table id="sidebar-history-table" class="table table-hover w-100" style="border-top: none; table-layout: fixed;">
                                     <thead style="display: none;"><tr><th>Данные</th></tr></thead>
                                     <tbody></tbody>
                                 </table>
@@ -222,23 +225,24 @@
                                 cleanPrompt = cleanPrompt.substring(0, 120) + (cleanPrompt.length > 120 ? '...' : '');
 
                                 return `
-                                <div class="p-2 border-bottom">
+                                <div class="p-2">
                                     <div class="d-flex justify-content-between small text-muted mb-1">
                                         <span>${row.date} ${statusBadge}</span>
                                         <span class="badge ${badgeClass}">${sourceText}</span>
                                     </div>
-                                    <div class="text-truncate font-weight-bold mb-1 small" title="${row.link}">
-                                        <i class="fas fa-link mr-1"></i> ${row.link}
+                                    <div class="text-truncate font-weight-bold mb-1 small">
+                                        <i class="fas fa-link mr-1"></i> ${row.link.substring(0, 70) + (row.link.length > 70 ? '...' : '')}
                                     </div>
+
                                     <div class="text-muted small mb-2 text-truncate-3" style="font-size: 0.8rem; line-height: 1.2;">
                                         ${cleanPrompt}
                                     </div>
                                     <button class="btn btn-xs btn-block btn-outline-primary apply-history" 
                                         data-prompt="${encodeURIComponent(row.prompt || '')}"
-                                                        data-link="${row.link}"
-                                                        data-source="${row.source}"
-                                                        data-keywords="${keywordsAttr}"
-                                                        data-stopwords="${stopwordsAttr}">
+                                        data-link="${row.link}"
+                                        data-source="${row.source}"
+                                        data-keywords="${keywordsAttr}"
+                                        data-stopwords="${stopwordsAttr}">
                                         Применить этот промпт
                                     </button>
                                 </div>`;
@@ -252,12 +256,14 @@
                     info: false,
                     pageLength: 5,
                     language: {
-                        search: "",
-                        searchPlaceholder: "Поиск по истории...",
                         emptyTable: "История пуста",
                         paginate: { next: "»", previous: "«" }
                     },
-                    dom: '<"p-1"f>rt<"d-flex justify-content-center mt-2"p>'
+                    dom: 'rt<"d-flex justify-content-center mt-2"p>'
+                });
+
+                $('#custom-history-search').on('keyup search input', function () {
+                    historyTable.search(this.value).draw();
                 });
 
                 $('#sidebar-history-table').on('click', '.apply-history', function() {
