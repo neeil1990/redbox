@@ -62,7 +62,12 @@
                     
                     <div class="form-group mb-4">
                         <label>Промпт для генерации</label>
-                        <textarea id="prompt-text" class="form-control" rows="12" style="background: #f8f9fa;"></textarea>
+                        <div class="position-relative" id="prompt-wrapper">
+                            <textarea id="prompt-text" class="form-control" rows="12" style="background: #f8f9fa;"></textarea>
+                            <small class="text-muted">Чтобы использовать макрос в промпте, вам необходимо написать --название макроса--</small>
+                            <div id="macro-dropdown" class="dropdown-menu shadow-lg w-100" style="display: none; position: absolute; max-height: 250px; overflow-y: auto; z-index: 1050; top: 100%; margin-top: -5px;">
+                                </div>
+                        </div>
                     </div>
 
                     <div class="form-group mt-3 mb-4">
@@ -230,7 +235,7 @@
                                         <span>${row.date} ${statusBadge}</span>
                                         <span class="badge ${badgeClass}">${sourceText}</span>
                                     </div>
-                                    <div class="text-truncate font-weight-bold mb-1 small">
+                                    <div class="text-truncate font-weight-bold mb-1 small" title="${row.link}">
                                         <i class="fas fa-link mr-1"></i> ${row.link.substring(0, 70) + (row.link.length > 70 ? '...' : '')}
                                     </div>
 
@@ -432,6 +437,121 @@
                     });
                 }, 3000);
             }
+        </script>
+        <script>
+            let macrosList = [];
+
+            $.get("{{ route('ai.macros.datatable') }}", function(res) {
+                if(res && res.data) macrosList = res.data;
+            });
+
+            let macroMatchStart = -1;
+            let macroSearchTerm = '';
+
+            $('#prompt-text').on('input', function(e) {
+                let val = $(this).val();
+                let cursorPos = this.selectionStart;
+                let textBeforeCursor = val.substring(0, cursorPos);
+                let match = textBeforeCursor.match(/--([^\n\-]{0,50})$/);
+
+                if (match) {
+                    macroMatchStart = match.index;
+                    macroSearchTerm = match[1].toLowerCase();
+                    showMacroDropdown();
+                } else {
+                    hideMacroDropdown();
+                }
+            });
+
+            function showMacroDropdown() {
+                let filtered = macrosList.filter(m => m.name.toLowerCase().includes(macroSearchTerm));
+                let dropdown = $('#macro-dropdown');
+
+                if (filtered.length === 0) {
+                    hideMacroDropdown();
+                    return;
+                }
+
+                dropdown.empty();
+                filtered.forEach((m, index) => {
+                    let activeClass = index === 0 ? 'active' : '';
+                    dropdown.append(`
+                        <a href="javascript:void(0)" class="dropdown-item macro-item ${activeClass} py-2" data-name="${m.name}">
+                            <div class="font-weight-bold">${m.name}</div>
+                            <div class="small text-truncate" style="opacity: 0.8;">${m.description || 'Без описания'}</div>
+                        </a>
+                    `);
+                });
+
+                dropdown.show();
+            }
+
+            function hideMacroDropdown() {
+                $('#macro-dropdown').hide();
+                macroMatchStart = -1;
+            }
+
+            function insertMacro(macroName) {
+                let textarea = $('#prompt-text')[0];
+                let val = textarea.value;
+                let cursorPos = textarea.selectionStart;
+
+                let beforeMatch = val.substring(0, macroMatchStart);
+                let afterCursor = val.substring(cursorPos);
+
+                let insertText = `--${macroName}-- `;
+
+                textarea.value = beforeMatch + insertText + afterCursor;
+
+                hideMacroDropdown();
+
+                let newPos = beforeMatch.length + insertText.length;
+                textarea.setSelectionRange(newPos, newPos);
+                textarea.focus();
+            }
+
+            $(document).on('click', '.macro-item', function(e) {
+                e.preventDefault();
+                insertMacro($(this).data('name'));
+            });
+
+            $('#prompt-text').on('keydown', function(e) {
+                let dropdown = $('#macro-dropdown');
+                if (!dropdown.is(':visible')) return;
+
+                let items = dropdown.find('.macro-item');
+                let active = dropdown.find('.macro-item.active');
+                let activeIndex = items.index(active);
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (activeIndex < items.length - 1) {
+                        active.removeClass('active');
+                        $(items[activeIndex + 1]).addClass('active');
+                        dropdown[0].scrollTop = $(items[activeIndex + 1])[0].offsetTop - 50;
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (activeIndex > 0) {
+                        active.removeClass('active');
+                        $(items[activeIndex - 1]).addClass('active');
+                        dropdown[0].scrollTop = $(items[activeIndex - 1])[0].offsetTop - 50;
+                    }
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (active.length) {
+                        insertMacro(active.data('name'));
+                    }
+                } else if (e.key === 'Escape') {
+                    hideMacroDropdown();
+                }
+            });
+
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#prompt-wrapper').length) {
+                    hideMacroDropdown();
+                }
+            });
         </script>
     @endslot
 @endcomponent
