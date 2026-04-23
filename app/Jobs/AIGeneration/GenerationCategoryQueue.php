@@ -18,45 +18,19 @@ class GenerationCategoryQueue implements ShouldQueue
 
     private $data;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
     public function __construct(AiGenerationHistory $data)
     {
         $this->data = $data;
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
         $deepseekService = app(\App\Services\deepseek\DeepSeekBaseService::class);
 
         try {
-            $finalPrompt = $this->data->prompt;
-
-            $addWords = '';
-            if (isset($this->data->parrameters['keywords'])) {
-                $addWords = "\n\nДобавь каждое слова из этого списка:\n";
-                foreach ($this->data->parrameters['keywords'] as $item) {
-                    $addWords .= "- " . $item['word'] . " (использовать " . $item['count'] . " раз, можно склонять или менять падеж)\n";
-                }
-            }
-
-            $cancelWords = '';
-            if (isset($this->data->parrameters['stopwords'])) {
-                $cancelWords = "\nСлова которые запрещенно использовать в любом числе и падеже:\n";
-                foreach ($this->data->parrameters['stopwords'] as $word) {
-                    $cancelWords .= "- $word\n";
-                }
-            }
-
-            $finalPrompt .= $addWords . $cancelWords;
+            $finalPrompt = $this->getMacroses($this->data->prompt);
+            $finalPrompt .= $this->getWords();
+            $finalPrompt .= $this->getCancelWords();
 
             if ($this->data->parrameters['source'] === AiGenerationHistory::SOURCE_PARSE_HTML) {
                 $link = $this->data->parrameters['link'];
@@ -79,5 +53,52 @@ class GenerationCategoryQueue implements ShouldQueue
             $this->data->status = AiGenerationHistory::FAILED;
             $this->data->save();
         }
+    }
+
+    private function getMacroses($finalPrompt) {
+        if (preg_match_all('/--(.+?)--/', $finalPrompt, $matches)) {
+            $macroNames = array_unique($matches[1]);
+
+            $macros = \App\AiGenerationMacro::where('user_id', $this->data->user_id)
+                ->whereIn('name', $macroNames)
+                ->get()
+                ->keyBy('name');
+
+            foreach ($macroNames as $macroName) {
+                if ($macros->has($macroName)) {
+                    $finalPrompt = str_replace(
+                        '--' . $macroName . '--', 
+                        $macros->get($macroName)->content, 
+                        $finalPrompt
+                    );
+                }
+            }
+        }
+
+        return $finalPrompt;
+    }
+
+    private function getWords() {
+        $addWords = '';
+        if (isset($this->data->parrameters['keywords'])) {
+            $addWords = "\n\nДобавь каждое слова из этого списка:\n";
+            foreach ($this->data->parrameters['keywords'] as $item) {
+                $addWords .= "- " . $item['word'] . " (использовать " . $item['count'] . " раз, можно склонять или менять падеж)\n";
+            }
+        }
+
+        return $addWords;
+    }
+
+    private function getCancelWords() {
+        $cancelWords = '';
+        if (isset($this->data->parrameters['stopwords'])) {
+            $cancelWords = "\nСлова которые запрещенно использовать в любом числе и падеже:\n";
+            foreach ($this->data->parrameters['stopwords'] as $word) {
+                $cancelWords .= "- $word\n";
+            }
+        }
+
+        return $cancelWords;
     }
 }

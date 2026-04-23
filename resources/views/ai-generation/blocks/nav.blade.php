@@ -5,6 +5,9 @@
         </a>
     </li>
     <li class="nav-item">
+        <a class="nav-link" href="{{ route('ai.macros.index') }}">Макросы</a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link" href="{{ route('ai.stopwords.index') }}">
             Запрещённые слова
         </a>

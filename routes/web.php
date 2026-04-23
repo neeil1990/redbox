@@ -526,7 +526,6 @@ Route::middleware(['verified'])->group(function () {
     Route::get('/relevance-history/getPhrases/{projectId}', 'AiController@getPhrases')->name('ai.generation.relevance.history.phrases');
     Route::get('/relevance-projects', 'AiController@getProjects')->name('ai.generation.relevance.projects');
     Route::post('/ai-generation/history', 'AiController@getHistoryJson')->name('ai.generation.history.json');
-    
 
     Route::get('/ai-generation/stopwords', 'AiGenerationStopWordController@index')->name('ai.stopwords.index');
     Route::post('/ai-generation/stopwords', 'AiGenerationStopWordController@store')->name('ai.stopwords.store');
@@ -541,5 +540,13 @@ Route::middleware(['verified'])->group(function () {
         Route::post('/', 'AiGenerationStopWordCategoryController@store')->name('store');
         Route::put('/{id}', 'AiGenerationStopWordCategoryController@update')->name('update');
         Route::delete('/{id}', 'AiGenerationStopWordCategoryController@destroy')->name('destroy');
+    });
+
+    Route::prefix('ai-macros')->name('ai.macros.')->group(function () {
+        Route::get('/', 'AiGenerationMacroController@index')->name('index');
+        Route::get('/datatable', 'AiGenerationMacroController@datatable')->name('datatable');
+        Route::post('/', 'AiGenerationMacroController@store')->name('store');
+        Route::put('/{id}', 'AiGenerationMacroController@update')->name('update');
+        Route::delete('/{id}', 'AiGenerationMacroController@destroy')->name('destroy');
     });
 });

@@ -84,7 +84,7 @@ class AiController extends Controller
 
     public function prompt()
     {
-        return view('ai-generation.types.adaptive');
+        return view('ai-generation.prompt');
     }
 
     public function getProjects()
