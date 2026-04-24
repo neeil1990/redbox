@@ -56,11 +56,20 @@ public function index()
         return back()->with('success', 'Слово удалено');
     }
 
-    public function getJson()
+    public function getJson(Request $request)
     {
-        $words = AiGenerationStopWords::with('category')
-            ->where('user_id', Auth::id())
-            ->get();
+        $categoryId = $request->input('category', 'all');
+
+        $query = AiGenerationStopWords::with('category')
+            ->where('user_id', Auth::id());
+
+        if($categoryId === 'null') {
+            $query->whereNull('category_id');
+        } else if ($categoryId !== 'all') {
+            $query->where('category_id', $categoryId);
+        }
+
+        $words = $query->get();
 
         $grouped = $words->groupBy(function ($item) {
             return $item->category ? $item->category->name : 'Без категории';

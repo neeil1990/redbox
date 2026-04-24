@@ -15,7 +15,7 @@ class DeepSeekBaseService
         $this->apiKey = config('deepseek.token');
         $this->client = new Client([
             'base_uri' => 'https://api.deepseek.com',
-            'timeout'  => 30,
+            'timeout'  => 120,
         ]);
     }
 
