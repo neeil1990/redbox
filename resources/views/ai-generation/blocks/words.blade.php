@@ -35,12 +35,19 @@
     <div class="col-lg-6 col-md-12">
         <h5>Запрещённые слова №2</h5>
 
+        <div class="form-group mb-2">
+            <select id="stopword-category-select" class="form-control select2" style="width: 100%;">
+                <option value="all">Все категории</option>
+                    @foreach(App\AiGenerationStopWordCategory::where('user_id', Auth::id())->orderBy('name')->get() as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                    <option value="null">Без категории</option>
+            </select>
+        </div>
+
         <div class="d-flex mb-2 justify-content-between align-items-center">
             <input type="text" id="stopwords-search" class="form-control form-control-sm me-2" style="max-width: 300px;" placeholder="Поиск слова в таблице №2...">
             <div>
-                <button class="btn btn-info btn-sm me-1" id="reload-stopwords" title="Загрузить заново из базы">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
                 <button class="btn btn-danger btn-sm" id="clear-stopwords">Очистить</button>
             </div>
         </div>
@@ -72,7 +79,6 @@
     var stopwords = [];
 
     $(document).ready(function () {
-        // --- Блок "Добавляемые слова №1" остался без изменений ---
         $('#clear-keywords').on('click', function() {
             $('#keywords-table tbody').html(`
                 <tr>
@@ -125,13 +131,19 @@
             tbody.append(rows); 
         });
 
-        $('#reload-stopwords').click(function() {
-            let btn = $(this);
-            let icon = btn.find('i');
-            icon.addClass('fa-spin');
+        $('#stopword-category-select').select2({
+            theme: 'bootstrap4',
+            language: 'ru'
+        });
+
+        $('#stopword-category-select').on('change', function() {
+            let categoryId = $(this).val();
             
-            loadSavedStopWords(function() {
-                setTimeout(() => icon.removeClass('fa-spin'), 300);
+            let selectContainer = $(this).next('.select2-container');
+            selectContainer.css('opacity', '0.5');
+
+            loadSavedStopWords(categoryId, function() {
+                selectContainer.css('opacity', '1');
             });
         });
 
@@ -187,8 +199,8 @@
         loadSavedStopWords();
     });
 
-    function loadSavedStopWords(callback = null) {
-        $.get('/ai-generation/stopwords-list', function (data) {
+    function loadSavedStopWords(categoryId = 'all', callback = null) {
+        $.get('/ai-generation/stopwords-list', { category: categoryId }, function (data) {
             let tbody = $('#stopwords-table tbody');
             tbody.empty();
 

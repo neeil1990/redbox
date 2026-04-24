@@ -19,6 +19,7 @@
                 <select id="relevance-select" class="form-control" disabled>
                     <option value="">Сначала выберите проект</option>
                 </select>
+                <a href="" id="project-link" target="_blank" style="display: none;">Ссылка на выбранный проект</a>
             </div>
 
             <div class="border p-3 mb-3 rounded bg-light">
@@ -37,10 +38,10 @@
                 </div>
 
                 <div>
-                    <strong>2. Правило фильтрации:</strong><br>
+                    <strong>2. Варианты добавления слов из анализа релевантности:</strong><br>
                     <div class="form-check">
                         <input class="form-check-input filter-trigger" type="radio" name="filter_rule" id="rule-diff" value="diff" checked>
-                        <label class="form-check-label" for="rule-diff">Только недостающие <small class="text-muted">(Среднее кол-во повторений конкурента > Среднее кол-во повторений посадочной страницы)</small></label>
+                        <label class="form-check-label" for="rule-diff">Только недостающие <small class="text-muted">(Среднее кол-во повторений конкурента - Среднее кол-во повторений посадочной страницы)</small></label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input filter-trigger" type="radio" name="filter_rule" id="rule-zero" value="zero">
@@ -48,7 +49,21 @@
                     </div>
                     <div class="form-check">
                         <input class="form-check-input filter-trigger" type="radio" name="filter_rule" id="rule-all" value="all">
-                        <label class="form-check-label" for="rule-all">Все по 1 разу</label>
+                        <label class="form-check-label" for="rule-all">Все по 1 разу <small class="text-muted">(Слово или фраза будет использована вне зависимости от кол-ва повторений)</small></label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input filter-trigger" type="radio" name="filter_rule" id="rule-custom" value="custom">
+                        <label class="form-check-label" for="rule-custom">Тонкая настройка <small class="text-muted">(Процент от разницы с кол-во повторений конкурента и посадочной страницы)</small></label>
+                        
+                        <div class="mt-2 mb-2 p-2 border-left border-primary" id="custom-settings" style="display: none; background: #f8f9fa;">
+                            <div class="d-flex align-items-center mb-1" style="font-size: 0.9rem;">
+                                <span class="mr-2">Использовать</span>
+                                <input type="number" id="custom-n" class="form-control form-control-sm filter-trigger text-center mx-1" style="width: 70px;" value="50" min="1" max="100">
+                                <span class="mx-2">% от разницы, но не менее</span>
+                                <input type="number" id="custom-k" class="form-control form-control-sm filter-trigger text-center mx-1" style="width: 70px;" value="2" min="1">
+                                <span class="ml-2">раз</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,6 +78,14 @@
     let currentPhrasesData = null;
 
     $(document).ready(function() {
+        $('input[name="filter_rule"]').on('change', function() {
+            if ($(this).val() === 'custom') {
+                $('#custom-settings').slideDown('fast');
+            } else {
+                $('#custom-settings').slideUp('fast');
+            }
+        });
+
         $.get('/relevance-projects', function(data) {
             let options = '<option value="">Выберите проект</option>';
             
@@ -139,6 +162,9 @@
                 
                 applyFiltersAndRender();
             });
+
+            $('#project-link').attr('href', '/show-history/' + projectId);
+            $('#project-link').show();
         });
 
         $('.filter-trigger').on('change', function() {
@@ -173,7 +199,7 @@
         for (let word in words) {
             if (word !== '') {
                 let item = words[word];
-                let = avg = parseFloat(item.total && item.total.avgInTotalCompetitors ? item.total.avgInTotalCompetitors : 0);
+                let avg = parseFloat(item.total && item.total.avgInTotalCompetitors ? item.total.avgInTotalCompetitors : 0);
                 let total = parseFloat(item.total && item.total.totalRepeatMainPage ? item.total.totalRepeatMainPage : 0);
 
                 let shouldAdd = false;
@@ -192,6 +218,16 @@
                 } else if (filterRule === 'all') {
                     shouldAdd = true;
                     countValue = 1;
+                } else if (filterRule === 'custom') {
+                    if (avg > total) {
+                        let nPercent = parseFloat($('#custom-n').val()) || 50;
+                        let kMin = parseInt($('#custom-k').val()) || 1;
+                        let diff = avg - total;
+                        let calculated = Math.ceil(diff * (nPercent / 100));
+                        
+                        shouldAdd = true;
+                        countValue = Math.max(calculated, kMin);
+                    }
                 }
 
                 if (shouldAdd) {

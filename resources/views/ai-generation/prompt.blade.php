@@ -171,6 +171,17 @@
         </div>
     </div>
 
+    <div class="floating-scroll-buttons" style="position: fixed; right: 50px; bottom: 30px;">
+        <button class="btn btn-secondary shadow-sm" id="scroll-to-top" title="Наверх">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        <button class="btn btn-success shadow-sm" id="scroll-to-action" title="К кнопке генерации">
+            <i class="fas fa-play"></i>
+        </button>
+        <button class="btn btn-secondary shadow-sm" id="scroll-to-bottom" title="Вниз">
+            <i class="fas fa-arrow-down"></i>
+        </button>
+    </div>
     @slot('js')
         <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
         <script src="{{ asset('plugins/summernote/lang/summernote-ru-RU.js') }}"></script>
@@ -186,17 +197,6 @@
             let historyTable;
 
             $(document).ready(function() {
-                $('#result-text').summernote({
-                    height: 300,
-                    lang: 'ru-RU',
-                    toolbar: [
-                        ['style', ['bold', 'italic', 'underline', 'clear']],
-                        ['font', ['strikethrough']],
-                        ['para', ['ul', 'ol', 'paragraph']],
-                        ['view', ['codeview']]
-                    ]
-                });
-
                 const defaultPrompt = `Роль: \nТы — профессиональный копирайтер.\n\nЗадача:\nСоставь уникальный текст для категории товаров, которая расположена по ссылке: {link}. \nДля составления текста используй реальное содержимое указанной страницы.\n\nТекст должен быть составлен таким образом, чтобы его можно было разместить на сайте в качестве SEO-текста для привлечения клиентов. Достаточно составить один вариант текста.\n\nУникальность и грамотность:\nТекст должен быть полностью уникальным (не скопирован с других сайтов).\nПредложения должны быть грамотными, правильными с точки зрения русского языка и легко читаться.`;
 
                 $('#prompt-text').val(defaultPrompt);
@@ -382,7 +382,7 @@
             });
 
             $('#copy-result').click(function () {
-                let html = $('#result-text').summernote('code');
+                let html = $('#result-text').val();
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(html).then(function () {
                         toastr.success('Скопировано!');
@@ -391,6 +391,27 @@
                     if(typeof fallbackCopyTextToClipboard === 'function') {
                         fallbackCopyTextToClipboard(html);
                     }
+                }
+            });
+
+            $('#scroll-to-top').click(function () {
+                $('html, body').animate({ scrollTop: 0 }, 500);
+            });
+
+            $('#scroll-to-bottom').click(function () {
+                $('html, body').animate({ scrollTop: $(document).height() }, 500);
+            });
+
+            $('#scroll-to-action').click(function () {
+                let target = $('.generate-button[data-mode="new"]').first();
+                
+                if (target.length) {
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - 100 
+                    }, 500);
+                    
+                    target.addClass('btn-warning').removeClass('btn-success');
+                    setTimeout(() => target.addClass('btn-success').removeClass('btn-warning'), 500);
                 }
             });
 
@@ -424,7 +445,7 @@
 
                                     $('#generation-loading').addClass('d-none');
                                     $('#generation-success').removeClass('d-none');
-                                    $('#result-text').summernote('code', response.record.result);
+                                    $('#result-text').val(response.record.result);
 
                                     lastId = response.record.id;
                                     toastr.success('Генерация успешно завершена!');
@@ -438,6 +459,7 @@
                 }, 3000);
             }
         </script>
+        <!-- макросы -->
         <script>
             let macrosList = [];
 
