@@ -169,7 +169,7 @@ class AiController extends Controller
         $history = ProjectRelevanceHistory::where('id', $projectId)->first();
 
         if($history) {
-            return $history->stories()->get([
+            return $history->stories()->orderBy('id', 'desc')->get([
                 'id', 'phrase', 'main_link', 'created_at', 'last_check'
             ]);
         }
